@@ -5,6 +5,7 @@
 /* ------------------------------------------ */
 
 #include "CoreSystems/Application.hh"
+#include "CoreSystems/Logger.hh"
 
 /* --------- Client Point ------------------- */
 

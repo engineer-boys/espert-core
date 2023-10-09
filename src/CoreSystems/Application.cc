@@ -13,4 +13,9 @@ namespace Esper
     void Application::run()
     {
     }
+
+    void Application::set_context(std::unique_ptr<ContextApplication> context)
+    {
+        this->_m_context = std::move(context);
+    }
 } // namespace Esper
