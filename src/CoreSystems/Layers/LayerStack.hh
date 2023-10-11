@@ -1,8 +1,7 @@
 #ifndef __ENGINE__LAYERSTACK_HH__
 #define __ENGINE__LAYERSTACK_HH__
 
-#include <vector>
-
+#include "esppch.hh"
 #include "Layer.hh"
 
 namespace Esper
