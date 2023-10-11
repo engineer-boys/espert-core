@@ -15,7 +15,4 @@
 #include <unordered_map>
 #include <unordered_set>
 
-// libs
-#include "spdlog/fmt/ostr.h"
-
 #endif  // ESPERT_ESPPCH_HH_
