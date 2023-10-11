@@ -1,9 +1,9 @@
-#ifndef __ENGINE__LAYER_HH__
-#define __ENGINE__LAYER_HH__
+#ifndef ESPERT_CORESYSTEMS_LAYERS_LAYER_HH_
+#define ESPERT_CORESYSTEMS_LAYERS_LAYER_HH_
 
 #include "../Events/Event.hh"
 
-namespace Esper
+namespace Espert
 {
     class Layer
     {
@@ -16,6 +16,6 @@ namespace Esper
         virtual void handle_event(Event &event) {}
     };
 
-} // namespace Esper
+} // namespace Espert
 
-#endif /* __ENGINE__LAYER_HH__ */
+#endif  // ESPERT_CORESYSTEMS_LAYERS_LAYER_HH_

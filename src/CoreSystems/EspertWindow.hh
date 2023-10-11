@@ -1,13 +1,13 @@
-#ifndef __ENGINE__WINDOW_HH__
-#define __ENGINE__WINDOW_HH__
+#ifndef ESPERT_CORESYSTEMS_ESPERTWINDOW_HH_
+#define ESPERT_CORESYSTEMS_ESPERTWINDOW_HH_
 
 #include "esppch.hh"
 #include "Events/Event.hh"
 #include "GLFW/glfw3.h"
 
-namespace Esper
+namespace Espert
 {
-    class EsperWindow
+    class EspertWindow
     {
     public:
         struct WindowData
@@ -22,7 +22,7 @@ namespace Esper
             EventManagerFun events_manager_fun;
 
             WindowData(
-                const std::string title = "Esper widnow",
+                const std::string title = "Espert widnow",
                 unsigned int width = 1280,
                 unsigned int height = 720)
                 : title(title), width(width), height(height) {}
@@ -39,10 +39,10 @@ namespace Esper
         void init(const WindowData &data);
         void destroy();
 
-        EsperWindow(const WindowData &data);
+        EspertWindow(const WindowData &data);
 
     public:
-        ~EsperWindow();
+        ~EspertWindow();
 
         void on_update();
 
@@ -50,8 +50,8 @@ namespace Esper
         inline unsigned int get_height() { return _m_data.height; }
         inline void set_events_manager_fun(const WindowData::EventManagerFun &callback) { _m_data.events_manager_fun = callback; }
 
-        static std::unique_ptr<EsperWindow> create(const WindowData &data);
+        static std::unique_ptr<EspertWindow> create(const WindowData &data);
     };
-} // namespace Esper
+} // namespace Espert
 
-#endif /* __ENGINE__WINDOW_HH__ */
+#endif  // ESPERT_CORESYSTEMS_ESPERTWINDOW_HH_

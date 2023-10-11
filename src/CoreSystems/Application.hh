@@ -1,18 +1,18 @@
-#ifndef __ENGINE__APPLICATION_HH__
-#define __ENGINE__APPLICATION_HH__
+#ifndef ESPERT_CORESYSTEMS_APPLICATION_HH_
+#define ESPERT_CORESYSTEMS_APPLICATION_HH_
 
 #include "esppch.hh"
-#include "ContextApplication.hh"
+#include "ApplicationContext.hh"
 #include "Events/WindowEvent.h"
 #include "EspertWindow.hh"
 
-namespace Esper
+namespace Espert
 {
     class Application
     {
     private:
-        std::unique_ptr<ContextApplication> _m_context;
-        std::unique_ptr<EsperWindow> _m_window;
+        std::unique_ptr<ApplicationContext> _m_context;
+        std::unique_ptr<EspertWindow> _m_window;
 
         bool _m_running;
 
@@ -24,7 +24,7 @@ namespace Esper
         virtual ~Application();
 
         void run();
-        void set_context(std::unique_ptr<ContextApplication> context);
+        void set_context(std::unique_ptr<ApplicationContext> context);
 
         void events_manager(Event &e);
     };
@@ -32,6 +32,6 @@ namespace Esper
     /* This function is defined by CLIENT */
     Application *createAppInstance();
 
-} // namespace  Esper
+} // namespace Espert
 
-#endif /* __ENGINE__APPLICATION_HH__ */
+#endif  // ESPERT_CORESYSTEMS_APPLICATION_HH_

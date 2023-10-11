@@ -1,15 +1,15 @@
-#ifndef __ENGINE__CLIENT_POINT_HH__
-#define __ENGINE__CLIENT_POINT_HH__
+#ifndef ESPERT_CORESYSTEMS_CLIENTPOINT_HH_
+#define ESPERT_CORESYSTEMS_CLIENTPOINT_HH_
 
 #include "Application.hh"
-#include "ContextApplication.hh"
+#include "ApplicationContext.hh"
 
-extern Esper::Application *Esper::createAppInstance();
+extern Espert::Application *Espert::createAppInstance();
 
 int main(int argc, char **argv)
 {
-    auto context = Esper::ContextApplication::create();
-    Esper::Application *app_instance = Esper::createAppInstance();
+    auto context = Espert::ApplicationContext::create();
+    Espert::Application *app_instance = Espert::createAppInstance();
 
     /* running */
     {
@@ -20,4 +20,4 @@ int main(int argc, char **argv)
     delete app_instance;
 }
 
-#endif /* __ENGINE__CLIENT_POINT_HH__ */
+#endif  // ESPERT_CORESYSTEMS_CLIENTPOINT_HH_

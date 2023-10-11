@@ -1,10 +1,10 @@
-#ifndef __ENGINE__LOGGER_HH__
-#define __ENGINE__LOGGER_HH__
+#ifndef ESPERT_CORESYSTEMS_LOGGER_HH_
+#define ESPERT_CORESYSTEMS_LOGGER_HH_
 
 #include "esppch.hh"
 #include <spdlog/spdlog.h>
 
-namespace Esper
+namespace Espert
 {
     class Logger
     {
@@ -26,37 +26,37 @@ namespace Esper
         inline static std::shared_ptr<spdlog::logger> &get_client_logger() { return Logger::_s_instance->_m_client_logger; }
     };
 
-} // namespace Esper
+} // namespace Espert
 
 /* ################## LOGGER MACROS ################################# */
 #ifdef NDEBUG
 /* FOR CORE */
-#define EP_CORE_TRACE(...)
-#define EP_CORE_INFO(...)
-#define EP_CORE_WARM(...)
-#define EP_CORE_ERROR(...)
-#define EP_CORE_CRITICAL(...)
+#define ESP_CORE_TRACE(...)
+#define ESP_CORE_INFO(...)
+#define ESP_CORE_WARM(...)
+#define ESP_CORE_ERROR(...)
+#define ESP_CORE_CRITICAL(...)
 
 /* FOR CLIENT */
-#define EP_TRACE(...)
-#define EP_INFO(...)
-#define EP_WARM(...)
-#define EP_ERROR(...)
-#define EP_CRITICAL(...)
+#define ESP_TRACE(...)
+#define ESP_INFO(...)
+#define ESP_WARM(...)
+#define ESP_ERROR(...)
+#define ESP_CRITICAL(...)
 #else
 /* FOR CORE */
-#define EP_CORE_TRACE(...) Esper::Logger::get_core_logger()->trace(__VA_ARGS__)
-#define EP_CORE_INFO(...) Esper::Logger::get_core_logger()->info(__VA_ARGS__)
-#define EP_CORE_WARM(...) Esper::Logger::get_core_logger()->warm(__VA_ARGS__)
-#define EP_CORE_ERROR(...) Esper::Logger::get_core_logger()->error(__VA_ARGS__)
-#define EP_CORE_CRITICAL(...) Esper::Logger::get_core_logger()->critical(__VA_ARGS__)
+#define ESP_CORE_TRACE(...) Espert::Logger::get_core_logger()->trace(__VA_ARGS__)
+#define ESP_CORE_INFO(...) Espert::Logger::get_core_logger()->info(__VA_ARGS__)
+#define ESP_CORE_WARM(...) Espert::Logger::get_core_logger()->warm(__VA_ARGS__)
+#define ESP_CORE_ERROR(...) Espert::Logger::get_core_logger()->error(__VA_ARGS__)
+#define ESP_CORE_CRITICAL(...) Espert::Logger::get_core_logger()->critical(__VA_ARGS__)
 
 /* FOR CLIENT */
-#define EP_TRACE(...) Esper::Logger::get_client_logger()->trace(__VA_ARGS__)
-#define EP_INFO(...) Esper::Logger::get_client_logger()->info(__VA_ARGS__)
-#define EP_WARM(...) Esper::Logger::get_client_logger()->warm(__VA_ARGS__)
-#define EP_ERROR(...) Esper::Logger::get_client_logger()->error(__VA_ARGS__)
-#define EP_CRITICAL(...) Esper::Logger::get_client_logger()->critical(__VA_ARGS__)
+#define ESP_TRACE(...) Espert::Logger::get_client_logger()->trace(__VA_ARGS__)
+#define ESP_INFO(...) Espert::Logger::get_client_logger()->info(__VA_ARGS__)
+#define ESP_WARM(...) Espert::Logger::get_client_logger()->warm(__VA_ARGS__)
+#define ESP_ERROR(...) Espert::Logger::get_client_logger()->error(__VA_ARGS__)
+#define ESP_CRITICAL(...) Espert::Logger::get_client_logger()->critical(__VA_ARGS__)
 #endif
 
-#endif /* __ENGINE__LOGGER_HH__ */
+#endif  // ESPERT_CORESYSTEMS_LOGGER_HH_

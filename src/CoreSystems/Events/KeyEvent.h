@@ -1,9 +1,9 @@
-#ifndef __ENGINE__KEYEVENT_HH__
-#define __ENGINE__KEYEVENT_HH__
+#ifndef ESPERT_CORESYSTEMS_KEYEVENT_H_
+#define ESPERT_CORESYSTEMS_KEYEVENT_H_
 
 #include "Event.hh"
 
-namespace Esper
+namespace Espert
 {
     class KeyEvent : public Event
     {
@@ -38,6 +38,6 @@ namespace Esper
 
         EVENT_CLASS_SUBTYPE(KeyReleased)
     };
-} // namespace Esper
+} // namespace Espert
 
-#endif /* __ENGINE__KEYEVENT_HH__ */
+#endif  // ESPERT_CORESYSTEMS_KEYEVENT_H_

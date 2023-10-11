@@ -1,10 +1,10 @@
-#ifndef __ENGINE__LAYERSTACK_HH__
-#define __ENGINE__LAYERSTACK_HH__
+#ifndef ESPERT_CORESYSTEMS_LAYERS_LAYERSTACK_HH_
+#define ESPERT_CORESYSTEMS_LAYERS_LAYERSTACK_HH_
 
 #include "esppch.hh"
 #include "Layer.hh"
 
-namespace Esper
+namespace Espert
 {
     class LayerStack
     {
@@ -26,6 +26,6 @@ namespace Esper
         std::vector<Layer *>::iterator end() { return _m_layers.end(); }
     };
 
-} // namespace Esper
+} // namespace Espert
 
-#endif /* __ENGINE__LAYERSTACK_HH__ */
+#endif  // ESPERT_CORESYSTEMS_LAYERS_LAYERSTACK_HH_
