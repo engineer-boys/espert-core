@@ -1,7 +1,7 @@
 #ifndef __ENGINE__CONTEXT_APPLICATION_HH__
 #define __ENGINE__CONTEXT_APPLICATION_HH__
 
-#include <memory>
+#include "esppch.hh"
 #include "Logger.hh"
 
 namespace Esper

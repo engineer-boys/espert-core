@@ -1,7 +1,7 @@
 #ifndef __ENGINE__EVENT_HH__
 #define __ENGINE__EVENT_HH__
 
-#include <functional>
+#include "esppch.hh"
 
 #define SET_BIT(b) (1 << (b))
 

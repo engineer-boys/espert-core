@@ -1,7 +1,7 @@
 #ifndef __ENGINE__LOGGER_HH__
 #define __ENGINE__LOGGER_HH__
 
-#include <memory>
+#include "esppch.hh"
 #include <spdlog/spdlog.h>
 
 namespace Esper

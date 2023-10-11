@@ -1,7 +1,7 @@
 #ifndef __ENGINE__APPLICATION_HH__
 #define __ENGINE__APPLICATION_HH__
 
-#include <memory>
+#include "esppch.hh"
 #include "ContextApplication.hh"
 #include "Events/WindowEvent.h"
 #include "EspertWindow.hh"

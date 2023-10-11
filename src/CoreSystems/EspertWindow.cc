@@ -1,6 +1,3 @@
-
-#include <stdexcept>
-
 #include "EspertWindow.hh"
 #include "Events/KeyEvent.h"
 #include "Events/MouseEvent.h"
