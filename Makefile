@@ -26,7 +26,7 @@ ${BUILD}/ContextApp.o: ${CORES}/ContextApplication.cc
 	g++ -c $< -o $@ -I${EXTERNALS_SPDLOG_HEADER}
 
 ${BUILD}/Application.o: ${CORES}/Application.cc
-	g++ -c $< -o $@ -I${EXTERNALS_SPDLOG_HEADER}
+	g++ -c $< -o $@ -I${EXTERNALS_SPDLOG_HEADER} -I${EXTERNALS_GLFW3_HEADER}
 
 ${BUILD}/Logger.o: ${CORES}/Logger.cc
 	g++ -c $< -o $@ -I${EXTERNALS_SPDLOG_HEADER}
