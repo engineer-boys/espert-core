@@ -22,7 +22,7 @@ namespace Esper
             std::string title;
             unsigned int width;
             unsigned int height;
-            EventManagerFun event_manager_fun;
+            EventManagerFun events_manager_fun;
 
             WindowData(
                 const std::string title = "Esper widnow",
@@ -51,7 +51,7 @@ namespace Esper
 
         inline unsigned int get_width() { return _m_data.width; }
         inline unsigned int get_height() { return _m_data.height; }
-        inline void set_event_manager_fun(const WindowData::EventManagerFun &callback) { _m_data.event_manager_fun = callback; }
+        inline void set_events_manager_fun(const WindowData::EventManagerFun &callback) { _m_data.events_manager_fun = callback; }
 
         static std::unique_ptr<EsperWindow> create(const WindowData &data);
     };
