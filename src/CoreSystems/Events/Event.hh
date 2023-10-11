@@ -50,7 +50,7 @@ namespace Esper
         }
 
         template <typename T>
-        static bool try_hanlder(const Event &event, EventHandler<T> handler)
+        static bool try_hanlder(Event &event, EventHandler<T> handler)
         {
             if (event.get_subtype() == T::get_class_subtype())
             {

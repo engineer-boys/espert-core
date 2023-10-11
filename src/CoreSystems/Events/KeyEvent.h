@@ -21,12 +21,12 @@ namespace Esper
     class KeyPressedEvent : public KeyEvent
     {
     private:
-        int _m_repeat_counter;
+        bool _m_is_repeated;
 
     public:
-        KeyPressedEvent(int code, int counter) : KeyEvent(code), _m_repeat_counter(counter) {}
+        KeyPressedEvent(int code, bool is_repeated) : KeyEvent(code), _m_is_repeated(is_repeated) {}
 
-        inline int get_repeat_counter() const { return _m_repeat_counter; }
+        inline bool is_repeated() const { return _m_is_repeated; }
 
         EVENT_CLASS_SUBTYPE(KeyPressed)
     };
