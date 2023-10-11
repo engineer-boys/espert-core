@@ -1,5 +1,5 @@
-#ifndef __ESPER__CLIENT_HEADER_HH__
-#define __ESPER__CLIENT_HEADER_HH__
+#ifndef ESPERT_ESPERT_HH_
+#define ESPERT_ESPERT_HH_
 
 /* In this header file are all needed headers */
 /* ------------------------------------------ */
@@ -13,4 +13,4 @@
 
 /* ------------------------------------------ */
 
-#endif /* __ESPER__CLIENT_HEADER_HH__ */
+#endif  // ESPERT_ESPERT_HH_

@@ -2,7 +2,7 @@
 
 #include "Logger.hh"
 
-namespace Esper
+namespace Espert
 {
     Logger *Logger::_s_instance = nullptr;
 
@@ -37,7 +37,7 @@ namespace Esper
         logger->_m_client_logger = spdlog::stdout_color_mt("Client");
         logger->_m_client_logger->set_level(spdlog::level::trace);
 
-        EP_CORE_INFO("Logger is created");
+        ESP_CORE_INFO("Logger is created");
         return logger;
     }
 }

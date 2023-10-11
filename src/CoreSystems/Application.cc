@@ -2,11 +2,11 @@
 
 #define BIND_EVENT_FOR_FUN(fun) std::bind(&Application::fun, this, std::placeholders::_1)
 
-namespace Esper
+namespace Espert
 {
     Application::Application() : _m_running(true)
     {
-        _m_window = EsperWindow::create(EsperWindow::WindowData());
+        _m_window = EspertWindow::create(EspertWindow::WindowData());
         _m_window->set_events_manager_fun(BIND_EVENT_FOR_FUN(events_manager));
     }
 
@@ -22,7 +22,7 @@ namespace Esper
         }
     }
 
-    void Application::set_context(std::unique_ptr<ContextApplication> context)
+    void Application::set_context(std::unique_ptr<ApplicationContext> context)
     {
         this->_m_context = std::move(context);
     }
@@ -37,4 +37,4 @@ namespace Esper
     {
         Event::try_hanlder<WindowClosedEvent>(e, BIND_EVENT_FOR_FUN(on_window_closed));
     }
-} // namespace Esper
+} // namespace Espert

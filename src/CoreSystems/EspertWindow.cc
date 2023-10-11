@@ -4,52 +4,52 @@
 #include "Events/WindowEvent.h"
 #include "Logger.hh"
 
-namespace Esper
+namespace Espert
 {
     static void glfw_error_callback(int error, const char *description)
     {
-        EP_CORE_ERROR("GLFW error ({0}) : {1}", errno, description);
+        ESP_CORE_ERROR("GLFW error ({0}) : {1}", errno, description);
     }
 
-    bool EsperWindow::_s_is_exist = false;
+    bool EspertWindow::_s_is_exist = false;
 
-    EsperWindow::EsperWindow(const WindowData &data)
+    EspertWindow::EspertWindow(const WindowData &data)
     {
-        if (EsperWindow::_s_is_exist)
+        if (EspertWindow::_s_is_exist)
         {
-            throw std::runtime_error("The Esper's window already exists!");
+            throw std::runtime_error("The Espert's window already exists!");
         }
-        EsperWindow::_s_is_exist = true;
+        EspertWindow::_s_is_exist = true;
 
-        EsperWindow::init(data);
-        EP_CORE_INFO("window created: w {}, h {}, t {}", _m_data.width, _m_data.height, _m_data.title);
+        EspertWindow::init(data);
+        ESP_CORE_INFO("window created: w {}, h {}, t {}", _m_data.width, _m_data.height, _m_data.title);
     }
 
-    EsperWindow::~EsperWindow()
+    EspertWindow::~EspertWindow()
     {
-        EsperWindow::_s_is_exist = false;
+        EspertWindow::_s_is_exist = false;
         destroy();
     }
 
-    std::unique_ptr<EsperWindow> EsperWindow::create(const WindowData &data)
+    std::unique_ptr<EspertWindow> EspertWindow::create(const WindowData &data)
     {
-        std::unique_ptr<EsperWindow> window{new EsperWindow(data)};
+        std::unique_ptr<EspertWindow> window{new EspertWindow(data)};
         return window;
     }
 
-    void EsperWindow::on_update()
+    void EspertWindow::on_update()
     {
         glfwPollEvents();
     }
 
-    void EsperWindow::init(const WindowData &data)
+    void EspertWindow::init(const WindowData &data)
     {
         _m_data = data;
 
         int success = glfwInit();
         if (success == GLFW_FALSE)
         {
-            EP_CORE_ERROR("GLFW cannot be init");
+            ESP_CORE_ERROR("GLFW cannot be init");
             throw std::runtime_error("GLFW cannot be init");
         }
 
@@ -60,7 +60,7 @@ namespace Esper
         _m_window = glfwCreateWindow(_m_data.width, _m_data.height, _m_data.title.c_str(), nullptr, nullptr);
         if (_m_window == NULL)
         {
-            EP_CORE_ERROR("GLFW cannot create a window instance");
+            ESP_CORE_ERROR("GLFW cannot create a window instance");
             throw std::runtime_error("GLFW cannot create a window instance");
         }
         glfwSetWindowUserPointer(_m_window, &_m_data);
@@ -150,10 +150,10 @@ namespace Esper
         }
     }
 
-    void EsperWindow::destroy()
+    void EspertWindow::destroy()
     {
         glfwDestroyWindow(_m_window);
         glfwTerminate();
     }
 
-} // namespace Esper
+}  // namespace Espert

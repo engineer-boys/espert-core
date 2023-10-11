@@ -1,11 +1,11 @@
-#ifndef __ENGINE__EVENT_HH__
-#define __ENGINE__EVENT_HH__
+#ifndef ESPERT_CORESYSTEMS_EVENT_HH_
+#define ESPERT_CORESYSTEMS_EVENT_HH_
 
 #include "esppch.hh"
 
 #define SET_BIT(b) (1 << (b))
 
-namespace Esper
+namespace Espert
 {
     class Event
     {
@@ -62,13 +62,13 @@ namespace Esper
         }
     };
 
-} // namespace Esper
+} // namespace Espert
 
 #define EVENT_CLASS_SUBTYPE(subtype)                                                                      \
-    static Esper::Event::EventSubtype get_class_subtype() { return Esper::Event::EventSubtype::subtype; } \
-    virtual Esper::Event::EventSubtype get_subtype() const override { return get_class_subtype(); }
+    static Espert::Event::EventSubtype get_class_subtype() { return Espert::Event::EventSubtype::subtype; } \
+    virtual Espert::Event::EventSubtype get_subtype() const override { return get_class_subtype(); }
 
 #define EVENT_CLASS_TYPE(type) \
     virtual int get_type() const override { return type; }
 
-#endif /* __ENGINE__EVENT_HH__ */
+#endif  // ESPERT_CORESYSTEMS_EVENT_HH_

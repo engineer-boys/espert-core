@@ -1,9 +1,9 @@
-#ifndef __ENGINE__MOUSEEVENT_HH__
-#define __ENGINE__MOUSEEVENT_HH__
+#ifndef ESPERT_CORESYSTEMS_MOUSEEVENT_H_
+#define ESPERT_CORESYSTEMS_MOUSEEVENT_H_
 
 #include "Event.hh"
 
-namespace Esper
+namespace Espert
 {
     class MouseMovedEvent : public Event
     {
@@ -65,6 +65,6 @@ namespace Esper
 
         EVENT_CLASS_SUBTYPE(MouseButtonReleased)
     };
-} // namespace Esper
+} // namespace Espert
 
-#endif /* __ENGINE__MOUSEEVENT_HH__ */
+#endif  // ESPERT_CORESYSTEMS_MOUSEEVENT_H_

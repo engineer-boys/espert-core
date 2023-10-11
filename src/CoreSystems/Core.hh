@@ -1,3 +1,3 @@
-#ifndef __ENGINE__CORE_HH__
-#define __ENGINE__CORE_HH__
-#endif /* __ENGINE__CORE_HH__ */
+#ifndef ESPERT_CORESYSTEMS_CORE_HH_
+#define ESPERT_CORESYSTEMS_CORE_HH_
+#endif  // ESPERT_CORESYSTEMS_CORE_HH_

@@ -1,9 +1,9 @@
-#ifndef __ENGINE__WINDOWEVENT_HH__
-#define __ENGINE__WINDOWEVENT_HH__
+#ifndef ESPERT_CORESYSTEMS_WINDOWEVENT_H_
+#define ESPERT_CORESYSTEMS_WINDOWEVENT_H_
 
 #include "Event.hh"
 
-namespace Esper
+namespace Espert
 {
     class WindowClosedEvent : public Event
     {
@@ -30,6 +30,6 @@ namespace Esper
         EVENT_CLASS_SUBTYPE(WindowResized)
     };
 
-} // namespace Esper
+} // namespace Espert
 
-#endif /* __ENGINE__WINDOWEVENT_HH__ */
+#endif  // ESPERT_CORESYSTEMS_WINDOWEVENT_H_

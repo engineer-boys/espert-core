@@ -1,6 +1,6 @@
 #include "LayerStack.hh"
 
-namespace Esper
+namespace Espert
 {
     LayerStack::LayerStack()
     {
@@ -44,4 +44,4 @@ namespace Esper
         }
     }
 
-} // namespace Esper
+} // namespace Espert
