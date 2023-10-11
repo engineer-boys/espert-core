@@ -3,6 +3,7 @@
 
 #include <memory>
 #include "ContextApplication.hh"
+#include "EspertWindow.hh"
 
 namespace Esper
 {
@@ -10,6 +11,9 @@ namespace Esper
     {
     private:
         std::unique_ptr<ContextApplication> _m_context;
+        std::unique_ptr<EsperWindow> _m_window;
+
+        bool _m_running;
 
     public:
         Application();
