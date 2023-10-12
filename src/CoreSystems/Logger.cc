@@ -30,7 +30,7 @@ namespace Espert
         spdlog::set_pattern("%^[%T][%n]%$ : %v");
 
         /* set multithread logger for trace level */
-        logger->_m_core_logger = spdlog::stdout_color_mt("Esper");
+        logger->_m_core_logger = spdlog::stdout_color_mt("Espert");
         logger->_m_core_logger->set_level(spdlog::level::trace);
 
         /* set multithread logger for client level */
