@@ -1,7 +1,7 @@
 #ifndef ESPERT_CORESYSTEMS_LOGGER_HH_
 #define ESPERT_CORESYSTEMS_LOGGER_HH_
 
-#include "esppch.hh"
+#include <memory>
 #include <spdlog/spdlog.h>
 
 namespace Espert

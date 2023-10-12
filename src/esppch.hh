@@ -15,4 +15,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
+// espert
+#include "CoreSystems/Logger.hh"
+
 #endif  // ESPERT_ESPPCH_HH_
