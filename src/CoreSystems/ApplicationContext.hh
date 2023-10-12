@@ -2,7 +2,6 @@
 #define ESPERT_CORESYSTEMS_APPLICATIONCONTEXT_HH_
 
 #include "esppch.hh"
-#include "Logger.hh"
 
 namespace Espert
 {

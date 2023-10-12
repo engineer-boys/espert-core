@@ -2,7 +2,6 @@
 #include "Events/KeyEvent.h"
 #include "Events/MouseEvent.h"
 #include "Events/WindowEvent.h"
-#include "Logger.hh"
 
 namespace Espert
 {
