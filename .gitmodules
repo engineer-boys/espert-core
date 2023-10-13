@@ -19,3 +19,9 @@
 [submodule "external/catch2"]
 	path = external/catch2
 	url = https://github.com/catchorg/Catch2.git
+[submodule "external/tinyobjloader"]
+	path = external/tinyobjloader
+	url = git@github.com:tinyobjloader/tinyobjloader.git
+[submodule "external/entt"]
+	path = external/entt
+	url = git@github.com:skypjack/entt.git

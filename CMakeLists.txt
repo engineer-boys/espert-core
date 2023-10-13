@@ -16,6 +16,10 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     ${PROJECT_SOURCE_DIR}/src
 )
 
+include_directories(${PROJECT_SOURCE_DIR})
+include_directories(${PROJECT_SOURCE_DIR}/src)
+include_directories(${PROJECT_SOURCE_DIR}/src/Core)
+
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/esppch.hh)
 
 ############## Add libraries #######################
@@ -40,7 +44,7 @@ foreach (GLSL ${GLSL_SOURCE_FILES})
     get_filename_component(FILE_NAME ${GLSL} NAME)
     get_filename_component(DIR_PATH ${GLSL} DIRECTORY)
     get_filename_component(FILE_DIR ${DIR_PATH} NAME)
-    set(SPIRV "${PROJECT_SOURCE_DIR}/shaders/${FILE_DIR}/${FILE_NAME}.spv")
+    set(SPIRV "${PROJECT_SOURCE_DIR}shaders/${FILE_DIR}/${FILE_NAME}.spv")
     add_custom_command(
         OUTPUT ${SPIRV}
         COMMAND $<TARGET_FILE:glslang-standalone> -V ${GLSL} -o ${SPIRV}

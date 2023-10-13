@@ -16,7 +16,7 @@
 #include <vector>
 
 // espert
-#include "CoreSystems/Core.hh"
-#include "CoreSystems/Logger.hh"
+#include "Core/Logger.hh"
+#include "Core/Core.hh"
 
 #endif // ESPERT_ESPPCH_HH_
