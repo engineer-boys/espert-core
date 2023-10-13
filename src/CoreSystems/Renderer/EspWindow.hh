@@ -5,9 +5,9 @@
 #include "CoreSystems/Events/Event.hh"
 #include "GLFW/glfw3.h"
 
-namespace Espert
+namespace esp
 {
-    class EspertWindow
+    class EspWindow
     {
     public:
         struct WindowData
@@ -40,10 +40,10 @@ namespace Espert
         void destroy();
 		void set_callbacks();
 
-        EspertWindow(const WindowData &data);
+        EspWindow(const WindowData &data);
 
     public:
-        ~EspertWindow();
+        ~EspWindow();
 
         void update();
 
@@ -51,7 +51,7 @@ namespace Espert
         inline unsigned int get_height() { return _m_data.m_height; }
         inline void set_events_manager_fun(const WindowData::EventManagerFun &callback) { _m_data.m_events_manager_fun = callback; }
 
-        static std::unique_ptr<EspertWindow> create(const WindowData &data);
+        static std::unique_ptr<EspWindow> create(const WindowData &data);
     };
 } // namespace Espert
 

@@ -3,7 +3,7 @@
 
 #include "esppch.hh"
 
-namespace Espert
+namespace esp
 {
     class ApplicationContext
     {

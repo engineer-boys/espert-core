@@ -3,7 +3,7 @@
 
 #include "Event.hh"
 
-namespace Espert
+namespace esp
 {
     class MouseMovedEvent : public Event
     {

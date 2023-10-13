@@ -1,47 +1,47 @@
-#include "EspertWindow.hh"
+#include "EspWindow.hh"
 #include "CoreSystems/Events/KeyEvent.h"
 #include "CoreSystems/Events/MouseEvent.h"
 #include "CoreSystems/Events/WindowEvent.h"
 
-namespace Espert
+namespace esp
 {
     static void glfw_error_callback(int error, const char *description)
     {
         ESP_CORE_ERROR("GLFW error ({0}) : {1}", errno, description);
     }
 
-    bool EspertWindow::_s_is_exist = false;
+    bool EspWindow::_s_is_exist = false;
 
-    EspertWindow::EspertWindow(const WindowData &data)
+    EspWindow::EspWindow(const WindowData &data)
     {
-        if (EspertWindow::_s_is_exist)
+        if (EspWindow::_s_is_exist)
         {
             throw std::runtime_error("The Espert's window already exists!");
         }
-        EspertWindow::_s_is_exist = true;
+		EspWindow::_s_is_exist = true;
 
-        EspertWindow::init(data);
+        EspWindow::init(data);
         ESP_CORE_INFO("window created: w {}, h {}, t {}", _m_data.m_width, _m_data.m_height, _m_data.m_title);
     }
 
-    EspertWindow::~EspertWindow()
+    EspWindow::~EspWindow()
     {
-        EspertWindow::_s_is_exist = false;
+		EspWindow::_s_is_exist = false;
         destroy();
     }
 
-    std::unique_ptr<EspertWindow> EspertWindow::create(const WindowData &data)
+    std::unique_ptr<EspWindow> EspWindow::create(const WindowData &data)
     {
-        std::unique_ptr<EspertWindow> window{new EspertWindow(data)};
+        std::unique_ptr<EspWindow> window{ new EspWindow(data)};
         return window;
     }
 
-    void EspertWindow::on_update()
+    void EspWindow::on_update()
     {
         glfwPollEvents();
     }
 
-    void EspertWindow::init(const WindowData &data)
+    void EspWindow::init(const WindowData &data)
     {
         _m_data = data;
 
@@ -67,13 +67,13 @@ namespace Espert
         set_callbacks();
     }
 
-    void EspertWindow::destroy()
+    void EspWindow::destroy()
     {
         glfwDestroyWindow(_m_window);
         glfwTerminate();
     }
 
-	void EspertWindow::set_callbacks()
+	void EspWindow::set_callbacks()
 	{
 		/* set callbacks for glfw events */
 		glfwSetWindowSizeCallback(

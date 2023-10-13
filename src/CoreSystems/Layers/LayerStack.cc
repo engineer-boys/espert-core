@@ -1,6 +1,6 @@
 #include "LayerStack.hh"
 
-namespace Espert
+namespace esp
 {
     LayerStack::LayerStack()
     {

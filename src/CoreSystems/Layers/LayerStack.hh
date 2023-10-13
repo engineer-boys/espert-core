@@ -4,7 +4,7 @@
 #include "esppch.hh"
 #include "Layer.hh"
 
-namespace Espert
+namespace esp
 {
     class LayerStack
     {

@@ -1,11 +1,11 @@
 #include "Application.hh"
 #include <ranges>
 
-namespace Espert
+namespace esp
 {
     Application::Application() : _m_running(true)
     {
-        _m_window = EspertWindow::create(EspertWindow::WindowData());
+		_m_window = EspWindow::create(EspWindow::WindowData());
         _m_window->set_events_manager_fun(ESP_BIND_EVENT_FOR_FUN(Application::events_manager));
     }
 

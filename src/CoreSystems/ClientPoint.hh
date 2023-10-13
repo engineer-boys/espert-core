@@ -4,12 +4,12 @@
 #include "Application.hh"
 #include "ApplicationContext.hh"
 
-extern Espert::Application *Espert::createAppInstance();
+extern esp::Application *esp::createAppInstance();
 
 int main(int argc, char **argv)
 {
-    auto context = Espert::ApplicationContext::create();
-    Espert::Application *app_instance = Espert::createAppInstance();
+    auto context = esp::ApplicationContext::create();
+    esp::Application *app_instance = esp::createAppInstance();
 
     /* running */
     {

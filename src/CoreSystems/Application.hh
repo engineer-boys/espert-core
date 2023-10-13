@@ -4,17 +4,17 @@
 #include "esppch.hh"
 #include "ApplicationContext.hh"
 #include "Events/WindowEvent.hh"
-#include "Renderer/EspertWindow.hh"
 #include "Layers/Layer.hh"
 #include "Layers/LayerStack.hh"
+#include "Renderer/EspWindow.hh"
 
-namespace Espert
+namespace esp
 {
     class Application
     {
     private:
         std::unique_ptr<ApplicationContext> _m_context;
-        std::unique_ptr<EspertWindow> _m_window;
+        std::unique_ptr<EspWindow> _m_window;
 
         bool _m_running;
 

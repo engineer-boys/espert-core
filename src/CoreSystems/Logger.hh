@@ -4,7 +4,7 @@
 #include <memory>
 #include <spdlog/spdlog.h>
 
-namespace Espert
+namespace esp
 {
     class Logger
     {
@@ -46,9 +46,9 @@ namespace Espert
 #else
 /* FOR CORE */
 #define ESP_CORE_TRACE(...) Espert::Logger::get_core_logger()->trace(__VA_ARGS__)
-#define ESP_CORE_INFO(...) Espert::Logger::get_core_logger()->info(__VA_ARGS__)
+#define ESP_CORE_INFO(...) esp::Logger::get_core_logger()->info(__VA_ARGS__)
 #define ESP_CORE_WARM(...) Espert::Logger::get_core_logger()->warm(__VA_ARGS__)
-#define ESP_CORE_ERROR(...) Espert::Logger::get_core_logger()->error(__VA_ARGS__)
+#define ESP_CORE_ERROR(...) esp::Logger::get_core_logger()->error(__VA_ARGS__)
 #define ESP_CORE_CRITICAL(...) Espert::Logger::get_core_logger()->critical(__VA_ARGS__)
 
 /* FOR CLIENT */

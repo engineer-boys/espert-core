@@ -2,7 +2,7 @@
 
 #include "Logger.hh"
 
-namespace Espert
+namespace esp
 {
     Logger *Logger::_s_instance = nullptr;
 

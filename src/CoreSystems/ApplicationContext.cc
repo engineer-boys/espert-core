@@ -1,6 +1,6 @@
 #include "ApplicationContext.hh"
 
-namespace Espert
+namespace esp
 {
     bool ApplicationContext::_s_is_exist = false;
 

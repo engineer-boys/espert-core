@@ -5,7 +5,7 @@
 
 #define SET_BIT(b) (1 << (b))
 
-namespace Espert
+namespace esp
 {
     class Event
     {
@@ -65,8 +65,8 @@ namespace Espert
 } // namespace Espert
 
 #define EVENT_CLASS_SUBTYPE(subtype)                                                                      \
-    static Espert::Event::EventSubtype get_class_subtype() { return Espert::Event::EventSubtype::subtype; } \
-    virtual Espert::Event::EventSubtype get_subtype() const override { return get_class_subtype(); }
+    static esp::Event::EventSubtype get_class_subtype() { return esp::Event::EventSubtype::subtype; } \
+    virtual esp::Event::EventSubtype get_subtype() const override { return get_class_subtype(); }
 
 #define EVENT_CLASS_TYPE(type) \
     virtual int get_type() const override { return type; }

@@ -3,7 +3,7 @@
 
 #include "../Events/Event.hh"
 
-namespace Espert
+namespace esp
 {
     class Layer
     {
