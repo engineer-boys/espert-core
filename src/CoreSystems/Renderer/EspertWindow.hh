@@ -2,7 +2,7 @@
 #define ESPERT_CORESYSTEMS_ESPERTWINDOW_HH_
 
 #include "esppch.hh"
-#include "Events/Event.hh"
+#include "CoreSystems/Events/Event.hh"
 #include "GLFW/glfw3.h"
 
 namespace Espert
@@ -16,16 +16,16 @@ namespace Espert
             using EventManagerFun = std::function<void(Event &)>;
 
         public:
-            std::string title;
-            unsigned int width;
-            unsigned int height;
-            EventManagerFun events_manager_fun;
+            std::string m_title;
+            unsigned int m_width;
+            unsigned int m_height;
+            EventManagerFun m_events_manager_fun;
 
             WindowData(
                 const std::string title = "Espert widnow",
                 unsigned int width = 1280,
                 unsigned int height = 720)
-                : title(title), width(width), height(height) {}
+                : m_title(title), m_width(width), m_height(height) {}
         };
 
     private:
@@ -38,6 +38,7 @@ namespace Espert
     private:
         void init(const WindowData &data);
         void destroy();
+		void set_callbacks();
 
         EspertWindow(const WindowData &data);
 
@@ -46,9 +47,9 @@ namespace Espert
 
         void update();
 
-        inline unsigned int get_width() { return _m_data.width; }
-        inline unsigned int get_height() { return _m_data.height; }
-        inline void set_events_manager_fun(const WindowData::EventManagerFun &callback) { _m_data.events_manager_fun = callback; }
+        inline unsigned int get_width() { return _m_data.m_width; }
+        inline unsigned int get_height() { return _m_data.m_height; }
+        inline void set_events_manager_fun(const WindowData::EventManagerFun &callback) { _m_data.m_events_manager_fun = callback; }
 
         static std::unique_ptr<EspertWindow> create(const WindowData &data);
     };

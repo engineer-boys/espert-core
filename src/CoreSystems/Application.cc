@@ -31,6 +31,12 @@ namespace Espert
         this->_m_context = std::move(context);
     }
 
+	bool Application::on_window_resized(WindowResizedEvent& e)
+	{
+		//TODO: send event to recreate swapchain
+		return true;
+	}
+
     bool Application::on_window_closed(WindowClosedEvent &e)
     {
         _m_running = false;
@@ -39,6 +45,7 @@ namespace Espert
 
     void Application::events_manager(Event &e)
     {
+		Event::try_hanlder<WindowResizedEvent>(e, ESP_BIND_EVENT_FOR_FUN(Application::on_window_resized));
         Event::try_hanlder<WindowClosedEvent>(e, ESP_BIND_EVENT_FOR_FUN(Application::on_window_closed));
         
         for (auto& iter : _m_layer_stack | std::views::reverse)

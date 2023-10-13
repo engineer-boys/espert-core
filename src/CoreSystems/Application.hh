@@ -4,7 +4,7 @@
 #include "esppch.hh"
 #include "ApplicationContext.hh"
 #include "Events/WindowEvent.hh"
-#include "EspertWindow.hh"
+#include "Renderer/EspertWindow.hh"
 #include "Layers/Layer.hh"
 #include "Layers/LayerStack.hh"
 
@@ -21,6 +21,7 @@ namespace Espert
         LayerStack _m_layer_stack;
 
     private:
+		bool on_window_resized(WindowResizedEvent &e);
         bool on_window_closed(WindowClosedEvent &e);
 
     public:
