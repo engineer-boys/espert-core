@@ -4,7 +4,7 @@ namespace esp
 {
     LayerStack::LayerStack()
     {
-        _m_head_of_normall_layers = _m_layers.begin();
+		_m_head_of_normal_layers = _m_layers.begin();
     }
 
     LayerStack::~LayerStack()
@@ -17,7 +17,7 @@ namespace esp
 
     void LayerStack::push_layer(Layer *layer)
     {
-        _m_head_of_normall_layers = _m_layers.emplace(_m_head_of_normall_layers, layer);
+		_m_head_of_normal_layers = _m_layers.emplace(_m_head_of_normal_layers, layer);
     }
 
     void LayerStack::push_overlayer(Layer *layer)
@@ -31,7 +31,7 @@ namespace esp
         if (iter != _m_layers.end())
         {
             _m_layers.erase(iter);
-            _m_head_of_normall_layers--;
+            _m_head_of_normal_layers--;
         }
     }
 
