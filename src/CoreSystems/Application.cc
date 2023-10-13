@@ -1,13 +1,12 @@
 #include "Application.hh"
-
-#define BIND_EVENT_FOR_FUN(fun) std::bind(&Application::fun, this, std::placeholders::_1)
+#include <ranges>
 
 namespace Espert
 {
     Application::Application() : _m_running(true)
     {
         _m_window = EspertWindow::create(EspertWindow::WindowData());
-        _m_window->set_events_manager_fun(BIND_EVENT_FOR_FUN(events_manager));
+        _m_window->set_events_manager_fun(ESP_BIND_EVENT_FOR_FUN(Application::events_manager));
     }
 
     Application::~Application()
@@ -18,7 +17,12 @@ namespace Espert
     {
         while (_m_running)
         {
-            _m_window->on_update();
+            for (auto layer : _m_layer_stack)
+            {
+                layer->update();
+            }
+
+            _m_window->update();
         }
     }
 
@@ -35,6 +39,25 @@ namespace Espert
 
     void Application::events_manager(Event &e)
     {
-        Event::try_hanlder<WindowClosedEvent>(e, BIND_EVENT_FOR_FUN(on_window_closed));
+        Event::try_hanlder<WindowClosedEvent>(e, ESP_BIND_EVENT_FOR_FUN(Application::on_window_closed));
+        
+        for (auto& iter : _m_layer_stack | std::views::reverse)
+        {
+            iter->handle_event(e);
+            if (e.handled)
+            {
+                break;
+            }
+        }
+    }
+
+    void Application::push_layer(Layer* layer)
+    {
+        _m_layer_stack.push_layer(layer);
+    }
+
+    void Application::push_overlayer(Layer* layer)
+    {
+        _m_layer_stack.push_overlayer(layer);
     }
 } // namespace Espert

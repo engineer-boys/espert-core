@@ -17,5 +17,6 @@
 
 // espert
 #include "CoreSystems/Logger.hh"
+#include "CoreSystems/Core.hh"
 
 #endif  // ESPERT_ESPPCH_HH_

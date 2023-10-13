@@ -1,7 +1,7 @@
 #include "EspertWindow.hh"
-#include "Events/KeyEvent.h"
-#include "Events/MouseEvent.h"
-#include "Events/WindowEvent.h"
+#include "Events/KeyEvent.hh"
+#include "Events/MouseEvent.hh"
+#include "Events/WindowEvent.hh"
 
 namespace Espert
 {
@@ -36,7 +36,7 @@ namespace Espert
         return window;
     }
 
-    void EspertWindow::on_update()
+    void EspertWindow::update()
     {
         glfwPollEvents();
     }

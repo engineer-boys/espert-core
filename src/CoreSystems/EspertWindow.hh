@@ -44,7 +44,7 @@ namespace Espert
     public:
         ~EspertWindow();
 
-        void on_update();
+        void update();
 
         inline unsigned int get_width() { return _m_data.width; }
         inline unsigned int get_height() { return _m_data.height; }
