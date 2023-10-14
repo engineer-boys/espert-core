@@ -1,7 +1,7 @@
 #ifndef ESP_RENDERER_H_
 #define ESP_RENDERER_H_
 
-#include "EspWindow.hh"
+#include "CoreSystems/EspWindow.hh"
 #include "EspDevice.hh"
 #include "EspSwapChain.hh"
 
@@ -15,14 +15,14 @@ namespace esp
 	class EspRenderScheduler
 	{
 	 private:
-		EspWindow& espWindow;
-		EspDevice& espDevice;
-		std::unique_ptr<EspSwapChain> espSwapChain;
-		std::vector<VkCommandBuffer> commandBuffers;
+		EspWindow& m_window;
+		EspDevice& m_device;
+		std::unique_ptr<EspSwapChain> m_esp_swap_chain;
+		std::vector<VkCommandBuffer> m_command_buffers;
 
-		uint32_t currentImageIndex;
-		int currentFrameIndex{0};
-		bool isFrameStarted{false};
+		uint32_t m_current_image_index;
+		int m_current_frame_index{ 0};
+		bool m_frame_started{ false};
 
 	 public:
 		EspRenderScheduler(EspWindow& window, EspDevice& device);
@@ -31,41 +31,34 @@ namespace esp
 		EspRenderScheduler(const EspRenderScheduler&) = delete;
 		EspRenderScheduler& operator=(const EspRenderScheduler&) = delete;
 
-		bool isFrameInProgress() const
-		{
-			return isFrameStarted;
-		};
+		inline bool is_frame_in_progress() const { return m_frame_started; };
 
-		VkCommandBuffer getCurrentCommandBuffer() const
+		inline VkCommandBuffer get_current_command_buffer() const
 		{
-			assert(isFrameStarted && "Cannot get command buffer if frame hasn't started");
-			return commandBuffers[currentFrameIndex];
+			assert(m_frame_started && "Cannot get command buffer if frame hasn't started");
+			return m_command_buffers[m_current_frame_index];
 		}
 
-		int getCurrentFrameIndex()
+		inline int get_current_frame_index()
 		{
-			assert(isFrameStarted && "Cannot get frame index if frame hasn't started");
-			return currentFrameIndex;
+			assert(m_frame_started && "Cannot get frame index if frame hasn't started");
+			return m_current_frame_index;
 		}
 
-		VkCommandBuffer beginFrame();
-		void endFrame();
+		VkCommandBuffer begin_frame();
+		void end_frame();
 
-		VkRenderPass getSwapChainRenderPass() const
-		{
-			return espSwapChain->getRenderPass();
-		};
-		float getAspectRatio() const
-		{
-			return espSwapChain->extentAspectRatio();
-		};
-		void beginSwapChainRenderPass(VkCommandBuffer commandBuffer);
-		void endSwapChainRenderPass(VkCommandBuffer commandBuffer);
+		inline VkRenderPass get_swap_chain_render_pass() const { return m_esp_swap_chain->get_render_pass(); };
+		inline float get_aspect_ratio() const { return m_esp_swap_chain->get_swap_chain_extent_aspect_ratio(); };
+		void begin_swap_chain_render_pass(VkCommandBuffer command_buffer);
+		void end_swap_chain_render_pass(VkCommandBuffer command_buffer);
 
 	 private:
-		void createCommandBuffers();
-		void freeCommandBuffers();
-		void recreateSwapChain();
+		void create_command_buffers();
+		void free_command_buffers();
+		void recreate_swap_chain();
+
+		friend class EspRenderer;
 	};
 }
 

@@ -16,38 +16,37 @@ namespace esp
 		class Builder
 		{
 		 private:
-			EspDevice& espDevice;
-			std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings{};
+			EspDevice& m_device;
+			std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> m_bindings{};
 
 		 public:
-			Builder(EspDevice& device) : espDevice{ device }
-			{
-			}
+			Builder(EspDevice& device) : m_device{device} {}
 
-			Builder& addBinding(
+			Builder& add_binding(
 				uint32_t binding,
-				VkDescriptorType descriptorType,
-				VkShaderStageFlags stageFlags,
+				VkDescriptorType descriptor_type,
+				VkShaderStageFlags stage_flags,
 				uint32_t count = 1);
 			std::unique_ptr<EspDescriptorSetLayout> build() const;
 		};
 
 	 private:
-		EspDevice& espDevice;
-		VkDescriptorSetLayout descriptorSetLayout;
-		std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings;
+		EspDevice& m_device;
+		VkDescriptorSetLayout m_descriptor_set_layout;
+		std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> m_bindings;
 
 	 public:
 		EspDescriptorSetLayout(
-			EspDevice& device, std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings);
+			EspDevice& device,
+			std::unordered_map<uint32_t,VkDescriptorSetLayoutBinding> bindings);
 		~EspDescriptorSetLayout();
 
 		EspDescriptorSetLayout(const EspDescriptorSetLayout&) = delete;
 		EspDescriptorSetLayout& operator=(const EspDescriptorSetLayout&) = delete;
 
-		VkDescriptorSetLayout getDescriptorSetLayout() const
+		VkDescriptorSetLayout get_descriptor_set_layout() const
 		{
-			return descriptorSetLayout;
+			return m_descriptor_set_layout;
 		}
 
 		friend class EspDescriptorWriter;
@@ -59,42 +58,43 @@ namespace esp
 		class Builder
 		{
 		 private:
-			EspDevice& espDevice;
-			std::vector<VkDescriptorPoolSize> poolSizes{};
-			uint32_t maxSets = 1000;
-			VkDescriptorPoolCreateFlags poolFlags = 0;
+			EspDevice& m_device;
+			std::vector<VkDescriptorPoolSize> m_pool_sizes{};
+			uint32_t m_max_sets = 1000;
+			VkDescriptorPoolCreateFlags m_pool_flags = 0;
 
 		 public:
-			Builder(EspDevice& device) : espDevice{ device }
+			Builder(EspDevice& device) : m_device{ device }
 			{
 			}
 
-			Builder& addPoolSize(VkDescriptorType descriptorType, uint32_t count);
-			Builder& setPoolFlags(VkDescriptorPoolCreateFlags flags);
-			Builder& setMaxSets(uint32_t count);
+			Builder& add_pool_size(VkDescriptorType descriptor_type, uint32_t count);
+			Builder& set_pool_flags(VkDescriptorPoolCreateFlags flags);
+			Builder& set_max_sets(uint32_t count);
 			std::unique_ptr<EspDescriptorPool> build() const;
 		};
 
 	 private:
-		EspDevice& espDevice;
-		VkDescriptorPool descriptorPool;
+		EspDevice& m_device;
+		VkDescriptorPool m_descriptor_pool;
 
 	 public:
 		EspDescriptorPool(
 			EspDevice& device,
 			uint32_t maxSets,
-			VkDescriptorPoolCreateFlags poolFlags,
-			const std::vector<VkDescriptorPoolSize>& poolSizes);
+			VkDescriptorPoolCreateFlags pool_flags,
+			const std::vector<VkDescriptorPoolSize>& pool_sizes);
 		~EspDescriptorPool();
 		EspDescriptorPool(const EspDescriptorPool&) = delete;
 		EspDescriptorPool& operator=(const EspDescriptorPool&) = delete;
 
-		bool allocateDescriptorSet(
-			const VkDescriptorSetLayout& descriptorSetLayout, VkDescriptorSet& descriptor) const;
+		bool allocate_descriptor_set(
+			const VkDescriptorSetLayout& descriptor_set_layout,
+			VkDescriptorSet& descriptor) const;
 
-		void freeDescriptors(std::vector<VkDescriptorSet>& descriptors) const;
+		void free_descriptors(std::vector<VkDescriptorSet>& descriptors) const;
 
-		void resetPool();
+		void reset_pool();
 
 		friend class EspDescriptorWriter;
 	};
@@ -102,15 +102,15 @@ namespace esp
 	class EspDescriptorWriter
 	{
 	 private:
-		EspDescriptorSetLayout& setLayout;
+		EspDescriptorSetLayout& m_set_layout;
 		EspDescriptorPool& pool;
 		std::vector<VkWriteDescriptorSet> writes;
 
 	 public:
-		EspDescriptorWriter(EspDescriptorSetLayout& setLayout, EspDescriptorPool& pool);
+		EspDescriptorWriter(EspDescriptorSetLayout& set_layout, EspDescriptorPool& pool);
 
-		EspDescriptorWriter& writeBuffer(uint32_t binding, VkDescriptorBufferInfo* bufferInfo);
-		EspDescriptorWriter& writeImage(uint32_t binding, VkDescriptorImageInfo* imageInfo);
+		EspDescriptorWriter& write_buffer(uint32_t binding, VkDescriptorBufferInfo* buffer_info);
+		EspDescriptorWriter& write_image(uint32_t binding, VkDescriptorImageInfo* image_info);
 
 		bool build(VkDescriptorSet& set);
 		void overwrite(VkDescriptorSet& set);

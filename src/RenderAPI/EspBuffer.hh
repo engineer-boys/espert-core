@@ -8,26 +8,26 @@ namespace esp
 	class EspBuffer
 	{
 	 private:
-		EspDevice& espDevice;
-		void* mapped = nullptr;
-		VkBuffer buffer = VK_NULL_HANDLE;
-		VkDeviceMemory memory = VK_NULL_HANDLE;
+		EspDevice& m_device;
+		void* m_mapped = nullptr;
+		VkBuffer m_buffer = VK_NULL_HANDLE;
+		VkDeviceMemory m_memory = VK_NULL_HANDLE;
 
-		VkDeviceSize bufferSize;
-		uint32_t instanceCount;
-		VkDeviceSize instanceSize;
-		VkDeviceSize alignmentSize;
-		VkBufferUsageFlags usageFlags;
-		VkMemoryPropertyFlags memoryPropertyFlags;
+		VkDeviceSize m_buffer_size;
+		uint32_t m_instance_count;
+		VkDeviceSize m_instance_size;
+		VkDeviceSize m_alignment_size;
+		VkBufferUsageFlags m_usage_flags;
+		VkMemoryPropertyFlags m_memory_property_flags;
 
 	 public:
 		EspBuffer(
 			EspDevice& device,
-			VkDeviceSize instanceSize,
-			uint32_t instanceCount,
-			VkBufferUsageFlags usageFlags,
-			VkMemoryPropertyFlags memoryPropertyFlags,
-			VkDeviceSize minOffsetAlignment = 1);
+			VkDeviceSize instance_size,
+			uint32_t instance_count,
+			VkBufferUsageFlags usage_flags,
+			VkMemoryPropertyFlags memory_property_flags,
+			VkDeviceSize min_offset_alignment = 1);
 		~EspBuffer();
 
 		EspBuffer(const EspBuffer&) = delete;
@@ -36,51 +36,27 @@ namespace esp
 		VkResult map(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
 		void unmap();
 
-		void writeToBuffer(void* data, VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
+		void write_to_buffer(void* data, VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
 		VkResult flush(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
-		VkDescriptorBufferInfo descriptorInfo(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
+		VkDescriptorBufferInfo descriptor_info(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
 		VkResult invalidate(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
 
-		void writeToIndex(void* data, int index);
-		VkResult flushIndex(int index);
-		VkDescriptorBufferInfo descriptorInfoForIndex(int index);
-		VkResult invalidateIndex(int index);
+		void write_to_index(void* data, int index);
+		VkResult flush_index(int index);
+		VkDescriptorBufferInfo descriptor_info_for_index(int index);
+		VkResult invalidate_index(int index);
 
-		VkBuffer getBuffer() const
-		{
-			return buffer;
-		}
-		void* getMappedMemory() const
-		{
-			return mapped;
-		}
-		uint32_t getInstanceCount() const
-		{
-			return instanceCount;
-		}
-		VkDeviceSize getInstanceSize() const
-		{
-			return instanceSize;
-		}
-		VkDeviceSize getAlignmentSize() const
-		{
-			return alignmentSize;
-		}
-		VkBufferUsageFlags getUsageFlags() const
-		{
-			return usageFlags;
-		}
-		VkMemoryPropertyFlags getMemoryPropertyFlags() const
-		{
-			return memoryPropertyFlags;
-		}
-		VkDeviceSize getBufferSize() const
-		{
-			return bufferSize;
-		}
+		inline VkBuffer get_buffer() const { return m_buffer; }
+		inline void* get_mapped_memory() const { return m_mapped; }
+		inline uint32_t get_instance_count() const { return m_instance_count; }
+		inline VkDeviceSize get_instance_size() const { return m_instance_size; }
+		inline VkDeviceSize get_alignment_size() const { return m_alignment_size; }
+		inline VkBufferUsageFlags get_usage_flags() const { return m_usage_flags; }
+		inline VkMemoryPropertyFlags get_memory_property_flags() const { return m_memory_property_flags; }
+		inline VkDeviceSize get_buffer_size() const { return m_buffer_size; }
 
 	 private:
-		static VkDeviceSize getAlignment(VkDeviceSize instanceSize, VkDeviceSize minOffsetAlignment);
+		static VkDeviceSize get_alignment(VkDeviceSize instance_size, VkDeviceSize min_offset_alignment);
 	};
 }
 

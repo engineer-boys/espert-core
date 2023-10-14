@@ -8,83 +8,85 @@ namespace esp
 {
 	// *************** Descriptor Set Layout Builder *********************
 
-	EspDescriptorSetLayout::Builder& EspDescriptorSetLayout::Builder::addBinding(
+	EspDescriptorSetLayout::Builder& EspDescriptorSetLayout::Builder::add_binding(
 		uint32_t binding,
-		VkDescriptorType descriptorType,
-		VkShaderStageFlags stageFlags,
+		VkDescriptorType descriptor_type,
+		VkShaderStageFlags stage_flags,
 		uint32_t count)
 	{
-		assert(bindings.count(binding) == 0 && "Binding already in use");
-		VkDescriptorSetLayoutBinding layoutBinding{};
-		layoutBinding.binding = binding;
-		layoutBinding.descriptorType = descriptorType;
-		layoutBinding.descriptorCount = count;
-		layoutBinding.stageFlags = stageFlags;
-		bindings[binding] = layoutBinding;
+		assert(m_bindings.count(binding) == 0 && "Binding already in use");
+		VkDescriptorSetLayoutBinding layout_binding{};
+		layout_binding.binding = binding;
+		layout_binding.descriptorType = descriptor_type;
+		layout_binding.descriptorCount = count;
+		layout_binding.stageFlags = stage_flags;
+		m_bindings[binding] = layout_binding;
 		return *this;
 	}
 
 	std::unique_ptr<EspDescriptorSetLayout> EspDescriptorSetLayout::Builder::build() const
 	{
-		return std::make_unique<EspDescriptorSetLayout>(espDevice, bindings);
+		return std::make_unique<EspDescriptorSetLayout>(m_device, m_bindings);
 	}
 
 	// *************** Descriptor Set Layout *********************
 
 	EspDescriptorSetLayout::EspDescriptorSetLayout(
-		EspDevice& device, std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings)
-		: espDevice{ device }, bindings{ bindings }
+		EspDevice& device,
+		std::unordered_map<uint32_t,VkDescriptorSetLayoutBinding> bindings)
+		: m_device{ device }, m_bindings{ bindings }
 	{
-		std::vector<VkDescriptorSetLayoutBinding> setLayoutBindings{};
+		std::vector<VkDescriptorSetLayoutBinding> set_layout_bindings{};
 		for (auto kv : bindings)
 		{
-			setLayoutBindings.push_back(kv.second);
+			set_layout_bindings.push_back(kv.second);
 		}
 
-		VkDescriptorSetLayoutCreateInfo descriptorSetLayoutInfo{};
-		descriptorSetLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-		descriptorSetLayoutInfo.bindingCount = static_cast<uint32_t>(setLayoutBindings.size());
-		descriptorSetLayoutInfo.pBindings = setLayoutBindings.data();
+		VkDescriptorSetLayoutCreateInfo descriptor_set_layout_info{};
+		descriptor_set_layout_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+		descriptor_set_layout_info.bindingCount = static_cast<uint32_t>(set_layout_bindings.size());
+		descriptor_set_layout_info.pBindings = set_layout_bindings.data();
 
 		if (vkCreateDescriptorSetLayout(
-			device.device(),
-			&descriptorSetLayoutInfo,
+			device.get_device(),
+			&descriptor_set_layout_info,
 			nullptr,
-			&descriptorSetLayout) != VK_SUCCESS)
+			&m_descriptor_set_layout) != VK_SUCCESS)
 		{
-			throw std::runtime_error("failed to create descriptor set layout!");
+			ESP_CORE_ERROR("Failed to create descriptor set layout");
+			throw std::runtime_error("Failed to create descriptor set layout");
 		}
 	}
 
 	EspDescriptorSetLayout::~EspDescriptorSetLayout()
 	{
-		vkDestroyDescriptorSetLayout(espDevice.device(), descriptorSetLayout, nullptr);
+		vkDestroyDescriptorSetLayout(m_device.get_device(), m_descriptor_set_layout, nullptr);
 	}
 
 	// *************** Descriptor Pool Builder *********************
 
-	EspDescriptorPool::Builder& EspDescriptorPool::Builder::addPoolSize(
-		VkDescriptorType descriptorType, uint32_t count)
+	EspDescriptorPool::Builder& EspDescriptorPool::Builder::add_pool_size(
+		VkDescriptorType descriptor_type, uint32_t count)
 	{
-		poolSizes.push_back({ descriptorType, count });
+		m_pool_sizes.push_back({ descriptor_type, count });
 		return *this;
 	}
 
-	EspDescriptorPool::Builder& EspDescriptorPool::Builder::setPoolFlags(
+	EspDescriptorPool::Builder& EspDescriptorPool::Builder::set_pool_flags(
 		VkDescriptorPoolCreateFlags flags)
 	{
-		poolFlags = flags;
+		m_pool_flags = flags;
 		return *this;
 	}
-	EspDescriptorPool::Builder& EspDescriptorPool::Builder::setMaxSets(uint32_t count)
+	EspDescriptorPool::Builder& EspDescriptorPool::Builder::set_max_sets(uint32_t count)
 	{
-		maxSets = count;
+		m_max_sets = count;
 		return *this;
 	}
 
 	std::unique_ptr<EspDescriptorPool> EspDescriptorPool::Builder::build() const
 	{
-		return std::make_unique<EspDescriptorPool>(espDevice, maxSets, poolFlags, poolSizes);
+		return std::make_unique<EspDescriptorPool>(m_device, m_max_sets, m_pool_flags, m_pool_sizes);
 	}
 
 	// *************** Descriptor Pool *********************
@@ -92,106 +94,107 @@ namespace esp
 	EspDescriptorPool::EspDescriptorPool(
 		EspDevice& device,
 		uint32_t maxSets,
-		VkDescriptorPoolCreateFlags poolFlags,
-		const std::vector<VkDescriptorPoolSize>& poolSizes)
-		: espDevice{ device }
+		VkDescriptorPoolCreateFlags pool_flags,
+		const std::vector<VkDescriptorPoolSize>& pool_sizes)
+		: m_device{ device }
 	{
-		VkDescriptorPoolCreateInfo descriptorPoolInfo{};
-		descriptorPoolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-		descriptorPoolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
-		descriptorPoolInfo.pPoolSizes = poolSizes.data();
-		descriptorPoolInfo.maxSets = maxSets;
-		descriptorPoolInfo.flags = poolFlags;
+		VkDescriptorPoolCreateInfo descriptor_pool_info{};
+		descriptor_pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+		descriptor_pool_info.poolSizeCount = static_cast<uint32_t>(pool_sizes.size());
+		descriptor_pool_info.pPoolSizes = pool_sizes.data();
+		descriptor_pool_info.maxSets = maxSets;
+		descriptor_pool_info.flags = pool_flags;
 
-		if (vkCreateDescriptorPool(device.device(), &descriptorPoolInfo, nullptr, &descriptorPool) !=
+		if (vkCreateDescriptorPool(device.get_device(), &descriptor_pool_info, nullptr, &m_descriptor_pool) !=
 			VK_SUCCESS)
 		{
-			throw std::runtime_error("failed to create descriptor pool!");
+			ESP_CORE_ERROR("Failed to create descriptor pool");
+			throw std::runtime_error("Failed to create descriptor pool");
 		}
 	}
 
 	EspDescriptorPool::~EspDescriptorPool()
 	{
-		vkDestroyDescriptorPool(espDevice.device(), descriptorPool, nullptr);
+		vkDestroyDescriptorPool(m_device.get_device(), m_descriptor_pool, nullptr);
 	}
 
-	bool EspDescriptorPool::allocateDescriptorSet(
-		const VkDescriptorSetLayout& descriptorSetLayout, VkDescriptorSet& descriptor) const
+	bool EspDescriptorPool::allocate_descriptor_set(
+		const VkDescriptorSetLayout& descriptor_set_layout, VkDescriptorSet& descriptor) const
 	{
-		VkDescriptorSetAllocateInfo allocInfo{};
-		allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-		allocInfo.descriptorPool = descriptorPool;
-		allocInfo.pSetLayouts = &descriptorSetLayout;
-		allocInfo.descriptorSetCount = 1;
+		VkDescriptorSetAllocateInfo alloc_info{};
+		alloc_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+		alloc_info.descriptorPool = m_descriptor_pool;
+		alloc_info.pSetLayouts = &descriptor_set_layout;
+		alloc_info.descriptorSetCount = 1;
 
-		// Might want to create a "DescriptorPoolManager" class that handles this case, and builds
-		// a new pool whenever an old pool fills up: https://vkguide.dev/docs/extra-chapter/abstracting_descriptors/
-		if (vkAllocateDescriptorSets(espDevice.device(), &allocInfo, &descriptor) != VK_SUCCESS)
+		// TODO: Might want to create a "DescriptorPoolManager" class that handles this case,
+		//  and builds a new pool whenever an old pool fills up: https://vkguide.dev/docs/extra-chapter/abstracting_descriptors/
+		if (vkAllocateDescriptorSets(m_device.get_device(), &alloc_info, &descriptor) != VK_SUCCESS)
 		{
 			return false;
 		}
 		return true;
 	}
 
-	void EspDescriptorPool::freeDescriptors(std::vector<VkDescriptorSet>& descriptors) const
+	void EspDescriptorPool::free_descriptors(std::vector<VkDescriptorSet>& descriptors) const
 	{
 		vkFreeDescriptorSets(
-			espDevice.device(),
-			descriptorPool,
+			m_device.get_device(),
+			m_descriptor_pool,
 			static_cast<uint32_t>(descriptors.size()),
 			descriptors.data());
 	}
 
-	void EspDescriptorPool::resetPool()
+	void EspDescriptorPool::reset_pool()
 	{
-		vkResetDescriptorPool(espDevice.device(), descriptorPool, 0);
+		vkResetDescriptorPool(m_device.get_device(), m_descriptor_pool, 0);
 	}
 
 	// *************** Descriptor Writer *********************
 
-	EspDescriptorWriter::EspDescriptorWriter(EspDescriptorSetLayout& setLayout, EspDescriptorPool& pool)
-		: setLayout{ setLayout }, pool{ pool }
+	EspDescriptorWriter::EspDescriptorWriter(EspDescriptorSetLayout& set_layout, EspDescriptorPool& pool)
+		: m_set_layout{ set_layout }, pool{ pool }
 	{
 	}
 
-	EspDescriptorWriter& EspDescriptorWriter::writeBuffer(
-		uint32_t binding, VkDescriptorBufferInfo* bufferInfo)
+	EspDescriptorWriter& EspDescriptorWriter::write_buffer(
+		uint32_t binding, VkDescriptorBufferInfo* buffer_info)
 	{
-		assert(setLayout.bindings.count(binding) == 1 && "Layout does not contain specified binding");
+		assert(m_set_layout.m_bindings.count(binding) == 1 && "Layout does not contain specified binding");
 
-		auto& bindingDescription = setLayout.bindings[binding];
+		auto& binding_description = m_set_layout.m_bindings[binding];
 
 		assert(
-			bindingDescription.descriptorCount == 1 &&
+			binding_description.descriptorCount == 1 &&
 				"Binding single descriptor info, but binding expects multiple");
 
 		VkWriteDescriptorSet write{};
 		write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		write.descriptorType = bindingDescription.descriptorType;
+		write.descriptorType = binding_description.descriptorType;
 		write.dstBinding = binding;
-		write.pBufferInfo = bufferInfo;
+		write.pBufferInfo = buffer_info;
 		write.descriptorCount = 1;
 
 		writes.push_back(write);
 		return *this;
 	}
 
-	EspDescriptorWriter& EspDescriptorWriter::writeImage(
-		uint32_t binding, VkDescriptorImageInfo* imageInfo)
+	EspDescriptorWriter& EspDescriptorWriter::write_image(
+		uint32_t binding, VkDescriptorImageInfo* image_info)
 	{
-		assert(setLayout.bindings.count(binding) == 1 && "Layout does not contain specified binding");
+		assert(m_set_layout.m_bindings.count(binding) == 1 && "Layout does not contain specified binding");
 
-		auto& bindingDescription = setLayout.bindings[binding];
+		auto& binding_description = m_set_layout.m_bindings[binding];
 
 		assert(
-			bindingDescription.descriptorCount == 1 &&
+			binding_description.descriptorCount == 1 &&
 				"Binding single descriptor info, but binding expects multiple");
 
 		VkWriteDescriptorSet write{};
 		write.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-		write.descriptorType = bindingDescription.descriptorType;
+		write.descriptorType = binding_description.descriptorType;
 		write.dstBinding = binding;
-		write.pImageInfo = imageInfo;
+		write.pImageInfo = image_info;
 		write.descriptorCount = 1;
 
 		writes.push_back(write);
@@ -200,7 +203,7 @@ namespace esp
 
 	bool EspDescriptorWriter::build(VkDescriptorSet& set)
 	{
-		bool success = pool.allocateDescriptorSet(setLayout.getDescriptorSetLayout(), set);
+		bool success = pool.allocate_descriptor_set(m_set_layout.get_descriptor_set_layout(), set);
 		if (!success)
 		{
 			return false;
@@ -215,6 +218,6 @@ namespace esp
 		{
 			write.dstSet = set;
 		}
-		vkUpdateDescriptorSets(pool.espDevice.device(), writes.size(), writes.data(), 0, nullptr);
+		vkUpdateDescriptorSets(pool.m_device.get_device(), writes.size(), writes.data(), 0, nullptr);
 	}
 }

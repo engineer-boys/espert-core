@@ -15,56 +15,56 @@ namespace esp
 		PipelineConfigInfo(const PipelineConfigInfo&) = delete;
 		PipelineConfigInfo& operator=(const PipelineConfigInfo&) = delete;
 
-		std::vector<VkVertexInputBindingDescription> bindingDescriptions{};
-		std::vector<VkVertexInputAttributeDescription> attributeDescriptions{};
+		std::vector<VkVertexInputBindingDescription> m_binding_descriptions{};
+		std::vector<VkVertexInputAttributeDescription> m_attribute_descriptions{};
 
-		VkPipelineViewportStateCreateInfo viewportInfo;
-		VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
-		VkPipelineRasterizationStateCreateInfo rasterizationInfo;
-		VkPipelineMultisampleStateCreateInfo multisampleInfo;
-		VkPipelineColorBlendAttachmentState colorBlendAttachment;
-		VkPipelineColorBlendStateCreateInfo colorBlendInfo;
-		VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
-		std::vector<VkDynamicState> dynamicStates;
-		VkPipelineDynamicStateCreateInfo dynamicStateInfo;
-		VkPipelineLayout pipelineLayout = nullptr;
-		VkRenderPass renderPass = nullptr;
+		VkPipelineViewportStateCreateInfo m_viewport_info;
+		VkPipelineInputAssemblyStateCreateInfo m_input_assembly_info;
+		VkPipelineRasterizationStateCreateInfo m_rasterization_info;
+		VkPipelineMultisampleStateCreateInfo m_multisample_info;
+		VkPipelineColorBlendAttachmentState m_color_blend_attachment;
+		VkPipelineColorBlendStateCreateInfo m_color_blend_info;
+		VkPipelineDepthStencilStateCreateInfo m_depth_stencil_info;
+		std::vector<VkDynamicState> m_dynamic_states;
+		VkPipelineDynamicStateCreateInfo m_dynamic_state_info;
+		VkPipelineLayout m_pipeline_layout = nullptr;
+		VkRenderPass m_render_pass = nullptr;
 		uint32_t subpass = 0;
 	};
 
 	class EspPipeline
 	{
 	 private:
-		EspDevice& espDevice;
-		VkPipeline graphicsPipeline;
-		VkShaderModule vertShaderModule;
-		VkShaderModule fragShaderModule;
+		EspDevice& m_device;
+		VkPipeline m_graphics_pipeline;
+		VkShaderModule m_vert_shader_module;
+		VkShaderModule m_frag_shader_module;
 
 	 public:
 		EspPipeline(
 			EspDevice& device,
-			const std::string& shaderVertPath,
-			const std::string& shaderFragPath,
-			const PipelineConfigInfo& configInfo);
+			const std::string& shader_vert_path,
+			const std::string& shader_frag_path,
+			const PipelineConfigInfo& config_info);
 		~EspPipeline();
 
 		EspPipeline(const EspPipeline&) = delete;
 		EspPipeline& operator=(const EspPipeline&) = delete;
 
-		void bind(VkCommandBuffer commandBuffer);
+		void bind(VkCommandBuffer command_buffer);
 
-		static void defaultPipelineConfigInfo(PipelineConfigInfo& configInfo);
-		static void enableAlphaBlending(PipelineConfigInfo& configInfo);
+		static void create_default_pipeline_config_info(PipelineConfigInfo& config_info);
+		static void enableAlphaBlending(PipelineConfigInfo& config_info);
 
 	 private:
-		static std::vector<char> readFile(const std::string& filePath);
+		static std::vector<char> read_file(const std::string& file_path);
 
-		void createGraphicsPipeline(
-			const std::string& shaderVertPath,
-			const std::string& shaderFragPath,
-			const PipelineConfigInfo& configInfo);
+		void create_graphics_pipeline(
+			const std::string& shader_vert_path,
+			const std::string& shader_frag_path,
+			const PipelineConfigInfo& config_info);
 
-		void createShaderModule(const std::vector<char>& code, VkShaderModule* shaderModule);
+		void create_shader_module(const std::vector<char>& code, VkShaderModule* shader_module);
 	};
 }
 

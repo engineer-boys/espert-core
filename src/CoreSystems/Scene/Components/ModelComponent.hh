@@ -14,40 +14,40 @@ namespace esp
 	 public:
 		struct Vertex
 		{
-			glm::vec3 position{};
-			glm::vec3 color{};
-			glm::vec3 normal{};
-			glm::vec2 uv{}; // 2-dim tex coord
+			glm::vec3 m_position{};
+			glm::vec3 m_color{};
+			glm::vec3 m_normal{};
+			glm::vec2 m_uv{}; // 2-dim tex coord
 
-			static std::vector<VkVertexInputBindingDescription> getBindingDescriptions();
-			static std::vector<VkVertexInputAttributeDescription> getAttributeDescriptions();
+			static std::vector<VkVertexInputBindingDescription> get_binding_descriptions();
+			static std::vector<VkVertexInputAttributeDescription> get_attribute_descriptions();
 
 			bool operator==(const Vertex& other) const
 			{
-				return position == other.position
-					&& color == other.color
-					&& normal == other.normal
-					&& uv == other.uv;
+				return m_position == other.m_position
+					&& m_color == other.m_color
+					&& m_normal == other.m_normal
+					&& m_uv == other.m_uv;
 			}
 		};
 
 		struct Builder
 		{
-			std::vector<Vertex> vertices{};
-			std::vector<uint32_t> indices{};
+			std::vector<Vertex> m_vertices{};
+			std::vector<uint32_t> m_indices{};
 
 			void loadModel(const std::string& filepath);
 		};
 
 	 private:
-		EspDevice& espDevice;
+		EspDevice& m_device;
 
-		std::unique_ptr<EspBuffer> vertexBuffer;
-		uint32_t vertexCount;
+		std::unique_ptr<EspBuffer> m_vertex_buffer;
+		uint32_t m_vertex_count;
 
-		bool hasIndexBuffer{ false };
-		std::unique_ptr<EspBuffer> indexBuffer;
-		uint32_t indexCount;
+		bool m_has_index_buffer{ false};
+		std::unique_ptr<EspBuffer> m_index_buffer;
+		uint32_t m_index_count;
 
 	 public:
 		ModelComponent(EspDevice& device, const ModelComponent::Builder& builder);
@@ -56,12 +56,12 @@ namespace esp
 		ModelComponent(const ModelComponent&) = delete;
 		ModelComponent& operator=(const ModelComponent&) = delete;
 
-		void bind(VkCommandBuffer commandBuffer);
-		void draw(VkCommandBuffer commandBuffer);
+		void bind(VkCommandBuffer command_buffer);
+		void draw(VkCommandBuffer command_buffer);
 
 	 private:
-		void createVertexBuffers(const std::vector<Vertex>& vertices);
-		void createIndexBuffers(const std::vector<uint32_t>& indices);
+		void create_vertex_buffer(const std::vector<Vertex>& vertices);
+		void create_index_buffer(const std::vector<uint32_t>& indices);
 	};
 }
 

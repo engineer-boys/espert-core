@@ -5,24 +5,26 @@
 
 namespace esp
 {
-	class Renderer
+	class EspRenderer
 	{
 	 private:
 		//TODO: create scene
 		// Scene _m_scene{};
 		//TODO: scene - unordered_map[key: bit mask of components, value: list<entities>]
-		static Renderer* s_instance;
+		static EspRenderer* s_instance;
 
 		EspDevice m_device;
-		EspRenderScheduler m_render_scheduler;
+		std::unique_ptr<EspRenderScheduler> m_render_scheduler;
 
-		Renderer(EspWindow& window);
+		EspRenderer(EspWindow& window);
 
 	 public:
-		~Renderer();
-		static std::unique_ptr<Renderer> create(EspWindow& window);
+		~EspRenderer();
+		static std::unique_ptr<EspRenderer> create(EspWindow& window);
 
-		inline static Renderer* get_instance() { return Renderer::s_instance; }
+		inline static EspRenderer* get_instance() { return s_instance; }
+
+		void on_window_resized();
 	};
 }
 

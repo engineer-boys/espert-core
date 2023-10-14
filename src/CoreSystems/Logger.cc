@@ -37,7 +37,7 @@ namespace esp
         logger->_m_client_logger = spdlog::stdout_color_mt("Client");
         logger->_m_client_logger->set_level(spdlog::level::trace);
 
-        ESP_CORE_INFO("Logger is created");
+        ESP_CORE_INFO("Logger created");
         return logger;
     }
 }

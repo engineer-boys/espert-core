@@ -26,18 +26,18 @@ namespace esp
             EventManagerFun m_events_manager_fun;
 
             WindowData(
-                const std::string title = "Espert widnow",
+                const std::string title = "Espert window",
                 unsigned int width = 1280,
                 unsigned int height = 720)
                 : m_title(title), m_width(width), m_height(height) {}
         };
 
     private:
-        static bool _s_is_exist;
+        static bool s_is_exist;
 
     private:
-        WindowData _m_data;
-        GLFWwindow *_m_window;
+        WindowData m_data;
+        GLFWwindow *m_window;
 
     private:
         void init(const WindowData &data);
@@ -51,21 +51,24 @@ namespace esp
 
         void update();
 
-        inline unsigned int get_width() { return _m_data.m_width; }
-        inline unsigned int get_height() { return _m_data.m_height; }
+        inline unsigned int get_width() { return m_data.m_width; }
+        inline unsigned int get_height() { return m_data.m_height; }
 		inline VkExtent2D get_extent() const
 		{
 			return
 			{
-				static_cast<uint32_t>(_m_data.m_height),
-				static_cast<uint32_t>(_m_data.m_height)
+				static_cast<uint32_t>(m_data.m_height),
+				static_cast<uint32_t>(m_data.m_height)
 			};
 		}
-        inline void set_events_manager_fun(const WindowData::EventManagerFun &callback) { _m_data.m_events_manager_fun = callback; }
+        inline void set_events_manager_fun(const WindowData::EventManagerFun &callback)
+		{
+			m_data.m_events_manager_fun = callback;
+		}
 
         static std::unique_ptr<EspWindow> create(const WindowData &data);
 
-		void createWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
+		void create_window_surface(VkInstance instance, VkSurfaceKHR* surface);
     };
 } // namespace Espert
 

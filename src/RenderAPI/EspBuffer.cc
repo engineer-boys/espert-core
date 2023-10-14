@@ -14,46 +14,46 @@
 namespace esp
 {
 	/**
-	 * Returns the minimum instance size required to be compatible with devices minOffsetAlignment
+	 * Returns the minimum instance size required to be compatible with devices min_offset_alignment
 	 *
-	 * @param instanceSize The size of an instance
-	 * @param minOffsetAlignment The minimum required alignment, in bytes, for the offset member (eg
+	 * @param instance_size The size of an instance
+	 * @param min_offset_alignment The minimum required alignment, in bytes, for the offset member (eg
 	 * minUniformBufferOffsetAlignment)
 	 *
 	 * @return VkResult of the buffer mapping call
 	 */
-	VkDeviceSize EspBuffer::getAlignment(VkDeviceSize instanceSize, VkDeviceSize minOffsetAlignment)
+	VkDeviceSize EspBuffer::get_alignment(VkDeviceSize instance_size, VkDeviceSize min_offset_alignment)
 	{
-		if (minOffsetAlignment > 0)
+		if (min_offset_alignment > 0)
 		{
-			return (instanceSize + minOffsetAlignment - 1) & ~(minOffsetAlignment - 1);
+			return (instance_size + min_offset_alignment - 1) & ~(min_offset_alignment - 1);
 		}
-		return instanceSize;
+		return instance_size;
 	}
 
 	EspBuffer::EspBuffer(
 		EspDevice& device,
-		VkDeviceSize instanceSize,
-		uint32_t instanceCount,
-		VkBufferUsageFlags usageFlags,
-		VkMemoryPropertyFlags memoryPropertyFlags,
-		VkDeviceSize minOffsetAlignment)
-		: espDevice{ device },
-		  instanceSize{ instanceSize },
-		  instanceCount{ instanceCount },
-		  usageFlags{ usageFlags },
-		  memoryPropertyFlags{ memoryPropertyFlags }
+		VkDeviceSize instance_size,
+		uint32_t instance_count,
+		VkBufferUsageFlags usage_flags,
+		VkMemoryPropertyFlags memory_property_flags,
+		VkDeviceSize min_offset_alignment)
+		: m_device{device},
+		  m_instance_size{instance_size},
+		  m_instance_count{instance_count},
+		  m_usage_flags{usage_flags},
+		  m_memory_property_flags{memory_property_flags}
 	{
-		alignmentSize = getAlignment(instanceSize, minOffsetAlignment);
-		bufferSize = alignmentSize * instanceCount;
-		device.createBuffer(bufferSize, usageFlags, memoryPropertyFlags, buffer, memory);
+		m_alignment_size = get_alignment(instance_size, min_offset_alignment);
+		m_buffer_size = m_alignment_size * instance_count;
+		device.create_buffer(m_buffer_size, usage_flags, memory_property_flags, m_buffer, m_memory);
 	}
 
 	EspBuffer::~EspBuffer()
 	{
 		unmap();
-		vkDestroyBuffer(espDevice.device(), buffer, nullptr);
-		vkFreeMemory(espDevice.device(), memory, nullptr);
+		vkDestroyBuffer(m_device.get_device(), m_buffer, nullptr);
+		vkFreeMemory(m_device.get_device(), m_memory, nullptr);
 	}
 
 	/**
@@ -67,8 +67,8 @@ namespace esp
 	 */
 	VkResult EspBuffer::map(VkDeviceSize size, VkDeviceSize offset)
 	{
-		assert(buffer && memory && "Called map on buffer before create");
-		return vkMapMemory(espDevice.device(), memory, offset, size, 0, &mapped);
+		assert(m_buffer && m_memory && "Called map on buffer before create");
+		return vkMapMemory(m_device.get_device(), m_memory, offset, size, 0, &m_mapped);
 	}
 
 	/**
@@ -78,10 +78,10 @@ namespace esp
 	 */
 	void EspBuffer::unmap()
 	{
-		if (mapped)
+		if (m_mapped)
 		{
-			vkUnmapMemory(espDevice.device(), memory);
-			mapped = nullptr;
+			vkUnmapMemory(m_device.get_device(), m_memory);
+			m_mapped = nullptr;
 		}
 	}
 
@@ -94,19 +94,19 @@ namespace esp
 	 * @param offset (Optional) Byte offset from beginning of mapped region
 	 *
 	 */
-	void EspBuffer::writeToBuffer(void* data, VkDeviceSize size, VkDeviceSize offset)
+	void EspBuffer::write_to_buffer(void* data, VkDeviceSize size, VkDeviceSize offset)
 	{
-		assert(mapped && "Cannot copy to unmapped buffer");
+		assert(m_mapped && "Cannot copy to unmapped buffer");
 
 		if (size == VK_WHOLE_SIZE)
 		{
-			memcpy(mapped, data, bufferSize);
+			memcpy(m_mapped, data, m_buffer_size);
 		}
 		else
 		{
-			char* memOffset = (char*)mapped;
-			memOffset += offset;
-			memcpy(memOffset, data, size);
+			char* mem_offset = (char*)m_mapped;
+			mem_offset += offset;
+			memcpy(mem_offset, data, size);
 		}
 	}
 
@@ -123,12 +123,12 @@ namespace esp
 	 */
 	VkResult EspBuffer::flush(VkDeviceSize size, VkDeviceSize offset)
 	{
-		VkMappedMemoryRange mappedRange = {};
-		mappedRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
-		mappedRange.memory = memory;
-		mappedRange.offset = offset;
-		mappedRange.size = size;
-		return vkFlushMappedMemoryRanges(espDevice.device(), 1, &mappedRange);
+		VkMappedMemoryRange mapped_range = {};
+		mapped_range.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+		mapped_range.memory = m_memory;
+		mapped_range.offset = offset;
+		mapped_range.size = size;
+		return vkFlushMappedMemoryRanges(m_device.get_device(), 1, &mapped_range);
 	}
 
 	/**
@@ -144,12 +144,12 @@ namespace esp
 	 */
 	VkResult EspBuffer::invalidate(VkDeviceSize size, VkDeviceSize offset)
 	{
-		VkMappedMemoryRange mappedRange = {};
-		mappedRange.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
-		mappedRange.memory = memory;
-		mappedRange.offset = offset;
-		mappedRange.size = size;
-		return vkInvalidateMappedMemoryRanges(espDevice.device(), 1, &mappedRange);
+		VkMappedMemoryRange mapped_range = {};
+		mapped_range.sType = VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE;
+		mapped_range.memory = m_memory;
+		mapped_range.offset = offset;
+		mapped_range.size = size;
+		return vkInvalidateMappedMemoryRanges(m_device.get_device(), 1, &mapped_range);
 	}
 
 	/**
@@ -160,49 +160,49 @@ namespace esp
 	 *
 	 * @return VkDescriptorBufferInfo of specified offset and range
 	 */
-	VkDescriptorBufferInfo EspBuffer::descriptorInfo(VkDeviceSize size, VkDeviceSize offset)
+	VkDescriptorBufferInfo EspBuffer::descriptor_info(VkDeviceSize size, VkDeviceSize offset)
 	{
 		return VkDescriptorBufferInfo
 			{
-				buffer,
+				m_buffer,
 				offset,
 				size,
 			};
 	}
 
 	/**
-	 * Copies "instanceSize" bytes of data to the mapped buffer at an offset of index * alignmentSize
+	 * Copies "m_instance_size" bytes of data to the mapped buffer at an offset of index * m_alignment_size
 	 *
 	 * @param data Pointer to the data to copy
 	 * @param index Used in offset calculation
 	 *
 	 */
-	void EspBuffer::writeToIndex(void* data, int index)
+	void EspBuffer::write_to_index(void* data, int index)
 	{
-		writeToBuffer(data, instanceSize, index * alignmentSize);
+		write_to_buffer(data, m_instance_size, index * m_alignment_size);
 	}
 
 	/**
-	 *  Flush the memory range at index * alignmentSize of the buffer to make it visible to the device
+	 *  Flush the memory range at index * m_alignment_size of the buffer to make it visible to the device
 	 *
 	 * @param index Used in offset calculation
 	 *
 	 */
-	VkResult EspBuffer::flushIndex(int index)
+	VkResult EspBuffer::flush_index(int index)
 	{
-		return flush(alignmentSize, index * alignmentSize);
+		return flush(m_alignment_size, index * m_alignment_size);
 	}
 
 	/**
 	 * Create a buffer info descriptor
 	 *
-	 * @param index Specifies the region given by index * alignmentSize
+	 * @param index Specifies the region given by index * m_alignment_size
 	 *
 	 * @return VkDescriptorBufferInfo for instance at index
 	 */
-	VkDescriptorBufferInfo EspBuffer::descriptorInfoForIndex(int index)
+	VkDescriptorBufferInfo EspBuffer::descriptor_info_for_index(int index)
 	{
-		return descriptorInfo(alignmentSize, index * alignmentSize);
+		return descriptor_info(m_alignment_size, index * m_alignment_size);
 	}
 
 	/**
@@ -210,12 +210,12 @@ namespace esp
 	 *
 	 * @note Only required for non-coherent memory
 	 *
-	 * @param index Specifies the region to invalidate: index * alignmentSize
+	 * @param index Specifies the region to invalidate: index * m_alignment_size
 	 *
 	 * @return VkResult of the invalidate call
 	 */
-	VkResult EspBuffer::invalidateIndex(int index)
+	VkResult EspBuffer::invalidate_index(int index)
 	{
-		return invalidate(alignmentSize, index * alignmentSize);
+		return invalidate(m_alignment_size, index * m_alignment_size);
 	}
 }

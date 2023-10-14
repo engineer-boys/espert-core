@@ -8,7 +8,7 @@ namespace esp
 		_m_window = EspWindow::create(EspWindow::WindowData());
         _m_window->set_events_manager_fun(ESP_BIND_EVENT_FOR_FUN(Application::events_manager));
 
-		m_renderer = Renderer::create(*_m_window);
+		m_renderer = EspRenderer::create(*_m_window);
     }
 
     Application::~Application()
@@ -36,6 +36,8 @@ namespace esp
 	bool Application::on_window_resized(WindowResizedEvent& e)
 	{
 		//TODO: send event to recreate swapchain
+		m_renderer->on_window_resized();
+		//
 		return true;
 	}
 

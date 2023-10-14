@@ -1,5 +1,4 @@
 #include "ModelComponent.hh"
-#include "Utils.hh"
 
 // libs
 #define TINYOBJLOADER_IMPLEMENTATION
@@ -24,42 +23,42 @@ namespace std
 		size_t operator()(const esp::ModelComponent::Vertex& vertex) const
 		{
 			size_t seed = 0;
-			esp::hashCombine(seed, vertex.position, vertex.color, vertex.normal, vertex.uv);
+			esp::hashCombine(seed, vertex.m_position, vertex.m_color, vertex.m_normal, vertex.m_uv);
 			return seed;
 		}
 	};
 }
 
-std::vector<VkVertexInputBindingDescription> ModelComponent::Vertex::getBindingDescriptions()
+std::vector<VkVertexInputBindingDescription> ModelComponent::Vertex::get_binding_descriptions()
 {
-	std::vector<VkVertexInputBindingDescription> bindingDescriptions(1);
-	bindingDescriptions[0].binding = 0;
-	bindingDescriptions[0].stride = sizeof(Vertex);
-	bindingDescriptions[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+	std::vector<VkVertexInputBindingDescription> binding_descriptions(1);
+	binding_descriptions[0].binding = 0;
+	binding_descriptions[0].stride = sizeof(Vertex);
+	binding_descriptions[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
-	return bindingDescriptions;
+	return binding_descriptions;
 }
 
-std::vector<VkVertexInputAttributeDescription> ModelComponent::Vertex::getAttributeDescriptions()
+std::vector<VkVertexInputAttributeDescription> ModelComponent::Vertex::get_attribute_descriptions()
 {
-	std::vector<VkVertexInputAttributeDescription> attributeDescriptions{};
+	std::vector<VkVertexInputAttributeDescription> attribute_descriptions{};
 
-	attributeDescriptions.push_back({ 0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, position) });
-	attributeDescriptions.push_back({ 1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color) });
-	attributeDescriptions.push_back({ 2, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, normal) });
-	attributeDescriptions.push_back({ 3, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, uv) });
+	attribute_descriptions.push_back({ 0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, m_position) });
+	attribute_descriptions.push_back({ 1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, m_color) });
+	attribute_descriptions.push_back({ 2, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, m_normal) });
+	attribute_descriptions.push_back({ 3, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, m_uv) });
 
 	// Alternative
-	/*attributeDescriptions[0].binding = 0;
-	attributeDescriptions[0].location = 0;
-	attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-	attributeDescriptions[0].offset = offsetof(Vertex, position);
-	attributeDescriptions[1].binding = 0;
-	attributeDescriptions[1].location = 1;
-	attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-	attributeDescriptions[1].offset = offsetof(Vertex, color);*/
+	/*attribute_descriptions[0].binding = 0;
+	attribute_descriptions[0].location = 0;
+	attribute_descriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+	attribute_descriptions[0].offset = offsetof(Vertex, position);
+	attribute_descriptions[1].binding = 0;
+	attribute_descriptions[1].location = 1;
+	attribute_descriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+	attribute_descriptions[1].offset = offsetof(Vertex, color);*/
 
-	return attributeDescriptions;
+	return attribute_descriptions;
 }
 
 void ModelComponent::Builder::loadModel(const std::string& filepath)
@@ -69,17 +68,18 @@ void ModelComponent::Builder::loadModel(const std::string& filepath)
 	std::vector<tinyobj::material_t> materials;
 	std::string warn, err;
 
-	std::string enginePath = ENGINE_DIR + filepath;
+	std::string engine_path = ENGINE_DIR + filepath;
 
-	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, enginePath.c_str()))
+	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, engine_path.c_str()))
 	{
+		ESP_CORE_ERROR("Failed to load object");
 		throw std::runtime_error(warn + err);
 	}
 
-	vertices.clear();
-	indices.clear();
+	m_vertices.clear();
+	m_indices.clear();
 
-	std::unordered_map<Vertex, uint32_t> uniqueVertices{};
+	std::unordered_map<Vertex, uint32_t> unique_vertices{};
 
 	for (auto& shape : shapes)
 	{
@@ -89,14 +89,14 @@ void ModelComponent::Builder::loadModel(const std::string& filepath)
 
 			if (index.vertex_index >= 0)
 			{
-				vertex.position =
+				vertex.m_position =
 					{
 						attrib.vertices[3 * index.vertex_index + 0],
 						attrib.vertices[3 * index.vertex_index + 1],
 						attrib.vertices[3 * index.vertex_index + 2]
 					};
 
-				vertex.color =
+				vertex.m_color =
 					{
 						attrib.colors[3 * index.vertex_index + 0],
 						attrib.colors[3 * index.vertex_index + 1],
@@ -105,7 +105,7 @@ void ModelComponent::Builder::loadModel(const std::string& filepath)
 			}
 			if (index.normal_index >= 0)
 			{
-				vertex.normal =
+				vertex.m_normal =
 					{
 						attrib.normals[3 * index.normal_index + 0],
 						attrib.normals[3 * index.normal_index + 1],
@@ -114,113 +114,113 @@ void ModelComponent::Builder::loadModel(const std::string& filepath)
 			}
 			if (index.texcoord_index >= 0)
 			{
-				vertex.uv =
+				vertex.m_uv =
 					{
 						attrib.texcoords[3 * index.texcoord_index + 0],
 						attrib.texcoords[3 * index.texcoord_index + 1],
 					};
 			}
 
-			if (uniqueVertices.count(vertex) == 0)
+			if (unique_vertices.count(vertex) == 0)
 			{
-				uniqueVertices[vertex] = static_cast<uint32_t>(vertices.size());
-				vertices.push_back(vertex);
+				unique_vertices[vertex] = static_cast<uint32_t>(m_vertices.size());
+				m_vertices.push_back(vertex);
 			}
-			indices.push_back(uniqueVertices[vertex]);
+			m_indices.push_back(unique_vertices[vertex]);
 		}
 	}
 }
 
 ModelComponent::ModelComponent(EspDevice& device, const ModelComponent::Builder& builder)
-	: espDevice{ device }
+	: m_device{ device }
 {
-	createVertexBuffers(builder.vertices);
-	createIndexBuffers(builder.indices);
+	create_vertex_buffer(builder.m_vertices);
+	create_index_buffer(builder.m_indices);
 }
 
-void ModelComponent::createVertexBuffers(const std::vector<Vertex>& vertices)
+void ModelComponent::create_vertex_buffer(const std::vector<Vertex>& vertices)
 {
-	vertexCount = static_cast<uint32_t>(vertices.size());
-	assert(vertexCount >= 3 && "Vertex count must be at least 3");
+	m_vertex_count = static_cast<uint32_t>(vertices.size());
+	assert(m_vertex_count >= 3 && "Vertex count must be at least 3");
 
-	VkDeviceSize bufferSize = sizeof(vertices[0]) * vertexCount;
-	uint32_t vertexSize = sizeof(vertices[0]);
+	VkDeviceSize buffer_size = sizeof(vertices[0]) * m_vertex_count;
+	uint32_t vertex_size = sizeof(vertices[0]);
 
-	EspBuffer stagingBuffer
+	EspBuffer staging_buffer
 		{
-			espDevice,
-			vertexSize,
-			vertexCount,
+			m_device,
+			vertex_size,
+			m_vertex_count,
 			VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 			// host (cpu) has visible data | vertex buffer data = device (gpu) memory
 			VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 		};
 
-	stagingBuffer.map();
-	stagingBuffer.writeToBuffer((void*)vertices.data());
+	staging_buffer.map();
+	staging_buffer.write_to_buffer((void*)vertices.data());
 
-	vertexBuffer = std::make_unique<EspBuffer>(
-		espDevice,
-		vertexSize,
-		vertexCount,
+	m_vertex_buffer = std::make_unique<EspBuffer>(
+		m_device,
+		vertex_size,
+		m_vertex_count,
 		VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-	espDevice.copyBuffer(stagingBuffer.getBuffer(), vertexBuffer->getBuffer(), bufferSize);
+	m_device.copy_buffer(staging_buffer.get_buffer(), m_vertex_buffer->get_buffer(), buffer_size);
 }
 
-void ModelComponent::createIndexBuffers(const std::vector<uint32_t>& indices)
+void ModelComponent::create_index_buffer(const std::vector<uint32_t>& indices)
 {
-	indexCount = static_cast<uint32_t>(indices.size());
-	hasIndexBuffer = indexCount > 0;
+	m_index_count = static_cast<uint32_t>(indices.size());
+	m_has_index_buffer = m_index_count > 0;
 
-	if (!hasIndexBuffer) return;
+	if (!m_has_index_buffer) return;
 
-	VkDeviceSize bufferSize = sizeof(indices[0]) * indexCount;
-	uint32_t indexSize = sizeof(indices[0]);
+	VkDeviceSize buffer_size = sizeof(indices[0]) * m_index_count;
+	uint32_t index_size = sizeof(indices[0]);
 
-	EspBuffer stagingBuffer{
-		espDevice,
-		indexSize,
-		indexCount,
+	EspBuffer staging_buffer{
+		m_device,
+		index_size,
+		m_index_count,
 		VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
 		// host (cpu) has visible data | vertex buffer data = device (gpu) memory
 		VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 	};
 
-	stagingBuffer.map();
-	stagingBuffer.writeToBuffer((void*)indices.data());
+	staging_buffer.map();
+	staging_buffer.write_to_buffer((void*)indices.data());
 
-	indexBuffer = std::make_unique<EspBuffer>(
-		espDevice,
-		indexSize,
-		indexCount,
+	m_index_buffer = std::make_unique<EspBuffer>(
+		m_device,
+		index_size,
+		m_index_count,
 		VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
 		VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-	espDevice.copyBuffer(stagingBuffer.getBuffer(), indexBuffer->getBuffer(), bufferSize);
+	m_device.copy_buffer(staging_buffer.get_buffer(), m_index_buffer->get_buffer(), buffer_size);
 }
 
-void ModelComponent::bind(VkCommandBuffer commandBuffer)
+void ModelComponent::bind(VkCommandBuffer command_buffer)
 {
-	VkBuffer buffers[] = { vertexBuffer->getBuffer() };
+	VkBuffer buffers[] = { m_vertex_buffer->get_buffer() };
 	VkDeviceSize offsets[] = { 0 };
 
-	vkCmdBindVertexBuffers(commandBuffer, 0, 1, buffers, offsets);
+	vkCmdBindVertexBuffers(command_buffer, 0, 1, buffers, offsets);
 
-	if (hasIndexBuffer)
+	if (m_has_index_buffer)
 	{
-		vkCmdBindIndexBuffer(commandBuffer, indexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32);
+		vkCmdBindIndexBuffer(command_buffer, m_index_buffer->get_buffer(), 0, VK_INDEX_TYPE_UINT32);
 	}
 }
-void ModelComponent::draw(VkCommandBuffer commandBuffer)
+void ModelComponent::draw(VkCommandBuffer command_buffer)
 {
-	if (hasIndexBuffer)
+	if (m_has_index_buffer)
 	{
-		vkCmdDrawIndexed(commandBuffer, indexCount, 1, 0, 0, 0);
+		vkCmdDrawIndexed(command_buffer, m_index_count, 1, 0, 0, 0);
 	}
 	else
 	{
-		vkCmdDraw(commandBuffer, vertexCount, 1, 0, 0);
+		vkCmdDraw(command_buffer, m_vertex_count, 1, 0, 0);
 	}
 }
