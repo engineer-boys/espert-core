@@ -86,6 +86,11 @@ namespace esp
 
 	void EspDevice::createInstance()
 	{
+		if (volkInitialize() != VK_SUCCESS)
+		{
+			throw std::runtime_error("failed to initialize volk!");
+		}
+
 		if (enableValidationLayers && !checkValidationLayerSupport())
 		{
 			throw std::runtime_error("validation layers requested, but not available!");
@@ -122,11 +127,6 @@ namespace esp
 		{
 			createInfo.enabledLayerCount = 0;
 			createInfo.pNext = nullptr;
-		}
-
-		if (volkInitialize() != VK_SUCCESS)
-		{
-			throw std::runtime_error("failed to initialize volk!");
 		}
 
 		if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS)

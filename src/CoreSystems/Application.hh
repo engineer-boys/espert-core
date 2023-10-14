@@ -7,6 +7,8 @@
 #include "Layers/Layer.hh"
 #include "Layers/LayerStack.hh"
 #include "RenderAPI/EspWindow.hh"
+#include "RenderAPI/EspDevice.hh"
+#include "Renderer.hh"
 
 namespace esp
 {
@@ -15,6 +17,7 @@ namespace esp
     private:
         std::unique_ptr<ApplicationContext> _m_context;
         std::unique_ptr<EspWindow> _m_window;
+		std::unique_ptr<Renderer> m_renderer;
 
         bool _m_running;
 

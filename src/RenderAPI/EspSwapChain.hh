@@ -3,9 +3,6 @@
 
 #include "EspDevice.hh"
 
-//libs
-#include "external/vulkan/include/vulkan/vulkan.h"
-
 //std
 #include <memory>
 #include <string>
