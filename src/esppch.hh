@@ -9,14 +9,14 @@
 #include <utility>
 
 // data types
-#include <string>
 #include <sstream>
-#include <vector>
+#include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <vector>
 
 // espert
 #include "CoreSystems/Logger.hh"
 #include "CoreSystems/Core.hh"
 
-#endif  // ESPERT_ESPPCH_HH_
+#endif // ESPERT_ESPPCH_HH_
