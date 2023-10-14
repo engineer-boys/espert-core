@@ -3,7 +3,7 @@
 #include "Logger.hh"
 
 namespace Espert {
-Logger *Logger::_s_instance = nullptr;
+Logger* Logger::_s_instance = nullptr;
 
 Logger::Logger() {
   if (Logger::_s_instance != nullptr) {

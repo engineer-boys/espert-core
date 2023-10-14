@@ -30,7 +30,7 @@ class Event {
     EventTypeMouse    = SET_BIT(3),
   };
 
-  template<typename T> using EventHandler = std::function<bool(T &)>;
+  template<typename T> using EventHandler = std::function<bool(T&)>;
 
   public:
   bool handled = false;
@@ -42,9 +42,9 @@ class Event {
   inline bool is_type(EventType type) { return get_type() & type; }
 
   template<typename T>
-  static bool try_hanlder(Event &event, EventHandler<T> handler) {
+  static bool try_hanlder(Event& event, EventHandler<T> handler) {
     if (event.get_subtype() == T::get_class_subtype()) {
-      event.handled = handler(*(T *)&event);
+      event.handled = handler(*(T*)&event);
       return true;
     }
 

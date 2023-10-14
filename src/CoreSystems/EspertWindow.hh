@@ -10,7 +10,7 @@ class EspertWindow {
   public:
   struct WindowData {
     public:
-    using EventManagerFun = std::function<void(Event &)>;
+    using EventManagerFun = std::function<void(Event&)>;
 
     public:
     std::string title;
@@ -25,13 +25,13 @@ class EspertWindow {
 
     private:
     WindowData _m_data;
-    GLFWwindow *_m_window;
+    GLFWwindow* _m_window;
 
     private:
-    void init(const WindowData &data);
+    void init(const WindowData& data);
     void destroy();
 
-    EspertWindow(const WindowData &data);
+    EspertWindow(const WindowData& data);
 
     public:
     ~EspertWindow();
@@ -41,11 +41,11 @@ class EspertWindow {
     inline unsigned int get_width() { return _m_data.width; }
     inline unsigned int get_height() { return _m_data.height; }
     inline void
-    set_events_manager_fun(const WindowData::EventManagerFun &callback) {
+    set_events_manager_fun(const WindowData::EventManagerFun& callback) {
       _m_data.events_manager_fun = callback;
     }
 
-    static std::unique_ptr<EspertWindow> create(const WindowData &data);
+    static std::unique_ptr<EspertWindow> create(const WindowData& data);
   };
 } // namespace Espert
 

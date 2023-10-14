@@ -18,7 +18,7 @@ class Application {
   LayerStack _m_layer_stack;
 
   private:
-  bool on_window_closed(WindowClosedEvent &e);
+  bool on_window_closed(WindowClosedEvent& e);
 
   public:
   Application();
@@ -26,14 +26,14 @@ class Application {
 
   void run();
   void set_context(std::unique_ptr<ApplicationContext> context);
-  void events_manager(Event &e);
+  void events_manager(Event& e);
 
-  void push_layer(Layer *layer);
-  void push_overlayer(Layer *layer);
+  void push_layer(Layer* layer);
+  void push_overlayer(Layer* layer);
 };
 
 /* This function is defined by CLIENT */
-Application *createAppInstance();
+Application* createAppInstance();
 
 } // namespace Espert
 
