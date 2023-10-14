@@ -16,3 +16,9 @@
 [submodule "external/spdlog"]
 	path = external/spdlog
 	url = https://github.com/gabime/spdlog
+[submodule "external/tinyobjloader"]
+	path = external/tinyobjloader
+	url = git@github.com:tinyobjloader/tinyobjloader.git
+[submodule "external/entt"]
+	path = external/entt
+	url = git@github.com:skypjack/entt.git
