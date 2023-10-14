@@ -39,7 +39,7 @@ IndentWrappedFunctionNames: 'false'
 KeepEmptyLinesAtTheStartOfBlocks: 'false'
 Language: Cpp
 NamespaceIndentation: None
-PointerAlignment: Right
+PointerAlignment: Left
 ReflowComments: 'true'
 SortIncludes: 'true'
 SortUsingDeclarations: 'true'
