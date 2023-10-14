@@ -24,26 +24,26 @@ void Application::set_context(std::unique_ptr<ApplicationContext> context) {
   this->_m_context = std::move(context);
 }
 
-bool Application::on_window_closed(WindowClosedEvent &e) {
+bool Application::on_window_closed(WindowClosedEvent& e) {
   _m_running = false;
   return true;
 }
 
-void Application::events_manager(Event &e) {
+void Application::events_manager(Event& e) {
   Event::try_hanlder<WindowClosedEvent>(
       e, ESP_BIND_EVENT_FOR_FUN(Application::on_window_closed));
 
-  for (auto &iter : _m_layer_stack | std::views::reverse) {
+  for (auto& iter : _m_layer_stack | std::views::reverse) {
     iter->handle_event(e);
     if (e.handled) { break; }
   }
 }
 
-void Application::push_layer(Layer *layer) {
+void Application::push_layer(Layer* layer) {
   _m_layer_stack.push_layer(layer);
 }
 
-void Application::push_overlayer(Layer *layer) {
+void Application::push_overlayer(Layer* layer) {
   _m_layer_stack.push_overlayer(layer);
 }
 } // namespace Espert

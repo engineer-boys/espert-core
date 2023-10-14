@@ -4,13 +4,13 @@
 #include "Events/WindowEvent.hh"
 
 namespace Espert {
-static void glfw_error_callback(int error, const char *description) {
+static void glfw_error_callback(int error, const char* description) {
   ESP_CORE_ERROR("GLFW error ({0}) : {1}", errno, description);
 }
 
 bool EspertWindow::_s_is_exist = false;
 
-EspertWindow::EspertWindow(const WindowData &data) {
+EspertWindow::EspertWindow(const WindowData& data) {
   if (EspertWindow::_s_is_exist) {
     throw std::runtime_error("The Espert's window already exists!");
   }
@@ -26,7 +26,7 @@ EspertWindow::~EspertWindow() {
   destroy();
 }
 
-std::unique_ptr<EspertWindow> EspertWindow::create(const WindowData &data) {
+std::unique_ptr<EspertWindow> EspertWindow::create(const WindowData& data) {
   std::unique_ptr<EspertWindow> window{ new EspertWindow(data) };
   return window;
 }
@@ -35,7 +35,7 @@ void EspertWindow::update() {
   glfwPollEvents();
 }
 
-void EspertWindow::init(const WindowData &data) {
+void EspertWindow::init(const WindowData& data) {
   _m_data = data;
 
   int success = glfwInit();
@@ -59,9 +59,9 @@ void EspertWindow::init(const WindowData &data) {
   /* set callbacks for glfw events */
   {
     glfwSetWindowSizeCallback(
-        _m_window, [](GLFWwindow *window, int width, int height) {
-          WindowData *data =
-              static_cast<WindowData *>(glfwGetWindowUserPointer(window));
+        _m_window, [](GLFWwindow* window, int width, int height) {
+          WindowData* data =
+              static_cast<WindowData*>(glfwGetWindowUserPointer(window));
           data->width  = width;
           data->height = height;
 
@@ -69,18 +69,18 @@ void EspertWindow::init(const WindowData &data) {
           data->events_manager_fun(event);
         });
 
-    glfwSetWindowCloseCallback(_m_window, [](GLFWwindow *window) {
-      WindowData *data =
-          static_cast<WindowData *>(glfwGetWindowUserPointer(window));
+    glfwSetWindowCloseCallback(_m_window, [](GLFWwindow* window) {
+      WindowData* data =
+          static_cast<WindowData*>(glfwGetWindowUserPointer(window));
       WindowClosedEvent event;
       data->events_manager_fun(event);
     });
 
     glfwSetKeyCallback(
         _m_window,
-        [](GLFWwindow *window, int key, int scancode, int action, int mods) {
-          WindowData *data =
-              static_cast<WindowData *>(glfwGetWindowUserPointer(window));
+        [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+          WindowData* data =
+              static_cast<WindowData*>(glfwGetWindowUserPointer(window));
 
           switch (action) {
           case GLFW_PRESS: {
@@ -102,9 +102,9 @@ void EspertWindow::init(const WindowData &data) {
         });
 
     glfwSetMouseButtonCallback(
-        _m_window, [](GLFWwindow *window, int button, int action, int mods) {
-          WindowData *data =
-              static_cast<WindowData *>(glfwGetWindowUserPointer(window));
+        _m_window, [](GLFWwindow* window, int button, int action, int mods) {
+          WindowData* data =
+              static_cast<WindowData*>(glfwGetWindowUserPointer(window));
 
           switch (action) {
           case GLFW_PRESS: {
@@ -121,18 +121,18 @@ void EspertWindow::init(const WindowData &data) {
         });
 
     glfwSetScrollCallback(
-        _m_window, [](GLFWwindow *window, double x_offset, double y_offset) {
-          WindowData *data =
-              static_cast<WindowData *>(glfwGetWindowUserPointer(window));
+        _m_window, [](GLFWwindow* window, double x_offset, double y_offset) {
+          WindowData* data =
+              static_cast<WindowData*>(glfwGetWindowUserPointer(window));
 
           MouseScrolledEvent event((float)x_offset, (float)y_offset);
           data->events_manager_fun(event);
         });
 
     glfwSetCursorPosCallback(
-        _m_window, [](GLFWwindow *window, double x_pos, double y_pos) {
-          WindowData *data =
-              static_cast<WindowData *>(glfwGetWindowUserPointer(window));
+        _m_window, [](GLFWwindow* window, double x_pos, double y_pos) {
+          WindowData* data =
+              static_cast<WindowData*>(glfwGetWindowUserPointer(window));
 
           MouseMovedEvent event((float)x_pos, (float)y_pos);
           data->events_manager_fun(event);

@@ -11,7 +11,7 @@ class Layer {
   virtual void attach() {}
   virtual void detach() {}
   virtual void update() {}
-  virtual void handle_event(Event &event) {}
+  virtual void handle_event(Event& event) {}
 };
 
 } // namespace Espert
