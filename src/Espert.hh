@@ -8,8 +8,8 @@
 #include "CoreSystems/Application.hh"
 #include "CoreSystems/Logger.hh"
 
-#include "CoreSystems/Layers/Layer.hh"
 #include "CoreSystems/Events/Events.hh"
+#include "CoreSystems/Layers/Layer.hh"
 
 /* --------- Client Point ------------------- */
 
