@@ -6,18 +6,17 @@
 
 extern Espert::Application *Espert::createAppInstance();
 
-int main(int argc, char **argv)
-{
-    auto context = Espert::ApplicationContext::create();
-    Espert::Application *app_instance = Espert::createAppInstance();
+int main(int argc, char **argv) {
+  auto context                      = Espert::ApplicationContext::create();
+  Espert::Application *app_instance = Espert::createAppInstance();
 
-    /* running */
-    {
-        app_instance->set_context(std::move(context));
-        app_instance->run();
-    }
+  /* running */
+  {
+    app_instance->set_context(std::move(context));
+    app_instance->run();
+  }
 
-    delete app_instance;
+  delete app_instance;
 }
 
-#endif  // ESPERT_CORESYSTEMS_CLIENTPOINT_HH_
+#endif // ESPERT_CORESYSTEMS_CLIENTPOINT_HH_

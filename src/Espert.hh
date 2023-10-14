@@ -17,4 +17,4 @@
 
 /* ------------------------------------------ */
 
-#endif  // ESPERT_ESPERT_HH_
+#endif // ESPERT_ESPERT_HH_

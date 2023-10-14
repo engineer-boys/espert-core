@@ -3,24 +3,22 @@
 
 #include "esppch.hh"
 
-namespace Espert
-{
-    class ApplicationContext
-    {
-    private:
-        static bool _s_is_exist;
+namespace Espert {
+class ApplicationContext {
+  private:
+  static bool _s_is_exist;
 
-    private:
-        std::unique_ptr<Logger> _m_logger;
+  private:
+  std::unique_ptr<Logger> _m_logger;
 
-        ApplicationContext();
+  ApplicationContext();
 
-    public:
-        ~ApplicationContext();
+  public:
+  ~ApplicationContext();
 
-        static std::unique_ptr<ApplicationContext> create();
-    };
+  static std::unique_ptr<ApplicationContext> create();
+};
 
 } // namespace Espert
 
-#endif  // ESPERT_CORESYSTEMS_APPLICATIONCONTEXT_HH_
+#endif // ESPERT_CORESYSTEMS_APPLICATIONCONTEXT_HH_
