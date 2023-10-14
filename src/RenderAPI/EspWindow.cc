@@ -1,7 +1,5 @@
 #include "EspWindow.hh"
-#include "CoreSystems/Events/KeyEvent.h"
-#include "CoreSystems/Events/MouseEvent.h"
-#include "CoreSystems/Events/WindowEvent.h"
+#include "Events/Events.hh"
 
 namespace esp
 {
@@ -36,7 +34,7 @@ namespace esp
         return window;
     }
 
-    void EspWindow::on_update()
+    void EspWindow::update()
     {
         glfwPollEvents();
     }
@@ -164,4 +162,11 @@ namespace esp
 			});
 	}
 
+	void EspWindow::createWindowSurface(VkInstance instance, VkSurfaceKHR* surface)
+	{
+		if (glfwCreateWindowSurface(instance, _m_window, nullptr, surface) != VK_SUCCESS)
+		{
+			throw std::runtime_error("failed to create window surface");
+		}
+	}
 }  // namespace Espert

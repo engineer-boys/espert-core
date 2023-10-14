@@ -3,7 +3,11 @@
 
 #include "esppch.hh"
 #include "CoreSystems/Events/Event.hh"
+
+// libs
+#define GLFW_INCLUDE_VULKAN
 #include "GLFW/glfw3.h"
+#include "volk.h"
 
 namespace esp
 {
@@ -49,9 +53,19 @@ namespace esp
 
         inline unsigned int get_width() { return _m_data.m_width; }
         inline unsigned int get_height() { return _m_data.m_height; }
+		inline VkExtent2D get_extent() const
+		{
+			return
+			{
+				static_cast<uint32_t>(_m_data.m_height),
+				static_cast<uint32_t>(_m_data.m_height)
+			};
+		}
         inline void set_events_manager_fun(const WindowData::EventManagerFun &callback) { _m_data.m_events_manager_fun = callback; }
 
         static std::unique_ptr<EspWindow> create(const WindowData &data);
+
+		void createWindowSurface(VkInstance instance, VkSurfaceKHR* surface);
     };
 } // namespace Espert
 
