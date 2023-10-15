@@ -4,7 +4,6 @@
 #include "RenderAPI/EspBuffer.hh"
 
 // libs
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include "glm/glm.hpp"
 
 namespace esp
@@ -45,7 +44,7 @@ namespace esp
 		std::unique_ptr<EspBuffer> m_vertex_buffer;
 		uint32_t m_vertex_count;
 
-		bool m_has_index_buffer{ false};
+		bool m_has_index_buffer{false};
 		std::unique_ptr<EspBuffer> m_index_buffer;
 		uint32_t m_index_count;
 
