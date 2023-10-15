@@ -3,6 +3,7 @@
 namespace esp
 {
 	EspRenderer* EspRenderer::s_instance = nullptr;
+	std::unordered_map<TagComponent::TAG, EspRenderSystem&> EspRenderer::render_systems{};
 
 	EspRenderer::EspRenderer(EspWindow& window) : m_device{ window}
 	{
@@ -27,6 +28,11 @@ namespace esp
 
 		ESP_CORE_INFO("Renderer created");
 		return renderer;
+	}
+
+	void EspRenderer::add_render_system(TagComponent::TAG tag, EspRenderSystem& system)
+	{
+		render_systems.insert({tag, system});
 	}
 
 	void EspRenderer::on_window_resized()
