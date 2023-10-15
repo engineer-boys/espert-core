@@ -1,7 +1,7 @@
 #ifndef ESP_RENDERER_H_
 #define ESP_RENDERER_H_
 
-#include "CoreSystems/EspWindow.hh"
+#include "Core/EspWindow.hh"
 #include "EspDevice.hh"
 #include "EspSwapChain.hh"
 

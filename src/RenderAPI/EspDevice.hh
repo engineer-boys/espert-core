@@ -1,7 +1,7 @@
 #ifndef RENDERER_ESP_DEVICE_H_
 #define RENDERER_ESP_DEVICE_H_
 
-#include "CoreSystems/EspWindow.hh"
+#include "Core/EspWindow.hh"
 
 // std
 #include <string>

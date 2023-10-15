@@ -1,5 +1,5 @@
-#ifndef ESPERT_CORESYSTEMS_WINDOWEVENT_H_
-#define ESPERT_CORESYSTEMS_WINDOWEVENT_H_
+#ifndef ESPERT_CORE_WINDOWEVENT_H_
+#define ESPERT_CORE_WINDOWEVENT_H_
 
 #include "Event.hh"
 
@@ -32,4 +32,4 @@ namespace esp
 
 } // namespace Espert
 
-#endif  // ESPERT_CORESYSTEMS_WINDOWEVENT_H_
+#endif  // ESPERT_CORE_WINDOWEVENT_H_

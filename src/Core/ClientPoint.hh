@@ -1,5 +1,5 @@
-#ifndef ESPERT_CORESYSTEMS_CLIENTPOINT_HH_
-#define ESPERT_CORESYSTEMS_CLIENTPOINT_HH_
+#ifndef ESPERT_CORE_CLIENTPOINT_HH_
+#define ESPERT_CORE_CLIENTPOINT_HH_
 
 #include "Application.hh"
 #include "ApplicationContext.hh"
@@ -20,4 +20,4 @@ int main(int argc, char **argv)
     delete app_instance;
 }
 
-#endif  // ESPERT_CORESYSTEMS_CLIENTPOINT_HH_
+#endif  // ESPERT_CORE_CLIENTPOINT_HH_

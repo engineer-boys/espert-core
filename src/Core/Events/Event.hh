@@ -1,5 +1,5 @@
-#ifndef ESPERT_CORESYSTEMS_EVENT_HH_
-#define ESPERT_CORESYSTEMS_EVENT_HH_
+#ifndef ESPERT_CORE_EVENT_HH_
+#define ESPERT_CORE_EVENT_HH_
 
 #include "esppch.hh"
 
@@ -71,4 +71,4 @@ namespace esp
 #define EVENT_CLASS_TYPE(type) \
     virtual int get_type() const override { return type; }
 
-#endif  // ESPERT_CORESYSTEMS_EVENT_HH_
+#endif  // ESPERT_CORE_EVENT_HH_

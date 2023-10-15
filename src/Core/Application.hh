@@ -1,5 +1,5 @@
-#ifndef ESPERT_CORESYSTEMS_APPLICATION_HH_
-#define ESPERT_CORESYSTEMS_APPLICATION_HH_
+#ifndef ESPERT_CORE_APPLICATION_HH_
+#define ESPERT_CORE_APPLICATION_HH_
 
 #include "esppch.hh"
 #include "ApplicationContext.hh"
@@ -44,4 +44,4 @@ namespace esp
 
 } // namespace Espert
 
-#endif  // ESPERT_CORESYSTEMS_APPLICATION_HH_
+#endif  // ESPERT_CORE_APPLICATION_HH_

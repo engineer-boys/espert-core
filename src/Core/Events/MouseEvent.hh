@@ -1,5 +1,5 @@
-#ifndef ESPERT_CORESYSTEMS_MOUSEEVENT_H_
-#define ESPERT_CORESYSTEMS_MOUSEEVENT_H_
+#ifndef ESPERT_CORE_MOUSEEVENT_H_
+#define ESPERT_CORE_MOUSEEVENT_H_
 
 #include "Event.hh"
 
@@ -67,4 +67,4 @@ namespace esp
     };
 } // namespace Espert
 
-#endif  // ESPERT_CORESYSTEMS_MOUSEEVENT_H_
+#endif  // ESPERT_CORE_MOUSEEVENT_H_

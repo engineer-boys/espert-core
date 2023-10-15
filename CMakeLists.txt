@@ -16,7 +16,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/src)
-include_directories(${PROJECT_SOURCE_DIR}/src/CoreSystems)
+include_directories(${PROJECT_SOURCE_DIR}/src/Core)
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/esppch.hh)
 

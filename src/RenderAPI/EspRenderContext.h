@@ -8,9 +8,9 @@ namespace esp
 	struct EspRenderContext
 	{
 		EspWindow& m_window;
-		EspDevice& m_device;
-		EspSwapChain& m_swap_chain;
-		VkCommandBuffer m_command_buffer; //TODO: add EspCommandBuffer class
+		//EspDevice& m_device;
+		//EspSwapChain& m_swap_chain;
+		//VkCommandBuffer m_command_buffer; //TODO: add EspCommandBuffer class
 		// EspScene& scene;
 		// EspCamera& camera
 

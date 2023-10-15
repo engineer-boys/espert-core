@@ -1,5 +1,5 @@
-#ifndef ESPERT_CORESYSTEMS_LAYERS_LAYERSTACK_HH_
-#define ESPERT_CORESYSTEMS_LAYERS_LAYERSTACK_HH_
+#ifndef ESPERT_CORE_LAYERS_LAYERSTACK_HH_
+#define ESPERT_CORE_LAYERS_LAYERSTACK_HH_
 
 #include "esppch.hh"
 #include "Layer.hh"
@@ -28,4 +28,4 @@ namespace esp
 
 } // namespace Espert
 
-#endif  // ESPERT_CORESYSTEMS_LAYERS_LAYERSTACK_HH_
+#endif  // ESPERT_CORE_LAYERS_LAYERSTACK_HH_

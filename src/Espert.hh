@@ -3,17 +3,17 @@
 
 /* In this header file are all needed headers */
 /* ------------------------------------------ */
-#include "CoreSystems/Core.hh"
+#include "Core/Core.hh"
 
-#include "CoreSystems/Application.hh"
-#include "CoreSystems/Logger.hh"
+#include "Core/Application.hh"
+#include "Core/Logger.hh"
 
-#include "CoreSystems/Layers/Layer.hh"
-#include "CoreSystems/Events/Events.hh"
+#include "Core/Layers/Layer.hh"
+#include "Core/Events/Events.hh"
 
 /* --------- Client Point ------------------- */
 
-#include "CoreSystems/ClientPoint.hh"
+#include "Core/ClientPoint.hh"
 
 /* ------------------------------------------ */
 

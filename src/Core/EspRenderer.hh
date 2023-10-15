@@ -2,6 +2,7 @@
 #define RENDERER_RENDERER_H_
 
 #include "RenderAPI/EspRenderScheduler.hh"
+#include "Scene/Components/Components.hh"
 
 namespace esp
 {
@@ -15,6 +16,8 @@ namespace esp
 
 		EspDevice m_device;
 		std::unique_ptr<EspRenderScheduler> m_render_scheduler;
+
+		//using RenderSystems = std::unordered_map<TagComponent::TAG, system>;
 
 		EspRenderer(EspWindow& window);
 

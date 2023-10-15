@@ -16,7 +16,7 @@
 #include <unordered_set>
 
 // espert
-#include "CoreSystems/Logger.hh"
-#include "CoreSystems/Core.hh"
+#include "Core/Logger.hh"
+#include "Core/Core.hh"
 
 #endif  // ESPERT_ESPPCH_HH_

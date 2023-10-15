@@ -1,5 +1,5 @@
-#ifndef ESPERT_CORESYSTEMS_KEYEVENT_H_
-#define ESPERT_CORESYSTEMS_KEYEVENT_H_
+#ifndef ESPERT_CORE_KEYEVENT_H_
+#define ESPERT_CORE_KEYEVENT_H_
 
 #include "Event.hh"
 
@@ -40,4 +40,4 @@ namespace esp
     };
 } // namespace Espert
 
-#endif  // ESPERT_CORESYSTEMS_KEYEVENT_H_
+#endif  // ESPERT_CORE_KEYEVENT_H_

@@ -1,5 +1,5 @@
-#ifndef ESPERT_CORESYSTEMS_LOGGER_HH_
-#define ESPERT_CORESYSTEMS_LOGGER_HH_
+#ifndef ESPERT_CORE_LOGGER_HH_
+#define ESPERT_CORE_LOGGER_HH_
 
 #include <memory>
 #include <spdlog/spdlog.h>
@@ -59,4 +59,4 @@ namespace esp
 #define ESP_CRITICAL(...) esp::Logger::get_client_logger()->critical(__VA_ARGS__)
 #endif
 
-#endif  // ESPERT_CORESYSTEMS_LOGGER_HH_
+#endif  // ESPERT_CORE_LOGGER_HH_
