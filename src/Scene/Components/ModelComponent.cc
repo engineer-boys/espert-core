@@ -3,7 +3,7 @@
 // libs
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "external/tinyobjloader/tiny_obj_loader.h"
-#include <glm/gtx/hash.hpp>
+#include "external/glm/glm/gtx/hash.hpp"
 
 // std
 #include <cassert>
