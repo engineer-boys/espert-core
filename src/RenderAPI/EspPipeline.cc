@@ -13,6 +13,56 @@
 
 namespace esp
 {
+	EspPipeline::Builder& EspPipeline::Builder::set_vert_shader_path(const std::string& path)
+	{
+		m_vert_shader_path = path;
+		return *this;
+	}
+
+	EspPipeline::Builder& EspPipeline::Builder::set_frag_shader_path(const std::string& path)
+	{
+		m_frag_shader_path = path;
+		return *this;
+	}
+
+	std::unique_ptr<EspPipelineLayout> EspPipeline::Builder::build_pipeline_layout(
+		PipelineConfigInfo& pipeline_config)
+	{
+		VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo{};
+		pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+		pipelineLayoutCreateInfo.setLayoutCount = 0;
+		pipelineLayoutCreateInfo.pSetLayouts = nullptr;
+		pipelineLayoutCreateInfo.pushConstantRangeCount = 0;
+		pipelineLayoutCreateInfo.pPushConstantRanges = nullptr;
+
+		VkPipelineLayout pipeline_layout{};
+		if (vkCreatePipelineLayout(m_device.get_device(), &pipelineLayoutCreateInfo, nullptr, &pipeline_layout) != VK_SUCCESS)
+		{
+			ESP_CORE_ERROR("Failed to create pipeline layout");
+			throw std::runtime_error("Failed to create pipeline layout");
+		}
+
+		pipeline_config.m_pipeline_layout = pipeline_layout;
+
+		return std::make_unique<EspPipelineLayout>(pipeline_layout);
+	}
+
+	std::unique_ptr<EspPipeline> EspPipeline::Builder::build_pipeline(
+		esp::PipelineConfigInfo& pipeline_config,
+		VkRenderPass render_pass)
+	{
+		assert(pipeline_config.m_pipeline_layout != nullptr
+			&& "Can't create pipeline before pipeline layout");
+
+		pipeline_config.m_render_pass = render_pass;
+
+		return std::make_unique<EspPipeline>(
+			m_device,
+			m_vert_shader_path,
+			m_frag_shader_path,
+			pipeline_config);
+	}
+
 	EspPipeline::EspPipeline(
 		EspDevice& device,
 		const std::string& shader_vert_path,
@@ -144,7 +194,7 @@ namespace esp
 		vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_graphics_pipeline);
 	}
 
-	void EspPipeline::create_default_pipeline_config_info(PipelineConfigInfo& config_info)
+	void EspPipeline::default_pipeline_config_info(PipelineConfigInfo& config_info)
 	{
 		//inputAssemblyInfo - defines how the assembler is going to proceed vertices
 		config_info.m_input_assembly_info.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
@@ -226,7 +276,7 @@ namespace esp
 	}
 
 	// this method requires rendering solid objects first and then semi-transparent objects from furthest to closest
-	void EspPipeline::enableAlphaBlending(PipelineConfigInfo& config_info)
+	void EspPipeline::enable_alpha_blending(PipelineConfigInfo& config_info)
 	{
 		//colorBlend - controls how we combine colors in our framebuffer
 		config_info.m_color_blend_attachment.colorWriteMask =

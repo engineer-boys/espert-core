@@ -64,9 +64,7 @@ namespace esp
 			VkDescriptorPoolCreateFlags m_pool_flags = 0;
 
 		 public:
-			Builder(EspDevice& device) : m_device{ device }
-			{
-			}
+			Builder(EspDevice& device) : m_device{device} {}
 
 			Builder& add_pool_size(VkDescriptorType descriptor_type, uint32_t count);
 			Builder& set_pool_flags(VkDescriptorPoolCreateFlags flags);

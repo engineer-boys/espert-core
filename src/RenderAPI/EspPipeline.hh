@@ -32,8 +32,40 @@ namespace esp
 		uint32_t subpass = 0;
 	};
 
+	class EspPipelineLayout
+	{
+	 private:
+		VkPipelineLayout m_pipeline_layout;
+
+	 public:
+		EspPipelineLayout(VkPipelineLayout pipeline_layout) : m_pipeline_layout{pipeline_layout} {}
+
+		EspPipelineLayout(const EspPipelineLayout&) = delete;
+		EspPipelineLayout& operator=(const EspPipelineLayout&) = delete;
+
+		inline VkPipelineLayout& get_layout() { return m_pipeline_layout; }
+	};
+
 	class EspPipeline
 	{
+	 public:
+		class Builder
+		{
+		 private:
+			EspDevice& m_device;
+
+			std::string m_vert_shader_path;
+			std::string m_frag_shader_path;
+		 public:
+
+			Builder(EspDevice& device) : m_device{device} {}
+
+			Builder& set_vert_shader_path(const std::string& path);
+			Builder& set_frag_shader_path(const std::string& path);
+			std::unique_ptr<EspPipelineLayout> build_pipeline_layout(PipelineConfigInfo& pipeline_config); //TODO: add descriptor set layout
+			std::unique_ptr<EspPipeline> build_pipeline(PipelineConfigInfo& pipeline_config, VkRenderPass render_pass);
+		};
+
 	 private:
 		EspDevice& m_device;
 		VkPipeline m_graphics_pipeline;
@@ -53,8 +85,8 @@ namespace esp
 
 		void bind(VkCommandBuffer command_buffer);
 
-		static void create_default_pipeline_config_info(PipelineConfigInfo& config_info);
-		static void enableAlphaBlending(PipelineConfigInfo& config_info);
+		static void default_pipeline_config_info(PipelineConfigInfo& config_info);
+		static void enable_alpha_blending(PipelineConfigInfo& config_info);
 
 	 private:
 		static std::vector<char> read_file(const std::string& file_path);
