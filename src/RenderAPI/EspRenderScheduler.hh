@@ -17,7 +17,7 @@ namespace esp
 	 private:
 		EspWindow& m_window;
 		EspDevice& m_device;
-		std::unique_ptr<EspSwapChain> m_esp_swap_chain;
+		std::unique_ptr<EspSwapChain> m_swap_chain;
 		std::vector<VkCommandBuffer> m_command_buffers;
 
 		uint32_t m_current_image_index;
@@ -48,8 +48,8 @@ namespace esp
 		VkCommandBuffer begin_frame();
 		void end_frame();
 
-		inline VkRenderPass get_swap_chain_render_pass() const { return m_esp_swap_chain->get_render_pass(); };
-		inline float get_aspect_ratio() const { return m_esp_swap_chain->get_swap_chain_extent_aspect_ratio(); };
+		inline VkRenderPass get_swap_chain_render_pass() const { return m_swap_chain->get_render_pass(); };
+		inline float get_aspect_ratio() const { return m_swap_chain->get_swap_chain_extent_aspect_ratio(); };
 		void begin_swap_chain_render_pass(VkCommandBuffer command_buffer);
 		void end_swap_chain_render_pass(VkCommandBuffer command_buffer);
 

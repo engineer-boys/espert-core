@@ -22,7 +22,7 @@ namespace esp
 	{
 		assert(!m_frame_started && "Cannot call begin_frame while frame already in progress");
 
-		auto result = m_esp_swap_chain->acquire_next_image(&m_current_image_index);
+		auto result = m_swap_chain->acquire_next_image(&m_current_image_index);
 
 		//window has changed in such a way that is no longer compatible with the swap chain (example: resizing)
 		if (result == VK_ERROR_OUT_OF_DATE_KHR)
@@ -63,7 +63,7 @@ namespace esp
 			throw std::runtime_error("Failed to record command buffer");
 		}
 
-		auto result = m_esp_swap_chain->submit_command_buffers(&command_buffer, &m_current_image_index);
+		auto result = m_swap_chain->submit_command_buffers(&command_buffer, &m_current_image_index);
 		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
 		{
 			recreate_swap_chain();
@@ -86,11 +86,11 @@ namespace esp
 
 		VkRenderPassBeginInfo render_pass_info{};
 		render_pass_info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-		render_pass_info.renderPass = m_esp_swap_chain->get_render_pass();
-		render_pass_info.framebuffer = m_esp_swap_chain->get_frame_buffer(m_current_image_index);
+		render_pass_info.renderPass = m_swap_chain->get_render_pass();
+		render_pass_info.framebuffer = m_swap_chain->get_frame_buffer(m_current_image_index);
 		//renderArea - area where shader loads and stores will take place
 		render_pass_info.renderArea.offset = { 0, 0 };
-		render_pass_info.renderArea.extent = m_esp_swap_chain->get_swap_chain_extent();
+		render_pass_info.renderArea.extent = m_swap_chain->get_swap_chain_extent();
 
 		//clear_values - values the frame buffer will use to clear itself
 		std::array<VkClearValue, 2> clear_values{};
@@ -105,11 +105,11 @@ namespace esp
 		VkViewport viewport{};
 		viewport.x = 0.0f;
 		viewport.y = 0.0f;
-		viewport.width = static_cast<float>(m_esp_swap_chain->get_swap_chain_extent().width);
-		viewport.height = static_cast<float>(m_esp_swap_chain->get_swap_chain_extent().height);
+		viewport.width = static_cast<float>(m_swap_chain->get_swap_chain_extent().width);
+		viewport.height = static_cast<float>(m_swap_chain->get_swap_chain_extent().height);
 		viewport.minDepth = 0.0f;
 		viewport.maxDepth = 1.0f;
-		VkRect2D scissor{{ 0, 0 }, m_esp_swap_chain->get_swap_chain_extent() };
+		VkRect2D scissor{{ 0, 0 }, m_swap_chain->get_swap_chain_extent() };
 		vkCmdSetViewport(command_buffer, 0, 1, &viewport);
 		vkCmdSetScissor(command_buffer, 0, 1, &scissor);
 	}
@@ -163,16 +163,16 @@ namespace esp
 
 		vkDeviceWaitIdle(m_device.get_device()); //wait until the current swap chain is not being used
 
-		if (m_esp_swap_chain == nullptr)
+		if (m_swap_chain == nullptr)
 		{
-			m_esp_swap_chain = std::make_unique<EspSwapChain>(m_device, extent);
+			m_swap_chain = std::make_unique<EspSwapChain>(m_device, extent);
 		}
 		else
 		{
-			std::shared_ptr<EspSwapChain> old_swap_chain = std::move(m_esp_swap_chain);
-			m_esp_swap_chain = std::make_unique<EspSwapChain>(m_device, extent, old_swap_chain);
+			std::shared_ptr<EspSwapChain> old_swap_chain = std::move(m_swap_chain);
+			m_swap_chain = std::make_unique<EspSwapChain>(m_device, extent, old_swap_chain);
 
-			if (!old_swap_chain->compare_swap_chain_formats(*m_esp_swap_chain))
+			if (!old_swap_chain->compare_swap_chain_formats(*m_swap_chain))
 			{
 				ESP_CORE_ERROR("Swap chain image/depth format has changed");
 				throw std::runtime_error("Swap chain image/depth format has changed");

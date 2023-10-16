@@ -23,7 +23,7 @@ namespace esp
 		EspRenderSystem(const EspRenderSystem&) = delete;
 		EspRenderSystem& operator=(const EspRenderSystem&) = delete;
 
-		virtual void render(EspRenderContext& render_context) = 0;
+		virtual void render(EspRenderContext& context) = 0;
 	};
 }
 

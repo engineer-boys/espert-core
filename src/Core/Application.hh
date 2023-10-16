@@ -26,7 +26,6 @@ namespace esp
     private:
 		bool on_window_resized(WindowResizedEvent &e);
         bool on_window_closed(WindowClosedEvent &e);
-
     public:
         Application();
         virtual ~Application();
@@ -37,7 +36,10 @@ namespace esp
 
         void push_layer(Layer* layer);
         void push_overlayer(Layer* layer);
-    };
+
+	 private:
+		void add_base_render_systems();
+	};
 
     /* This function is defined by CLIENT */
     Application *createAppInstance();

@@ -1,4 +1,5 @@
 #include "Application.hh"
+#include "Systems/Render/MeshRenderSystem.hh"
 #include <ranges>
 
 namespace esp
@@ -17,6 +18,8 @@ namespace esp
 
     void Application::run()
     {
+		add_base_render_systems();
+
         while (_m_running)
         {
             for (auto layer : _m_layer_stack)
@@ -25,6 +28,10 @@ namespace esp
             }
 
             _m_window->update();
+
+			m_renderer->begin_scene();
+			//...//
+			m_renderer->end_scene();
         }
     }
 
@@ -35,9 +42,7 @@ namespace esp
 
 	bool Application::on_window_resized(WindowResizedEvent& e)
 	{
-		//TODO: send event to recreate swapchain
 		m_renderer->on_window_resized();
-		//
 		return true;
 	}
 
@@ -71,4 +76,10 @@ namespace esp
     {
         _m_layer_stack.push_overlayer(layer);
     }
+
+	void Application::add_base_render_systems()
+	{
+		MeshRenderSystem mesh_system{EspRenderer::get_render_context()};
+		EspRenderer::add_render_system("MESH", std::move(mesh_system));
+	}
 } // namespace Espert
