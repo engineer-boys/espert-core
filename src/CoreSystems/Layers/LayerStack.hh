@@ -4,8 +4,10 @@
 #include "Layer.hh"
 #include "esppch.hh"
 
-namespace Espert {
-class LayerStack {
+namespace Espert
+{
+class LayerStack
+{
   private:
   std::vector<Layer*> _m_layers;
   std::vector<Layer*>::iterator _m_head_of_normall_layers;

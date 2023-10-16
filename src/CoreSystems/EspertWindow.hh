@@ -5,10 +5,13 @@
 #include "GLFW/glfw3.h"
 #include "esppch.hh"
 
-namespace Espert {
-class EspertWindow {
+namespace Espert
+{
+class EspertWindow
+{
   public:
-  struct WindowData {
+  struct WindowData
+  {
     public:
     using EventManagerFun = std::function<void(Event&)>;
 
@@ -21,7 +24,9 @@ class EspertWindow {
     WindowData(const std::string title = "Espert widnow",
                unsigned int width = 1280, unsigned int height = 720) :
         title(title),
-        width(width), height(height) {}
+        width(width), height(height)
+    {
+    }
   };
 
   private:
@@ -45,7 +50,8 @@ class EspertWindow {
   inline unsigned int get_width() { return _m_data.width; }
   inline unsigned int get_height() { return _m_data.height; }
   inline void
-  set_events_manager_fun(const WindowData::EventManagerFun& callback) {
+  set_events_manager_fun(const WindowData::EventManagerFun& callback)
+  {
     _m_data.events_manager_fun = callback;
   }
 

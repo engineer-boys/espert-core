@@ -5,10 +5,13 @@
 
 #define SET_BIT(b) (1 << (b))
 
-namespace Espert {
-class Event {
+namespace Espert
+{
+class Event
+{
   public:
-  enum class EventSubtype {
+  enum class EventSubtype
+  {
     None,
     /* for window class */
     WindowClosed,
@@ -22,7 +25,8 @@ class Event {
     MouseScrolled
   };
 
-  enum EventType {
+  enum EventType
+  {
     None              = 0,
     EventTypeWindow   = SET_BIT(0),
     EventTypeInput    = SET_BIT(1),
@@ -42,8 +46,10 @@ class Event {
   inline bool is_type(EventType type) { return get_type() & type; }
 
   template<typename T>
-  static bool try_hanlder(Event& event, EventHandler<T> handler) {
-    if (event.get_subtype() == T::get_class_subtype()) {
+  static bool try_hanlder(Event& event, EventHandler<T> handler)
+  {
+    if (event.get_subtype() == T::get_class_subtype())
+    {
       event.handled = handler(*(T*)&event);
       return true;
     }
@@ -54,17 +60,20 @@ class Event {
 
 } // namespace Espert
 
-#define EVENT_CLASS_SUBTYPE(subtype)                                 \
-  static Espert::Event::EventSubtype get_class_subtype() {           \
-    return Espert::Event::EventSubtype::subtype;                     \
-  }                                                                  \
-  virtual Espert::Event::EventSubtype get_subtype() const override { \
-    return get_class_subtype();                                      \
+#define EVENT_CLASS_SUBTYPE(subtype)                               \
+  static Espert::Event::EventSubtype get_class_subtype()           \
+  {                                                                \
+    return Espert::Event::EventSubtype::subtype;                   \
+  }                                                                \
+  virtual Espert::Event::EventSubtype get_subtype() const override \
+  {                                                                \
+    return get_class_subtype();                                    \
   }
 
-#define EVENT_CLASS_TYPE(type)            \
-  virtual int get_type() const override { \
-    return type;                          \
+#define EVENT_CLASS_TYPE(type)          \
+  virtual int get_type() const override \
+  {                                     \
+    return type;                        \
   }
 
 #endif // ESPERT_CORESYSTEMS_EVENT_HH_
