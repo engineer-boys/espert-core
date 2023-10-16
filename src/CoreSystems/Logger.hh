@@ -4,8 +4,10 @@
 #include <memory>
 #include <spdlog/spdlog.h>
 
-namespace Espert {
-class Logger {
+namespace Espert
+{
+class Logger
+{
   private:
   static Logger* _s_instance;
 
@@ -20,10 +22,12 @@ class Logger {
   static std::unique_ptr<Logger> create();
 
   inline static Logger* get_instance() { return Logger::_s_instance; }
-  inline static std::shared_ptr<spdlog::logger>& get_core_logger() {
+  inline static std::shared_ptr<spdlog::logger>& get_core_logger()
+  {
     return Logger::_s_instance->_m_core_logger;
   }
-  inline static std::shared_ptr<spdlog::logger>& get_client_logger() {
+  inline static std::shared_ptr<spdlog::logger>& get_client_logger()
+  {
     return Logger::_s_instance->_m_client_logger;
   }
 };

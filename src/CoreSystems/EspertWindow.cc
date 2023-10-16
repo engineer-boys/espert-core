@@ -3,15 +3,19 @@
 #include "Events/MouseEvent.hh"
 #include "Events/WindowEvent.hh"
 
-namespace Espert {
-static void glfw_error_callback(int error, const char* description) {
+namespace Espert
+{
+static void glfw_error_callback(int error, const char* description)
+{
   ESP_CORE_ERROR("GLFW error ({0}) : {1}", errno, description);
 }
 
 bool EspertWindow::_s_is_exist = false;
 
-EspertWindow::EspertWindow(const WindowData& data) {
-  if (EspertWindow::_s_is_exist) {
+EspertWindow::EspertWindow(const WindowData& data)
+{
+  if (EspertWindow::_s_is_exist)
+  {
     throw std::runtime_error("The Espert's window already exists!");
   }
   EspertWindow::_s_is_exist = true;
@@ -21,25 +25,30 @@ EspertWindow::EspertWindow(const WindowData& data) {
                 _m_data.height, _m_data.title);
 }
 
-EspertWindow::~EspertWindow() {
+EspertWindow::~EspertWindow()
+{
   EspertWindow::_s_is_exist = false;
   destroy();
 }
 
-std::unique_ptr<EspertWindow> EspertWindow::create(const WindowData& data) {
+std::unique_ptr<EspertWindow> EspertWindow::create(const WindowData& data)
+{
   std::unique_ptr<EspertWindow> window{ new EspertWindow(data) };
   return window;
 }
 
-void EspertWindow::update() {
+void EspertWindow::update()
+{
   glfwPollEvents();
 }
 
-void EspertWindow::init(const WindowData& data) {
+void EspertWindow::init(const WindowData& data)
+{
   _m_data = data;
 
   int success = glfwInit();
-  if (success == GLFW_FALSE) {
+  if (success == GLFW_FALSE)
+  {
     ESP_CORE_ERROR("GLFW cannot be init");
     throw std::runtime_error("GLFW cannot be init");
   }
@@ -50,7 +59,8 @@ void EspertWindow::init(const WindowData& data) {
 
   _m_window = glfwCreateWindow(_m_data.width, _m_data.height,
                                _m_data.title.c_str(), nullptr, nullptr);
-  if (_m_window == NULL) {
+  if (_m_window == NULL)
+  {
     ESP_CORE_ERROR("GLFW cannot create a window instance");
     throw std::runtime_error("GLFW cannot create a window instance");
   }
@@ -58,42 +68,50 @@ void EspertWindow::init(const WindowData& data) {
 
   /* set callbacks for glfw events */
   {
-    glfwSetWindowSizeCallback(
-        _m_window, [](GLFWwindow* window, int width, int height) {
-          WindowData* data =
-              static_cast<WindowData*>(glfwGetWindowUserPointer(window));
-          data->width  = width;
-          data->height = height;
+    glfwSetWindowSizeCallback(_m_window,
+                              [](GLFWwindow* window, int width, int height)
+                              {
+                                WindowData* data = static_cast<WindowData*>(
+                                    glfwGetWindowUserPointer(window));
+                                data->width  = width;
+                                data->height = height;
 
-          WindowResizedEvent event(width, height);
-          data->events_manager_fun(event);
-        });
+                                WindowResizedEvent event(width, height);
+                                data->events_manager_fun(event);
+                              });
 
-    glfwSetWindowCloseCallback(_m_window, [](GLFWwindow* window) {
-      WindowData* data =
-          static_cast<WindowData*>(glfwGetWindowUserPointer(window));
-      WindowClosedEvent event;
-      data->events_manager_fun(event);
-    });
+    glfwSetWindowCloseCallback(_m_window,
+                               [](GLFWwindow* window)
+                               {
+                                 WindowData* data = static_cast<WindowData*>(
+                                     glfwGetWindowUserPointer(window));
+                                 WindowClosedEvent event;
+                                 data->events_manager_fun(event);
+                               });
 
     glfwSetKeyCallback(
         _m_window,
-        [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+        [](GLFWwindow* window, int key, int scancode, int action, int mods)
+        {
           WindowData* data =
               static_cast<WindowData*>(glfwGetWindowUserPointer(window));
 
-          switch (action) {
-          case GLFW_PRESS: {
+          switch (action)
+          {
+          case GLFW_PRESS:
+          {
             KeyPressedEvent event(key, false);
             data->events_manager_fun(event);
             break;
           }
-          case GLFW_RELEASE: {
+          case GLFW_RELEASE:
+          {
             KeyReleasedEvent event(key);
             data->events_manager_fun(event);
             break;
           }
-          case GLFW_REPEAT: {
+          case GLFW_REPEAT:
+          {
             KeyPressedEvent event(key, true);
             data->events_manager_fun(event);
             break;
@@ -102,17 +120,22 @@ void EspertWindow::init(const WindowData& data) {
         });
 
     glfwSetMouseButtonCallback(
-        _m_window, [](GLFWwindow* window, int button, int action, int mods) {
+        _m_window,
+        [](GLFWwindow* window, int button, int action, int mods)
+        {
           WindowData* data =
               static_cast<WindowData*>(glfwGetWindowUserPointer(window));
 
-          switch (action) {
-          case GLFW_PRESS: {
+          switch (action)
+          {
+          case GLFW_PRESS:
+          {
             MouseButtonPressedEvent event(button);
             data->events_manager_fun(event);
             break;
           }
-          case GLFW_RELEASE: {
+          case GLFW_RELEASE:
+          {
             MouseButtonReleasedEvent event(button);
             data->events_manager_fun(event);
             break;
@@ -121,7 +144,9 @@ void EspertWindow::init(const WindowData& data) {
         });
 
     glfwSetScrollCallback(
-        _m_window, [](GLFWwindow* window, double x_offset, double y_offset) {
+        _m_window,
+        [](GLFWwindow* window, double x_offset, double y_offset)
+        {
           WindowData* data =
               static_cast<WindowData*>(glfwGetWindowUserPointer(window));
 
@@ -130,7 +155,9 @@ void EspertWindow::init(const WindowData& data) {
         });
 
     glfwSetCursorPosCallback(
-        _m_window, [](GLFWwindow* window, double x_pos, double y_pos) {
+        _m_window,
+        [](GLFWwindow* window, double x_pos, double y_pos)
+        {
           WindowData* data =
               static_cast<WindowData*>(glfwGetWindowUserPointer(window));
 
@@ -140,7 +167,8 @@ void EspertWindow::init(const WindowData& data) {
   }
 }
 
-void EspertWindow::destroy() {
+void EspertWindow::destroy()
+{
   glfwDestroyWindow(_m_window);
   glfwTerminate();
 }

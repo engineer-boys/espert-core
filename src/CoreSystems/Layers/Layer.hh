@@ -3,8 +3,10 @@
 
 #include "../Events/Event.hh"
 
-namespace Espert {
-class Layer {
+namespace Espert
+{
+class Layer
+{
   public:
   virtual ~Layer() {}
 

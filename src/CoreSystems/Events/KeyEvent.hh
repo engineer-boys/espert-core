@@ -3,8 +3,10 @@
 
 #include "Event.hh"
 
-namespace Espert {
-class KeyEvent : public Event {
+namespace Espert
+{
+class KeyEvent : public Event
+{
   protected:
   int _m_key_code;
 
@@ -16,20 +18,24 @@ class KeyEvent : public Event {
   EVENT_CLASS_TYPE(EventType::EventTypeInput | EventType::EventTypeKeyboard)
 };
 
-class KeyPressedEvent : public KeyEvent {
+class KeyPressedEvent : public KeyEvent
+{
   private:
   bool _m_is_repeated;
 
   public:
   KeyPressedEvent(int code, bool is_repeated) :
-      KeyEvent(code), _m_is_repeated(is_repeated) {}
+      KeyEvent(code), _m_is_repeated(is_repeated)
+  {
+  }
 
   inline bool is_repeated() const { return _m_is_repeated; }
 
   EVENT_CLASS_SUBTYPE(KeyPressed)
 };
 
-class KeyReleasedEvent : public KeyEvent {
+class KeyReleasedEvent : public KeyEvent
+{
   public:
   KeyReleasedEvent(int code) : KeyEvent(code) {}
 

@@ -7,8 +7,10 @@
 #include "Layers/Layer.hh"
 #include "Layers/LayerStack.hh"
 
-namespace Espert {
-class Application {
+namespace Espert
+{
+class Application
+{
   private:
   std::unique_ptr<ApplicationContext> _m_context;
   std::unique_ptr<EspertWindow> _m_window;

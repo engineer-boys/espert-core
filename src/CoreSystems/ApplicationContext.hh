@@ -3,8 +3,10 @@
 
 #include "esppch.hh"
 
-namespace Espert {
-class ApplicationContext {
+namespace Espert
+{
+class ApplicationContext
+{
   private:
   static bool _s_is_exist;
 

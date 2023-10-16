@@ -2,22 +2,27 @@
 
 #include "Logger.hh"
 
-namespace Espert {
+namespace Espert
+{
 Logger* Logger::_s_instance = nullptr;
 
-Logger::Logger() {
-  if (Logger::_s_instance != nullptr) {
+Logger::Logger()
+{
+  if (Logger::_s_instance != nullptr)
+  {
     throw std::runtime_error("The logger instance already exists!");
   }
 
   Logger::_s_instance = this;
 }
 
-Logger::~Logger() {
+Logger::~Logger()
+{
   Logger::_s_instance = nullptr;
 }
 
-std::unique_ptr<Logger> Logger::create() {
+std::unique_ptr<Logger> Logger::create()
+{
   /* create singleton */
   auto logger = std::unique_ptr<Logger>{ new Logger() };
 
