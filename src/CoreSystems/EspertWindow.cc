@@ -37,10 +37,7 @@ std::unique_ptr<EspertWindow> EspertWindow::create(const WindowData& data)
   return window;
 }
 
-void EspertWindow::update()
-{
-  glfwPollEvents();
-}
+void EspertWindow::update() { glfwPollEvents(); }
 
 void EspertWindow::init(const WindowData& data)
 {

@@ -16,10 +16,7 @@ Logger::Logger()
   Logger::_s_instance = this;
 }
 
-Logger::~Logger()
-{
-  Logger::_s_instance = nullptr;
-}
+Logger::~Logger() { Logger::_s_instance = nullptr; }
 
 std::unique_ptr<Logger> Logger::create()
 {
