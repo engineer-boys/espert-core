@@ -48,10 +48,7 @@ void Application::events_manager(Event& e)
   }
 }
 
-void Application::push_layer(Layer* layer)
-{
-  _m_layer_stack.push_layer(layer);
-}
+void Application::push_layer(Layer* layer) { _m_layer_stack.push_layer(layer); }
 
 void Application::push_overlayer(Layer* layer)
 {

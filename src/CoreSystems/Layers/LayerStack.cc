@@ -2,10 +2,7 @@
 
 namespace Espert
 {
-LayerStack::LayerStack()
-{
-  _m_head_of_normall_layers = _m_layers.begin();
-}
+LayerStack::LayerStack() { _m_head_of_normall_layers = _m_layers.begin(); }
 
 LayerStack::~LayerStack()
 {
@@ -21,10 +18,7 @@ void LayerStack::push_layer(Layer* layer)
       _m_layers.emplace(_m_head_of_normall_layers, layer);
 }
 
-void LayerStack::push_overlayer(Layer* layer)
-{
-  _m_layers.emplace_back(layer);
-}
+void LayerStack::push_overlayer(Layer* layer) { _m_layers.emplace_back(layer); }
 
 void LayerStack::pop_layer(Layer* layer)
 {
