@@ -137,3 +137,8 @@ option(SPDLOG_BUILD_EXAMPLE OFF)
 
 add_subdirectory(spdlog)
 set_property(TARGET spdlog PROPERTY FOLDER "External")
+
+# Catch2
+add_subdirectory(catch2)
+set_property(TARGET Catch2 PROPERTY FOLDER "External")
+set_property(TARGET Catch2WithMain PROPERTY FOLDER "External")

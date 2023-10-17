@@ -4,6 +4,8 @@ project(espert-core VERSION 0.0.1 LANGUAGES C CXX)
 
 set (CMAKE_CXX_STANDARD 20)
 
+option(ESP_BUILD_TESTS "Build the Espert-core test programs" OFF)
+
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cc)
 
 add_library(${PROJECT_NAME} STATIC
@@ -52,3 +54,16 @@ add_custom_target(
     DEPENDS ${SPIRV_BINARY_FILES}
 )
 add_dependencies(${PROJECT_NAME} shaders)
+
+############## Build tests #########################
+
+if (ESP_BUILD_TESTS)
+    file(GLOB_RECURSE TEST_SOURCES ${PROJECT_SOURCE_DIR}/tests/*.cc)
+    add_executable(tests ${TEST_SOURCES})
+    target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
+
+    list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/external/catch2/extras)
+    include(CTest)
+    include(Catch)
+    catch_discover_tests(tests)
+endif()
