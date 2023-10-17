@@ -1,9 +1,6 @@
 #ifndef COMPONENTS_TRANSFORM_COMPONENT_H_
 #define COMPONENTS_TRANSFORM_COMPONENT_H_
 
-// libs
-#include <glm/glm.hpp>
-
 namespace esp
 {
 	struct TransformComponent

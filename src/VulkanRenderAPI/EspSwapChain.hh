@@ -3,11 +3,6 @@
 
 #include "EspDevice.hh"
 
-//std
-#include <memory>
-#include <string>
-#include <vector>
-
 namespace esp
 {
 	class EspSwapChain

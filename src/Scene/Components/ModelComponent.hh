@@ -3,9 +3,6 @@
 
 #include "VulkanRenderAPI/EspBuffer.hh"
 
-// libs
-#include "glm/glm.hpp"
-
 namespace esp
 {
 	struct ModelComponent
