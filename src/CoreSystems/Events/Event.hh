@@ -70,10 +70,7 @@ class Event
     return get_class_subtype();                                    \
   }
 
-#define EVENT_CLASS_TYPE(type)          \
-  virtual int get_type() const override \
-  {                                     \
-    return type;                        \
-  }
+#define EVENT_CLASS_TYPE(type) \
+  virtual int get_type() const override { return type; }
 
 #endif // ESPERT_CORESYSTEMS_EVENT_HH_
