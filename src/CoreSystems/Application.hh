@@ -11,7 +11,7 @@ namespace Espert
 {
 class Application
 {
-  private:
+ private:
   std::unique_ptr<ApplicationContext> _m_context;
   std::unique_ptr<EspertWindow> _m_window;
 
@@ -19,10 +19,10 @@ class Application
 
   LayerStack _m_layer_stack;
 
-  private:
+ private:
   bool on_window_closed(WindowClosedEvent& e);
 
-  public:
+ public:
   Application();
   virtual ~Application();
 
