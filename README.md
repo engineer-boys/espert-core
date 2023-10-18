@@ -9,18 +9,39 @@ Required packages:
 - make
 - cmake
 - git
+- python3
 
-All code dependecies are managed within project. To download all external modules run in git repository:
+All code dependecies are managed within project. To download all external modules run inside git repository:
 ```
 git submodule update --init --recursive
 ```
 
-To setup project run configure script for your system (unix-configure.sh or windows-configure.bat).
+To configure project run:
+```
+python3 scripts/espert-core.py configure
+```
 
-To build project run make command inside build directory after configuring project. This will produce a static library inside build directory.
+To build project run:
+```
+python3 scripts/espert-core.py build
+```
+Running configure before build is not necessary as the script will take care of it.
 
-## Testing
+To run tests run:
+```
+python3 scripts/espert-core.py test
+```
+If no tests were run it means you have configured project without tests.
+To reconfigure project with tests and run them use:
+```
+python3 scripts/espert-core.py -c test
+```
 
-To enable tests run cmake with ESP_BUILD_TESTS set to ON. \
-Tests are automatically registered with cTest so you just need to run ctest command from build directory. \
-All tests should be placed in tests directory.
+## Formatting
+
+To format code use:
+```
+python3 scripts/code-format.py
+```
+By default it runs in src directory. You can change the directory by adding -p flag.\
+To fix coding style errors inplace add -i flag.
