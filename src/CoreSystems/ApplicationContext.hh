@@ -7,15 +7,15 @@ namespace Espert
 {
 class ApplicationContext
 {
-  private:
+ private:
   static bool _s_is_exist;
 
-  private:
+ private:
   std::unique_ptr<Logger> _m_logger;
 
   ApplicationContext();
 
-  public:
+ public:
   ~ApplicationContext();
 
   static std::unique_ptr<ApplicationContext> create();

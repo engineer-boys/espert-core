@@ -7,7 +7,7 @@ namespace Espert
 {
 class Layer
 {
-  public:
+ public:
   virtual ~Layer() {}
 
   virtual void attach() {}

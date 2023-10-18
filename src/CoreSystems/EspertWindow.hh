@@ -9,13 +9,13 @@ namespace Espert
 {
 class EspertWindow
 {
-  public:
+ public:
   struct WindowData
   {
-    public:
+   public:
     using EventManagerFun = std::function<void(Event&)>;
 
-    public:
+   public:
     std::string title;
     unsigned int width;
     unsigned int height;
@@ -29,20 +29,20 @@ class EspertWindow
     }
   };
 
-  private:
+ private:
   static bool _s_is_exist;
 
-  private:
+ private:
   WindowData _m_data;
   GLFWwindow* _m_window;
 
-  private:
+ private:
   void init(const WindowData& data);
   void destroy();
 
   EspertWindow(const WindowData& data);
 
-  public:
+ public:
   ~EspertWindow();
 
   void update();

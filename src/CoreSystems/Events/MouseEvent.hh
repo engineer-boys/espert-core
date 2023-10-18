@@ -7,11 +7,11 @@ namespace Espert
 {
 class MouseMovedEvent : public Event
 {
-  private:
+ private:
   float _m_x;
   float _m_y;
 
-  public:
+ public:
   MouseMovedEvent(float x, float y) : _m_x(x), _m_y(y) {}
 
   inline float get_x() const { return _m_x; }
@@ -23,11 +23,11 @@ class MouseMovedEvent : public Event
 
 class MouseScrolledEvent : public Event
 {
-  private:
+ private:
   float _m_offset_x;
   float _m_offset_y;
 
-  public:
+ public:
   MouseScrolledEvent(float o_x, float o_y) : _m_offset_x(o_x), _m_offset_y(o_y)
   {
   }
@@ -41,12 +41,12 @@ class MouseScrolledEvent : public Event
 
 class MouseButtonEvent : public Event
 {
-  protected:
+ protected:
   int _m_button_code;
 
   MouseButtonEvent(int code) : _m_button_code(code) {}
 
-  public:
+ public:
   inline int get_button_code() const { return _m_button_code; }
 
   EVENT_CLASS_TYPE(EventType::EventTypeInput | EventType::EventTypeMouse)
@@ -54,7 +54,7 @@ class MouseButtonEvent : public Event
 
 class MouseButtonPressedEvent : public MouseButtonEvent
 {
-  public:
+ public:
   MouseButtonPressedEvent(int code) : MouseButtonEvent(code) {}
 
   EVENT_CLASS_SUBTYPE(MouseButtonPressed)
@@ -62,7 +62,7 @@ class MouseButtonPressedEvent : public MouseButtonEvent
 
 class MouseButtonReleasedEvent : public MouseButtonEvent
 {
-  public:
+ public:
   MouseButtonReleasedEvent(int code) : MouseButtonEvent(code) {}
 
   EVENT_CLASS_SUBTYPE(MouseButtonReleased)

@@ -8,16 +8,16 @@ namespace Espert
 {
 class Logger
 {
-  private:
+ private:
   static Logger* _s_instance;
 
-  private:
+ private:
   std::shared_ptr<spdlog::logger> _m_core_logger;
   std::shared_ptr<spdlog::logger> _m_client_logger;
 
   Logger();
 
-  public:
+ public:
   ~Logger();
   static std::unique_ptr<Logger> create();
 

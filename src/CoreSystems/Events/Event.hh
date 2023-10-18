@@ -9,7 +9,7 @@ namespace Espert
 {
 class Event
 {
-  public:
+ public:
   enum class EventSubtype
   {
     None,
@@ -36,10 +36,10 @@ class Event
 
   template<typename T> using EventHandler = std::function<bool(T&)>;
 
-  public:
+ public:
   bool handled = false;
 
-  public:
+ public:
   virtual EventSubtype get_subtype() const = 0;
   virtual int get_type() const             = 0;
 

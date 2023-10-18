@@ -7,12 +7,12 @@ namespace Espert
 {
 class KeyEvent : public Event
 {
-  protected:
+ protected:
   int _m_key_code;
 
   KeyEvent(int code) : _m_key_code(code) {}
 
-  public:
+ public:
   inline int get_code() const { return _m_key_code; }
 
   EVENT_CLASS_TYPE(EventType::EventTypeInput | EventType::EventTypeKeyboard)
@@ -20,10 +20,10 @@ class KeyEvent : public Event
 
 class KeyPressedEvent : public KeyEvent
 {
-  private:
+ private:
   bool _m_is_repeated;
 
-  public:
+ public:
   KeyPressedEvent(int code, bool is_repeated) :
       KeyEvent(code), _m_is_repeated(is_repeated)
   {
@@ -36,7 +36,7 @@ class KeyPressedEvent : public KeyEvent
 
 class KeyReleasedEvent : public KeyEvent
 {
-  public:
+ public:
   KeyReleasedEvent(int code) : KeyEvent(code) {}
 
   EVENT_CLASS_SUBTYPE(KeyReleased)

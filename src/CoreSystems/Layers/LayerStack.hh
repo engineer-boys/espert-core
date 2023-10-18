@@ -8,11 +8,11 @@ namespace Espert
 {
 class LayerStack
 {
-  private:
+ private:
   std::vector<Layer*> _m_layers;
   std::vector<Layer*>::iterator _m_head_of_normall_layers;
 
-  public:
+ public:
   LayerStack();
   ~LayerStack();
 

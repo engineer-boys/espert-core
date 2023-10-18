@@ -7,7 +7,7 @@ namespace Espert
 {
 class WindowClosedEvent : public Event
 {
-  public:
+ public:
   WindowClosedEvent() {}
 
   EVENT_CLASS_TYPE(EventType::EventTypeWindow)
@@ -16,11 +16,11 @@ class WindowClosedEvent : public Event
 
 class WindowResizedEvent : public Event
 {
-  private:
+ private:
   unsigned int _m_width;
   unsigned int _m_height;
 
-  public:
+ public:
   WindowResizedEvent(unsigned int width, unsigned int height) :
       _m_width(width), _m_height(height)
   {
