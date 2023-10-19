@@ -17,8 +17,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 )
 
 include_directories(${PROJECT_SOURCE_DIR})
-include_directories(${PROJECT_SOURCE_DIR}/src)
-include_directories(${PROJECT_SOURCE_DIR}/src/Core)
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/esppch.hh)
 
@@ -44,7 +42,7 @@ foreach (GLSL ${GLSL_SOURCE_FILES})
     get_filename_component(FILE_NAME ${GLSL} NAME)
     get_filename_component(DIR_PATH ${GLSL} DIRECTORY)
     get_filename_component(FILE_DIR ${DIR_PATH} NAME)
-    set(SPIRV "${PROJECT_SOURCE_DIR}shaders/${FILE_DIR}/${FILE_NAME}.spv")
+    set(SPIRV "${PROJECT_SOURCE_DIR}/shaders/${FILE_DIR}/${FILE_NAME}.spv")
     add_custom_command(
         OUTPUT ${SPIRV}
         COMMAND $<TARGET_FILE:glslang-standalone> -V ${GLSL} -o ${SPIRV}
@@ -54,13 +52,12 @@ foreach (GLSL ${GLSL_SOURCE_FILES})
 endforeach (GLSL)
 
 add_custom_target(
-    shaders
+    core_shaders
     DEPENDS ${SPIRV_BINARY_FILES}
 )
-add_dependencies(${PROJECT_NAME} shaders)
+add_dependencies(${PROJECT_NAME} core_shaders)
 
 ############## Build tests #########################
-
 if (ESP_BUILD_TESTS)
     file(GLOB_RECURSE TEST_SOURCES ${PROJECT_SOURCE_DIR}/tests/*.cc)
     add_executable(tests ${TEST_SOURCES})
