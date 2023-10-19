@@ -10,7 +10,7 @@ namespace esp
 	{
 	  private:
 	  std::vector<Layer*> _m_layers;
-	  std::vector<Layer*>::iterator _m_head_of_normall_layers;
+	  std::vector<Layer*>::iterator _m_head_of_normal_layers;
 
 	  public:
 	  LayerStack();
