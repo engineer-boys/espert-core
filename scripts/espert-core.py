@@ -21,11 +21,6 @@ import sys
 GET_WSI_COMMAND = "loginctl show-session $(loginctl | grep $(whoami) | awk '{print $1}') -p Type | cut -d'=' -f2"
 CTEST_FILE = 'CTestTestfile.cmake'
 
-class Platform(Enum):
-    LINUX = 'linux'
-    MACOS = 'darwin',
-    WINDOWS = 'win32'
-
 
 class WSI(Enum):
     XCM = 'xcm'
@@ -42,10 +37,6 @@ class BuildType(Enum):
 class Compiler(Enum):
     GCC = 'gcc'
     CLANG = 'clang'
-
-
-def get_platform() -> Platform:
-    return Platform(sys.platform)
 
 
 def get_cpu_count() -> int:
@@ -71,12 +62,11 @@ def get_configure_command(args: Namespace) -> str:
         CMD += f' -DCMAKE_BUILD_TYPE=Release'
 
     if args.compiler == Compiler.GCC:
-        CMD += ' -DCMAKE_C_COMPILER=gcc-11 -DCMAKE_CXX_COMPILER=g++-11'
+        CMD += ' -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++'
     elif args.compiler == Compiler.CLANG:
-        CMD += ' -DCMAKE_C_COMPILER=clang-16 -DCMAKE_CXX_COMPILER=clang++-16'
+        CMD += ' -DCMAKE_C_COMPILER=clang-17 -DCMAKE_CXX_COMPILER=clang++-17'
 
-    platform = get_platform()
-    if platform == Platform.LINUX:
+    if sys.platform.startswith('linux'):
         if args.wsi is None:
             wsi = get_wsi_type()
         else:
