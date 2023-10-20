@@ -4,20 +4,20 @@
 #include "Application.hh"
 #include "ApplicationContext.hh"
 
-extern esp::Application *esp::createAppInstance();
+extern esp::Application* esp::createAppInstance();
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
-    auto context = esp::ApplicationContext::create();
-    esp::Application *app_instance = esp::createAppInstance();
+  auto context                   = esp::ApplicationContext::create();
+  esp::Application* app_instance = esp::createAppInstance();
 
-    /* running */
-    {
-        app_instance->set_context(std::move(context));
-        app_instance->run();
-    }
+  /* running */
+  {
+    app_instance->set_context(std::move(context));
+    app_instance->run();
+  }
 
-    delete app_instance;
+  delete app_instance;
 }
 
-#endif  // ESPERT_CORE_CLIENTPOINT_HH_
+#endif // ESPERT_CORE_CLIENTPOINT_HH_

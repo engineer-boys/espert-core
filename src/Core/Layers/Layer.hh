@@ -5,16 +5,16 @@
 
 namespace esp
 {
-	class Layer
-	{
-	  public:
-	  virtual ~Layer() {}
+  class Layer
+  {
+   public:
+    virtual ~Layer() {}
 
-	  virtual void attach() {}
-	  virtual void detach() {}
-	  virtual void update() {}
-	  virtual void handle_event(Event& event) {}
-	};
-} // namespace Espert
+    virtual void attach() {}
+    virtual void detach() {}
+    virtual void update() {}
+    virtual void handle_event(Event& event) {}
+  };
+} // namespace esp
 
-#endif  // ESPERT_CORE_LAYERS_LAYER_HH_
+#endif // ESPERT_CORE_LAYERS_LAYER_HH_

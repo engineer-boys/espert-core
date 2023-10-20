@@ -3,10 +3,10 @@
 
 namespace esp
 {
-	struct ColorComponent
-	{
-		glm::vec3 m_color{1.0f};
-	};
-}
+  struct ColorComponent
+  {
+    glm::vec3 m_color{ 1.0f };
+  };
+} // namespace esp
 
-#endif //COMPONENTS_COLOR_COMPONENT_H_
+#endif // COMPONENTS_COLOR_COMPONENT_H_
