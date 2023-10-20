@@ -43,7 +43,11 @@ def run_analysis(command: str):
     if args.path.is_file():
         entries = [args.path]
     else:
-        entries = args.path.rglob('*[.h,.hh.c,.cc]')
+        entries = [entry for entry in args.path.rglob('*.h')] + \
+        [entry for entry in args.path.rglob('*.hh')] + \
+        [entry for entry in args.path.rglob('*.c')] + \
+        [entry for entry in args.path.rglob('*.cc')]
+
 
     for entry in entries:
         if entry.is_dir(): continue
