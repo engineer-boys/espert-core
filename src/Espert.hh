@@ -13,6 +13,7 @@
 
 /* --------- Client Point ------------------- */
 
+#include "Renderer/Camera.hh"
 #include "Core/ClientPoint.hh"
 #include "Scene/Components/Components.hh"
 #include "VulkanRenderAPI/EspPipeline.hh"
