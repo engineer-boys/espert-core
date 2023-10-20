@@ -5,68 +5,69 @@
 
 namespace Espert
 {
-class MouseMovedEvent : public Event
-{
- private:
-  float _m_x;
-  float _m_y;
-
- public:
-  MouseMovedEvent(float x, float y) : _m_x(x), _m_y(y) {}
-
-  inline float get_x() const { return _m_x; }
-  inline float get_y() const { return _m_y; }
-
-  EVENT_CLASS_TYPE(EventType::EventTypeInput | EventType::EventTypeMouse)
-  EVENT_CLASS_SUBTYPE(MouseMoved)
-};
-
-class MouseScrolledEvent : public Event
-{
- private:
-  float _m_offset_x;
-  float _m_offset_y;
-
- public:
-  MouseScrolledEvent(float o_x, float o_y) : _m_offset_x(o_x), _m_offset_y(o_y)
+  class MouseMovedEvent : public Event
   {
-  }
+   private:
+    float _m_x;
+    float _m_y;
 
-  inline float get_offset_x() const { return _m_offset_x; }
-  inline float get_offset_y() const { return _m_offset_y; }
+   public:
+    MouseMovedEvent(float x, float y) : _m_x(x), _m_y(y) {}
 
-  EVENT_CLASS_TYPE(EventType::EventTypeInput | EventType::EventTypeMouse)
-  EVENT_CLASS_SUBTYPE(MouseScrolled)
-};
+    inline float get_x() const { return _m_x; }
+    inline float get_y() const { return _m_y; }
 
-class MouseButtonEvent : public Event
-{
- protected:
-  int _m_button_code;
+    EVENT_CLASS_TYPE(EventType::EventTypeInput | EventType::EventTypeMouse)
+    EVENT_CLASS_SUBTYPE(MouseMoved)
+  };
 
-  MouseButtonEvent(int code) : _m_button_code(code) {}
+  class MouseScrolledEvent : public Event
+  {
+   private:
+    float _m_offset_x;
+    float _m_offset_y;
 
- public:
-  inline int get_button_code() const { return _m_button_code; }
+   public:
+    MouseScrolledEvent(float o_x, float o_y) :
+        _m_offset_x(o_x), _m_offset_y(o_y)
+    {
+    }
 
-  EVENT_CLASS_TYPE(EventType::EventTypeInput | EventType::EventTypeMouse)
-};
+    inline float get_offset_x() const { return _m_offset_x; }
+    inline float get_offset_y() const { return _m_offset_y; }
 
-class MouseButtonPressedEvent : public MouseButtonEvent
-{
- public:
-  MouseButtonPressedEvent(int code) : MouseButtonEvent(code) {}
+    EVENT_CLASS_TYPE(EventType::EventTypeInput | EventType::EventTypeMouse)
+    EVENT_CLASS_SUBTYPE(MouseScrolled)
+  };
 
-  EVENT_CLASS_SUBTYPE(MouseButtonPressed)
-};
+  class MouseButtonEvent : public Event
+  {
+   protected:
+    int _m_button_code;
 
-class MouseButtonReleasedEvent : public MouseButtonEvent
-{
- public:
-  MouseButtonReleasedEvent(int code) : MouseButtonEvent(code) {}
+    MouseButtonEvent(int code) : _m_button_code(code) {}
 
-  EVENT_CLASS_SUBTYPE(MouseButtonReleased)
-};
+   public:
+    inline int get_button_code() const { return _m_button_code; }
+
+    EVENT_CLASS_TYPE(EventType::EventTypeInput | EventType::EventTypeMouse)
+  };
+
+  class MouseButtonPressedEvent : public MouseButtonEvent
+  {
+   public:
+    MouseButtonPressedEvent(int code) : MouseButtonEvent(code) {}
+
+    EVENT_CLASS_SUBTYPE(MouseButtonPressed)
+  };
+
+  class MouseButtonReleasedEvent : public MouseButtonEvent
+  {
+   public:
+    MouseButtonReleasedEvent(int code) : MouseButtonEvent(code) {}
+
+    EVENT_CLASS_SUBTYPE(MouseButtonReleased)
+  };
 } // namespace Espert
 
 #endif // ESPERT_CORESYSTEMS_MOUSEEVENT_H_
