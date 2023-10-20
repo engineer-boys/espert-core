@@ -6,31 +6,31 @@
 
 namespace Espert
 {
-class Logger
-{
- private:
-  static Logger* _s_instance;
-
- private:
-  std::shared_ptr<spdlog::logger> _m_core_logger;
-  std::shared_ptr<spdlog::logger> _m_client_logger;
-
-  Logger();
-
- public:
-  ~Logger();
-  static std::unique_ptr<Logger> create();
-
-  inline static Logger* get_instance() { return Logger::_s_instance; }
-  inline static std::shared_ptr<spdlog::logger>& get_core_logger()
+  class Logger
   {
-    return Logger::_s_instance->_m_core_logger;
-  }
-  inline static std::shared_ptr<spdlog::logger>& get_client_logger()
-  {
-    return Logger::_s_instance->_m_client_logger;
-  }
-};
+   private:
+    static Logger* _s_instance;
+
+   private:
+    std::shared_ptr<spdlog::logger> _m_core_logger;
+    std::shared_ptr<spdlog::logger> _m_client_logger;
+
+    Logger();
+
+   public:
+    ~Logger();
+    static std::unique_ptr<Logger> create();
+
+    inline static Logger* get_instance() { return Logger::_s_instance; }
+    inline static std::shared_ptr<spdlog::logger>& get_core_logger()
+    {
+      return Logger::_s_instance->_m_core_logger;
+    }
+    inline static std::shared_ptr<spdlog::logger>& get_client_logger()
+    {
+      return Logger::_s_instance->_m_client_logger;
+    }
+  };
 
 } // namespace Espert
 

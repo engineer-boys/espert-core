@@ -5,16 +5,16 @@
 
 namespace Espert
 {
-class Layer
-{
- public:
-  virtual ~Layer() {}
+  class Layer
+  {
+   public:
+    virtual ~Layer() {}
 
-  virtual void attach() {}
-  virtual void detach() {}
-  virtual void update() {}
-  virtual void handle_event(Event& event) {}
-};
+    virtual void attach() {}
+    virtual void detach() {}
+    virtual void update() {}
+    virtual void handle_event(Event& event) {}
+  };
 
 } // namespace Espert
 
