@@ -91,7 +91,8 @@ namespace esp
     VkShaderModule m_frag_shader_module;
 
    public:
-    EspPipeline(EspDevice& device, const std::string& shader_vert_path,
+    EspPipeline(EspDevice& device,
+                const std::string& shader_vert_path,
                 const std::string& shader_frag_path,
                 const PipelineConfigInfo& config_info);
     ~EspPipeline();

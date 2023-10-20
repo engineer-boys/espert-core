@@ -19,8 +19,10 @@ namespace esp
     EspWindow::s_is_exist = true;
 
     EspWindow::init(data);
-    ESP_CORE_INFO("window created: w {}, h {}, t {}", m_data.m_width,
-                  m_data.m_height, m_data.m_title);
+    ESP_CORE_INFO("window created: w {}, h {}, t {}",
+                  m_data.m_width,
+                  m_data.m_height,
+                  m_data.m_title);
   }
 
   EspWindow::~EspWindow()
@@ -52,8 +54,11 @@ namespace esp
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-    m_window = glfwCreateWindow(m_data.m_width, m_data.m_height,
-                                m_data.m_title.c_str(), nullptr, nullptr);
+    m_window = glfwCreateWindow(m_data.m_width,
+                                m_data.m_height,
+                                m_data.m_title.c_str(),
+                                nullptr,
+                                nullptr);
     if (m_window == NULL)
     {
       ESP_CORE_ERROR("GLFW cannot create a window instance");

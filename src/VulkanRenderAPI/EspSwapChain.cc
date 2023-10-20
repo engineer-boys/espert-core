@@ -18,7 +18,8 @@ namespace esp
     init();
   }
 
-  EspSwapChain::EspSwapChain(EspDevice& device_ref, VkExtent2D window_extent,
+  EspSwapChain::EspSwapChain(EspDevice& device_ref,
+                             VkExtent2D window_extent,
                              std::shared_ptr<EspSwapChain> previous) :
       m_device{ device_ref },
       m_window_extent{ window_extent }, m_old_swap_chain{ previous }
@@ -45,7 +46,8 @@ namespace esp
 
     for (int i = 0; i < m_depth_images.size(); i++)
     {
-      vkDestroyImageView(m_device.get_device(), m_depth_image_views[i],
+      vkDestroyImageView(m_device.get_device(),
+                         m_depth_image_views[i],
                          nullptr);
       vkDestroyImage(m_device.get_device(), m_depth_images[i], nullptr);
       vkFreeMemory(m_device.get_device(), m_depth_image_memories[i], nullptr);
@@ -61,9 +63,11 @@ namespace esp
     // cleanup synchronization objects
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
     {
-      vkDestroySemaphore(m_device.get_device(), m_render_finished_semaphores[i],
+      vkDestroySemaphore(m_device.get_device(),
+                         m_render_finished_semaphores[i],
                          nullptr);
-      vkDestroySemaphore(m_device.get_device(), m_image_available_semaphores[i],
+      vkDestroySemaphore(m_device.get_device(),
+                         m_image_available_semaphores[i],
                          nullptr);
       vkDestroyFence(m_device.get_device(), m_in_flight_fences[i], nullptr);
     }
@@ -71,16 +75,20 @@ namespace esp
 
   VkResult EspSwapChain::acquire_next_image(uint32_t* image_index)
   {
-    vkWaitForFences(m_device.get_device(), 1,
-                    &m_in_flight_fences[m_current_frame], VK_TRUE,
+    vkWaitForFences(m_device.get_device(),
+                    1,
+                    &m_in_flight_fences[m_current_frame],
+                    VK_TRUE,
                     std::numeric_limits<uint64_t>::max());
 
     VkResult result = vkAcquireNextImageKHR(
-        m_device.get_device(), m_swap_chain,
+        m_device.get_device(),
+        m_swap_chain,
         std::numeric_limits<uint64_t>::max(),
         m_image_available_semaphores[m_current_frame], // must be a not signaled
                                                        // semaphore
-        VK_NULL_HANDLE, image_index);
+        VK_NULL_HANDLE,
+        image_index);
 
     return result;
   }
@@ -90,8 +98,11 @@ namespace esp
   {
     if (m_images_in_flight[*image_index] != VK_NULL_HANDLE)
     {
-      vkWaitForFences(m_device.get_device(), 1,
-                      &m_images_in_flight[*image_index], VK_TRUE, UINT64_MAX);
+      vkWaitForFences(m_device.get_device(),
+                      1,
+                      &m_images_in_flight[*image_index],
+                      VK_TRUE,
+                      UINT64_MAX);
     }
     m_images_in_flight[*image_index] = m_in_flight_fences[m_current_frame];
 
@@ -117,9 +128,12 @@ namespace esp
     submit_info.signalSemaphoreCount = 1;
     submit_info.pSignalSemaphores    = signal_semaphores;
 
-    vkResetFences(m_device.get_device(), 1,
+    vkResetFences(m_device.get_device(),
+                  1,
                   &m_in_flight_fences[m_current_frame]);
-    if (vkQueueSubmit(m_device.get_graphics_queue(), 1, &submit_info,
+    if (vkQueueSubmit(m_device.get_graphics_queue(),
+                      1,
+                      &submit_info,
                       m_in_flight_fences[m_current_frame]) != VK_SUCCESS)
     {
       ESP_CORE_ERROR("Failed to submit draw command buffer");
@@ -214,7 +228,9 @@ namespace esp
         ? m_old_swap_chain->m_swap_chain
         : VK_NULL_HANDLE;
 
-    if (vkCreateSwapchainKHR(m_device.get_device(), &create_info, nullptr,
+    if (vkCreateSwapchainKHR(m_device.get_device(),
+                             &create_info,
+                             nullptr,
                              &m_swap_chain) != VK_SUCCESS)
     {
       ESP_CORE_ERROR("Failed to create swap chain");
@@ -226,10 +242,14 @@ namespace esp
     // we'll first query the final number of images with
     // vkGetSwapchainImagesKHR, then resize the container and finally call it
     // again to retrieve the handles.
-    vkGetSwapchainImagesKHR(m_device.get_device(), m_swap_chain, &image_count,
+    vkGetSwapchainImagesKHR(m_device.get_device(),
+                            m_swap_chain,
+                            &image_count,
                             nullptr);
     m_swap_chain_images.resize(image_count);
-    vkGetSwapchainImagesKHR(m_device.get_device(), m_swap_chain, &image_count,
+    vkGetSwapchainImagesKHR(m_device.get_device(),
+                            m_swap_chain,
+                            &image_count,
                             m_swap_chain_images.data());
 
     m_swap_chain_image_format = surface_format.format;
@@ -252,7 +272,9 @@ namespace esp
       view_info.subresourceRange.baseArrayLayer = 0;
       view_info.subresourceRange.layerCount     = 1;
 
-      if (vkCreateImageView(m_device.get_device(), &view_info, nullptr,
+      if (vkCreateImageView(m_device.get_device(),
+                            &view_info,
+                            nullptr,
                             &m_swap_chain_image_views[i]) != VK_SUCCESS)
       {
         ESP_CORE_ERROR("Failed to create texture image view");
@@ -322,7 +344,9 @@ namespace esp
     render_pass_info.dependencyCount = 1;
     render_pass_info.pDependencies   = &dependency;
 
-    if (vkCreateRenderPass(m_device.get_device(), &render_pass_info, nullptr,
+    if (vkCreateRenderPass(m_device.get_device(),
+                           &render_pass_info,
+                           nullptr,
                            &m_render_pass) != VK_SUCCESS)
     {
       ESP_CORE_ERROR("Failed to create render pass");
@@ -349,7 +373,9 @@ namespace esp
       framebuffer_info.height       = swap_chain_extent.height;
       framebuffer_info.layers       = 1;
 
-      if (vkCreateFramebuffer(m_device.get_device(), &framebuffer_info, nullptr,
+      if (vkCreateFramebuffer(m_device.get_device(),
+                              &framebuffer_info,
+                              nullptr,
                               &m_swap_chain_framebuffers[i]) != VK_SUCCESS)
       {
         ESP_CORE_ERROR("Failed to create framebuffer");
@@ -386,9 +412,10 @@ namespace esp
       image_info.sharingMode   = VK_SHARING_MODE_EXCLUSIVE;
       image_info.flags         = 0;
 
-      m_device.create_image_with_info(
-          image_info, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, m_depth_images[i],
-          m_depth_image_memories[i]);
+      m_device.create_image_with_info(image_info,
+                                      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                                      m_depth_images[i],
+                                      m_depth_image_memories[i]);
 
       VkImageViewCreateInfo view_info{};
       view_info.sType    = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -401,7 +428,9 @@ namespace esp
       view_info.subresourceRange.baseArrayLayer = 0;
       view_info.subresourceRange.layerCount     = 1;
 
-      if (vkCreateImageView(m_device.get_device(), &view_info, nullptr,
+      if (vkCreateImageView(m_device.get_device(),
+                            &view_info,
+                            nullptr,
                             &m_depth_image_views[i]) != VK_SUCCESS)
       {
         ESP_CORE_ERROR("Failed to create texture image view");
@@ -426,11 +455,17 @@ namespace esp
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
     {
-      if (vkCreateSemaphore(m_device.get_device(), &semaphore_info, nullptr,
+      if (vkCreateSemaphore(m_device.get_device(),
+                            &semaphore_info,
+                            nullptr,
                             &m_image_available_semaphores[i]) != VK_SUCCESS ||
-          vkCreateSemaphore(m_device.get_device(), &semaphore_info, nullptr,
+          vkCreateSemaphore(m_device.get_device(),
+                            &semaphore_info,
+                            nullptr,
                             &m_render_finished_semaphores[i]) != VK_SUCCESS ||
-          vkCreateFence(m_device.get_device(), &fence_info, nullptr,
+          vkCreateFence(m_device.get_device(),
+                        &fence_info,
+                        nullptr,
                         &m_in_flight_fences[i]) != VK_SUCCESS)
       {
         ESP_CORE_ERROR("Failed to create synchronization objects for a frame");
@@ -504,7 +539,8 @@ namespace esp
   VkFormat EspSwapChain::find_depth_format()
   {
     return m_device.find_supported_format(
-        { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT,
+        { VK_FORMAT_D32_SFLOAT,
+          VK_FORMAT_D32_SFLOAT_S8_UINT,
           VK_FORMAT_D24_UNORM_S8_UINT },
         VK_IMAGE_TILING_OPTIMAL,
         VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
