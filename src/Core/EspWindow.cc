@@ -3,171 +3,182 @@
 
 namespace esp
 {
-    static void glfw_error_callback(int error, const char *description)
+  static void glfw_error_callback(int error, const char* description)
+  {
+    ESP_CORE_ERROR("GLFW error ({0}) : {1}", errno, description);
+  }
+
+  bool EspWindow::s_is_exist = false;
+
+  EspWindow::EspWindow(const WindowData& data)
+  {
+    if (EspWindow::s_is_exist)
     {
-        ESP_CORE_ERROR("GLFW error ({0}) : {1}", errno, description);
+      throw std::runtime_error("The Espert window already exists!");
+    }
+    EspWindow::s_is_exist = true;
+
+    EspWindow::init(data);
+    ESP_CORE_INFO("window created: w {}, h {}, t {}", m_data.m_width,
+                  m_data.m_height, m_data.m_title);
+  }
+
+  EspWindow::~EspWindow()
+  {
+    EspWindow::s_is_exist = false;
+    destroy();
+  }
+
+  std::unique_ptr<EspWindow> EspWindow::create(const WindowData& data)
+  {
+    std::unique_ptr<EspWindow> window{ new EspWindow(data) };
+    return window;
+  }
+
+  void EspWindow::update() { glfwPollEvents(); }
+
+  void EspWindow::init(const WindowData& data)
+  {
+    m_data = data;
+
+    int success = glfwInit();
+    if (success == GLFW_FALSE)
+    {
+      ESP_CORE_ERROR("GLFW cannot be init");
+      throw std::runtime_error("GLFW cannot be init");
     }
 
-    bool EspWindow::s_is_exist = false;
+    glfwSetErrorCallback(glfw_error_callback);
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-    EspWindow::EspWindow(const WindowData &data)
+    m_window = glfwCreateWindow(m_data.m_width, m_data.m_height,
+                                m_data.m_title.c_str(), nullptr, nullptr);
+    if (m_window == NULL)
     {
-        if (EspWindow::s_is_exist)
+      ESP_CORE_ERROR("GLFW cannot create a window instance");
+      throw std::runtime_error("GLFW cannot create a window instance");
+    }
+    glfwSetWindowUserPointer(m_window, &m_data);
+
+    set_callbacks();
+  }
+
+  void EspWindow::destroy()
+  {
+    glfwDestroyWindow(m_window);
+    glfwTerminate();
+  }
+
+  void EspWindow::set_callbacks()
+  {
+    /* set callbacks for glfw events */
+    glfwSetWindowSizeCallback(m_window,
+                              [](GLFWwindow* window, int width, int height)
+                              {
+                                WindowData* data = static_cast<WindowData*>(
+                                    glfwGetWindowUserPointer(window));
+                                data->m_width  = width;
+                                data->m_height = height;
+
+                                WindowResizedEvent event(width, height);
+                                data->m_events_manager_fun(event);
+                              });
+
+    glfwSetWindowCloseCallback(m_window,
+                               [](GLFWwindow* window)
+                               {
+                                 WindowData* data = static_cast<WindowData*>(
+                                     glfwGetWindowUserPointer(window));
+                                 WindowClosedEvent event;
+                                 data->m_events_manager_fun(event);
+                               });
+
+    glfwSetKeyCallback(
+        m_window,
+        [](GLFWwindow* window, int key, int scancode, int action, int mods)
         {
-            throw std::runtime_error("The Espert window already exists!");
-        }
-		EspWindow::s_is_exist = true;
+          WindowData* data =
+              static_cast<WindowData*>(glfwGetWindowUserPointer(window));
 
-        EspWindow::init(data);
-        ESP_CORE_INFO("window created: w {}, h {}, t {}", m_data.m_width, m_data.m_height, m_data.m_title);
-    }
+          switch (action)
+          {
+          case GLFW_PRESS:
+          {
+            KeyPressedEvent event(key, false);
+            data->m_events_manager_fun(event);
+            break;
+          }
+          case GLFW_RELEASE:
+          {
+            KeyReleasedEvent event(key);
+            data->m_events_manager_fun(event);
+            break;
+          }
+          case GLFW_REPEAT:
+          {
+            KeyPressedEvent event(key, true);
+            data->m_events_manager_fun(event);
+            break;
+          }
+          }
+        });
 
-    EspWindow::~EspWindow()
-    {
-		EspWindow::s_is_exist = false;
-        destroy();
-    }
-
-    std::unique_ptr<EspWindow> EspWindow::create(const WindowData &data)
-    {
-        std::unique_ptr<EspWindow> window{ new EspWindow(data)};
-        return window;
-    }
-
-    void EspWindow::update()
-    {
-        glfwPollEvents();
-    }
-
-    void EspWindow::init(const WindowData &data)
-    {
-		m_data = data;
-
-        int success = glfwInit();
-        if (success == GLFW_FALSE)
+    glfwSetMouseButtonCallback(
+        m_window,
+        [](GLFWwindow* window, int button, int action, int mods)
         {
-            ESP_CORE_ERROR("GLFW cannot be init");
-            throw std::runtime_error("GLFW cannot be init");
-        }
+          WindowData* data =
+              static_cast<WindowData*>(glfwGetWindowUserPointer(window));
 
-        glfwSetErrorCallback(glfw_error_callback);
-        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+          switch (action)
+          {
+          case GLFW_PRESS:
+          {
+            MouseButtonPressedEvent event(button);
+            data->m_events_manager_fun(event);
+            break;
+          }
+          case GLFW_RELEASE:
+          {
+            MouseButtonReleasedEvent event(button);
+            data->m_events_manager_fun(event);
+            break;
+          }
+          }
+        });
 
-		m_window = glfwCreateWindow(m_data.m_width, m_data.m_height, m_data.m_title.c_str(), nullptr, nullptr);
-        if (m_window == NULL)
+    glfwSetScrollCallback(
+        m_window,
+        [](GLFWwindow* window, double x_offset, double y_offset)
         {
-            ESP_CORE_ERROR("GLFW cannot create a window instance");
-            throw std::runtime_error("GLFW cannot create a window instance");
-        }
-        glfwSetWindowUserPointer(m_window, &m_data);
+          WindowData* data =
+              static_cast<WindowData*>(glfwGetWindowUserPointer(window));
 
-        set_callbacks();
-    }
+          MouseScrolledEvent event((float)x_offset, (float)y_offset);
+          data->m_events_manager_fun(event);
+        });
 
-    void EspWindow::destroy()
+    glfwSetCursorPosCallback(
+        m_window,
+        [](GLFWwindow* window, double x_pos, double y_pos)
+        {
+          WindowData* data =
+              static_cast<WindowData*>(glfwGetWindowUserPointer(window));
+
+          MouseMovedEvent event((float)x_pos, (float)y_pos);
+          data->m_events_manager_fun(event);
+        });
+  }
+
+  void EspWindow::create_window_surface(VkInstance instance,
+                                        VkSurfaceKHR* surface)
+  {
+    if (glfwCreateWindowSurface(instance, m_window, nullptr, surface) !=
+        VK_SUCCESS)
     {
-        glfwDestroyWindow(m_window);
-        glfwTerminate();
+      ESP_CORE_ERROR("Failed to create window surface");
+      throw std::runtime_error("Failed to create window surface");
     }
-
-	void EspWindow::set_callbacks()
-	{
-		/* set callbacks for glfw events */
-		glfwSetWindowSizeCallback(
-			m_window, [](GLFWwindow *window, int width, int height)
-			{
-			  WindowData *data = static_cast<WindowData *>(glfwGetWindowUserPointer(window));
-			  data->m_width = width;
-			  data->m_height = height;
-
-			  WindowResizedEvent event(width, height);
-			  data->m_events_manager_fun(event);
-			});
-
-		glfwSetWindowCloseCallback(
-			m_window, [](GLFWwindow *window)
-			{
-			  WindowData *data = static_cast<WindowData *>(glfwGetWindowUserPointer(window));
-			  WindowClosedEvent event;
-			  data->m_events_manager_fun(event);
-			});
-
-		glfwSetKeyCallback(
-			m_window, [](GLFWwindow *window, int key, int scancode, int action, int mods)
-			{
-			  WindowData *data = static_cast<WindowData *>(glfwGetWindowUserPointer(window));
-
-			  switch (action)
-			  {
-				  case GLFW_PRESS:
-				  {
-					  KeyPressedEvent event(key, false);
-					  data->m_events_manager_fun(event);
-					  break;
-				  }
-				  case GLFW_RELEASE:
-				  {
-					  KeyReleasedEvent event(key);
-					  data->m_events_manager_fun(event);
-					  break;
-				  }
-				  case GLFW_REPEAT:
-				  {
-					  KeyPressedEvent event(key, true);
-					  data->m_events_manager_fun(event);
-					  break;
-				  }
-			  }
-			});
-
-		glfwSetMouseButtonCallback(
-			m_window, [](GLFWwindow *window, int button, int action, int mods)
-			{
-			  WindowData *data = static_cast<WindowData *>(glfwGetWindowUserPointer(window));
-
-			  switch (action)
-			  {
-			  case GLFW_PRESS:
-			  {
-				  MouseButtonPressedEvent event(button);
-				  data->m_events_manager_fun(event);
-				  break;
-			  }
-			  case GLFW_RELEASE:
-			  {
-				  MouseButtonReleasedEvent event(button);
-				  data->m_events_manager_fun(event);
-				  break;
-			  }
-			  }
-			});
-
-		glfwSetScrollCallback(
-			m_window, [](GLFWwindow *window, double x_offset, double y_offset)
-			{
-			  WindowData *data = static_cast<WindowData *>(glfwGetWindowUserPointer(window));
-
-			  MouseScrolledEvent event((float)x_offset, (float)y_offset);
-			  data->m_events_manager_fun(event);
-			});
-
-		glfwSetCursorPosCallback(
-			m_window, [](GLFWwindow *window, double x_pos, double y_pos)
-			{
-			  WindowData *data = static_cast<WindowData *>(glfwGetWindowUserPointer(window));
-
-			  MouseMovedEvent event((float)x_pos, (float)y_pos);
-			  data->m_events_manager_fun(event);
-			});
-	}
-
-	void EspWindow::create_window_surface(VkInstance instance, VkSurfaceKHR* surface)
-	{
-		if (glfwCreateWindowSurface(instance, m_window, nullptr, surface) != VK_SUCCESS)
-		{
-			ESP_CORE_ERROR("Failed to create window surface");
-			throw std::runtime_error("Failed to create window surface");
-		}
-	}
-}  // namespace Espert
+  }
+} // namespace esp

@@ -52,17 +52,19 @@ namespace esp
 #else
 /* FOR CORE */
 #define ESP_CORE_TRACE(...) esp::Logger::get_core_logger()->trace(__VA_ARGS__)
-#define ESP_CORE_INFO(...) esp::Logger::get_core_logger()->info(__VA_ARGS__)
-#define ESP_CORE_WARM(...) esp::Logger::get_core_logger()->warm(__VA_ARGS__)
+#define ESP_CORE_INFO(...)  esp::Logger::get_core_logger()->info(__VA_ARGS__)
+#define ESP_CORE_WARM(...)  esp::Logger::get_core_logger()->warm(__VA_ARGS__)
 #define ESP_CORE_ERROR(...) esp::Logger::get_core_logger()->error(__VA_ARGS__)
-#define ESP_CORE_CRITICAL(...) esp::Logger::get_core_logger()->critical(__VA_ARGS__)
+#define ESP_CORE_CRITICAL(...) \
+  esp::Logger::get_core_logger()->critical(__VA_ARGS__)
 
 /* FOR CLIENT */
 #define ESP_TRACE(...) esp::Logger::get_client_logger()->trace(__VA_ARGS__)
-#define ESP_INFO(...) esp::Logger::get_client_logger()->info(__VA_ARGS__)
-#define ESP_WARM(...) esp::Logger::get_client_logger()->warm(__VA_ARGS__)
+#define ESP_INFO(...)  esp::Logger::get_client_logger()->info(__VA_ARGS__)
+#define ESP_WARM(...)  esp::Logger::get_client_logger()->warm(__VA_ARGS__)
 #define ESP_ERROR(...) esp::Logger::get_client_logger()->error(__VA_ARGS__)
-#define ESP_CRITICAL(...) esp::Logger::get_client_logger()->critical(__VA_ARGS__)
+#define ESP_CRITICAL(...) \
+  esp::Logger::get_client_logger()->critical(__VA_ARGS__)
 #endif
 
-#endif  // ESPERT_CORE_LOGGER_HH_
+#endif // ESPERT_CORE_LOGGER_HH_

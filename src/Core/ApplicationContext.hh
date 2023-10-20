@@ -5,21 +5,21 @@
 
 namespace esp
 {
-	class ApplicationContext
-	{
-	  private:
-	  static bool _s_is_exist;
+  class ApplicationContext
+  {
+   private:
+    static bool _s_is_exist;
 
-	  private:
-	  std::unique_ptr<Logger> _m_logger;
+   private:
+    std::unique_ptr<Logger> _m_logger;
 
-	  ApplicationContext();
+    ApplicationContext();
 
-	  public:
-	  ~ApplicationContext();
+   public:
+    ~ApplicationContext();
 
-	  static std::unique_ptr<ApplicationContext> create();
-	};
-} // namespace Espert
+    static std::unique_ptr<ApplicationContext> create();
+  };
+} // namespace esp
 
-#endif  // ESPERT_CORE_APPLICATIONCONTEXT_HH_
+#endif // ESPERT_CORE_APPLICATIONCONTEXT_HH_

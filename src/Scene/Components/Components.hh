@@ -5,4 +5,4 @@
 #include "ModelComponent.hh"
 #include "TransformComponent.hh"
 
-#endif //COMPONENTS_COMPONENTS_H_
+#endif // COMPONENTS_COMPONENTS_H_
