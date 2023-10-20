@@ -43,12 +43,30 @@ namespace esp
     EspDescriptorSetLayout(const EspDescriptorSetLayout&)            = delete;
     EspDescriptorSetLayout& operator=(const EspDescriptorSetLayout&) = delete;
 
-    VkDescriptorSetLayout get_descriptor_set_layout() const
+    inline VkDescriptorSetLayout get_layout() const
     {
       return m_descriptor_set_layout;
     }
 
     friend class EspDescriptorWriter;
+  };
+
+  class EspDescriptorSet
+  {
+   private:
+    VkDescriptorSet m_descriptor_set;
+
+   public:
+    EspDescriptorSet()  = default;
+    ~EspDescriptorSet() = default;
+
+    EspDescriptorSet(const EspDescriptorSet&)            = delete;
+    EspDescriptorSet& operator=(const EspDescriptorSet&) = delete;
+
+    // TODO: add possibility to bind group of sets
+    void bind(VkCommandBuffer command_buffer, VkPipelineLayout pipeline_layout);
+
+    inline VkDescriptorSet& get_set() { return m_descriptor_set; }
   };
 
   class EspDescriptorPool
@@ -111,8 +129,8 @@ namespace esp
     EspDescriptorWriter& write_image(uint32_t binding,
                                      VkDescriptorImageInfo* image_info);
 
-    bool build(VkDescriptorSet& set);
-    void overwrite(VkDescriptorSet& set);
+    bool build(EspDescriptorSet& set);
+    void overwrite(EspDescriptorSet& set);
   };
 } // namespace esp
 
