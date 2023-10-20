@@ -11,7 +11,8 @@ namespace esp
 
     TransformComponent()                          = default;
     TransformComponent(const TransformComponent&) = default;
-    TransformComponent(const glm::vec3& translation, const glm::vec3& scale,
+    TransformComponent(const glm::vec3& translation,
+                       const glm::vec3& scale,
                        const glm::vec3& rotation) :
         m_translation{ translation },
         m_scale{ scale }, m_rotation{ rotation }

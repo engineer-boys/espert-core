@@ -27,7 +27,8 @@ namespace esp
       VkDebugUtilsMessengerEXT* p_debug_messenger)
   {
     auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
-        instance, "vkCreateDebugUtilsMessengerEXT");
+        instance,
+        "vkCreateDebugUtilsMessengerEXT");
     if (func != nullptr)
     {
       return func(instance, p_create_info, p_allocator, p_debug_messenger);
@@ -41,7 +42,8 @@ namespace esp
                                     const VkAllocationCallbacks* pAllocator)
   {
     auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(
-        instance, "vkDestroyDebugUtilsMessengerEXT");
+        instance,
+        "vkDestroyDebugUtilsMessengerEXT");
     if (func != nullptr) { func(instance, debugMessenger, pAllocator); }
   }
 
@@ -294,7 +296,9 @@ namespace esp
     if (!m_enable_validation_layers) return;
     VkDebugUtilsMessengerCreateInfoEXT create_info;
     populate_debug_messenger_create_info(create_info);
-    if (create_debug_utils_messenger_EXT(m_instance, &create_info, nullptr,
+    if (create_debug_utils_messenger_EXT(m_instance,
+                                         &create_info,
+                                         nullptr,
                                          &m_debug_messenger) != VK_SUCCESS)
     {
       ESP_CORE_ERROR("Failed to set up debug messenger");
@@ -335,8 +339,9 @@ namespace esp
     const char** glfw_extensions;
     glfw_extensions = glfwGetRequiredInstanceExtensions(&glfw_extensions_count);
 
-    std::vector<const char*> extensions(
-        glfw_extensions, glfw_extensions + glfw_extensions_count);
+    std::vector<const char*> extensions(glfw_extensions,
+                                        glfw_extensions +
+                                            glfw_extensions_count);
 
     for (auto instance_extension : m_instance_extensions)
     {
@@ -356,7 +361,8 @@ namespace esp
     uint32_t extensions_count = 0;
     vkEnumerateInstanceExtensionProperties(nullptr, &extensions_count, nullptr);
     std::vector<VkExtensionProperties> extensions(extensions_count);
-    vkEnumerateInstanceExtensionProperties(nullptr, &extensions_count,
+    vkEnumerateInstanceExtensionProperties(nullptr,
+                                           &extensions_count,
                                            extensions.data());
 
     ESP_CORE_INFO("Available extensions:");
@@ -383,11 +389,15 @@ namespace esp
   bool EspDevice::check_device_extension_support(VkPhysicalDevice device)
   {
     uint32_t extensions_count;
-    vkEnumerateDeviceExtensionProperties(device, nullptr, &extensions_count,
+    vkEnumerateDeviceExtensionProperties(device,
+                                         nullptr,
+                                         &extensions_count,
                                          nullptr);
 
     std::vector<VkExtensionProperties> available_extensions(extensions_count);
-    vkEnumerateDeviceExtensionProperties(device, nullptr, &extensions_count,
+    vkEnumerateDeviceExtensionProperties(device,
+                                         nullptr,
+                                         &extensions_count,
                                          available_extensions.data());
 
     std::set<std::string> required_extensions(m_device_extensions.begin(),
@@ -406,11 +416,13 @@ namespace esp
     QueueFamilyIndices indices;
 
     uint32_t queue_family_count = 0;
-    vkGetPhysicalDeviceQueueFamilyProperties(device, &queue_family_count,
+    vkGetPhysicalDeviceQueueFamilyProperties(device,
+                                             &queue_family_count,
                                              nullptr);
 
     std::vector<VkQueueFamilyProperties> queue_families(queue_family_count);
-    vkGetPhysicalDeviceQueueFamilyProperties(device, &queue_family_count,
+    vkGetPhysicalDeviceQueueFamilyProperties(device,
+                                             &queue_family_count,
                                              queue_families.data());
 
     int i = 0;
@@ -423,7 +435,9 @@ namespace esp
         indices.m_graphics_family_has_value = true;
       }
       VkBool32 present_support = false;
-      vkGetPhysicalDeviceSurfaceSupportKHR(device, i, m_surface,
+      vkGetPhysicalDeviceSurfaceSupportKHR(device,
+                                           i,
+                                           m_surface,
                                            &present_support);
       if (queue_family.queueCount > 0 && present_support)
       {
@@ -442,28 +456,36 @@ namespace esp
   EspDevice::query_swap_chain_support(VkPhysicalDevice device)
   {
     SwapChainSupportDetails details;
-    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, m_surface,
+    vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device,
+                                              m_surface,
                                               &details.m_capabilities);
 
     uint32_t format_count;
-    vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_surface, &format_count,
+    vkGetPhysicalDeviceSurfaceFormatsKHR(device,
+                                         m_surface,
+                                         &format_count,
                                          nullptr);
 
     if (format_count != 0)
     {
       details.m_formats.resize(format_count);
-      vkGetPhysicalDeviceSurfaceFormatsKHR(device, m_surface, &format_count,
+      vkGetPhysicalDeviceSurfaceFormatsKHR(device,
+                                           m_surface,
+                                           &format_count,
                                            details.m_formats.data());
     }
 
     uint32_t present_mode_count;
-    vkGetPhysicalDeviceSurfacePresentModesKHR(device, m_surface,
-                                              &present_mode_count, nullptr);
+    vkGetPhysicalDeviceSurfacePresentModesKHR(device,
+                                              m_surface,
+                                              &present_mode_count,
+                                              nullptr);
 
     if (present_mode_count != 0)
     {
       details.m_present_modes.resize(present_mode_count);
-      vkGetPhysicalDeviceSurfacePresentModesKHR(device, m_surface,
+      vkGetPhysicalDeviceSurfacePresentModesKHR(device,
+                                                m_surface,
                                                 &present_mode_count,
                                                 details.m_present_modes.data());
     }
@@ -515,9 +537,11 @@ namespace esp
     throw std::runtime_error("Failed to find suitable memory type");
   }
 
-  void EspDevice::create_buffer(VkDeviceSize size, VkBufferUsageFlags usage,
+  void EspDevice::create_buffer(VkDeviceSize size,
+                                VkBufferUsageFlags usage,
                                 VkMemoryPropertyFlags properties,
-                                VkBuffer& buffer, VkDeviceMemory& buffer_memory)
+                                VkBuffer& buffer,
+                                VkDeviceMemory& buffer_memory)
   {
     VkBufferCreateInfo buffer_info{};
     buffer_info.sType       = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -584,7 +608,8 @@ namespace esp
     vkFreeCommandBuffers(m_device, m_command_pool, 1, &command_buffer);
   }
 
-  void EspDevice::copy_buffer(VkBuffer src_buffer, VkBuffer dst_buffer,
+  void EspDevice::copy_buffer(VkBuffer src_buffer,
+                              VkBuffer dst_buffer,
                               VkDeviceSize size)
   {
     VkCommandBuffer command_buffer = begin_single_time_commands();
@@ -598,8 +623,10 @@ namespace esp
     end_single_time_commands(command_buffer);
   }
 
-  void EspDevice::copy_buffer_to_image(VkBuffer buffer, VkImage image,
-                                       uint32_t width, uint32_t height,
+  void EspDevice::copy_buffer_to_image(VkBuffer buffer,
+                                       VkImage image,
+                                       uint32_t width,
+                                       uint32_t height,
                                        uint32_t layer_count)
   {
     VkCommandBuffer command_buffer = begin_single_time_commands();
@@ -617,8 +644,12 @@ namespace esp
     region.imageOffset = { 0, 0, 0 };
     region.imageExtent = { width, height, 1 };
 
-    vkCmdCopyBufferToImage(command_buffer, buffer, image,
-                           VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+    vkCmdCopyBufferToImage(command_buffer,
+                           buffer,
+                           image,
+                           VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                           1,
+                           &region);
     end_single_time_commands(command_buffer);
   }
 

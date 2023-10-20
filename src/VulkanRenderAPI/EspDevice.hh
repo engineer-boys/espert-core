@@ -52,7 +52,8 @@ namespace esp
       "VK_KHR_get_physical_device_properties2"
     };
     const std::vector<const char*> m_device_extensions = {
-      VK_KHR_SWAPCHAIN_EXTENSION_NAME, "VK_KHR_portability_subset"
+      VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+      "VK_KHR_portability_subset"
     };
 
    public:
@@ -94,19 +95,25 @@ namespace esp
     inline void complete_queues() { vkDeviceWaitIdle(m_device); }
 
     // Buffer Helper Functions
-    void create_buffer(VkDeviceSize size, VkBufferUsageFlags usage,
-                       VkMemoryPropertyFlags properties, VkBuffer& buffer,
+    void create_buffer(VkDeviceSize size,
+                       VkBufferUsageFlags usage,
+                       VkMemoryPropertyFlags properties,
+                       VkBuffer& buffer,
                        VkDeviceMemory& buffer_memory);
     VkCommandBuffer begin_single_time_commands();
     void end_single_time_commands(VkCommandBuffer command_buffer);
-    void copy_buffer(VkBuffer src_buffer, VkBuffer dst_buffer,
-                     VkDeviceSize size);
-    void copy_buffer_to_image(VkBuffer buffer, VkImage image, uint32_t width,
-                              uint32_t height, uint32_t layer_count);
+    void
+    copy_buffer(VkBuffer src_buffer, VkBuffer dst_buffer, VkDeviceSize size);
+    void copy_buffer_to_image(VkBuffer buffer,
+                              VkImage image,
+                              uint32_t width,
+                              uint32_t height,
+                              uint32_t layer_count);
 
     void create_image_with_info(const VkImageCreateInfo& image_info,
                                 VkMemoryPropertyFlags properties,
-                                VkImage& image, VkDeviceMemory& image_memory);
+                                VkImage& image,
+                                VkDeviceMemory& image_memory);
 
    private:
     void create_instance();

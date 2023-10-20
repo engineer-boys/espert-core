@@ -8,9 +8,11 @@ namespace esp
 {
   // *************** Descriptor Set Layout Builder *********************
 
-  EspDescriptorSetLayout::Builder& EspDescriptorSetLayout::Builder::add_binding(
-      uint32_t binding, VkDescriptorType descriptor_type,
-      VkShaderStageFlags stage_flags, uint32_t count)
+  EspDescriptorSetLayout::Builder&
+  EspDescriptorSetLayout::Builder::add_binding(uint32_t binding,
+                                               VkDescriptorType descriptor_type,
+                                               VkShaderStageFlags stage_flags,
+                                               uint32_t count)
   {
     assert(m_bindings.count(binding) == 0 && "Binding already in use");
     VkDescriptorSetLayoutBinding layout_binding{};
@@ -50,7 +52,8 @@ namespace esp
     descriptor_set_layout_info.pBindings = set_layout_bindings.data();
 
     if (vkCreateDescriptorSetLayout(device.get_device(),
-                                    &descriptor_set_layout_info, nullptr,
+                                    &descriptor_set_layout_info,
+                                    nullptr,
                                     &m_descriptor_set_layout) != VK_SUCCESS)
     {
       ESP_CORE_ERROR("Failed to create descriptor set layout");
@@ -60,7 +63,8 @@ namespace esp
 
   EspDescriptorSetLayout::~EspDescriptorSetLayout()
   {
-    vkDestroyDescriptorSetLayout(m_device.get_device(), m_descriptor_set_layout,
+    vkDestroyDescriptorSetLayout(m_device.get_device(),
+                                 m_descriptor_set_layout,
                                  nullptr);
   }
 
@@ -89,14 +93,17 @@ namespace esp
 
   std::unique_ptr<EspDescriptorPool> EspDescriptorPool::Builder::build() const
   {
-    return std::make_unique<EspDescriptorPool>(m_device, m_max_sets,
-                                               m_pool_flags, m_pool_sizes);
+    return std::make_unique<EspDescriptorPool>(m_device,
+                                               m_max_sets,
+                                               m_pool_flags,
+                                               m_pool_sizes);
   }
 
   // *************** Descriptor Pool *********************
 
   EspDescriptorPool::EspDescriptorPool(
-      EspDevice& device, uint32_t maxSets,
+      EspDevice& device,
+      uint32_t maxSets,
       VkDescriptorPoolCreateFlags pool_flags,
       const std::vector<VkDescriptorPoolSize>& pool_sizes) :
       m_device{ device }
@@ -109,8 +116,10 @@ namespace esp
     descriptor_pool_info.maxSets    = maxSets;
     descriptor_pool_info.flags      = pool_flags;
 
-    if (vkCreateDescriptorPool(device.get_device(), &descriptor_pool_info,
-                               nullptr, &m_descriptor_pool) != VK_SUCCESS)
+    if (vkCreateDescriptorPool(device.get_device(),
+                               &descriptor_pool_info,
+                               nullptr,
+                               &m_descriptor_pool) != VK_SUCCESS)
     {
       ESP_CORE_ERROR("Failed to create descriptor pool");
       throw std::runtime_error("Failed to create descriptor pool");
@@ -136,7 +145,8 @@ namespace esp
     // this case,
     //  and builds a new pool whenever an old pool fills up:
     //  https://vkguide.dev/docs/extra-chapter/abstracting_descriptors/
-    if (vkAllocateDescriptorSets(m_device.get_device(), &alloc_info,
+    if (vkAllocateDescriptorSets(m_device.get_device(),
+                                 &alloc_info,
                                  &descriptor) != VK_SUCCESS)
     {
       return false;
@@ -147,7 +157,8 @@ namespace esp
   void EspDescriptorPool::free_descriptors(
       std::vector<VkDescriptorSet>& descriptors) const
   {
-    vkFreeDescriptorSets(m_device.get_device(), m_descriptor_pool,
+    vkFreeDescriptorSets(m_device.get_device(),
+                         m_descriptor_pool,
                          static_cast<uint32_t>(descriptors.size()),
                          descriptors.data());
   }
@@ -214,8 +225,9 @@ namespace esp
 
   bool EspDescriptorWriter::build(VkDescriptorSet& set)
   {
-    bool success = pool.allocate_descriptor_set(
-        m_set_layout.get_descriptor_set_layout(), set);
+    bool success =
+        pool.allocate_descriptor_set(m_set_layout.get_descriptor_set_layout(),
+                                     set);
     if (!success) { return false; }
     overwrite(set);
     return true;
@@ -227,7 +239,10 @@ namespace esp
     {
       write.dstSet = set;
     }
-    vkUpdateDescriptorSets(pool.m_device.get_device(), writes.size(),
-                           writes.data(), 0, nullptr);
+    vkUpdateDescriptorSets(pool.m_device.get_device(),
+                           writes.size(),
+                           writes.data(),
+                           0,
+                           nullptr);
   }
 } // namespace esp

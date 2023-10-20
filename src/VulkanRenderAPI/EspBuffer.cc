@@ -34,8 +34,10 @@ namespace esp
     return instance_size;
   }
 
-  EspBuffer::EspBuffer(EspDevice& device, VkDeviceSize instance_size,
-                       uint32_t instance_count, VkBufferUsageFlags usage_flags,
+  EspBuffer::EspBuffer(EspDevice& device,
+                       VkDeviceSize instance_size,
+                       uint32_t instance_count,
+                       VkBufferUsageFlags usage_flags,
                        VkMemoryPropertyFlags memory_property_flags,
                        VkDeviceSize min_offset_alignment) :
       m_device{ device },
@@ -45,8 +47,11 @@ namespace esp
   {
     m_alignment_size = get_alignment(instance_size, min_offset_alignment);
     m_buffer_size    = m_alignment_size * instance_count;
-    device.create_buffer(m_buffer_size, usage_flags, memory_property_flags,
-                         m_buffer, m_memory);
+    device.create_buffer(m_buffer_size,
+                         usage_flags,
+                         memory_property_flags,
+                         m_buffer,
+                         m_memory);
   }
 
   EspBuffer::~EspBuffer()
@@ -69,7 +74,11 @@ namespace esp
   VkResult EspBuffer::map(VkDeviceSize size, VkDeviceSize offset)
   {
     assert(m_buffer && m_memory && "Called map on buffer before create");
-    return vkMapMemory(m_device.get_device(), m_memory, offset, size, 0,
+    return vkMapMemory(m_device.get_device(),
+                       m_memory,
+                       offset,
+                       size,
+                       0,
                        &m_mapped);
   }
 
@@ -97,8 +106,8 @@ namespace esp
    * @param offset (Optional) Byte offset from beginning of mapped region
    *
    */
-  void EspBuffer::write_to_buffer(void* data, VkDeviceSize size,
-                                  VkDeviceSize offset)
+  void
+  EspBuffer::write_to_buffer(void* data, VkDeviceSize size, VkDeviceSize offset)
   {
     assert(m_mapped && "Cannot copy to unmapped buffer");
 
@@ -150,7 +159,8 @@ namespace esp
     mapped_range.memory              = m_memory;
     mapped_range.offset              = offset;
     mapped_range.size                = size;
-    return vkInvalidateMappedMemoryRanges(m_device.get_device(), 1,
+    return vkInvalidateMappedMemoryRanges(m_device.get_device(),
+                                          1,
                                           &mapped_range);
   }
 

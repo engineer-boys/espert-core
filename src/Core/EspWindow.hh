@@ -26,7 +26,8 @@ namespace esp
       EventManagerFun m_events_manager_fun;
 
       WindowData(const std::string title = "Espert window",
-                 unsigned int width = 1280, unsigned int height = 720) :
+                 unsigned int width      = 1280,
+                 unsigned int height     = 720) :
           m_title(title),
           m_width(width), m_height(height)
       {

@@ -22,8 +22,10 @@ namespace esp
      public:
       Builder(EspDevice& device) : m_device{ device } {}
 
-      Builder& add_binding(uint32_t binding, VkDescriptorType descriptor_type,
-                           VkShaderStageFlags stage_flags, uint32_t count = 1);
+      Builder& add_binding(uint32_t binding,
+                           VkDescriptorType descriptor_type,
+                           VkShaderStageFlags stage_flags,
+                           uint32_t count = 1);
       std::unique_ptr<EspDescriptorSetLayout> build() const;
     };
 
@@ -74,7 +76,8 @@ namespace esp
     VkDescriptorPool m_descriptor_pool;
 
    public:
-    EspDescriptorPool(EspDevice& device, uint32_t maxSets,
+    EspDescriptorPool(EspDevice& device,
+                      uint32_t maxSets,
                       VkDescriptorPoolCreateFlags pool_flags,
                       const std::vector<VkDescriptorPoolSize>& pool_sizes);
     ~EspDescriptorPool();

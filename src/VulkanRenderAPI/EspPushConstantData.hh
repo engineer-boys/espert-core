@@ -20,10 +20,13 @@ namespace esp
     template<typename T>
     inline void bind(VkCommandBuffer command_buffer, VkPipelineLayout layout)
     {
-      vkCmdPushConstants(command_buffer, layout,
+      vkCmdPushConstants(command_buffer,
+                         layout,
                          VK_SHADER_STAGE_VERTEX_BIT |
                              VK_SHADER_STAGE_FRAGMENT_BIT,
-                         0, sizeof(T), this);
+                         0,
+                         sizeof(T),
+                         this);
     }
   };
 } // namespace esp

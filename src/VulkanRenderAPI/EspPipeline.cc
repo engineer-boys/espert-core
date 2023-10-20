@@ -68,8 +68,10 @@ namespace esp
 
     pipeline_config.m_render_pass = render_pass;
 
-    return std::make_unique<EspPipeline>(m_device, m_vert_shader_path,
-                                         m_frag_shader_path, pipeline_config);
+    return std::make_unique<EspPipeline>(m_device,
+                                         m_vert_shader_path,
+                                         m_frag_shader_path,
+                                         pipeline_config);
   }
 
   std::unique_ptr<EspPipelineLayout>
@@ -78,7 +80,9 @@ namespace esp
       VkPipelineLayoutCreateInfo create_info)
   {
     VkPipelineLayout pipeline_layout{};
-    if (vkCreatePipelineLayout(m_device.get_device(), &create_info, nullptr,
+    if (vkCreatePipelineLayout(m_device.get_device(),
+                               &create_info,
+                               nullptr,
                                &pipeline_layout) != VK_SUCCESS)
     {
       ESP_CORE_ERROR("Failed to create pipeline layout");
@@ -200,8 +204,11 @@ namespace esp
     pipeline_info.basePipelineIndex  = -1;
     pipeline_info.basePipelineHandle = VK_NULL_HANDLE;
 
-    if (vkCreateGraphicsPipelines(m_device.get_device(), VK_NULL_HANDLE, 1,
-                                  &pipeline_info, nullptr,
+    if (vkCreateGraphicsPipelines(m_device.get_device(),
+                                  VK_NULL_HANDLE,
+                                  1,
+                                  &pipeline_info,
+                                  nullptr,
                                   &m_graphics_pipeline) != VK_SUCCESS)
     {
       ESP_CORE_ERROR("Failed to create graphics pipeline");
@@ -217,7 +224,9 @@ namespace esp
     create_info.codeSize = code.size();
     create_info.pCode    = reinterpret_cast<const uint32_t*>(code.data());
 
-    if (vkCreateShaderModule(m_device.get_device(), &create_info, nullptr,
+    if (vkCreateShaderModule(m_device.get_device(),
+                             &create_info,
+                             nullptr,
                              shader_module) != VK_SUCCESS)
     {
       ESP_CORE_ERROR("Failed to create shader module");
@@ -227,7 +236,8 @@ namespace esp
 
   void EspPipeline::bind(VkCommandBuffer command_buffer)
   {
-    vkCmdBindPipeline(command_buffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+    vkCmdBindPipeline(command_buffer,
+                      VK_PIPELINE_BIND_POINT_GRAPHICS,
                       m_graphics_pipeline);
   }
 

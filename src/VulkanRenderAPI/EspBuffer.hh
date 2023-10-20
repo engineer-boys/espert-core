@@ -21,8 +21,10 @@ namespace esp
     VkMemoryPropertyFlags m_memory_property_flags;
 
    public:
-    EspBuffer(EspDevice& device, VkDeviceSize instance_size,
-              uint32_t instance_count, VkBufferUsageFlags usage_flags,
+    EspBuffer(EspDevice& device,
+              VkDeviceSize instance_size,
+              uint32_t instance_count,
+              VkBufferUsageFlags usage_flags,
               VkMemoryPropertyFlags memory_property_flags,
               VkDeviceSize min_offset_alignment = 1);
     ~EspBuffer();
@@ -33,7 +35,8 @@ namespace esp
     VkResult map(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
     void unmap();
 
-    void write_to_buffer(void* data, VkDeviceSize size = VK_WHOLE_SIZE,
+    void write_to_buffer(void* data,
+                         VkDeviceSize size   = VK_WHOLE_SIZE,
                          VkDeviceSize offset = 0);
     VkResult flush(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
     VkDescriptorBufferInfo descriptor_info(VkDeviceSize size   = VK_WHOLE_SIZE,

@@ -107,7 +107,8 @@ namespace esp
         static_cast<uint32_t>(clear_values.size());
     render_pass_info.pClearValues = clear_values.data();
 
-    vkCmdBeginRenderPass(command_buffer, &render_pass_info,
+    vkCmdBeginRenderPass(command_buffer,
+                         &render_pass_info,
                          VK_SUBPASS_CONTENTS_INLINE);
 
     VkViewport viewport{};
@@ -149,7 +150,8 @@ namespace esp
     allocate_info.commandBufferCount =
         static_cast<uint32_t>(m_command_buffers.size());
 
-    if (vkAllocateCommandBuffers(m_device.get_device(), &allocate_info,
+    if (vkAllocateCommandBuffers(m_device.get_device(),
+                                 &allocate_info,
                                  m_command_buffers.data()) != VK_SUCCESS)
     {
       ESP_CORE_ERROR("Failed to allocate command buffers");
@@ -159,7 +161,8 @@ namespace esp
 
   void EspFrameScheduler::free_command_buffers()
   {
-    vkFreeCommandBuffers(m_device.get_device(), m_device.get_command_pool(),
+    vkFreeCommandBuffers(m_device.get_device(),
+                         m_device.get_command_pool(),
                          static_cast<uint32_t>(m_command_buffers.size()),
                          m_command_buffers.data());
     m_command_buffers.clear();

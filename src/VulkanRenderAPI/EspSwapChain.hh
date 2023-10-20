@@ -39,7 +39,8 @@ namespace esp
     static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
     EspSwapChain(EspDevice& device_ref, VkExtent2D window_extent);
-    EspSwapChain(EspDevice& device_ref, VkExtent2D window_extent,
+    EspSwapChain(EspDevice& device_ref,
+                 VkExtent2D window_extent,
                  std::shared_ptr<EspSwapChain> previous);
     ~EspSwapChain();
 
