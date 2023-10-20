@@ -68,6 +68,21 @@ namespace esp
                                  nullptr);
   }
 
+  // *************** Descriptor Set *********************
+
+  void EspDescriptorSet::bind(VkCommandBuffer command_buffer,
+                              VkPipelineLayout pipeline_layout)
+  {
+    vkCmdBindDescriptorSets(command_buffer,
+                            VK_PIPELINE_BIND_POINT_GRAPHICS,
+                            pipeline_layout,
+                            0,
+                            1,
+                            &m_descriptor_set,
+                            0,
+                            nullptr);
+  }
+
   // *************** Descriptor Pool Builder *********************
 
   EspDescriptorPool::Builder&
@@ -223,21 +238,20 @@ namespace esp
     return *this;
   }
 
-  bool EspDescriptorWriter::build(VkDescriptorSet& set)
+  bool EspDescriptorWriter::build(EspDescriptorSet& set)
   {
     bool success =
-        pool.allocate_descriptor_set(m_set_layout.get_descriptor_set_layout(),
-                                     set);
+        pool.allocate_descriptor_set(m_set_layout.get_layout(), set.get_set());
     if (!success) { return false; }
     overwrite(set);
     return true;
   }
 
-  void EspDescriptorWriter::overwrite(VkDescriptorSet& set)
+  void EspDescriptorWriter::overwrite(EspDescriptorSet& set)
   {
     for (auto& write : writes)
     {
-      write.dstSet = set;
+      write.dstSet = set.get_set();
     }
     vkUpdateDescriptorSets(pool.m_device.get_device(),
                            writes.size(),

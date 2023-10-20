@@ -68,11 +68,14 @@ namespace esp
 
       Builder& set_vert_shader_path(const std::string& path);
       Builder& set_frag_shader_path(const std::string& path);
-      std::unique_ptr<EspPipelineLayout> build_pipeline_layout(
-          PipelineConfigInfo&
-              pipeline_config); // TODO: add descriptor set layout
+      std::unique_ptr<EspPipelineLayout>
+      build_pipeline_layout(PipelineConfigInfo& pipeline_config);
       std::unique_ptr<EspPipelineLayout>
       build_pipeline_layout(PipelineConfigInfo& pipeline_config,
+                            VkPushConstantRange push_constant_range);
+      std::unique_ptr<EspPipelineLayout>
+      build_pipeline_layout(PipelineConfigInfo& pipeline_config,
+                            VkDescriptorSetLayout set_layout,
                             VkPushConstantRange push_constant_range);
       std::unique_ptr<EspPipeline>
       build_pipeline(PipelineConfigInfo& pipeline_config,

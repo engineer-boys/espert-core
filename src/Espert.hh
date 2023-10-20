@@ -16,6 +16,7 @@
 #include "Core/ClientPoint.hh"
 #include "Renderer/Camera.hh"
 #include "Scene/Components/Components.hh"
+#include "VulkanRenderAPI/EspDescriptors.hh"
 #include "VulkanRenderAPI/EspPipeline.hh"
 #include "VulkanRenderAPI/EspPushConstantData.hh"
 #include "VulkanRenderAPI/EspRenderContext.hh"
