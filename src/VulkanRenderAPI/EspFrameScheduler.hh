@@ -6,7 +6,6 @@
 #include "EspSwapChain.hh"
 
 // std
-#include <cassert>
 #include <memory>
 #include <vector>
 
@@ -35,15 +34,15 @@ namespace esp
 
     inline VkCommandBuffer get_current_command_buffer() const
     {
-      assert(m_frame_started &&
-             "Cannot get command buffer if frame hasn't started");
+      ESP_ASSERT(m_frame_started,
+                 "Cannot get command buffer if frame hasn't started")
       return m_command_buffers[m_current_frame_index];
     }
 
     inline int get_current_frame_index()
     {
-      assert(m_frame_started &&
-             "Cannot get frame index if frame hasn't started");
+      ESP_ASSERT(m_frame_started,
+                 "Cannot get frame index if frame hasn't started")
       return m_current_frame_index;
     }
 

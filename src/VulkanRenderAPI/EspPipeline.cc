@@ -2,7 +2,6 @@
 #include "Scene/Components/Components.hh"
 
 // std
-#include <cassert>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
@@ -63,8 +62,8 @@ namespace esp
   EspPipeline::Builder::build_pipeline(esp::PipelineConfigInfo& pipeline_config,
                                        VkRenderPass render_pass)
   {
-    assert(pipeline_config.m_pipeline_layout != nullptr &&
-           "Can't create pipeline before pipeline layout");
+    ESP_ASSERT(pipeline_config.m_pipeline_layout != nullptr,
+               "Can't create pipeline before pipeline layout")
 
     pipeline_config.m_render_pass = render_pass;
 
@@ -135,12 +134,13 @@ namespace esp
                                         const std::string& shader_frag_path,
                                         const PipelineConfigInfo& config_info)
   {
-    assert(config_info.m_pipeline_layout != VK_NULL_HANDLE &&
-           "Cannot create graphics pipeline: no m_pipeline_layout provided on "
-           "config_info");
-    assert(config_info.m_render_pass != VK_NULL_HANDLE &&
-           "Cannot create graphics pipeline: no m_render_pass  provided on "
-           "config_info");
+    ESP_ASSERT(
+        config_info.m_pipeline_layout != VK_NULL_HANDLE,
+        "Cannot create graphics pipeline: no m_pipeline_layout provided on "
+        "config_info")
+    ESP_ASSERT(config_info.m_render_pass != VK_NULL_HANDLE,
+               "Cannot create graphics pipeline: no m_render_pass  provided on "
+               "config_info")
 
     auto shader_vert = read_file(shader_vert_path);
     auto shader_frag = read_file(shader_frag_path);

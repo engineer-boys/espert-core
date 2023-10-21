@@ -5,7 +5,6 @@
 #include "external/tinyobjloader/tiny_obj_loader.h"
 
 // std
-#include <cassert>
 #include <unordered_map>
 
 using namespace esp;
@@ -136,7 +135,7 @@ ModelComponent::ModelComponent(EspDevice& device,
 void ModelComponent::create_vertex_buffer(const std::vector<Vertex>& vertices)
 {
   m_vertex_count = static_cast<uint32_t>(vertices.size());
-  assert(m_vertex_count >= 3 && "Vertex count must be at least 3");
+  ESP_ASSERT(m_vertex_count >= 3, "Vertex count must be at least 3")
 
   VkDeviceSize buffer_size = sizeof(vertices[0]) * m_vertex_count;
   uint32_t vertex_size     = sizeof(vertices[0]);

@@ -17,8 +17,8 @@ namespace esp
 
   VkCommandBuffer EspFrameScheduler::begin_frame()
   {
-    assert(!m_frame_started &&
-           "Cannot call begin_frame while frame already in progress");
+    ESP_ASSERT(!m_frame_started,
+               "Cannot call begin_frame while frame already in progress")
 
     auto result = m_swap_chain->acquire_next_image(&m_current_image_index);
 
@@ -53,8 +53,8 @@ namespace esp
 
   void EspFrameScheduler::end_frame()
   {
-    assert(m_frame_started &&
-           "Cannot call end_frame while frame is not in progress");
+    ESP_ASSERT(m_frame_started,
+               "Cannot call end_frame while frame is not in progress")
 
     auto command_buffer = get_current_command_buffer();
     if (vkEndCommandBuffer(command_buffer) != VK_SUCCESS)
@@ -83,11 +83,12 @@ namespace esp
   void EspFrameScheduler::begin_swap_chain_render_pass(
       VkCommandBuffer command_buffer)
   {
-    assert(m_frame_started &&
-           "Cannot call begin_swap_chain_render_pass while frame is not in "
-           "progress");
-    assert(command_buffer == get_current_command_buffer() &&
-           "Cannot begin render pass on command buffer from a different frame");
+    ESP_ASSERT(m_frame_started,
+               "Cannot call begin_swap_chain_render_pass while frame is not in "
+               "progress")
+    ESP_ASSERT(
+        command_buffer == get_current_command_buffer(),
+        "Cannot begin render pass on command buffer from a different frame")
 
     VkRenderPassBeginInfo render_pass_info{};
     render_pass_info.sType      = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -128,10 +129,12 @@ namespace esp
   void
   EspFrameScheduler::end_swap_chain_render_pass(VkCommandBuffer command_buffer)
   {
-    assert(m_frame_started &&
-           "Cannot call end_swap_chain_render_pass while frame is in progress");
-    assert(command_buffer == get_current_command_buffer() &&
-           "Cannot end render pass on command buffer from a different frame");
+    ESP_ASSERT(
+        m_frame_started,
+        "Cannot call end_swap_chain_render_pass while frame is in progress")
+    ESP_ASSERT(
+        command_buffer == get_current_command_buffer(),
+        "Cannot end render pass on command buffer from a different frame")
 
     vkCmdEndRenderPass(command_buffer);
   }
