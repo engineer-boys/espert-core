@@ -1,5 +1,5 @@
-#ifndef ESPERT_CORE_ESPERTWINDOW_HH_
-#define ESPERT_CORE_ESPERTWINDOW_HH_
+#ifndef ESPERT_CORE_ESPERTWINDOW_HH
+#define ESPERT_CORE_ESPERTWINDOW_HH
 
 #include "Core/Events/Event.hh"
 #include "esppch.hh"
@@ -25,11 +25,8 @@ namespace esp
       unsigned int m_height;
       EventManagerFun m_events_manager_fun;
 
-      WindowData(const std::string title = "Espert window",
-                 unsigned int width      = 1280,
-                 unsigned int height     = 720) :
-          m_title(title),
-          m_width(width), m_height(height)
+      WindowData(const std::string title = "Espert window", unsigned int width = 1280, unsigned int height = 720) :
+          m_title(title), m_width(width), m_height(height)
       {
       }
     };
@@ -57,11 +54,9 @@ namespace esp
     inline unsigned int get_height() { return m_data.m_height; }
     inline VkExtent2D get_extent() const
     {
-      return { static_cast<uint32_t>(m_data.m_height),
-               static_cast<uint32_t>(m_data.m_height) };
+      return { static_cast<uint32_t>(m_data.m_height), static_cast<uint32_t>(m_data.m_height) };
     }
-    inline void
-    set_events_manager_fun(const WindowData::EventManagerFun& callback)
+    inline void set_events_manager_fun(const WindowData::EventManagerFun& callback)
     {
       m_data.m_events_manager_fun = callback;
     }
@@ -72,4 +67,4 @@ namespace esp
   };
 } // namespace esp
 
-#endif // ESPERT_CORE_ESPERTWINDOW_HH_
+#endif // ESPERT_CORE_ESPERTWINDOW_HH

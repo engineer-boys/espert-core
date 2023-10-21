@@ -1,5 +1,5 @@
-#ifndef RENDERER_ESP_SWAP_CHAIN_H_
-#define RENDERER_ESP_SWAP_CHAIN_H_
+#ifndef RENDERER_ESP_SWAP_CHAIN_HH
+#define RENDERER_ESP_SWAP_CHAIN_HH
 
 #include "EspDevice.hh"
 
@@ -39,53 +39,33 @@ namespace esp
     static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
     EspSwapChain(EspDevice& device_ref, VkExtent2D window_extent);
-    EspSwapChain(EspDevice& device_ref,
-                 VkExtent2D window_extent,
-                 std::shared_ptr<EspSwapChain> previous);
+    EspSwapChain(EspDevice& device_ref, VkExtent2D window_extent, std::shared_ptr<EspSwapChain> previous);
     ~EspSwapChain();
 
     EspSwapChain(const EspSwapChain&)            = delete;
     EspSwapChain& operator=(const EspSwapChain&) = delete;
 
-    inline VkFramebuffer get_frame_buffer(int index)
-    {
-      return m_swap_chain_framebuffers[index];
-    }
+    inline VkFramebuffer get_frame_buffer(int index) { return m_swap_chain_framebuffers[index]; }
     inline VkRenderPass get_render_pass() { return m_render_pass; }
-    inline VkImageView get_image_view(int index)
-    {
-      return m_swap_chain_image_views[index];
-    }
+    inline VkImageView get_image_view(int index) { return m_swap_chain_image_views[index]; }
     inline size_t image_count() { return m_swap_chain_images.size(); }
-    inline VkFormat get_swap_chain_image_format()
-    {
-      return m_swap_chain_image_format;
-    }
+    inline VkFormat get_swap_chain_image_format() { return m_swap_chain_image_format; }
     inline VkExtent2D get_swap_chain_extent() { return m_swap_chain_extent; }
-    inline uint32_t get_swap_chain_extent_width()
-    {
-      return m_swap_chain_extent.width;
-    }
-    inline uint32_t get_swap_chain_extent_height()
-    {
-      return m_swap_chain_extent.height;
-    }
+    inline uint32_t get_swap_chain_extent_width() { return m_swap_chain_extent.width; }
+    inline uint32_t get_swap_chain_extent_height() { return m_swap_chain_extent.height; }
 
     inline float get_swap_chain_extent_aspect_ratio()
     {
-      return static_cast<float>(m_swap_chain_extent.width) /
-          static_cast<float>(m_swap_chain_extent.height);
+      return static_cast<float>(m_swap_chain_extent.width) / static_cast<float>(m_swap_chain_extent.height);
     }
     VkFormat find_depth_format();
 
     VkResult acquire_next_image(uint32_t* image_index);
-    VkResult submit_command_buffers(const VkCommandBuffer* buffers,
-                                    uint32_t* image_index);
+    VkResult submit_command_buffers(const VkCommandBuffer* buffers, uint32_t* image_index);
 
     inline bool compare_swap_chain_formats(const EspSwapChain& swap_chain) const
     {
-      return swap_chain.m_swap_chain_depth_format ==
-          m_swap_chain_depth_format &&
+      return swap_chain.m_swap_chain_depth_format == m_swap_chain_depth_format &&
           swap_chain.m_swap_chain_image_format == m_swap_chain_image_format;
     }
 
@@ -99,15 +79,12 @@ namespace esp
     void create_sync_objects();
 
     // Helper functions
-    VkSurfaceFormatKHR choose_swap_chain_surface_format(
-        const std::vector<VkSurfaceFormatKHR>& available_formats);
-    VkPresentModeKHR choose_swap_chain_present_mode(
-        const std::vector<VkPresentModeKHR>& available_present_modes);
-    VkExtent2D
-    choose_swap_chain_extent(const VkSurfaceCapabilitiesKHR& capabilities);
+    VkSurfaceFormatKHR choose_swap_chain_surface_format(const std::vector<VkSurfaceFormatKHR>& available_formats);
+    VkPresentModeKHR choose_swap_chain_present_mode(const std::vector<VkPresentModeKHR>& available_present_modes);
+    VkExtent2D choose_swap_chain_extent(const VkSurfaceCapabilitiesKHR& capabilities);
 
     void log_chosen_swap_chain_present_mode(const std::string& mode);
   };
 } // namespace esp
 
-#endif // RENDERER_ESP_SWAP_CHAIN_H_
+#endif // RENDERER_ESP_SWAP_CHAIN_HH

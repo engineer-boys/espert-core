@@ -16,18 +16,13 @@ namespace std
     size_t operator()(const esp::ModelComponent::Vertex& vertex) const
     {
       size_t seed = 0;
-      esp::hashCombine(seed,
-                       vertex.m_position,
-                       vertex.m_color,
-                       vertex.m_normal,
-                       vertex.m_uv);
+      esp::hashCombine(seed, vertex.m_position, vertex.m_color, vertex.m_normal, vertex.m_uv);
       return seed;
     }
   };
 } // namespace std
 
-std::vector<VkVertexInputBindingDescription>
-ModelComponent::Vertex::get_binding_descriptions()
+std::vector<VkVertexInputBindingDescription> ModelComponent::Vertex::get_binding_descriptions()
 {
   std::vector<VkVertexInputBindingDescription> binding_descriptions(1);
   binding_descriptions[0].binding   = 0;
@@ -37,36 +32,26 @@ ModelComponent::Vertex::get_binding_descriptions()
   return binding_descriptions;
 }
 
-std::vector<VkVertexInputAttributeDescription>
-ModelComponent::Vertex::get_attribute_descriptions()
+std::vector<VkVertexInputAttributeDescription> ModelComponent::Vertex::get_attribute_descriptions()
 {
   std::vector<VkVertexInputAttributeDescription> attribute_descriptions{};
 
-  attribute_descriptions.push_back(
-      { 0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, m_position) });
-  attribute_descriptions.push_back(
-      { 1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, m_color) });
-  attribute_descriptions.push_back(
-      { 2, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, m_normal) });
-  attribute_descriptions.push_back(
-      { 3, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, m_uv) });
+  attribute_descriptions.push_back({ 0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, m_position) });
+  attribute_descriptions.push_back({ 1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, m_color) });
+  attribute_descriptions.push_back({ 2, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, m_normal) });
+  attribute_descriptions.push_back({ 3, 0, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, m_uv) });
 
   return attribute_descriptions;
 }
 
-void ModelComponent::Builder::loadModel(const std::string& filepath)
+void ModelComponent::Builder::load_model(const std::string& filepath)
 {
   tinyobj::attrib_t attrib;
   std::vector<tinyobj::shape_t> shapes;
   std::vector<tinyobj::material_t> materials;
   std::string warn, err;
 
-  if (!tinyobj::LoadObj(&attrib,
-                        &shapes,
-                        &materials,
-                        &warn,
-                        &err,
-                        filepath.c_str()))
+  if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, filepath.c_str()))
   {
     ESP_CORE_ERROR("Failed to load object");
     throw std::runtime_error(warn + err);
@@ -117,17 +102,13 @@ void ModelComponent::Builder::loadModel(const std::string& filepath)
   }
 }
 
-ModelComponent::ModelComponent(EspDevice& device,
-                               const ModelComponent::Builder& builder) :
-    m_device{ device }
+ModelComponent::ModelComponent(EspDevice& device, const ModelComponent::Builder& builder) : m_device{ device }
 {
   create_vertex_buffer(builder.m_vertices);
   create_index_buffer(builder.m_indices);
 }
 
-ModelComponent::ModelComponent(EspDevice& device,
-                               const std::vector<Vertex>& vertices) :
-    m_device{ device }
+ModelComponent::ModelComponent(EspDevice& device, const std::vector<Vertex>& vertices) : m_device{ device }
 {
   create_vertex_buffer(vertices);
 }
@@ -152,16 +133,13 @@ void ModelComponent::create_vertex_buffer(const std::vector<Vertex>& vertices)
   staging_buffer.map();
   staging_buffer.write_to_buffer((void*)vertices.data());
 
-  m_vertex_buffer = std::make_unique<EspBuffer>(
-      m_device,
-      vertex_size,
-      m_vertex_count,
-      VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+  m_vertex_buffer = std::make_unique<EspBuffer>(m_device,
+                                                vertex_size,
+                                                m_vertex_count,
+                                                VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+                                                VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-  m_device.copy_buffer(staging_buffer.get_buffer(),
-                       m_vertex_buffer->get_buffer(),
-                       buffer_size);
+  m_device.copy_buffer(staging_buffer.get_buffer(), m_vertex_buffer->get_buffer(), buffer_size);
 }
 
 void ModelComponent::create_index_buffer(const std::vector<uint32_t>& indices)
@@ -186,16 +164,13 @@ void ModelComponent::create_index_buffer(const std::vector<uint32_t>& indices)
   staging_buffer.map();
   staging_buffer.write_to_buffer((void*)indices.data());
 
-  m_index_buffer = std::make_unique<EspBuffer>(
-      m_device,
-      index_size,
-      m_index_count,
-      VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
-      VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+  m_index_buffer = std::make_unique<EspBuffer>(m_device,
+                                               index_size,
+                                               m_index_count,
+                                               VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+                                               VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-  m_device.copy_buffer(staging_buffer.get_buffer(),
-                       m_index_buffer->get_buffer(),
-                       buffer_size);
+  m_device.copy_buffer(staging_buffer.get_buffer(), m_index_buffer->get_buffer(), buffer_size);
 }
 
 void ModelComponent::bind(VkCommandBuffer command_buffer)
@@ -207,17 +182,11 @@ void ModelComponent::bind(VkCommandBuffer command_buffer)
 
   if (m_has_index_buffer)
   {
-    vkCmdBindIndexBuffer(command_buffer,
-                         m_index_buffer->get_buffer(),
-                         0,
-                         VK_INDEX_TYPE_UINT32);
+    vkCmdBindIndexBuffer(command_buffer, m_index_buffer->get_buffer(), 0, VK_INDEX_TYPE_UINT32);
   }
 }
 void ModelComponent::draw(VkCommandBuffer command_buffer)
 {
-  if (m_has_index_buffer)
-  {
-    vkCmdDrawIndexed(command_buffer, m_index_count, 1, 0, 0, 0);
-  }
+  if (m_has_index_buffer) { vkCmdDrawIndexed(command_buffer, m_index_count, 1, 0, 0, 0); }
   else { vkCmdDraw(command_buffer, m_vertex_count, 1, 0, 0); }
 }

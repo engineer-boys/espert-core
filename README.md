@@ -20,6 +20,7 @@ To configure project run:
 ```
 python3 scripts/espert-core.py configure
 ```
+The default compilers are gcc/g++.
 
 To build project run:
 ```
@@ -36,12 +37,28 @@ To reconfigure project with tests and run them use:
 ```
 python3 scripts/espert-core.py -c test
 ```
+To learn more about building options run
+```
+python3 scripts/espert-core.py --help
+```
 
 ## Formatting
+
+Required dependencies for code formatting are:
+- clang-format-17
+- clang-tidy-17
 
 To format code use:
 ```
 python3 scripts/code-format.py
 ```
-By default it runs in src directory. You can change the directory by adding -p flag.\
-To fix coding style errors inplace add -i flag.
+By default it will run both clang-format and clang-tidy. Keep in mind that clang-tidy works only if you use clang and clang++ as project compilers. To rebuild project with clang run
+```
+python3 scripts/espert-core.py -c --clang build
+```
+By default it runs in src/ directory. You can change the directory by adding -p flag.\
+To fix coding style errors inplace add -i flag. To fix suggestions add -x and to fix all errors add -e.\
+To learn more about code formatting options run
+```
+python3 scripts/code-format.py --help
+```

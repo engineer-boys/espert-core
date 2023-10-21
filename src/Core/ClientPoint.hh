@@ -1,15 +1,15 @@
-#ifndef ESPERT_CORE_CLIENTPOINT_HH_
-#define ESPERT_CORE_CLIENTPOINT_HH_
+#ifndef ESPERT_CORE_CLIENTPOINT_HH
+#define ESPERT_CORE_CLIENTPOINT_HH
 
 #include "Application.hh"
 #include "ApplicationContext.hh"
 
-extern esp::Application* esp::createAppInstance();
+extern esp::Application* esp::create_app_instance();
 
 int main(int argc, char** argv)
 {
   auto context                   = esp::ApplicationContext::create();
-  esp::Application* app_instance = esp::createAppInstance();
+  esp::Application* app_instance = esp::create_app_instance();
 
   /* running */
   {
@@ -20,4 +20,4 @@ int main(int argc, char** argv)
   delete app_instance;
 }
 
-#endif // ESPERT_CORE_CLIENTPOINT_HH_
+#endif // ESPERT_CORE_CLIENTPOINT_HH

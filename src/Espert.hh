@@ -1,5 +1,5 @@
-#ifndef ESPERT_ESPERT_HH_
-#define ESPERT_ESPERT_HH_
+#ifndef ESPERT_ESPERT_HH
+#define ESPERT_ESPERT_HH
 
 /* In this header file are all needed headers */
 /* ------------------------------------------ */
@@ -23,4 +23,4 @@
 
 /* ------------------------------------------ */
 
-#endif // ESPERT_ESPERT_HH_
+#endif // ESPERT_ESPERT_HH

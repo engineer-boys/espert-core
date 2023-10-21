@@ -1,5 +1,5 @@
-#ifndef ESPERT_CORE_LAYERS_LAYERSTACK_HH_
-#define ESPERT_CORE_LAYERS_LAYERSTACK_HH_
+#ifndef ESPERT_CORE_LAYERS_LAYERSTACK_HH
+#define ESPERT_CORE_LAYERS_LAYERSTACK_HH
 
 #include "Layer.hh"
 #include "esppch.hh"
@@ -9,8 +9,8 @@ namespace esp
   class LayerStack
   {
    private:
-    std::vector<Layer*> _m_layers;
-    std::vector<Layer*>::iterator _m_head_of_normal_layers;
+    std::vector<Layer*> m_layers;
+    std::vector<Layer*>::iterator m_head_of_normal_layers;
 
    public:
     LayerStack();
@@ -22,9 +22,9 @@ namespace esp
     void pop_layer(Layer* layer);
     void pop_overlayer(Layer* layer);
 
-    std::vector<Layer*>::iterator begin() { return _m_layers.begin(); }
-    std::vector<Layer*>::iterator end() { return _m_layers.end(); }
+    std::vector<Layer*>::iterator begin() { return m_layers.begin(); }
+    std::vector<Layer*>::iterator end() { return m_layers.end(); }
   };
 } // namespace esp
 
-#endif // ESPERT_CORE_LAYERS_LAYERSTACK_HH_
+#endif // ESPERT_CORE_LAYERS_LAYERSTACK_HH

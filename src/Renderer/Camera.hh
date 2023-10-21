@@ -21,12 +21,7 @@ namespace esp::renderer
     Camera(const Camera&)            = delete;
     Camera& operator=(const Camera&) = delete;
 
-    void set_orthographic(float left,
-                          float right,
-                          float top,
-                          float bottom,
-                          float near,
-                          float far);
+    void set_orthographic(float left, float right, float top, float bottom, float near, float far);
     void set_perspective(float fov, float aspect_ratio, float near, float far);
     void set_perspective(float aspect_ratio);
 

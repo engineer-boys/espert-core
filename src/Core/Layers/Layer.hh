@@ -1,5 +1,5 @@
-#ifndef ESPERT_CORE_LAYERS_LAYER_HH_
-#define ESPERT_CORE_LAYERS_LAYER_HH_
+#ifndef ESPERT_CORE_LAYERS_LAYER_HH
+#define ESPERT_CORE_LAYERS_LAYER_HH
 
 #include "../Events/Event.hh"
 
@@ -17,4 +17,4 @@ namespace esp
   };
 } // namespace esp
 
-#endif // ESPERT_CORE_LAYERS_LAYER_HH_
+#endif // ESPERT_CORE_LAYERS_LAYER_HH

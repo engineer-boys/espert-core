@@ -1,5 +1,5 @@
-#ifndef ESPERT_CORE_APPLICATIONCONTEXT_HH_
-#define ESPERT_CORE_APPLICATIONCONTEXT_HH_
+#ifndef ESPERT_CORE_APPLICATIONCONTEXT_HH
+#define ESPERT_CORE_APPLICATIONCONTEXT_HH
 
 #include "esppch.hh"
 
@@ -8,10 +8,10 @@ namespace esp
   class ApplicationContext
   {
    private:
-    static bool _s_is_exist;
+    static bool s_is_exist;
 
    private:
-    std::unique_ptr<Logger> _m_logger;
+    std::unique_ptr<Logger> m_logger;
 
     ApplicationContext();
 
@@ -22,4 +22,4 @@ namespace esp
   };
 } // namespace esp
 
-#endif // ESPERT_CORE_APPLICATIONCONTEXT_HH_
+#endif // ESPERT_CORE_APPLICATIONCONTEXT_HH

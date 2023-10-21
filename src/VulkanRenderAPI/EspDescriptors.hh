@@ -1,5 +1,5 @@
-#ifndef RENDERER_ESP_DESCRIPTORS_H_
-#define RENDERER_ESP_DESCRIPTORS_H_
+#ifndef RENDERER_ESP_DESCRIPTORS_HH
+#define RENDERER_ESP_DESCRIPTORS_HH
 
 #include "EspDevice.hh"
 
@@ -35,18 +35,13 @@ namespace esp
     std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> m_bindings;
 
    public:
-    EspDescriptorSetLayout(
-        EspDevice& device,
-        std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings);
+    EspDescriptorSetLayout(EspDevice& device, std::unordered_map<uint32_t, VkDescriptorSetLayoutBinding> bindings);
     ~EspDescriptorSetLayout();
 
     EspDescriptorSetLayout(const EspDescriptorSetLayout&)            = delete;
     EspDescriptorSetLayout& operator=(const EspDescriptorSetLayout&) = delete;
 
-    inline VkDescriptorSetLayout get_layout() const
-    {
-      return m_descriptor_set_layout;
-    }
+    inline VkDescriptorSetLayout get_layout() const { return m_descriptor_set_layout; }
 
     friend class EspDescriptorWriter;
   };
@@ -95,16 +90,14 @@ namespace esp
 
    public:
     EspDescriptorPool(EspDevice& device,
-                      uint32_t maxSets,
+                      uint32_t max_sets,
                       VkDescriptorPoolCreateFlags pool_flags,
                       const std::vector<VkDescriptorPoolSize>& pool_sizes);
     ~EspDescriptorPool();
     EspDescriptorPool(const EspDescriptorPool&)            = delete;
     EspDescriptorPool& operator=(const EspDescriptorPool&) = delete;
 
-    bool
-    allocate_descriptor_set(const VkDescriptorSetLayout& descriptor_set_layout,
-                            VkDescriptorSet& descriptor) const;
+    bool allocate_descriptor_set(const VkDescriptorSetLayout& descriptor_set_layout, VkDescriptorSet& descriptor) const;
 
     void free_descriptors(std::vector<VkDescriptorSet>& descriptors) const;
 
@@ -117,21 +110,18 @@ namespace esp
   {
    private:
     EspDescriptorSetLayout& m_set_layout;
-    EspDescriptorPool& pool;
-    std::vector<VkWriteDescriptorSet> writes;
+    EspDescriptorPool& m_pool;
+    std::vector<VkWriteDescriptorSet> m_writes;
 
    public:
-    EspDescriptorWriter(EspDescriptorSetLayout& set_layout,
-                        EspDescriptorPool& pool);
+    EspDescriptorWriter(EspDescriptorSetLayout& set_layout, EspDescriptorPool& pool);
 
-    EspDescriptorWriter& write_buffer(uint32_t binding,
-                                      VkDescriptorBufferInfo* buffer_info);
-    EspDescriptorWriter& write_image(uint32_t binding,
-                                     VkDescriptorImageInfo* image_info);
+    EspDescriptorWriter& write_buffer(uint32_t binding, VkDescriptorBufferInfo* buffer_info);
+    EspDescriptorWriter& write_image(uint32_t binding, VkDescriptorImageInfo* image_info);
 
     bool build(EspDescriptorSet& set);
     void overwrite(EspDescriptorSet& set);
   };
 } // namespace esp
 
-#endif // RENDERER_ESP_DESCRIPTORS_H_
+#endif // RENDERER_ESP_DESCRIPTORS_HH
