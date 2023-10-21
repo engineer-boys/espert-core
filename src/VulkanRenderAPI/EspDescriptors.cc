@@ -1,7 +1,6 @@
 #include "EspDescriptors.hh"
 
 // std
-#include <cassert>
 #include <stdexcept>
 
 namespace esp
@@ -14,7 +13,7 @@ namespace esp
                                                VkShaderStageFlags stage_flags,
                                                uint32_t count)
   {
-    assert(m_bindings.count(binding) == 0 && "Binding already in use");
+    ESP_ASSERT(m_bindings.count(binding) == 0, "Binding already in use")
     VkDescriptorSetLayoutBinding layout_binding{};
     layout_binding.binding         = binding;
     layout_binding.descriptorType  = descriptor_type;
@@ -181,13 +180,13 @@ namespace esp
   EspDescriptorWriter::write_buffer(uint32_t binding,
                                     VkDescriptorBufferInfo* buffer_info)
   {
-    assert(m_set_layout.m_bindings.count(binding) == 1 &&
-           "Layout does not contain specified binding");
+    ESP_ASSERT(m_set_layout.m_bindings.count(binding) == 1,
+               "Layout does not contain specified binding")
 
     auto& binding_description = m_set_layout.m_bindings[binding];
 
-    assert(binding_description.descriptorCount == 1 &&
-           "Binding single descriptor info, but binding expects multiple");
+    ESP_ASSERT(binding_description.descriptorCount == 1,
+               "Binding single descriptor info, but binding expects multiple")
 
     VkWriteDescriptorSet write{};
     write.sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -204,13 +203,13 @@ namespace esp
   EspDescriptorWriter::write_image(uint32_t binding,
                                    VkDescriptorImageInfo* image_info)
   {
-    assert(m_set_layout.m_bindings.count(binding) == 1 &&
-           "Layout does not contain specified binding");
+    ESP_ASSERT(m_set_layout.m_bindings.count(binding) == 1,
+               "Layout does not contain specified binding")
 
     auto& binding_description = m_set_layout.m_bindings[binding];
 
-    assert(binding_description.descriptorCount == 1 &&
-           "Binding single descriptor info, but binding expects multiple");
+    ESP_ASSERT(binding_description.descriptorCount == 1,
+               "Binding single descriptor info, but binding expects multiple");
 
     VkWriteDescriptorSet write{};
     write.sType           = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;

@@ -8,7 +8,6 @@
 #include "EspBuffer.hh"
 
 // std
-#include <cassert>
 #include <cstring>
 
 namespace esp
@@ -73,7 +72,7 @@ namespace esp
    */
   VkResult EspBuffer::map(VkDeviceSize size, VkDeviceSize offset)
   {
-    assert(m_buffer && m_memory && "Called map on buffer before create");
+    ESP_ASSERT(m_buffer && m_memory, "Called map on buffer before create")
     return vkMapMemory(m_device.get_device(),
                        m_memory,
                        offset,
@@ -109,7 +108,7 @@ namespace esp
   void
   EspBuffer::write_to_buffer(void* data, VkDeviceSize size, VkDeviceSize offset)
   {
-    assert(m_mapped && "Cannot copy to unmapped buffer");
+    ESP_ASSERT(m_mapped, "Cannot copy to unmapped buffer")
 
     if (size == VK_WHOLE_SIZE) { memcpy(m_mapped, data, m_buffer_size); }
     else

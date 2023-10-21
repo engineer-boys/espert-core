@@ -17,8 +17,9 @@ namespace esp
                                          float near,
                                          float far)
   {
-    assert(glm::abs(aspect_ratio - std::numeric_limits<float>::epsilon()) >
-           0.0f);
+    ESP_ASSERT(glm::abs(aspect_ratio - std::numeric_limits<float>::epsilon()) >
+                   0.0f,
+               "")
 
     m_projection_mat = glm::perspective(fov, aspect_ratio, near, far);
     m_projection_mat[2][2] *= -1;
