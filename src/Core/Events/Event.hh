@@ -1,5 +1,5 @@
-#ifndef ESPERT_CORE_EVENT_HH_
-#define ESPERT_CORE_EVENT_HH_
+#ifndef ESPERT_CORE_EVENT_HH
+#define ESPERT_CORE_EVENT_HH
 
 #include "esppch.hh"
 
@@ -45,8 +45,7 @@ namespace esp
 
     inline bool is_type(EventType type) { return get_type() & type; }
 
-    template<typename T>
-    static bool try_hanlder(Event& event, EventHandler<T> handler)
+    template<typename T> static bool try_hanlder(Event& event, EventHandler<T> handler)
     {
       if (event.get_subtype() == T::get_class_subtype())
       {
@@ -59,17 +58,11 @@ namespace esp
   };
 } // namespace esp
 
-#define EVENT_CLASS_SUBTYPE(subtype)                            \
-  static esp::Event::EventSubtype get_class_subtype()           \
-  {                                                             \
-    return esp::Event::EventSubtype::subtype;                   \
-  }                                                             \
-  virtual esp::Event::EventSubtype get_subtype() const override \
-  {                                                             \
-    return get_class_subtype();                                 \
-  }
+#define EVENT_CLASS_SUBTYPE(subtype)                                                                \
+  static esp::Event::EventSubtype get_class_subtype() { return esp::Event::EventSubtype::subtype; } \
+  virtual esp::Event::EventSubtype get_subtype() const override { return get_class_subtype(); }
 
 #define EVENT_CLASS_TYPE(type) \
   virtual int get_type() const override { return type; }
 
-#endif // ESPERT_CORE_EVENT_HH_
+#endif // ESPERT_CORE_EVENT_HH

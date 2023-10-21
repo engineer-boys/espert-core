@@ -1,5 +1,5 @@
-#ifndef ESP_RENDERER_H_
-#define ESP_RENDERER_H_
+#ifndef ESP_RENDERER_HH
+#define ESP_RENDERER_HH
 
 #include "Core/EspWindow.hh"
 #include "EspDevice.hh"
@@ -34,29 +34,21 @@ namespace esp
 
     inline VkCommandBuffer get_current_command_buffer() const
     {
-      ESP_ASSERT(m_frame_started,
-                 "Cannot get command buffer if frame hasn't started")
+      ESP_ASSERT(m_frame_started, "Cannot get command buffer if frame hasn't started")
       return m_command_buffers[m_current_frame_index];
     }
 
     inline int get_current_frame_index()
     {
-      ESP_ASSERT(m_frame_started,
-                 "Cannot get frame index if frame hasn't started")
+      ESP_ASSERT(m_frame_started, "Cannot get frame index if frame hasn't started")
       return m_current_frame_index;
     }
 
     VkCommandBuffer begin_frame();
     void end_frame();
 
-    inline VkRenderPass get_swap_chain_render_pass() const
-    {
-      return m_swap_chain->get_render_pass();
-    };
-    inline float get_aspect_ratio() const
-    {
-      return m_swap_chain->get_swap_chain_extent_aspect_ratio();
-    };
+    inline VkRenderPass get_swap_chain_render_pass() const { return m_swap_chain->get_render_pass(); };
+    inline float get_aspect_ratio() const { return m_swap_chain->get_swap_chain_extent_aspect_ratio(); };
     void begin_swap_chain_render_pass(VkCommandBuffer command_buffer);
     void end_swap_chain_render_pass(VkCommandBuffer command_buffer);
 
@@ -69,4 +61,4 @@ namespace esp
   };
 } // namespace esp
 
-#endif // ESP_RENDERER_H_
+#endif // ESP_RENDERER_HH

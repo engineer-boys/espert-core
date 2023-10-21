@@ -1,5 +1,5 @@
-#ifndef ESPERT_CORE_KEYEVENT_H_
-#define ESPERT_CORE_KEYEVENT_H_
+#ifndef ESPERT_CORE_KEYEVENT_H
+#define ESPERT_CORE_KEYEVENT_H
 
 #include "Event.hh"
 
@@ -8,12 +8,12 @@ namespace esp
   class KeyEvent : public Event
   {
    protected:
-    int _m_key_code;
+    int m_key_code;
 
-    KeyEvent(int code) : _m_key_code(code) {}
+    KeyEvent(int code) : m_key_code(code) {}
 
    public:
-    inline int get_code() const { return _m_key_code; }
+    inline int get_code() const { return m_key_code; }
 
     EVENT_CLASS_TYPE(EventType::EventTypeInput | EventType::EventTypeKeyboard)
   };
@@ -21,15 +21,12 @@ namespace esp
   class KeyPressedEvent : public KeyEvent
   {
    private:
-    bool _m_is_repeated;
+    bool m_is_repeated;
 
    public:
-    KeyPressedEvent(int code, bool is_repeated) :
-        KeyEvent(code), _m_is_repeated(is_repeated)
-    {
-    }
+    KeyPressedEvent(int code, bool is_repeated) : KeyEvent(code), m_is_repeated(is_repeated) {}
 
-    inline bool is_repeated() const { return _m_is_repeated; }
+    inline bool is_repeated() const { return m_is_repeated; }
 
     EVENT_CLASS_SUBTYPE(KeyPressed)
   };
@@ -43,4 +40,4 @@ namespace esp
   };
 } // namespace esp
 
-#endif // ESPERT_CORE_KEYEVENT_H_
+#endif // ESPERT_CORE_KEYEVENT_H

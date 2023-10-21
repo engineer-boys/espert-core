@@ -1,5 +1,5 @@
-#ifndef COMPONENTS_COLOR_COMPONENT_H_
-#define COMPONENTS_COLOR_COMPONENT_H_
+#ifndef COMPONENTS_COLOR_COMPONENT_H
+#define COMPONENTS_COLOR_COMPONENT_H
 
 namespace esp
 {
@@ -9,4 +9,4 @@ namespace esp
   };
 } // namespace esp
 
-#endif // COMPONENTS_COLOR_COMPONENT_H_
+#endif // COMPONENTS_COLOR_COMPONENT_H

@@ -146,7 +146,7 @@ def get_parser() -> ArgumentParser:
                                   action='store_const',
                                   dest='build_type',
                                   const=BuildType.DEBUG,
-                                  help='Use debug configuration.')
+                                  help='Use debug configuration. (default)')
     build_type_group.add_argument('-r',
                                   '--release',
                                   action='store_const',
@@ -160,7 +160,7 @@ def get_parser() -> ArgumentParser:
                                           action='store_const',
                                           dest='compiler',
                                           const=Compiler.GCC,
-                                          help='Pick gcc and g++ as project compilers.')
+                                          help='Pick gcc and g++ as project compilers. (default)')
     compiler_selection_group.add_argument('--clang',
                                           action='store_const',
                                           dest='compiler',
@@ -190,7 +190,7 @@ def get_parser() -> ArgumentParser:
                               required=False,
                               type=int,
                               default=get_number_of_jobs(),
-                              help='Number of paralell jobs during build.')
+                              help='Number of paralell jobs during build. (default: max system threads - 2)')
     main_parser.add_argument('-w',
                              '--wsi',
                              required=False,

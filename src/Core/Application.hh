@@ -1,5 +1,5 @@
-#ifndef ESPERT_CORE_APPLICATION_HH_
-#define ESPERT_CORE_APPLICATION_HH_
+#ifndef ESPERT_CORE_APPLICATION_HH
+#define ESPERT_CORE_APPLICATION_HH
 
 #include "ApplicationContext.hh"
 #include "EspWindow.hh"
@@ -14,19 +14,19 @@ namespace esp
   class Application
   {
    private:
-    std::unique_ptr<ApplicationContext> _m_context;
-    std::unique_ptr<EspWindow> _m_window;
+    std::unique_ptr<ApplicationContext> m_context;
+    std::unique_ptr<EspWindow> m_window;
 
-    bool _m_running;
+    bool m_running;
 
-    LayerStack* _m_layer_stack;
+    LayerStack* m_layer_stack;
 
    private:
     bool on_window_resized(WindowResizedEvent& e);
     bool on_window_closed(WindowClosedEvent& e);
 
    protected:
-    inline EspWindow& get_window() { return *_m_window; }
+    inline EspWindow& get_window() { return *m_window; }
 
    public:
     Application();
@@ -34,15 +34,15 @@ namespace esp
 
     void run();
     void set_context(std::unique_ptr<ApplicationContext> context);
-    void events_manager(Event& e);
+    void eventsmanager(Event& e);
 
     void push_layer(Layer* layer);
     void push_overlayer(Layer* layer);
   };
 
   /* This function is defined by CLIENT */
-  Application* createAppInstance();
+  Application* create_app_instance();
 
 } // namespace esp
 
-#endif // ESPERT_CORE_APPLICATION_HH_
+#endif // ESPERT_CORE_APPLICATION_HH

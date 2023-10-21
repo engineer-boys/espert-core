@@ -1,5 +1,5 @@
-#ifndef RENDERER_ESP_PIPELINE_H_
-#define RENDERER_ESP_PIPELINE_H_
+#ifndef RENDERER_ESP_PIPELINE_HH
+#define RENDERER_ESP_PIPELINE_HH
 
 #include "EspDevice.hh"
 #include "EspPushConstantData.hh"
@@ -39,10 +39,7 @@ namespace esp
     VkPipelineLayout m_pipeline_layout;
 
    public:
-    EspPipelineLayout(VkPipelineLayout pipeline_layout) :
-        m_pipeline_layout{ pipeline_layout }
-    {
-    }
+    EspPipelineLayout(VkPipelineLayout pipeline_layout) : m_pipeline_layout{ pipeline_layout } {}
 
     EspPipelineLayout(const EspPipelineLayout&)            = delete;
     EspPipelineLayout& operator=(const EspPipelineLayout&) = delete;
@@ -68,23 +65,17 @@ namespace esp
 
       Builder& set_vert_shader_path(const std::string& path);
       Builder& set_frag_shader_path(const std::string& path);
-      std::unique_ptr<EspPipelineLayout>
-      build_pipeline_layout(PipelineConfigInfo& pipeline_config);
-      std::unique_ptr<EspPipelineLayout>
-      build_pipeline_layout(PipelineConfigInfo& pipeline_config,
-                            VkPushConstantRange push_constant_range);
-      std::unique_ptr<EspPipelineLayout>
-      build_pipeline_layout(PipelineConfigInfo& pipeline_config,
-                            VkDescriptorSetLayout set_layout,
-                            VkPushConstantRange push_constant_range);
-      std::unique_ptr<EspPipeline>
-      build_pipeline(PipelineConfigInfo& pipeline_config,
-                     VkRenderPass render_pass);
+      std::unique_ptr<EspPipelineLayout> build_pipeline_layout(PipelineConfigInfo& pipeline_config);
+      std::unique_ptr<EspPipelineLayout> build_pipeline_layout(PipelineConfigInfo& pipeline_config,
+                                                               VkPushConstantRange push_constant_range);
+      std::unique_ptr<EspPipelineLayout> build_pipeline_layout(PipelineConfigInfo& pipeline_config,
+                                                               VkDescriptorSetLayout set_layout,
+                                                               VkPushConstantRange push_constant_range);
+      std::unique_ptr<EspPipeline> build_pipeline(PipelineConfigInfo& pipeline_config, VkRenderPass render_pass);
 
      private:
-      std::unique_ptr<EspPipelineLayout>
-      create_pipeline_layout(PipelineConfigInfo& pipeline_config,
-                             VkPipelineLayoutCreateInfo create_info);
+      std::unique_ptr<EspPipelineLayout> create_pipeline_layout(PipelineConfigInfo& pipeline_config,
+                                                                VkPipelineLayoutCreateInfo create_info);
     };
 
    private:
@@ -114,9 +105,8 @@ namespace esp
     void create_graphics_pipeline(const std::string& shader_vert_path,
                                   const std::string& shader_frag_path,
                                   const PipelineConfigInfo& config_info);
-    void create_shader_module(const std::vector<char>& code,
-                              VkShaderModule* shader_module);
+    void create_shader_module(const std::vector<char>& code, VkShaderModule* shader_module);
   };
 } // namespace esp
 
-#endif // RENDERER_ESP_PIPELINE_H_
+#endif // RENDERER_ESP_PIPELINE_HH

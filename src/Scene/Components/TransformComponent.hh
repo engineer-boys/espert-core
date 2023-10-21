@@ -1,5 +1,5 @@
-#ifndef COMPONENTS_TRANSFORM_COMPONENT_H_
-#define COMPONENTS_TRANSFORM_COMPONENT_H_
+#ifndef COMPONENTS_TRANSFORM_COMPONENT_H
+#define COMPONENTS_TRANSFORM_COMPONENT_H
 
 namespace esp
 {
@@ -11,11 +11,8 @@ namespace esp
 
     TransformComponent()                          = default;
     TransformComponent(const TransformComponent&) = default;
-    TransformComponent(const glm::vec3& translation,
-                       const glm::vec3& scale,
-                       const glm::vec3& rotation) :
-        m_translation{ translation },
-        m_scale{ scale }, m_rotation{ rotation }
+    TransformComponent(const glm::vec3& translation, const glm::vec3& scale, const glm::vec3& rotation) :
+        m_translation{ translation }, m_scale{ scale }, m_rotation{ rotation }
     {
     }
 
@@ -27,4 +24,4 @@ namespace esp
 
 } // namespace esp
 
-#endif // COMPONENTS_TRANSFORM_COMPONENT_H_
+#endif // COMPONENTS_TRANSFORM_COMPONENT_H

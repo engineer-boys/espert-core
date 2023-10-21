@@ -1,5 +1,5 @@
-#ifndef ESPERT_ESPPCH_HH_
-#define ESPERT_ESPPCH_HH_
+#ifndef ESPERT_ESPPCH_HH
+#define ESPERT_ESPPCH_HH
 
 #include <algorithm>
 #include <functional>
@@ -25,4 +25,4 @@
 #include "Core/Core.hh"
 #include "Core/Logger.hh"
 
-#endif // ESPERT_ESPPCH_HH_
+#endif // ESPERT_ESPPCH_HH

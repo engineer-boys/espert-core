@@ -6,8 +6,7 @@
 
 namespace esp
 {
-  EspFrameScheduler::EspFrameScheduler(EspWindow& window, EspDevice& device) :
-      m_window{ window }, m_device{ device }
+  EspFrameScheduler::EspFrameScheduler(EspWindow& window, EspDevice& device) : m_window{ window }, m_device{ device }
   {
     recreate_swap_chain();
     create_command_buffers();
@@ -17,8 +16,7 @@ namespace esp
 
   VkCommandBuffer EspFrameScheduler::begin_frame()
   {
-    ESP_ASSERT(!m_frame_started,
-               "Cannot call begin_frame while frame already in progress")
+    ESP_ASSERT(!m_frame_started, "Cannot call begin_frame while frame already in progress")
 
     auto result = m_swap_chain->acquire_next_image(&m_current_image_index);
 
@@ -53,8 +51,7 @@ namespace esp
 
   void EspFrameScheduler::end_frame()
   {
-    ESP_ASSERT(m_frame_started,
-               "Cannot call end_frame while frame is not in progress")
+    ESP_ASSERT(m_frame_started, "Cannot call end_frame while frame is not in progress")
 
     auto command_buffer = get_current_command_buffer();
     if (vkEndCommandBuffer(command_buffer) != VK_SUCCESS)
@@ -63,62 +60,49 @@ namespace esp
       throw std::runtime_error("Failed to record command buffer");
     }
 
-    auto result = m_swap_chain->submit_command_buffers(&command_buffer,
-                                                       &m_current_image_index);
-    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR)
-    {
-      recreate_swap_chain();
-    }
+    auto result = m_swap_chain->submit_command_buffers(&command_buffer, &m_current_image_index);
+    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) { recreate_swap_chain(); }
     else if (result != VK_SUCCESS)
     {
       ESP_CORE_ERROR("Failed to present swap chain image");
       throw std::runtime_error("Failed to present swap chain image");
     }
 
-    m_frame_started = false;
-    m_current_frame_index =
-        (m_current_frame_index + 1) % EspSwapChain::MAX_FRAMES_IN_FLIGHT;
+    m_frame_started       = false;
+    m_current_frame_index = (m_current_frame_index + 1) % EspSwapChain::MAX_FRAMES_IN_FLIGHT;
   }
 
-  void EspFrameScheduler::begin_swap_chain_render_pass(
-      VkCommandBuffer command_buffer)
+  void EspFrameScheduler::begin_swap_chain_render_pass(VkCommandBuffer command_buffer)
   {
     ESP_ASSERT(m_frame_started,
                "Cannot call begin_swap_chain_render_pass while frame is not in "
                "progress")
-    ESP_ASSERT(
-        command_buffer == get_current_command_buffer(),
-        "Cannot begin render pass on command buffer from a different frame")
+    ESP_ASSERT(command_buffer == get_current_command_buffer(),
+               "Cannot begin render pass on command buffer from a different frame")
 
     VkRenderPassBeginInfo render_pass_info{};
-    render_pass_info.sType      = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    render_pass_info.renderPass = m_swap_chain->get_render_pass();
-    render_pass_info.framebuffer =
-        m_swap_chain->get_frame_buffer(m_current_image_index);
+    render_pass_info.sType       = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    render_pass_info.renderPass  = m_swap_chain->get_render_pass();
+    render_pass_info.framebuffer = m_swap_chain->get_frame_buffer(m_current_image_index);
     // renderArea - area where shader loads and stores will take place
     render_pass_info.renderArea.offset = { 0, 0 };
     render_pass_info.renderArea.extent = m_swap_chain->get_swap_chain_extent();
 
     // clear_values - values the frame buffer will use to clear itself
     std::array<VkClearValue, 2> clear_values{};
-    clear_values[0].color = { 0.1f, 0.1f, 0.1f, 1.0f }; // color attachment
-    clear_values[1].depthStencil = { 1.0f, 0 };         // depth attachment
+    clear_values[0].color        = { 0.1f, 0.1f, 0.1f, 1.0f }; // color attachment
+    clear_values[1].depthStencil = { 1.0f, 0 };                // depth attachment
 
-    render_pass_info.clearValueCount =
-        static_cast<uint32_t>(clear_values.size());
-    render_pass_info.pClearValues = clear_values.data();
+    render_pass_info.clearValueCount = static_cast<uint32_t>(clear_values.size());
+    render_pass_info.pClearValues    = clear_values.data();
 
-    vkCmdBeginRenderPass(command_buffer,
-                         &render_pass_info,
-                         VK_SUBPASS_CONTENTS_INLINE);
+    vkCmdBeginRenderPass(command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
 
     VkViewport viewport{};
-    viewport.x = 0.0f;
-    viewport.y = 0.0f;
-    viewport.width =
-        static_cast<float>(m_swap_chain->get_swap_chain_extent().width);
-    viewport.height =
-        static_cast<float>(m_swap_chain->get_swap_chain_extent().height);
+    viewport.x        = 0.0f;
+    viewport.y        = 0.0f;
+    viewport.width    = static_cast<float>(m_swap_chain->get_swap_chain_extent().width);
+    viewport.height   = static_cast<float>(m_swap_chain->get_swap_chain_extent().height);
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
     VkRect2D scissor{ { 0, 0 }, m_swap_chain->get_swap_chain_extent() };
@@ -126,15 +110,11 @@ namespace esp
     vkCmdSetScissor(command_buffer, 0, 1, &scissor);
   }
 
-  void
-  EspFrameScheduler::end_swap_chain_render_pass(VkCommandBuffer command_buffer)
+  void EspFrameScheduler::end_swap_chain_render_pass(VkCommandBuffer command_buffer)
   {
-    ESP_ASSERT(
-        m_frame_started,
-        "Cannot call end_swap_chain_render_pass while frame is in progress")
-    ESP_ASSERT(
-        command_buffer == get_current_command_buffer(),
-        "Cannot end render pass on command buffer from a different frame")
+    ESP_ASSERT(m_frame_started, "Cannot call end_swap_chain_render_pass while frame is in progress")
+    ESP_ASSERT(command_buffer == get_current_command_buffer(),
+               "Cannot end render pass on command buffer from a different frame")
 
     vkCmdEndRenderPass(command_buffer);
   }
@@ -145,17 +125,13 @@ namespace esp
 
     VkCommandBufferAllocateInfo allocate_info{};
     allocate_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    allocate_info.level =
-        VK_COMMAND_BUFFER_LEVEL_PRIMARY; // primary - can be submitted to device
-                                         // queue but can't be called by other
-                                         // command buffers
-    allocate_info.commandPool = m_device.get_command_pool();
-    allocate_info.commandBufferCount =
-        static_cast<uint32_t>(m_command_buffers.size());
+    allocate_info.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY; // primary - can be submitted to device
+                                                           // queue but can't be called by other
+                                                           // command buffers
+    allocate_info.commandPool        = m_device.get_command_pool();
+    allocate_info.commandBufferCount = static_cast<uint32_t>(m_command_buffers.size());
 
-    if (vkAllocateCommandBuffers(m_device.get_device(),
-                                 &allocate_info,
-                                 m_command_buffers.data()) != VK_SUCCESS)
+    if (vkAllocateCommandBuffers(m_device.get_device(), &allocate_info, m_command_buffers.data()) != VK_SUCCESS)
     {
       ESP_CORE_ERROR("Failed to allocate command buffers");
       throw std::runtime_error("Failed to allocate command buffers");
@@ -184,15 +160,11 @@ namespace esp
     vkDeviceWaitIdle(m_device.get_device()); // wait until the current swap
                                              // chain is not being used
 
-    if (m_swap_chain == nullptr)
-    {
-      m_swap_chain = std::make_unique<EspSwapChain>(m_device, extent);
-    }
+    if (m_swap_chain == nullptr) { m_swap_chain = std::make_unique<EspSwapChain>(m_device, extent); }
     else
     {
       std::shared_ptr<EspSwapChain> old_swap_chain = std::move(m_swap_chain);
-      m_swap_chain =
-          std::make_unique<EspSwapChain>(m_device, extent, old_swap_chain);
+      m_swap_chain                                 = std::make_unique<EspSwapChain>(m_device, extent, old_swap_chain);
 
       if (!old_swap_chain->compare_swap_chain_formats(*m_swap_chain))
       {

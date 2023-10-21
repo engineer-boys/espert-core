@@ -1,8 +1,8 @@
-#ifndef COMPONENTS_COMPONENTS_H_
-#define COMPONENTS_COMPONENTS_H_
+#ifndef COMPONENTS_COMPONENTS_H
+#define COMPONENTS_COMPONENTS_H
 
 #include "ColorComponent.hh"
 #include "ModelComponent.hh"
 #include "TransformComponent.hh"
 
-#endif // COMPONENTS_COMPONENTS_H_
+#endif // COMPONENTS_COMPONENTS_H

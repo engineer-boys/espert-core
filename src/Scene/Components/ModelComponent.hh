@@ -1,5 +1,5 @@
-#ifndef COMPONENTS_MODEL_COMPONENT_H_
-#define COMPONENTS_MODEL_COMPONENT_H_
+#ifndef COMPONENTS_MODEL_COMPONENT_H
+#define COMPONENTS_MODEL_COMPONENT_H
 
 #include "VulkanRenderAPI/EspBuffer.hh"
 
@@ -15,15 +15,13 @@ namespace esp
       glm::vec3 m_normal{};
       glm::vec2 m_uv{}; // 2-dim tex coord
 
-      static std::vector<VkVertexInputBindingDescription>
-      get_binding_descriptions();
-      static std::vector<VkVertexInputAttributeDescription>
-      get_attribute_descriptions();
+      static std::vector<VkVertexInputBindingDescription> get_binding_descriptions();
+      static std::vector<VkVertexInputAttributeDescription> get_attribute_descriptions();
 
       bool operator==(const Vertex& other) const
       {
-        return m_position == other.m_position && m_color == other.m_color &&
-            m_normal == other.m_normal && m_uv == other.m_uv;
+        return m_position == other.m_position && m_color == other.m_color && m_normal == other.m_normal &&
+            m_uv == other.m_uv;
       }
     };
 
@@ -32,7 +30,7 @@ namespace esp
       std::vector<Vertex> m_vertices{};
       std::vector<uint32_t> m_indices{};
 
-      void loadModel(const std::string& filepath);
+      void load_model(const std::string& filepath);
     };
 
    private:
@@ -62,4 +60,4 @@ namespace esp
   };
 } // namespace esp
 
-#endif // COMPONENTS_MODEL_COMPONENT_H_
+#endif // COMPONENTS_MODEL_COMPONENT_H

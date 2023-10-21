@@ -2,11 +2,11 @@
 
 namespace esp
 {
-  LayerStack::LayerStack() { _m_head_of_normal_layers = _m_layers.begin(); }
+  LayerStack::LayerStack() { m_head_of_normal_layers = m_layers.begin(); }
 
   LayerStack::~LayerStack()
   {
-    for (Layer* layer : _m_layers)
+    for (Layer* layer : m_layers)
     {
       delete layer;
     }
@@ -14,28 +14,24 @@ namespace esp
 
   void LayerStack::push_layer(Layer* layer)
   {
-    _m_head_of_normal_layers =
-        _m_layers.emplace(_m_head_of_normal_layers, layer);
+    m_head_of_normal_layers = m_layers.emplace(m_head_of_normal_layers, layer);
   }
 
-  void LayerStack::push_overlayer(Layer* layer)
-  {
-    _m_layers.emplace_back(layer);
-  }
+  void LayerStack::push_overlayer(Layer* layer) { m_layers.emplace_back(layer); }
 
   void LayerStack::pop_layer(Layer* layer)
   {
-    auto iter = std::find(_m_layers.begin(), _m_layers.end(), layer);
-    if (iter != _m_layers.end())
+    auto iter = std::find(m_layers.begin(), m_layers.end(), layer);
+    if (iter != m_layers.end())
     {
-      _m_layers.erase(iter);
-      _m_head_of_normal_layers--;
+      m_layers.erase(iter);
+      m_head_of_normal_layers--;
     }
   }
 
   void LayerStack::pop_overlayer(Layer* layer)
   {
-    auto iter = std::find(_m_layers.begin(), _m_layers.end(), layer);
-    if (iter != _m_layers.end()) { _m_layers.erase(iter); }
+    auto iter = std::find(m_layers.begin(), m_layers.end(), layer);
+    if (iter != m_layers.end()) { m_layers.erase(iter); }
   }
 } // namespace esp
