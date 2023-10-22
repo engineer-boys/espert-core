@@ -4,7 +4,7 @@
 #define ESP_BIND_EVENT_FOR_FUN(obj) std::bind(&obj, this, std::placeholders::_1)
 
 #ifdef NDEBUG
-#define ESP_ASSERT(...) ((void)0)
+#define ESP_ASSERT(...) ((void)0);
 #else
 #define ESP_ASSERT(condition, ...)                                      \
   if (!(condition))                                                     \
