@@ -23,7 +23,7 @@ jobs:
           # has to be the github workspace, not the runner workspace, for the docker-based clang-tidy-review
           buildDirectory: '${{github.workspace}}/build'
           cmakeAppendedArgs: >-
-            -D-DVKB_WSI_SELECTION=XLIB
+            -DVKB_WSI_SELECTION=XLIB
             -DCMAKE_EXPORT_COMPILE_COMMANDS=on
 
       - name: Run clang-tidy
