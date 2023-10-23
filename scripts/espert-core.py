@@ -38,6 +38,9 @@ class Compiler(Enum):
     GCC = 'gcc'
     CLANG = 'clang'
 
+class RenderAPIPlatform(Enum):
+    OPENGL = "opengl"
+    VULKAN = "vulkan"
 
 def get_cpu_count() -> int:
     return multiprocessing.cpu_count()
@@ -79,6 +82,11 @@ def get_configure_command(args: Namespace) -> str:
 
     if args.export_compile_commands:
         CMD += ' -DCMAKE_EXPORT_COMPILE_COMMANDS=ON'
+
+    if args.render_platform == RenderAPIPlatform.VULKAN:
+        CMD += ' -DRENDER_PLATFORM=VULKAN'
+    elif args.render_platform == RenderAPIPlatform.OPENGL:
+        CMD += ' -DRENDER_PLATFORM=OPENGL'
 
     return CMD
 
@@ -166,6 +174,18 @@ def get_parser() -> ArgumentParser:
                                           dest='compiler',
                                           const=Compiler.CLANG,
                                           help='Pick clang and clang++ as project compilers.')
+    
+    render_platform_selection_group = main_parser.add_mutually_exclusive_group()
+    render_platform_selection_group.add_argument('--vulkan',
+                                                 action='store_const',
+                                                 dest='render_platform',
+                                                 const=RenderAPIPlatform.VULKAN,
+                                                 help='Pick Vulkan as render API.')
+    render_platform_selection_group.add_argument('--opengl',
+                                                 action='store_const',
+                                                 dest='render_platform',
+                                                 const=RenderAPIPlatform.OPENGL,
+                                                 help='Pick OpenGL as render API.')
 
     main_parser.add_argument('-c',
                              '--clean',

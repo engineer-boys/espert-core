@@ -25,11 +25,7 @@ namespace esp
                   m_data.m_title);
   }
 
-  EspWindow::~EspWindow()
-  {
-    EspWindow::s_is_exist = false;
-    destroy();
-  }
+  EspWindow::~EspWindow() { destroy(); }
 
   std::unique_ptr<EspWindow> EspWindow::create(const WindowData& data)
   {
@@ -43,15 +39,7 @@ namespace esp
   {
     m_data = data;
 
-    int success = glfwInit();
-    if (success == GLFW_FALSE)
-    {
-      ESP_CORE_ERROR("GLFW cannot be init");
-      throw std::runtime_error("GLFW cannot be init");
-    }
-
     glfwSetErrorCallback(glfw_error_callback);
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
     m_window = glfwCreateWindow(m_data.m_width,
@@ -72,7 +60,7 @@ namespace esp
   void EspWindow::destroy()
   {
     glfwDestroyWindow(m_window);
-    glfwTerminate();
+    EspWindow::s_is_exist = false;
   }
 
   void EspWindow::set_callbacks()
@@ -176,6 +164,7 @@ namespace esp
         });
   }
 
+#ifdef VULKAN_PLATFORM
   void EspWindow::create_window_surface(VkInstance instance,
                                         VkSurfaceKHR* surface)
   {
@@ -186,4 +175,5 @@ namespace esp
       throw std::runtime_error("Failed to create window surface");
     }
   }
+#endif
 } // namespace esp

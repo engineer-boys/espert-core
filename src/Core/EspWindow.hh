@@ -5,7 +5,7 @@
 #include "esppch.hh"
 
 // libs
-#include "volk.h"
+#include "MiniRAPI/MiniRCore.hh"
 
 #include "GLFW/glfw3.h"
 
@@ -55,11 +55,14 @@ namespace esp
 
     inline unsigned int get_width() { return m_data.m_width; }
     inline unsigned int get_height() { return m_data.m_height; }
-    inline VkExtent2D get_extent() const
-    {
-      return { static_cast<uint32_t>(m_data.m_height),
-               static_cast<uint32_t>(m_data.m_height) };
-    }
+
+    /* ....... TODO: ???? */
+    // inline VkExtent2D get_extent() const
+    // {
+    //   return { static_cast<uint32_t>(m_data.m_height),
+    //            static_cast<uint32_t>(m_data.m_height) };
+    // }
+
     inline void
     set_events_manager_fun(const WindowData::EventManagerFun& callback)
     {
@@ -68,7 +71,9 @@ namespace esp
 
     static std::unique_ptr<EspWindow> create(const WindowData& data);
 
+#ifdef VULKAN_PLATFORM
     void create_window_surface(VkInstance instance, VkSurfaceKHR* surface);
+#endif
   };
 } // namespace esp
 

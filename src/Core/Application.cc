@@ -1,19 +1,29 @@
 #include "Application.hh"
-#include "VulkanRenderAPI/EspRenderContext.hh"
 #include <ranges>
 
 namespace esp
 {
   Application::Application() : _m_running(true)
   {
+    MiniR_context_glfw_hints();
     _m_window = EspWindow::create(EspWindow::WindowData());
     _m_window->set_events_manager_fun(
         ESP_BIND_EVENT_FOR_FUN(Application::events_manager));
 
     _m_layer_stack = new LayerStack();
+
+    m_minir_context = MiniRContext::create_and_init(*(_m_window.get()));
   }
 
-  Application::~Application() {}
+  Application::~Application()
+  {
+    delete _m_layer_stack;
+    /*
+      They will be deleted by unique_ptr automatically:
+      - window
+      - mnir context
+    */
+  }
 
   void Application::run()
   {
@@ -26,8 +36,6 @@ namespace esp
 
       _m_window->update();
     }
-
-    delete _m_layer_stack;
   }
 
   void Application::set_context(std::unique_ptr<ApplicationContext> context)
@@ -40,9 +48,6 @@ namespace esp
   bool Application::on_window_closed(WindowClosedEvent& e)
   {
     _m_running = false;
-    // TODO: abstract this call
-    EspRenderContext::get_device().complete_queues();
-    //
     return true;
   }
 

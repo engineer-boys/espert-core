@@ -6,7 +6,7 @@
 #include "Events/WindowEvent.hh"
 #include "Layers/Layer.hh"
 #include "Layers/LayerStack.hh"
-#include "VulkanRenderAPI/EspDevice.hh"
+#include "MiniRAPI/MiniRContext.hh"
 #include "esppch.hh"
 
 namespace esp
@@ -16,6 +16,7 @@ namespace esp
    private:
     std::unique_ptr<ApplicationContext> _m_context;
     std::unique_ptr<EspWindow> _m_window;
+    std::unique_ptr<MiniRContext> m_minir_context;
 
     bool _m_running;
 

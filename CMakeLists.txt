@@ -8,9 +8,29 @@ option(ESP_BUILD_TESTS "Build the Espert-core test programs" OFF)
 
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cc)
 
+# Remove uncessary files
+if(RENDER_PLATFORM STREQUAL VULKAN)
+    file(GLOB_RECURSE BAD_SOURCES ${PROJECT_SOURCE_DIR}/src/Platforms/OpenGLMiniRAPI\*.cc)
+    foreach(bad_file ${BAD_SOURCES})
+        list(REMOVE_ITEM SOURCES ${bad_file})
+    endforeach()
+elseif(RENDER_PLATFORM STREQUAL OPENGL)
+    file(GLOB_RECURSE BAD_SOURCES ${PROJECT_SOURCE_DIR}/src/Platforms/VulkanMiniRAPI\*.cc)
+    foreach(bad_file ${BAD_SOURCES})
+        list(REMOVE_ITEM SOURCES ${bad_file})
+    endforeach()
+endif()
+
 add_library(${PROJECT_NAME} STATIC
     ${SOURCES}
 )
+
+# Set render platform specific macro
+if(RENDER_PLATFORM STREQUAL VULKAN)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE VULKAN_PLATFORM)
+elseif(RENDER_PLATFORM STREQUAL OPENGL)
+        target_compile_definitions(${PROJECT_NAME} PRIVATE OPENGL_PLATFORM)
+endif()
 
 target_include_directories(${PROJECT_NAME} PUBLIC 
     ${PROJECT_SOURCE_DIR}/src
