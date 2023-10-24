@@ -65,8 +65,8 @@ namespace esp
     // want to use
     create_logical_device();
 
+    m_context_data.m_vulkan_device = VulkanDevice::create();
     // TODO: init and create this objects !!!!
-    create_command_manager();
     create_frame_scheduler();
   }
 
@@ -74,6 +74,7 @@ namespace esp
   {
     ESP_ASSERT(s_instance != nullptr, "You cannot terminate vulkan context because it doesn't exist!");
 
+    vkDeviceWaitIdle(m_context_data.m_device);
     vkDestroyDevice(m_context_data.m_device, nullptr);
 
     if (m_context_data.m_enable_validation_layers)

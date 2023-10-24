@@ -2,6 +2,7 @@
 #define VULKAN_RENDER_API_VULKAN_CONTEXT_HH
 
 #include "Core/RenderAPI/EspRenderContext.hh"
+#include "VulkanDevice.hh"
 #include "esppch.hh"
 
 // libs
@@ -31,6 +32,7 @@ namespace esp
 
       VkPhysicalDevice m_physical_device = VK_NULL_HANDLE;
       VkDevice m_device;
+      std::unique_ptr<VulkanDevice> m_vulkan_device{};
 
       QueueFamilyIndices m_queue_family_indices;
       VkQueue m_graphics_queue;
@@ -49,7 +51,6 @@ namespace esp
    private:
     static VulkanContext* s_instance;
 
-   private:
     ContextData m_context_data;
 
    private:
@@ -59,17 +60,14 @@ namespace esp
     void pick_physical_device();
     void create_logical_device();
 
-   private:
     VulkanContext();
 
-    void create_command_manager();
     void create_frame_scheduler();
 
    public:
     VulkanContext(const VulkanContext& other)            = delete;
     VulkanContext& operator=(const VulkanContext& other) = delete;
 
-   public:
     /* ---------------- API ------------------------------------------- */
     virtual ~VulkanContext() override;
 
