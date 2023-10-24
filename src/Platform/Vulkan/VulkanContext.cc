@@ -66,7 +66,7 @@ namespace esp
     create_logical_device();
 
     // TODO: init and create this objects !!!!
-    create_buffer_command_object();
+    create_command_manager();
     create_frame_scheduler();
   }
 
@@ -262,8 +262,6 @@ namespace esp
     vkGetDeviceQueue(m_context_data.m_device, indices.m_present_family, 0, &m_context_data.m_present_queue);
   }
 
-  void VulkanContext::create_buffer_command_object() {}
-
   void VulkanContext::create_frame_scheduler() {}
 
   void render_context_glfw_hints()
@@ -364,8 +362,8 @@ static void has_glfw_required_instance_extensions(ContextData& context_data)
   }
 
   ESP_CORE_INFO("Required extensions:");
-  auto requiredExtensions = get_required_extensions(context_data);
-  for (const auto& required : requiredExtensions)
+  auto required_extensions = get_required_extensions(context_data);
+  for (const auto& required : required_extensions)
   {
     std::cout << "\t" << required << std::endl;
     if (available.find(required) == available.end())
@@ -406,7 +404,7 @@ static bool is_device_suitable(VkPhysicalDevice device, ContextData& context_dat
   VkPhysicalDeviceFeatures supported_features;
   vkGetPhysicalDeviceFeatures(device, &supported_features);
 
-  return indices.isComplete() && extensions_supported && swap_chain_adequate && supported_features.samplerAnisotropy;
+  return indices.is_complete() && extensions_supported && swap_chain_adequate && supported_features.samplerAnisotropy;
 }
 
 static esp::QueueFamilyIndices find_queue_families(VkPhysicalDevice device, ContextData& context_data)
@@ -434,7 +432,7 @@ static esp::QueueFamilyIndices find_queue_families(VkPhysicalDevice device, Cont
       indices.m_present_family           = i;
       indices.m_present_family_has_value = true;
     }
-    if (indices.isComplete()) { break; }
+    if (indices.is_complete()) { break; }
 
     i++;
   }
