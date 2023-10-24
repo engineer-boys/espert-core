@@ -1,5 +1,5 @@
-#ifndef ESPERT_SANDBOX_ESP_RENDER_CONTEXT_H
-#define ESPERT_SANDBOX_ESP_RENDER_CONTEXT_H
+#ifndef RENDER_API_ESP_RENDER_CONTEXT_H
+#define RENDER_API_ESP_RENDER_CONTEXT_H
 
 #include "Core/EspWindow.hh"
 #include "esppch.hh"
@@ -28,4 +28,4 @@ namespace esp
   void render_context_glfw_hints();
 } // namespace esp
 
-#endif // ESPERT_SANDBOX_ESP_RENDER_CONTEXT_H
+#endif // RENDER_API_ESP_RENDER_CONTEXT_H

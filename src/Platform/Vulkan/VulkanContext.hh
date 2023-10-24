@@ -16,7 +16,7 @@ namespace esp
     bool m_graphics_family_has_value = false;
     bool m_present_family_has_value  = false;
 
-    bool isComplete() const { return m_graphics_family_has_value && m_present_family_has_value; }
+    bool is_complete() const { return m_graphics_family_has_value && m_present_family_has_value; }
   };
 
   class VulkanContext : public EspRenderContext
@@ -48,7 +48,6 @@ namespace esp
 
    private:
     static VulkanContext* s_instance;
-    VulkanContext();
 
    private:
     ContextData m_context_data;
@@ -61,12 +60,13 @@ namespace esp
     void create_logical_device();
 
    private:
-    void create_buffer_command_object();
+    VulkanContext();
+
+    void create_command_manager();
     void create_frame_scheduler();
 
    public:
-    VulkanContext(const VulkanContext& other) = delete;
-
+    VulkanContext(const VulkanContext& other)            = delete;
     VulkanContext& operator=(const VulkanContext& other) = delete;
 
    public:
