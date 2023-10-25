@@ -16,7 +16,7 @@ namespace esp
     VkFormat m_swap_chain_depth_format;
     VkExtent2D m_swap_chain_extent;
 
-    VkDevice m_device;
+    VkDevice m_device{};
 
     std::vector<VkFramebuffer> m_swap_chain_framebuffers;
     VkRenderPass m_render_pass;

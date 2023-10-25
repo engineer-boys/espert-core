@@ -14,6 +14,7 @@ namespace esp
     static VulkanCommandHandler* s_instance;
 
     VkCommandPool m_command_pool;
+    VkCommandBuffer m_current_command_buffer{};
 
    public:
     static std::unique_ptr<VulkanCommandHandler> create();
@@ -27,8 +28,15 @@ namespace esp
     // void bind pipeline // override
 
     static VkCommandBuffer create_command_buffer();
+    static void free_command_buffer(VkCommandBuffer command_buffer);
     static VkCommandBuffer begin_single_time_commands();
     static void end_single_time_commands(VkCommandBuffer command_buffer);
+
+    // should be used only from within vulkan frame scheduler
+    inline static void set_current_command_buffer(VkCommandBuffer command_buffer)
+    {
+      s_instance->m_current_command_buffer = command_buffer;
+    }
 
    private:
     VulkanCommandHandler();
