@@ -15,8 +15,8 @@ namespace esp
    private:
     static bool s_is_exist;
 
-    VkPhysicalDevice m_physical_device;
-    VkDevice m_device;
+    VkPhysicalDevice m_physical_device{};
+    VkDevice m_device{};
 
    public:
     static std::unique_ptr<VulkanDevice> create();

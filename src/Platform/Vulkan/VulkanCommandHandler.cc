@@ -42,6 +42,13 @@ namespace esp
     return command_buffer;
   }
 
+  void VulkanCommandHandler::free_command_buffer(VkCommandBuffer command_buffer)
+  {
+    auto& context_data = VulkanContext::get_context_data();
+
+    vkFreeCommandBuffers(context_data.m_device, s_instance->m_command_pool, 1, &command_buffer);
+  }
+
   VkCommandBuffer VulkanCommandHandler::begin_single_time_commands()
   {
     auto command_buffer = create_command_buffer();
