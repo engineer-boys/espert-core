@@ -20,6 +20,7 @@ static VkResult create_debug_utils_messenger_EXT(VkInstance instance,
                                                  const VkAllocationCallbacks* p_allocator,
                                                  VkDebugUtilsMessengerEXT* p_debug_messenger);
 static bool is_device_suitable(VkPhysicalDevice device, ContextData& context_data);
+static esp::SwapChainSupportDetails query_swap_chain_support(VkPhysicalDevice device, ContextData& context_data);
 static esp::QueueFamilyIndices find_queue_families(VkPhysicalDevice device, ContextData& context_data);
 static bool check_device_extension_support(VkPhysicalDevice device, ContextData& context_data);
 static void destroy_debug_utils_messenger_EXT(VkInstance instance,
@@ -391,21 +392,46 @@ static bool is_device_suitable(VkPhysicalDevice device, ContextData& context_dat
 
   bool extensions_supported = check_device_extension_support(device, context_data);
 
-  // TODO:: checking things for swap chain
-
-  bool swap_chain_adequate = true;
+  bool swap_chain_adequate = false;
   if (extensions_supported)
   {
-    // SwapChainSupportDetails swap_chain_support =
-    //     query_swap_chain_support(device);
-    // swap_chain_adequate = !swap_chain_support.m_formats.empty() &&
-    //     !swap_chain_support.m_present_modes.empty();
+    context_data.m_swap_chain_support_details = query_swap_chain_support(device, context_data);
+    swap_chain_adequate                       = !context_data.m_swap_chain_support_details.m_formats.empty() &&
+        !context_data.m_swap_chain_support_details.m_present_modes.empty();
   }
 
   VkPhysicalDeviceFeatures supported_features;
   vkGetPhysicalDeviceFeatures(device, &supported_features);
 
   return indices.is_complete() && extensions_supported && swap_chain_adequate && supported_features.samplerAnisotropy;
+}
+
+static esp::SwapChainSupportDetails query_swap_chain_support(VkPhysicalDevice device, ContextData& context_data)
+{
+  esp::SwapChainSupportDetails details;
+  vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, context_data.m_surface, &details.m_capabilities);
+
+  uint32_t format_count;
+  vkGetPhysicalDeviceSurfaceFormatsKHR(device, context_data.m_surface, &format_count, nullptr);
+
+  if (format_count != 0)
+  {
+    details.m_formats.resize(format_count);
+    vkGetPhysicalDeviceSurfaceFormatsKHR(device, context_data.m_surface, &format_count, details.m_formats.data());
+  }
+
+  uint32_t present_mode_count;
+  vkGetPhysicalDeviceSurfacePresentModesKHR(device, context_data.m_surface, &present_mode_count, nullptr);
+
+  if (present_mode_count != 0)
+  {
+    details.m_present_modes.resize(present_mode_count);
+    vkGetPhysicalDeviceSurfacePresentModesKHR(device,
+                                              context_data.m_surface,
+                                              &present_mode_count,
+                                              details.m_present_modes.data());
+  }
+  return details;
 }
 
 static esp::QueueFamilyIndices find_queue_families(VkPhysicalDevice device, ContextData& context_data)

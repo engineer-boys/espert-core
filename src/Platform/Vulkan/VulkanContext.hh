@@ -10,6 +10,13 @@
 
 namespace esp
 {
+  struct SwapChainSupportDetails
+  {
+    VkSurfaceCapabilitiesKHR m_capabilities;
+    std::vector<VkSurfaceFormatKHR> m_formats;
+    std::vector<VkPresentModeKHR> m_present_modes;
+  };
+
   struct QueueFamilyIndices
   {
     uint32_t m_graphics_family;
@@ -37,6 +44,8 @@ namespace esp
       QueueFamilyIndices m_queue_family_indices;
       VkQueue m_graphics_queue;
       VkQueue m_present_queue;
+
+      SwapChainSupportDetails m_swap_chain_support_details;
 
       const std::vector<const char*> m_validation_layers = { "VK_LAYER_KHRONOS_validation" };
 

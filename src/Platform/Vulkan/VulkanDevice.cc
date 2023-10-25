@@ -120,6 +120,38 @@ namespace esp
     VulkanCommandHandler::end_single_time_commands(command_buffer);
   }
 
+  void VulkanDevice::create_image_with_info(const VkImageCreateInfo& image_info,
+                                            VkMemoryPropertyFlags properties,
+                                            VkImage& image,
+                                            VkDeviceMemory& image_memory)
+  {
+    if (vkCreateImage(m_device, &image_info, nullptr, &image) != VK_SUCCESS)
+    {
+      ESP_CORE_ERROR("Failed to create image");
+      throw std::runtime_error("Failed to create image");
+    }
+
+    VkMemoryRequirements mem_requirements;
+    vkGetImageMemoryRequirements(m_device, image, &mem_requirements);
+
+    VkMemoryAllocateInfo alloc_info{};
+    alloc_info.sType           = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+    alloc_info.allocationSize  = mem_requirements.size;
+    alloc_info.memoryTypeIndex = find_memory_type(mem_requirements.memoryTypeBits, properties);
+
+    if (vkAllocateMemory(m_device, &alloc_info, nullptr, &image_memory) != VK_SUCCESS)
+    {
+      ESP_CORE_ERROR("Failed to allocate image memory");
+      throw std::runtime_error("Failed to allocate image memory");
+    }
+
+    if (vkBindImageMemory(m_device, image, image_memory, 0) != VK_SUCCESS)
+    {
+      ESP_CORE_ERROR("Failed to bind image memory");
+      throw std::runtime_error("Failed to bind image memory");
+    }
+  }
+
   VulkanDevice::VulkanDevice()
   {
     ESP_ASSERT(!VulkanDevice::s_is_exist, "Vulkan device already exists")
