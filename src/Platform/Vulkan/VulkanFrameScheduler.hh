@@ -1,7 +1,6 @@
 #ifndef ESP_RENDERER_HH
 #define ESP_RENDERER_HH
 
-#include "Core/EspWindow.hh"
 #include "Core/RenderAPI/EspFrameScheduler.hh"
 #include "VulkanSwapChain.hh"
 
@@ -29,7 +28,17 @@ namespace esp
 
     ~VulkanFrameScheduler() = default;
 
-    void init(EspWindow& window) override;
+    void init() override;
+
+    void begin_frame() override;
+    void end_frame() override;
+
+    void begin_render_pass() override;
+    void end_render_pass() override;
+
+    void terminate() override;
+
+    void on_window_resized(WindowResizedEvent& e) override;
 
     inline bool is_frame_in_progress() const { return m_frame_started; };
 
@@ -45,14 +54,6 @@ namespace esp
       return m_current_frame_index;
     }
 
-    void begin_frame() override;
-    void end_frame() override;
-
-    void begin_render_pass() override;
-    void end_render_pass() override;
-
-    void terminate() override;
-
     inline VkRenderPass get_swap_chain_render_pass() const { return m_swap_chain->get_render_pass(); };
     inline float get_aspect_ratio() const { return m_swap_chain->get_swap_chain_extent_aspect_ratio(); };
 
@@ -61,7 +62,13 @@ namespace esp
 
     void create_command_buffers();
     void free_command_buffers();
-    void recreate_swap_chain(EspWindow& window);
+    void recreate_swap_chain();
+
+    std::array<VkClearValue, 2> get_clear_values();
+    void set_viewport();
+    void set_scissors();
+
+    VkExtent2D get_window_extent();
   };
 } // namespace esp
 
