@@ -219,6 +219,8 @@ namespace esp
       throw std::runtime_error("Failed to create swap chain");
     }
 
+    if (m_old_swap_chain != nullptr) { m_old_swap_chain->terminate(); }
+
     // we only specified a minimum number of images in the swap chain, so the
     // implementation is allowed to create a swap chain with more. That's why
     // we'll first query the final number of images with

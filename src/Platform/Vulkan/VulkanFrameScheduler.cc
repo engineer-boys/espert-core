@@ -13,9 +13,9 @@ namespace esp
     return std::unique_ptr<VulkanFrameScheduler>(new VulkanFrameScheduler());
   }
 
-  void VulkanFrameScheduler::init(esp::EspWindow& window)
+  void VulkanFrameScheduler::init()
   {
-    recreate_swap_chain(window);
+    recreate_swap_chain();
     create_command_buffers();
   }
 
@@ -66,9 +66,8 @@ namespace esp
     }
 
     auto result = m_swap_chain->submit_command_buffers(&command_buffer, &m_current_image_index);
-    // if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) { recreate_swap_chain(); } //TODO: create
-    // on resize event
-    if (result != VK_ERROR_OUT_OF_DATE_KHR && result != VK_SUBOPTIMAL_KHR && result != VK_SUCCESS)
+    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) { recreate_swap_chain(); }
+    else if (result != VK_SUCCESS)
     {
       ESP_CORE_ERROR("Failed to present swap chain image");
       throw std::runtime_error("Failed to present swap chain image");
@@ -93,9 +92,7 @@ namespace esp
     render_pass_info.renderArea.extent = m_swap_chain->get_swap_chain_extent();
 
     // clear_values - values the frame buffer will use to clear itself
-    std::array<VkClearValue, 2> clear_values{};
-    clear_values[0].color        = { 0.1f, 0.1f, 0.1f, 1.0f }; // color attachment
-    clear_values[1].depthStencil = { 1.0f, 0 };                // depth attachment
+    std::array<VkClearValue, 2> clear_values = get_clear_values();
 
     render_pass_info.clearValueCount = static_cast<uint32_t>(clear_values.size());
     render_pass_info.pClearValues    = clear_values.data();
@@ -104,16 +101,8 @@ namespace esp
 
     vkCmdBeginRenderPass(current_command_buffer, &render_pass_info, VK_SUBPASS_CONTENTS_INLINE);
 
-    VkViewport viewport{};
-    viewport.x        = 0.0f;
-    viewport.y        = 0.0f;
-    viewport.width    = static_cast<float>(m_swap_chain->get_swap_chain_extent().width);
-    viewport.height   = static_cast<float>(m_swap_chain->get_swap_chain_extent().height);
-    viewport.minDepth = 0.0f;
-    viewport.maxDepth = 1.0f;
-    VkRect2D scissor{ { 0, 0 }, m_swap_chain->get_swap_chain_extent() };
-    vkCmdSetViewport(current_command_buffer, 0, 1, &viewport);
-    vkCmdSetScissor(current_command_buffer, 0, 1, &scissor);
+    set_viewport();
+    set_scissors();
   }
 
   void VulkanFrameScheduler::end_render_pass()
@@ -128,6 +117,12 @@ namespace esp
     VulkanDevice::complete_queues();
     free_command_buffers();
     m_swap_chain->terminate();
+  }
+
+  void VulkanFrameScheduler::on_window_resized(WindowResizedEvent& e)
+  {
+    EspFrameScheduler::on_window_resized(e);
+    recreate_swap_chain();
   }
 
   void VulkanFrameScheduler::create_command_buffers()
@@ -149,13 +144,13 @@ namespace esp
     m_command_buffers.clear();
   }
 
-  void VulkanFrameScheduler::recreate_swap_chain(EspWindow& window)
+  void VulkanFrameScheduler::recreate_swap_chain()
   {
     // as long as 1 dimension is 0 (example: minimizing window) we wait
-    auto extent = window.get_extent();
+    auto extent = get_window_extent();
     while (extent.width == 0 || extent.height == 0)
     {
-      extent = window.get_extent();
+      extent = get_window_extent();
       glfwWaitEvents();
     }
 
@@ -173,7 +168,38 @@ namespace esp
         throw std::runtime_error("Swap chain image/depth format has changed");
       }
     }
+  }
 
-    ESP_CORE_INFO("Swap chain recreated");
+  std::array<VkClearValue, 2> VulkanFrameScheduler::get_clear_values()
+  {
+    std::array<VkClearValue, 2> clear_values{};
+    clear_values[0].color = { m_clear_color.x, m_clear_color.y, m_clear_color.z, m_clear_color.w }; // color attachment
+    clear_values[1].depthStencil = { m_depth_stencil.m_depth, m_depth_stencil.m_stencil };          // depth attachment
+
+    return clear_values;
+  }
+
+  void VulkanFrameScheduler::set_viewport()
+  {
+    VkViewport viewport{};
+    viewport.x        = 0.0f;
+    viewport.y        = 0.0f;
+    viewport.width    = static_cast<float>(m_swap_chain->get_swap_chain_extent().width);
+    viewport.height   = static_cast<float>(m_swap_chain->get_swap_chain_extent().height);
+    viewport.minDepth = 0.0f;
+    viewport.maxDepth = 1.0f;
+
+    vkCmdSetViewport(get_current_command_buffer(), 0, 1, &viewport);
+  }
+
+  void VulkanFrameScheduler::set_scissors()
+  {
+    VkRect2D scissor{ { 0, 0 }, m_swap_chain->get_swap_chain_extent() };
+    vkCmdSetScissor(get_current_command_buffer(), 0, 1, &scissor);
+  }
+
+  VkExtent2D VulkanFrameScheduler::get_window_extent()
+  {
+    return { static_cast<uint32_t>(m_window_width), static_cast<uint32_t>(m_window_height) };
   }
 } // namespace esp

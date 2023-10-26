@@ -18,6 +18,7 @@ namespace esp
 
   void Application::run()
   {
+    m_frame_scheduler->set_clear_color(glm::vec3{ .5f, .1f, .1f });
     while (m_running)
     {
       for (auto layer : *m_layer_stack)
@@ -27,6 +28,7 @@ namespace esp
 
       m_frame_scheduler->begin_frame();
       m_frame_scheduler->begin_render_pass();
+      /*...*/
       m_frame_scheduler->end_render_pass();
       m_frame_scheduler->end_frame();
 
@@ -38,7 +40,11 @@ namespace esp
 
   void Application::set_context(std::unique_ptr<ApplicationContext> context) { this->m_context = std::move(context); }
 
-  bool Application::on_window_resized(WindowResizedEvent& e) { return true; }
+  bool Application::on_window_resized(WindowResizedEvent& e)
+  {
+    m_frame_scheduler->on_window_resized(e);
+    return true;
+  }
 
   bool Application::on_window_closed(WindowClosedEvent& e)
   {
