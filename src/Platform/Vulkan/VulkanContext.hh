@@ -86,7 +86,7 @@ namespace esp
     VulkanContext& operator=(const VulkanContext& other) = delete;
 
     /* ---------------- API ------------------------------------------- */
-    virtual ~VulkanContext() override;
+    virtual ~VulkanContext() override = default;
 
     void init(EspWindow& window) override;
     void terminate() override;

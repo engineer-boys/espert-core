@@ -24,8 +24,10 @@ namespace esp
     virtual void begin_frame()           = 0;
     virtual void end_frame()             = 0;
 
-    virtual void begin_swap_chain_render_pass() = 0;
-    virtual void end_swap_chain_render_pass()   = 0;
+    virtual void begin_render_pass() = 0;
+    virtual void end_render_pass()   = 0;
+
+    virtual void terminate() = 0;
   };
 } // namespace esp
 

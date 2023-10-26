@@ -26,6 +26,8 @@ namespace esp
     static VkCommandBuffer begin_single_time_commands();
     static void end_single_time_commands(VkCommandBuffer command_buffer);
 
+    void terminate();
+
    private:
     VulkanCommandHandler();
 

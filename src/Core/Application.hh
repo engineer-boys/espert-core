@@ -6,7 +6,8 @@
 #include "Events/WindowEvent.hh"
 #include "Layers/Layer.hh"
 #include "Layers/LayerStack.hh"
-#include "VulkanRenderAPI/EspDevice.hh"
+#include "RenderAPI/EspFrameScheduler.hh"
+#include "RenderAPI/EspRenderContext.hh"
 #include "esppch.hh"
 
 namespace esp
@@ -16,6 +17,9 @@ namespace esp
    private:
     std::unique_ptr<ApplicationContext> m_context;
     std::unique_ptr<EspWindow> m_window;
+
+    std::unique_ptr<EspRenderContext> m_render_context;
+    std::unique_ptr<EspFrameScheduler> m_frame_scheduler;
 
     bool m_running;
 
@@ -34,7 +38,7 @@ namespace esp
 
     void run();
     void set_context(std::unique_ptr<ApplicationContext> context);
-    void eventsmanager(Event& e);
+    void events_manager(Event& e);
 
     void push_layer(Layer* layer);
     void push_overlayer(Layer* layer);

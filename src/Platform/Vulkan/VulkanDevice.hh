@@ -32,6 +32,8 @@ namespace esp
 
     static void complete_queues();
 
+    void terminate();
+
     // ---------------------------------------- Buffer Helper Functions ----------------------------------------
     void create_buffer(VkDeviceSize size,
                        VkBufferUsageFlags usage,

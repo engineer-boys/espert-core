@@ -13,7 +13,6 @@ namespace esp
 
   VulkanCommandHandler::~VulkanCommandHandler()
   {
-    vkDestroyCommandPool(VulkanDevice::get_logical_device(), m_command_pool, nullptr);
     s_instance = nullptr;
   }
 
@@ -93,5 +92,10 @@ namespace esp
       ESP_CORE_ERROR("Failed to create command pool");
       throw std::runtime_error("Failed to create command pool");
     }
+  }
+
+  void VulkanCommandHandler::terminate()
+  {
+    vkDestroyCommandPool(VulkanDevice::get_logical_device(), m_command_pool, nullptr);
   }
 } // namespace esp
