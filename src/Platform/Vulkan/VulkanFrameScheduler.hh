@@ -24,10 +24,10 @@ namespace esp
    public:
     static std::unique_ptr<VulkanFrameScheduler> create();
 
-    ~VulkanFrameScheduler();
-
     VulkanFrameScheduler(const VulkanFrameScheduler&)            = delete;
     VulkanFrameScheduler& operator=(const VulkanFrameScheduler&) = delete;
+
+    ~VulkanFrameScheduler() = default;
 
     void init(EspWindow& window) override;
 
@@ -48,8 +48,10 @@ namespace esp
     void begin_frame() override;
     void end_frame() override;
 
-    void begin_swap_chain_render_pass() override;
-    void end_swap_chain_render_pass() override;
+    void begin_render_pass() override;
+    void end_render_pass() override;
+
+    void terminate() override;
 
     inline VkRenderPass get_swap_chain_render_pass() const { return m_swap_chain->get_render_pass(); };
     inline float get_aspect_ratio() const { return m_swap_chain->get_swap_chain_extent_aspect_ratio(); };

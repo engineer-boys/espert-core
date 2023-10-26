@@ -19,8 +19,6 @@ namespace esp
     create_command_buffers();
   }
 
-  VulkanFrameScheduler::~VulkanFrameScheduler() { free_command_buffers(); }
-
   void VulkanFrameScheduler::begin_frame()
   {
     ESP_ASSERT(!m_frame_started, "Cannot call begin_frame while frame already in progress")
@@ -80,10 +78,10 @@ namespace esp
     m_current_frame_index = (m_current_frame_index + 1) % VulkanSwapChain::MAX_FRAMES_IN_FLIGHT;
   }
 
-  void VulkanFrameScheduler::begin_swap_chain_render_pass()
+  void VulkanFrameScheduler::begin_render_pass()
   {
     ESP_ASSERT(m_frame_started,
-               "Cannot call begin_swap_chain_render_pass while frame is not in "
+               "Cannot call begin_render_pass while frame is not in "
                "progress")
 
     VkRenderPassBeginInfo render_pass_info{};
@@ -118,11 +116,18 @@ namespace esp
     vkCmdSetScissor(current_command_buffer, 0, 1, &scissor);
   }
 
-  void VulkanFrameScheduler::end_swap_chain_render_pass()
+  void VulkanFrameScheduler::end_render_pass()
   {
-    ESP_ASSERT(m_frame_started, "Cannot call end_swap_chain_render_pass while frame is in progress")
+    ESP_ASSERT(m_frame_started, "Cannot call end_render_pass while frame is in progress")
 
     vkCmdEndRenderPass(get_current_command_buffer());
+  }
+
+  void VulkanFrameScheduler::terminate()
+  {
+    VulkanDevice::complete_queues();
+    free_command_buffers();
+    m_swap_chain->terminate();
   }
 
   void VulkanFrameScheduler::create_command_buffers()
@@ -154,8 +159,7 @@ namespace esp
       glfwWaitEvents();
     }
 
-    VulkanDevice::complete_queues(); // wait until the current swap
-                                     // chain is not being used
+    VulkanDevice::complete_queues();
 
     if (m_swap_chain == nullptr) { m_swap_chain = VulkanSwapChain::create(extent); }
     else
@@ -169,5 +173,7 @@ namespace esp
         throw std::runtime_error("Swap chain image/depth format has changed");
       }
     }
+
+    ESP_CORE_INFO("Swap chain recreated");
   }
 } // namespace esp

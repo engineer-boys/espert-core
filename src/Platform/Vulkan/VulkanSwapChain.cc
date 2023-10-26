@@ -29,43 +29,6 @@ namespace esp
     return std::unique_ptr<VulkanSwapChain>(new VulkanSwapChain(window_extent, previous));
   }
 
-  VulkanSwapChain::~VulkanSwapChain()
-  {
-    for (auto image_view : m_swap_chain_image_views)
-    {
-      vkDestroyImageView(m_device, image_view, nullptr);
-    }
-    m_swap_chain_image_views.clear();
-
-    if (m_swap_chain != nullptr)
-    {
-      vkDestroySwapchainKHR(m_device, m_swap_chain, nullptr);
-      m_swap_chain = nullptr;
-    }
-
-    for (int i = 0; i < m_depth_images.size(); i++)
-    {
-      vkDestroyImageView(m_device, m_depth_image_views[i], nullptr);
-      vkDestroyImage(m_device, m_depth_images[i], nullptr);
-      vkFreeMemory(m_device, m_depth_image_memories[i], nullptr);
-    }
-
-    for (auto framebuffer : m_swap_chain_framebuffers)
-    {
-      vkDestroyFramebuffer(m_device, framebuffer, nullptr);
-    }
-
-    vkDestroyRenderPass(m_device, m_render_pass, nullptr);
-
-    // cleanup synchronization objects
-    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
-    {
-      vkDestroySemaphore(m_device, m_render_finished_semaphores[i], nullptr);
-      vkDestroySemaphore(m_device, m_image_available_semaphores[i], nullptr);
-      vkDestroyFence(m_device, m_in_flight_fences[i], nullptr);
-    }
-  }
-
   VkResult VulkanSwapChain::acquire_next_image(uint32_t* image_index)
   {
     vkWaitForFences(m_device, 1, &m_in_flight_fences[m_current_frame], VK_TRUE, std::numeric_limits<uint64_t>::max());
@@ -149,6 +112,43 @@ namespace esp
     init();
 
     m_old_swap_chain = nullptr; // cleanup old swap chain since it's no longer needed
+  }
+
+  void VulkanSwapChain::terminate()
+  {
+    for (auto image_view : m_swap_chain_image_views)
+    {
+      vkDestroyImageView(m_device, image_view, nullptr);
+    }
+    m_swap_chain_image_views.clear();
+
+    if (m_swap_chain != nullptr)
+    {
+      vkDestroySwapchainKHR(m_device, m_swap_chain, nullptr);
+      m_swap_chain = nullptr;
+    }
+
+    for (int i = 0; i < m_depth_images.size(); i++)
+    {
+      vkDestroyImageView(m_device, m_depth_image_views[i], nullptr);
+      vkDestroyImage(m_device, m_depth_images[i], nullptr);
+      vkFreeMemory(m_device, m_depth_image_memories[i], nullptr);
+    }
+
+    for (auto framebuffer : m_swap_chain_framebuffers)
+    {
+      vkDestroyFramebuffer(m_device, framebuffer, nullptr);
+    }
+
+    vkDestroyRenderPass(m_device, m_render_pass, nullptr);
+
+    // cleanup synchronization objects
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
+    {
+      vkDestroySemaphore(m_device, m_render_finished_semaphores[i], nullptr);
+      vkDestroySemaphore(m_device, m_image_available_semaphores[i], nullptr);
+      vkDestroyFence(m_device, m_in_flight_fences[i], nullptr);
+    }
   }
 
   void VulkanSwapChain::init()
@@ -435,7 +435,8 @@ namespace esp
         VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
   }
 
-  VkSurfaceFormatKHR choose_swap_chain_surface_format(const std::vector<VkSurfaceFormatKHR>& available_formats)
+  VkSurfaceFormatKHR
+  VulkanSwapChain::choose_swap_chain_surface_format(const std::vector<VkSurfaceFormatKHR>& available_formats)
   {
     for (const auto& available_format : available_formats)
     {

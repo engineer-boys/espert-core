@@ -1,5 +1,4 @@
 #include "Application.hh"
-#include "VulkanRenderAPI/EspRenderContext.hh"
 #include <ranges>
 
 namespace esp
@@ -7,7 +6,10 @@ namespace esp
   Application::Application() : m_running(true)
   {
     m_window = EspWindow::create(EspWindow::WindowData());
-    m_window->set_events_manager_fun(ESP_BIND_EVENT_FOR_FUN(Application::eventsmanager));
+    m_window->set_events_manager_fun(ESP_BIND_EVENT_FOR_FUN(Application::events_manager));
+
+    m_render_context  = EspRenderContext::create_and_init(*m_window);
+    m_frame_scheduler = EspFrameScheduler::create_and_init(*m_window);
 
     m_layer_stack = new LayerStack();
   }
@@ -23,6 +25,11 @@ namespace esp
         layer->update();
       }
 
+      m_frame_scheduler->begin_frame();
+      m_frame_scheduler->begin_render_pass();
+      m_frame_scheduler->end_render_pass();
+      m_frame_scheduler->end_frame();
+
       m_window->update();
     }
 
@@ -36,13 +43,14 @@ namespace esp
   bool Application::on_window_closed(WindowClosedEvent& e)
   {
     m_running = false;
-    // TODO: abstract this call
-    EspRenderContext::get_device().complete_queues();
-    //
+
+    m_frame_scheduler->terminate();
+    m_render_context->terminate();
+
     return true;
   }
 
-  void Application::eventsmanager(Event& e)
+  void Application::events_manager(Event& e)
   {
     Event::try_hanlder<WindowResizedEvent>(e, ESP_BIND_EVENT_FOR_FUN(Application::on_window_resized));
     Event::try_hanlder<WindowClosedEvent>(e, ESP_BIND_EVENT_FOR_FUN(Application::on_window_closed));

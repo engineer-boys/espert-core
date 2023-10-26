@@ -11,13 +11,11 @@ namespace esp
     return std::unique_ptr<VulkanDevice>(new VulkanDevice(physical_device, device));
   }
 
-  VulkanDevice::~VulkanDevice()
-  {
-    complete_queues();
-    vkDestroyDevice(m_device, nullptr);
-  }
+  VulkanDevice::~VulkanDevice() { s_instance = nullptr; }
 
   void VulkanDevice::complete_queues() { vkDeviceWaitIdle(s_instance->m_device); }
+
+  void VulkanDevice::terminate() { vkDestroyDevice(m_device, nullptr); }
 
   VkFormat VulkanDevice::find_supported_format(const std::vector<VkFormat>& candidates,
                                                VkImageTiling tiling,

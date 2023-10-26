@@ -44,7 +44,7 @@ namespace esp
     static std::unique_ptr<VulkanSwapChain> recreate(VkExtent2D window_extent,
                                                      std::shared_ptr<VulkanSwapChain> previous);
 
-    ~VulkanSwapChain();
+    ~VulkanSwapChain() = default;
 
     VulkanSwapChain(const VulkanSwapChain&)            = delete;
     VulkanSwapChain& operator=(const VulkanSwapChain&) = delete;
@@ -72,6 +72,8 @@ namespace esp
       return swap_chain.m_swap_chain_depth_format == m_swap_chain_depth_format &&
           swap_chain.m_swap_chain_image_format == m_swap_chain_image_format;
     }
+
+    void terminate();
 
    private:
     VulkanSwapChain(VkExtent2D window_extent);

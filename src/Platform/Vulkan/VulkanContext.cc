@@ -47,8 +47,6 @@ namespace esp
 #endif /* __APPLE__ */
   }
 
-  VulkanContext::~VulkanContext() { terminate(); }
-
   void VulkanContext::init(EspWindow& window)
   {
     // create_instance - initializes vulkan library, it's connection between our
@@ -66,13 +64,16 @@ namespace esp
     // want to use
     create_logical_device();
 
-    m_vulkan_command_handler = VulkanCommandHandler::create();
     m_vulkan_device = VulkanDevice::create(m_device_context_data.m_physical_device, m_device_context_data.m_device);
+    m_vulkan_command_handler = VulkanCommandHandler::create();
   }
 
   void VulkanContext::terminate()
   {
     ESP_ASSERT(s_instance != nullptr, "You cannot terminate vulkan context because it doesn't exist!");
+
+    m_vulkan_command_handler->terminate();
+    m_vulkan_device->terminate();
 
     if (m_context_data.m_enable_validation_layers)
     {
