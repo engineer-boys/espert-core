@@ -9,7 +9,7 @@ namespace esp
     m_window->set_events_manager_fun(ESP_BIND_EVENT_FOR_FUN(Application::events_manager));
 
     m_render_context  = EspRenderContext::create_and_init(*m_window);
-    m_frame_scheduler = EspFrameScheduler::create_and_init(*m_window);
+    m_frame_scheduler = EspFrameManager::create_and_init(*m_window, glm::vec4{ .5f, .1f, .1f, 1.f });
 
     m_layer_stack = new LayerStack();
   }
@@ -18,7 +18,6 @@ namespace esp
 
   void Application::run()
   {
-    m_frame_scheduler->set_clear_color(glm::vec3{ .5f, .1f, .1f });
     while (m_running)
     {
       for (auto layer : *m_layer_stack)
@@ -27,9 +26,7 @@ namespace esp
       }
 
       m_frame_scheduler->begin_frame();
-      m_frame_scheduler->begin_render_pass();
       /*...*/
-      m_frame_scheduler->end_render_pass();
       m_frame_scheduler->end_frame();
 
       m_window->update();

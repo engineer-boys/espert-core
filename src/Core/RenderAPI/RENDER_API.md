@@ -1,50 +1,55 @@
-# MINIMAL RENDER API
+# RENDER API
 
 ```Python
 class EspRenderContext():
-    def init() -> None:
-        # Init the render context.
-    
+    def create_and_init(window=EspWindow) -> None:
+    # Init the render context.
+
     def terminate() -> None:
-        # Terminate the render context.
+    # Terminate render context.
 ```
 
 ```Python
 class EspFrameManager:
-    def __init__(clear_color=(0,0,0)):
-        # This variables has to be
-        # available as static members:
-        self.frame_counter
-        self.swapChainFramebuffers
-        self.render_pass
+    def create_and_init(window=EspWindow,
+                        clear_color=(0.1, 0.1, 0.1, 1.0)) -> None:
 
-        # Important members:
-        self.commandBuffers
-        self.clear_color
+    # Class members:
+    self.window_width
+    self.window_height
+    self.depth_stencil
+    self.clear_color
 
-    def counter_update() -> None:
-        # Update frame counter for
-        # rendering in flight.
-    
-    def clear_color_update(r, g, b) -> None:
-        # Set clear color
-    
     def begin_frame() -> None:
-        # Bind appropriate commandBuffer.
-        # Begin appropriate commandBuffer.
-        # Begin appropriate renderPass.
-    
+    # Set clear values
+    # Set viewport & scissors
+    # Bind appropriate commandBuffer.
+    # Begin appropriate commandBuffer.
+    # Begin appropriate renderPass.
+
     def end_frame() -> None:
-        # End appropriate renderPass.
-        # End appropriate commandBuffer.
-    
-    def view_update() -> None:
-        # Update viewport and scissor
-        # by set new viewport and scissor values
-        # for binded pipeline.
-    
+    # End appropriate renderPass.
+    # End appropriate commandBuffer.
+
+    def termiate() -> None:
+    # Terminate frame manager
+
+    def on_window_resized(e=WindowResizedEvent) -> None:
+    # Recreate swap chain
+
     def get_swap_chain_extent() -> std::pair<uint32,uint32>:
-        # This will return width and height.
+    # Get swap chain (window) width and height.
+    
+    def set_depth_stencil(depth=float,
+                          stencil=uint32_t) -> None:
+    # Set both depth and stencil values
+    # for render pass
+    
+    def set_clear_color(color=glm::vec3) -> None:
+    # Set clear color r,g,b
+    
+    def set_clear_color(color=glm::vec4) -> None:
+    # Set clear color r,g,b,a
 ```
 
 ```Python

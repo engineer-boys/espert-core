@@ -1,7 +1,7 @@
 #ifndef ESP_RENDERER_HH
 #define ESP_RENDERER_HH
 
-#include "Core/RenderAPI/EspFrameScheduler.hh"
+#include "Core/RenderAPI/EspFrameManager.hh"
 #include "VulkanSwapChain.hh"
 
 // std
@@ -10,7 +10,7 @@
 
 namespace esp
 {
-  class VulkanFrameScheduler : public EspFrameScheduler
+  class VulkanFrameManager : public EspFrameManager
   {
    private:
     std::unique_ptr<VulkanSwapChain> m_swap_chain;
@@ -21,24 +21,23 @@ namespace esp
     bool m_frame_started{ false };
 
    public:
-    static std::unique_ptr<VulkanFrameScheduler> create();
+    static std::unique_ptr<VulkanFrameManager> create();
 
-    VulkanFrameScheduler(const VulkanFrameScheduler&)            = delete;
-    VulkanFrameScheduler& operator=(const VulkanFrameScheduler&) = delete;
+    VulkanFrameManager(const VulkanFrameManager&)            = delete;
+    VulkanFrameManager& operator=(const VulkanFrameManager&) = delete;
 
-    ~VulkanFrameScheduler() = default;
+    ~VulkanFrameManager() = default;
 
+    // --------------------- Inherited ---------------------
     void init() override;
 
     void begin_frame() override;
     void end_frame() override;
 
-    void begin_render_pass() override;
-    void end_render_pass() override;
-
     void terminate() override;
 
     void on_window_resized(WindowResizedEvent& e) override;
+    // -----------------------------------------------------
 
     inline bool is_frame_in_progress() const { return m_frame_started; };
 
@@ -58,7 +57,10 @@ namespace esp
     inline float get_aspect_ratio() const { return m_swap_chain->get_swap_chain_extent_aspect_ratio(); };
 
    private:
-    VulkanFrameScheduler() = default;
+    VulkanFrameManager() = default;
+
+    void begin_render_pass();
+    void end_render_pass();
 
     void create_command_buffers();
     void free_command_buffers();

@@ -85,8 +85,6 @@ namespace esp
     VulkanContext::s_instance = nullptr;
   }
 
-  void VulkanContext::update() {}
-
   std::unique_ptr<VulkanContext> VulkanContext::create()
   {
     return std::unique_ptr<VulkanContext>{ new VulkanContext() };

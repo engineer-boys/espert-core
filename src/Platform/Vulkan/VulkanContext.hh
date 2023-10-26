@@ -90,7 +90,6 @@ namespace esp
 
     void init(EspWindow& window) override;
     void terminate() override;
-    void update() override;
 
     static std::unique_ptr<VulkanContext> create();
     static const ContextData& get_context_data();

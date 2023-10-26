@@ -12,17 +12,19 @@ namespace esp
     static bool s_is_exist;
 
    public:
+    static std::unique_ptr<EspRenderContext> create_and_init(EspWindow& window);
+
+    EspRenderContext()          = default;
+    virtual ~EspRenderContext() = default;
+
     EspRenderContext(const EspRenderContext& other)            = delete;
     EspRenderContext& operator=(const EspRenderContext& other) = delete;
 
-    virtual ~EspRenderContext() {}
-    EspRenderContext() {}
-
+   protected:
     virtual void init(EspWindow& window) = 0;
-    virtual void terminate()             = 0;
-    virtual void update()                = 0;
 
-    static std::unique_ptr<EspRenderContext> create_and_init(EspWindow& window);
+   public:
+    virtual void terminate() = 0;
   };
 
   void render_context_glfw_hints();
