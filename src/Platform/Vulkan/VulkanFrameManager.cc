@@ -1,4 +1,4 @@
-#include "VulkanFrameScheduler.hh"
+#include "VulkanFrameManager.hh"
 #include "VulkanCommandHandler.hh"
 #include "VulkanContext.hh"
 
@@ -8,18 +8,18 @@
 
 namespace esp
 {
-  std::unique_ptr<VulkanFrameScheduler> VulkanFrameScheduler::create()
+  std::unique_ptr<VulkanFrameManager> VulkanFrameManager::create()
   {
-    return std::unique_ptr<VulkanFrameScheduler>(new VulkanFrameScheduler());
+    return std::unique_ptr<VulkanFrameManager>(new VulkanFrameManager());
   }
 
-  void VulkanFrameScheduler::init()
+  void VulkanFrameManager::init()
   {
     recreate_swap_chain();
     create_command_buffers();
   }
 
-  void VulkanFrameScheduler::begin_frame()
+  void VulkanFrameManager::begin_frame()
   {
     ESP_ASSERT(!m_frame_started, "Cannot call begin_frame while frame already in progress")
 
@@ -52,11 +52,15 @@ namespace esp
       ESP_CORE_ERROR("Failed to begin recording command buffer");
       throw std::runtime_error("Failed to begin recording command buffer");
     }
+
+    begin_render_pass();
   }
 
-  void VulkanFrameScheduler::end_frame()
+  void VulkanFrameManager::end_frame()
   {
     ESP_ASSERT(m_frame_started, "Cannot call end_frame while frame is not in progress")
+
+    end_render_pass();
 
     auto command_buffer = get_current_command_buffer();
     if (vkEndCommandBuffer(command_buffer) != VK_SUCCESS)
@@ -77,7 +81,7 @@ namespace esp
     m_current_frame_index = (m_current_frame_index + 1) % VulkanSwapChain::MAX_FRAMES_IN_FLIGHT;
   }
 
-  void VulkanFrameScheduler::begin_render_pass()
+  void VulkanFrameManager::begin_render_pass()
   {
     ESP_ASSERT(m_frame_started,
                "Cannot call begin_render_pass while frame is not in "
@@ -105,27 +109,27 @@ namespace esp
     set_scissors();
   }
 
-  void VulkanFrameScheduler::end_render_pass()
+  void VulkanFrameManager::end_render_pass()
   {
     ESP_ASSERT(m_frame_started, "Cannot call end_render_pass while frame is in progress")
 
     vkCmdEndRenderPass(get_current_command_buffer());
   }
 
-  void VulkanFrameScheduler::terminate()
+  void VulkanFrameManager::terminate()
   {
     VulkanDevice::complete_queues();
     free_command_buffers();
     m_swap_chain->terminate();
   }
 
-  void VulkanFrameScheduler::on_window_resized(WindowResizedEvent& e)
+  void VulkanFrameManager::on_window_resized(WindowResizedEvent& e)
   {
-    EspFrameScheduler::on_window_resized(e);
+    EspFrameManager::on_window_resized(e);
     recreate_swap_chain();
   }
 
-  void VulkanFrameScheduler::create_command_buffers()
+  void VulkanFrameManager::create_command_buffers()
   {
     m_command_buffers.resize(VulkanSwapChain::MAX_FRAMES_IN_FLIGHT);
 
@@ -135,7 +139,7 @@ namespace esp
     }
   }
 
-  void VulkanFrameScheduler::free_command_buffers()
+  void VulkanFrameManager::free_command_buffers()
   {
     for (auto& buffer : m_command_buffers)
     {
@@ -144,7 +148,7 @@ namespace esp
     m_command_buffers.clear();
   }
 
-  void VulkanFrameScheduler::recreate_swap_chain()
+  void VulkanFrameManager::recreate_swap_chain()
   {
     // as long as 1 dimension is 0 (example: minimizing window) we wait
     auto extent = get_window_extent();
@@ -170,7 +174,7 @@ namespace esp
     }
   }
 
-  std::array<VkClearValue, 2> VulkanFrameScheduler::get_clear_values()
+  std::array<VkClearValue, 2> VulkanFrameManager::get_clear_values()
   {
     std::array<VkClearValue, 2> clear_values{};
     clear_values[0].color = { m_clear_color.x, m_clear_color.y, m_clear_color.z, m_clear_color.w }; // color attachment
@@ -179,7 +183,7 @@ namespace esp
     return clear_values;
   }
 
-  void VulkanFrameScheduler::set_viewport()
+  void VulkanFrameManager::set_viewport()
   {
     VkViewport viewport{};
     viewport.x        = 0.0f;
@@ -192,13 +196,13 @@ namespace esp
     vkCmdSetViewport(get_current_command_buffer(), 0, 1, &viewport);
   }
 
-  void VulkanFrameScheduler::set_scissors()
+  void VulkanFrameManager::set_scissors()
   {
     VkRect2D scissor{ { 0, 0 }, m_swap_chain->get_swap_chain_extent() };
     vkCmdSetScissor(get_current_command_buffer(), 0, 1, &scissor);
   }
 
-  VkExtent2D VulkanFrameScheduler::get_window_extent()
+  VkExtent2D VulkanFrameManager::get_window_extent()
   {
     return { static_cast<uint32_t>(m_window_width), static_cast<uint32_t>(m_window_height) };
   }

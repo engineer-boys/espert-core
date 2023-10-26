@@ -8,7 +8,7 @@
 
 namespace esp
 {
-  class EspFrameScheduler
+  class EspFrameManager
   {
    private:
     static bool s_is_exist;
@@ -24,27 +24,30 @@ namespace esp
     unsigned int m_window_height;
 
     DepthStencilInfo m_depth_stencil{ 1.f, 0 };
-    glm::vec4 m_clear_color{ .1f, .1f, .1f, 1.f };
+    glm::vec4 m_clear_color;
 
    public:
-    static std::unique_ptr<EspFrameScheduler> create_and_init(EspWindow& window);
+    static std::unique_ptr<EspFrameManager> create_and_init(EspWindow& window,
+                                                            glm::vec4 clear_color = { .1f, .1f, .1f, 1.f });
 
-    EspFrameScheduler()          = default;
-    virtual ~EspFrameScheduler() = default;
+    EspFrameManager()          = default;
+    virtual ~EspFrameManager() = default;
 
-    EspFrameScheduler(const EspFrameScheduler& other)            = delete;
-    EspFrameScheduler& operator=(const EspFrameScheduler& other) = delete;
+    EspFrameManager(const EspFrameManager& other)            = delete;
+    EspFrameManager& operator=(const EspFrameManager& other) = delete;
 
-    virtual void init()        = 0;
+   protected:
+    virtual void init() = 0;
+
+   public:
     virtual void begin_frame() = 0;
     virtual void end_frame()   = 0;
-
-    virtual void begin_render_pass() = 0;
-    virtual void end_render_pass()   = 0;
 
     virtual void terminate() = 0;
 
     virtual void on_window_resized(WindowResizedEvent& e);
+
+    std::pair<uint32_t, uint32_t> get_swap_chain_extent();
 
     void set_depth_stencil(float depth, uint32_t stencil);
     void set_clear_color(glm::vec3 color);

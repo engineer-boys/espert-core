@@ -6,7 +6,7 @@
 #include "Events/WindowEvent.hh"
 #include "Layers/Layer.hh"
 #include "Layers/LayerStack.hh"
-#include "RenderAPI/EspFrameScheduler.hh"
+#include "RenderAPI/EspFrameManager.hh"
 #include "RenderAPI/EspRenderContext.hh"
 #include "esppch.hh"
 
@@ -19,7 +19,7 @@ namespace esp
     std::unique_ptr<EspWindow> m_window;
 
     std::unique_ptr<EspRenderContext> m_render_context;
-    std::unique_ptr<EspFrameScheduler> m_frame_scheduler;
+    std::unique_ptr<EspFrameManager> m_frame_scheduler;
 
     bool m_running;
 
