@@ -69,7 +69,6 @@ namespace esp
     DeviceContextData m_device_context_data;
     ContextData m_context_data;
 
-    std::unique_ptr<VulkanCommandHandler> m_vulkan_command_handler{};
     std::unique_ptr<VulkanDevice> m_vulkan_device{};
 
    private:

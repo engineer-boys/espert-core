@@ -65,14 +65,12 @@ namespace esp
     create_logical_device();
 
     m_vulkan_device = VulkanDevice::create(m_device_context_data.m_physical_device, m_device_context_data.m_device);
-    m_vulkan_command_handler = VulkanCommandHandler::create();
   }
 
   void VulkanContext::terminate()
   {
     ESP_ASSERT(s_instance != nullptr, "You cannot terminate vulkan context because it doesn't exist!");
 
-    m_vulkan_command_handler->terminate();
     m_vulkan_device->terminate();
 
     if (m_context_data.m_enable_validation_layers)

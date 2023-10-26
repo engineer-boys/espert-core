@@ -11,9 +11,13 @@ namespace esp
     return std::unique_ptr<VulkanCommandHandler>(new VulkanCommandHandler());
   }
 
-  VulkanCommandHandler::~VulkanCommandHandler()
+  VulkanCommandHandler::~VulkanCommandHandler() { s_instance = nullptr; }
+
+  void VulkanCommandHandler::init() { create_command_pool(); }
+
+  void VulkanCommandHandler::terminate()
   {
-    s_instance = nullptr;
+    vkDestroyCommandPool(VulkanDevice::get_logical_device(), m_command_pool, nullptr);
   }
 
   VkCommandBuffer VulkanCommandHandler::create_command_buffer()
@@ -74,8 +78,6 @@ namespace esp
   {
     ESP_ASSERT(VulkanCommandHandler::s_instance == nullptr, "Vulkan command manager already exists")
     s_instance = this;
-
-    create_command_pool();
   }
 
   void VulkanCommandHandler::create_command_pool()
@@ -92,10 +94,5 @@ namespace esp
       ESP_CORE_ERROR("Failed to create command pool");
       throw std::runtime_error("Failed to create command pool");
     }
-  }
-
-  void VulkanCommandHandler::terminate()
-  {
-    vkDestroyCommandPool(VulkanDevice::get_logical_device(), m_command_pool, nullptr);
   }
 } // namespace esp

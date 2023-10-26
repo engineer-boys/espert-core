@@ -1,12 +1,14 @@
 #ifndef VULKAN_RENDER_API_VULKAN_COMMAND_MANAGER_HH
 #define VULKAN_RENDER_API_VULKAN_COMMAND_MANAGER_HH
 
+#include "Core/RenderAPI/EspCommandHandler.hh"
+
 // libs
 #include "volk.h"
 
 namespace esp
 {
-  class VulkanCommandHandler
+  class VulkanCommandHandler : public EspCommandHandler
   {
    private:
     static VulkanCommandHandler* s_instance;
@@ -19,14 +21,17 @@ namespace esp
     VulkanCommandHandler(const VulkanCommandHandler&)            = delete;
     VulkanCommandHandler& operator=(const VulkanCommandHandler&) = delete;
 
-    ~VulkanCommandHandler();
+    // --------------------- Inherited ---------------------
+    ~VulkanCommandHandler() override;
+
+    void init() override;
+    void terminate() override;
+    // -----------------------------------------------------
 
     static VkCommandBuffer create_command_buffer();
     static void free_command_buffer(VkCommandBuffer command_buffer);
     static VkCommandBuffer begin_single_time_commands();
     static void end_single_time_commands(VkCommandBuffer command_buffer);
-
-    void terminate();
 
    private:
     VulkanCommandHandler();

@@ -9,6 +9,7 @@ namespace esp
     m_window->set_events_manager_fun(ESP_BIND_EVENT_FOR_FUN(Application::events_manager));
 
     m_render_context  = EspRenderContext::create_and_init(*m_window);
+    m_command_handler = EspCommandHandler::create_and_init();
     m_frame_scheduler = EspFrameManager::create_and_init(*m_window, glm::vec4{ .5f, .1f, .1f, 1.f });
 
     m_layer_stack = new LayerStack();
@@ -48,6 +49,7 @@ namespace esp
     m_running = false;
 
     m_frame_scheduler->terminate();
+    m_command_handler->terminate();
     m_render_context->terminate();
 
     return true;
