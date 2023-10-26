@@ -18,8 +18,6 @@ namespace esp
     s_instance = nullptr;
   }
 
-  void VulkanCommandHandler::init() { create_command_pool(); }
-
   VkCommandBuffer VulkanCommandHandler::create_command_buffer()
   {
     VkCommandBufferAllocateInfo allocate_info{};
@@ -82,6 +80,8 @@ namespace esp
   {
     ESP_ASSERT(VulkanCommandHandler::s_instance == nullptr, "Vulkan command manager already exists")
     s_instance = this;
+
+    create_command_pool();
   }
 
   void VulkanCommandHandler::create_command_pool()
