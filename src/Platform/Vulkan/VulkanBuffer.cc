@@ -6,7 +6,7 @@
  */
 
 #include "VulkanBuffer.hh"
-#include "VulkanContext.hh"
+#include "VulkanDevice.hh"
 
 // std
 #include <cstring>
@@ -40,17 +40,15 @@ namespace esp
     m_alignment_size = get_alignment(instance_size, min_offset_alignment);
     m_buffer_size    = m_alignment_size * instance_count;
 
-    auto& context_data = VulkanContext::get_context_data();
-    context_data.m_vulkan_device->create_buffer(m_buffer_size, usage_flags, memory_property_flags, m_buffer, m_memory);
+    VulkanDevice::get_instance().create_buffer(m_buffer_size, usage_flags, memory_property_flags, m_buffer, m_memory);
   }
 
   VulkanBuffer::~VulkanBuffer()
   {
     unmap();
 
-    auto& context_data = VulkanContext::get_context_data();
-    vkDestroyBuffer(context_data.m_device, m_buffer, nullptr);
-    vkFreeMemory(context_data.m_device, m_memory, nullptr);
+    vkDestroyBuffer(VulkanDevice::get_logical_device(), m_buffer, nullptr);
+    vkFreeMemory(VulkanDevice::get_logical_device(), m_memory, nullptr);
   }
 
   /**
@@ -67,8 +65,7 @@ namespace esp
   {
     ESP_ASSERT(m_buffer && m_memory, "Called map on buffer before create")
 
-    auto& context_data = VulkanContext::get_context_data();
-    return vkMapMemory(context_data.m_device, m_memory, offset, size, 0, &m_mapped);
+    return vkMapMemory(VulkanDevice::get_logical_device(), m_memory, offset, size, 0, &m_mapped);
   }
 
   /**
@@ -80,8 +77,7 @@ namespace esp
   {
     if (m_mapped)
     {
-      auto& context_data = VulkanContext::get_context_data();
-      vkUnmapMemory(context_data.m_device, m_memory);
+      vkUnmapMemory(VulkanDevice::get_logical_device(), m_memory);
       m_mapped = nullptr;
     }
   }
@@ -128,8 +124,7 @@ namespace esp
     mapped_range.offset              = offset;
     mapped_range.size                = size;
 
-    auto& context_data = VulkanContext::get_context_data();
-    return vkFlushMappedMemoryRanges(context_data.m_device, 1, &mapped_range);
+    return vkFlushMappedMemoryRanges(VulkanDevice::get_logical_device(), 1, &mapped_range);
   }
 
   /**
@@ -151,8 +146,7 @@ namespace esp
     mapped_range.offset              = offset;
     mapped_range.size                = size;
 
-    auto& context_data = VulkanContext::get_context_data();
-    return vkInvalidateMappedMemoryRanges(context_data.m_device, 1, &mapped_range);
+    return vkInvalidateMappedMemoryRanges(VulkanDevice::get_logical_device(), 1, &mapped_range);
   }
 
   /**

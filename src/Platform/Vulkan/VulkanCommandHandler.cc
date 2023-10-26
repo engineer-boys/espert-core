@@ -1,5 +1,6 @@
 #include "VulkanCommandHandler.hh"
 #include "VulkanContext.hh"
+#include "VulkanDevice.hh"
 
 namespace esp
 {
@@ -12,9 +13,7 @@ namespace esp
 
   VulkanCommandHandler::~VulkanCommandHandler()
   {
-    auto& context_data = VulkanContext::get_context_data();
-
-    vkDestroyCommandPool(context_data.m_device, m_command_pool, nullptr);
+    vkDestroyCommandPool(VulkanDevice::get_logical_device(), m_command_pool, nullptr);
     s_instance = nullptr;
   }
 
@@ -28,10 +27,8 @@ namespace esp
     allocate_info.commandPool        = s_instance->m_command_pool;
     allocate_info.commandBufferCount = 1;
 
-    auto& context_data = VulkanContext::get_context_data();
-
     VkCommandBuffer command_buffer{};
-    if (vkAllocateCommandBuffers(context_data.m_device, &allocate_info, &command_buffer) != VK_SUCCESS)
+    if (vkAllocateCommandBuffers(VulkanDevice::get_logical_device(), &allocate_info, &command_buffer) != VK_SUCCESS)
     {
       ESP_CORE_ERROR("Failed to allocate command buffers");
       throw std::runtime_error("Failed to allocate command buffers");
@@ -42,9 +39,7 @@ namespace esp
 
   void VulkanCommandHandler::free_command_buffer(VkCommandBuffer command_buffer)
   {
-    auto& context_data = VulkanContext::get_context_data();
-
-    vkFreeCommandBuffers(context_data.m_device, s_instance->m_command_pool, 1, &command_buffer);
+    vkFreeCommandBuffers(VulkanDevice::get_logical_device(), s_instance->m_command_pool, 1, &command_buffer);
   }
 
   VkCommandBuffer VulkanCommandHandler::begin_single_time_commands()
@@ -73,7 +68,7 @@ namespace esp
     vkQueueSubmit(context_data.m_graphics_queue, 1, &submit_info, VK_NULL_HANDLE);
     vkQueueWaitIdle(context_data.m_graphics_queue);
 
-    vkFreeCommandBuffers(context_data.m_device, s_instance->m_command_pool, 1, &command_buffer);
+    vkFreeCommandBuffers(VulkanDevice::get_logical_device(), s_instance->m_command_pool, 1, &command_buffer);
   }
 
   VulkanCommandHandler::VulkanCommandHandler()
@@ -93,7 +88,7 @@ namespace esp
     pool_info.queueFamilyIndex        = context_data.m_queue_family_indices.m_graphics_family;
     pool_info.flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
 
-    if (vkCreateCommandPool(context_data.m_device, &pool_info, nullptr, &m_command_pool) != VK_SUCCESS)
+    if (vkCreateCommandPool(VulkanDevice::get_logical_device(), &pool_info, nullptr, &m_command_pool) != VK_SUCCESS)
     {
       ESP_CORE_ERROR("Failed to create command pool");
       throw std::runtime_error("Failed to create command pool");

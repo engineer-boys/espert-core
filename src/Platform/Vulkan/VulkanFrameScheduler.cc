@@ -125,12 +125,6 @@ namespace esp
     vkCmdEndRenderPass(get_current_command_buffer());
   }
 
-  VulkanFrameScheduler::VulkanFrameScheduler()
-  {
-    auto& context_data = VulkanContext::get_context_data();
-    m_device           = context_data.m_device;
-  }
-
   void VulkanFrameScheduler::create_command_buffers()
   {
     m_command_buffers.resize(VulkanSwapChain::MAX_FRAMES_IN_FLIGHT);
@@ -160,8 +154,8 @@ namespace esp
       glfwWaitEvents();
     }
 
-    vkDeviceWaitIdle(m_device); // wait until the current swap
-                                // chain is not being used
+    VulkanDevice::complete_queues(); // wait until the current swap
+                                     // chain is not being used
 
     if (m_swap_chain == nullptr) { m_swap_chain = VulkanSwapChain::create(extent); }
     else

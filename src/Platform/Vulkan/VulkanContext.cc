@@ -66,17 +66,13 @@ namespace esp
     // want to use
     create_logical_device();
 
-    m_context_data.m_vulkan_device = VulkanDevice::create();
-    // TODO: init and create this objects !!!!
-    create_frame_scheduler();
+    m_vulkan_command_handler = VulkanCommandHandler::create();
+    m_vulkan_device = VulkanDevice::create(m_device_context_data.m_physical_device, m_device_context_data.m_device);
   }
 
   void VulkanContext::terminate()
   {
     ESP_ASSERT(s_instance != nullptr, "You cannot terminate vulkan context because it doesn't exist!");
-
-    vkDeviceWaitIdle(m_context_data.m_device);
-    vkDestroyDevice(m_context_data.m_device, nullptr);
 
     if (m_context_data.m_enable_validation_layers)
     {
@@ -195,21 +191,22 @@ namespace esp
     {
       if (is_device_suitable(device, m_context_data))
       {
-        m_context_data.m_physical_device = device;
+        m_device_context_data.m_physical_device = device;
         break;
       }
     }
 
-    if (m_context_data.m_physical_device == VK_NULL_HANDLE)
+    if (m_device_context_data.m_physical_device == VK_NULL_HANDLE)
     {
       ESP_CORE_ERROR("Failed to find a suitable GPU");
       throw std::runtime_error("Failed to find a suitable GPU");
     }
 
-    m_context_data.m_queue_family_indices = find_queue_families(m_context_data.m_physical_device, m_context_data);
+    m_context_data.m_queue_family_indices =
+        find_queue_families(m_device_context_data.m_physical_device, m_context_data);
 
     VkPhysicalDeviceProperties properties;
-    vkGetPhysicalDeviceProperties(m_context_data.m_physical_device, &properties);
+    vkGetPhysicalDeviceProperties(m_device_context_data.m_physical_device, &properties);
     ESP_CORE_INFO("Physical device: {0}", properties.deviceName);
   }
 
@@ -253,18 +250,19 @@ namespace esp
     }
     else { create_info.enabledLayerCount = 0; }
 
-    if (vkCreateDevice(m_context_data.m_physical_device, &create_info, nullptr, &m_context_data.m_device) != VK_SUCCESS)
+    if (vkCreateDevice(m_device_context_data.m_physical_device,
+                       &create_info,
+                       nullptr,
+                       &m_device_context_data.m_device) != VK_SUCCESS)
     {
       ESP_CORE_ERROR("Failed to create logical device");
       throw std::runtime_error("Failed to create logical device");
     }
-    volkLoadDevice(m_context_data.m_device);
+    volkLoadDevice(m_device_context_data.m_device);
 
-    vkGetDeviceQueue(m_context_data.m_device, indices.m_graphics_family, 0, &m_context_data.m_graphics_queue);
-    vkGetDeviceQueue(m_context_data.m_device, indices.m_present_family, 0, &m_context_data.m_present_queue);
+    vkGetDeviceQueue(m_device_context_data.m_device, indices.m_graphics_family, 0, &m_context_data.m_graphics_queue);
+    vkGetDeviceQueue(m_device_context_data.m_device, indices.m_present_family, 0, &m_context_data.m_present_queue);
   }
-
-  void VulkanContext::create_frame_scheduler() {}
 
   void render_context_glfw_hints()
   {

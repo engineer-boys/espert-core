@@ -2,7 +2,10 @@
 #define VULKAN_RENDER_API_VULKAN_CONTEXT_HH
 
 #include "Core/RenderAPI/EspRenderContext.hh"
+
+#include "VulkanCommandHandler.hh"
 #include "VulkanDevice.hh"
+
 #include "esppch.hh"
 
 // libs
@@ -29,6 +32,13 @@ namespace esp
 
   class VulkanContext : public EspRenderContext
   {
+   private:
+    struct DeviceContextData
+    {
+      VkPhysicalDevice m_physical_device = VK_NULL_HANDLE;
+      VkDevice m_device;
+    };
+
    public:
     struct ContextData
     {
@@ -36,10 +46,6 @@ namespace esp
       VkDebugUtilsMessengerEXT m_debug_messenger;
 
       VkSurfaceKHR m_surface;
-
-      VkPhysicalDevice m_physical_device = VK_NULL_HANDLE;
-      VkDevice m_device;
-      std::unique_ptr<VulkanDevice> m_vulkan_device{};
 
       QueueFamilyIndices m_queue_family_indices;
       VkQueue m_graphics_queue;
@@ -60,7 +66,11 @@ namespace esp
    private:
     static VulkanContext* s_instance;
 
+    DeviceContextData m_device_context_data;
     ContextData m_context_data;
+
+    std::unique_ptr<VulkanCommandHandler> m_vulkan_command_handler{};
+    std::unique_ptr<VulkanDevice> m_vulkan_device{};
 
    private:
     void create_instance();
@@ -70,8 +80,6 @@ namespace esp
     void create_logical_device();
 
     VulkanContext();
-
-    void create_frame_scheduler();
 
    public:
     VulkanContext(const VulkanContext& other)            = delete;
