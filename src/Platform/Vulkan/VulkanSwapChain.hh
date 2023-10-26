@@ -9,7 +9,6 @@ namespace esp
   class VulkanSwapChain
   {
    private:
-    static bool s_is_exist;
     static bool s_first_initialization;
 
     VkFormat m_swap_chain_image_format;

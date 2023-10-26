@@ -1,5 +1,6 @@
 #include "VulkanSwapChain.hh"
 #include "VulkanContext.hh"
+#include "VulkanDevice.hh"
 
 // std
 #include <array>
@@ -135,8 +136,7 @@ namespace esp
 
   VulkanSwapChain::VulkanSwapChain(VkExtent2D window_extent) : m_window_extent{ window_extent }
   {
-    auto& context_data = VulkanContext::get_context_data();
-    m_device           = context_data.m_device;
+    m_device = VulkanDevice::get_logical_device();
 
     init();
   }
@@ -144,8 +144,7 @@ namespace esp
   VulkanSwapChain::VulkanSwapChain(VkExtent2D window_extent, std::shared_ptr<VulkanSwapChain> previous) :
       m_window_extent{ window_extent }, m_old_swap_chain{ previous }
   {
-    auto& context_data = VulkanContext::get_context_data();
-    m_device           = context_data.m_device;
+    m_device = VulkanDevice::get_logical_device();
 
     init();
 
@@ -376,10 +375,10 @@ namespace esp
       image_info.sharingMode   = VK_SHARING_MODE_EXCLUSIVE;
       image_info.flags         = 0;
 
-      context_data.m_vulkan_device->create_image_with_info(image_info,
-                                                           VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                                                           m_depth_images[i],
-                                                           m_depth_image_memories[i]);
+      VulkanDevice::get_instance().create_image_with_info(image_info,
+                                                          VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                                                          m_depth_images[i],
+                                                          m_depth_image_memories[i]);
 
       VkImageViewCreateInfo view_info{};
       view_info.sType                           = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
@@ -430,7 +429,7 @@ namespace esp
   {
     auto& context_data = esp::VulkanContext::get_context_data();
 
-    return context_data.m_vulkan_device->find_supported_format(
+    return VulkanDevice::get_instance().find_supported_format(
         { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
         VK_IMAGE_TILING_OPTIMAL,
         VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);

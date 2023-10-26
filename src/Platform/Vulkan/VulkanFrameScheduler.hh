@@ -17,8 +17,6 @@ namespace esp
     std::unique_ptr<VulkanSwapChain> m_swap_chain;
     std::vector<VkCommandBuffer> m_command_buffers;
 
-    VkDevice m_device;
-
     uint32_t m_current_image_index;
     int m_current_frame_index{ 0 };
     bool m_frame_started{ false };
@@ -57,7 +55,7 @@ namespace esp
     inline float get_aspect_ratio() const { return m_swap_chain->get_swap_chain_extent_aspect_ratio(); };
 
    private:
-    VulkanFrameScheduler();
+    VulkanFrameScheduler() = default;
 
     void create_command_buffers();
     void free_command_buffers();

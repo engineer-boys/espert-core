@@ -4,32 +4,24 @@
 
 namespace esp
 {
-  bool VulkanDevice::s_is_exist = false;
+  VulkanDevice* VulkanDevice::s_instance = nullptr;
 
-  std::unique_ptr<VulkanDevice> VulkanDevice::create()
+  std::unique_ptr<VulkanDevice> VulkanDevice::create(VkPhysicalDevice physical_device, VkDevice device)
   {
-    return std::unique_ptr<VulkanDevice>(new VulkanDevice());
+    return std::unique_ptr<VulkanDevice>(new VulkanDevice(physical_device, device));
   }
 
-  uint32_t VulkanDevice::find_memory_type(uint32_t type_filter, VkMemoryPropertyFlags properties)
+  VulkanDevice::~VulkanDevice()
   {
-    VkPhysicalDeviceMemoryProperties mem_properties;
-    vkGetPhysicalDeviceMemoryProperties(m_physical_device, &mem_properties);
-    for (uint32_t i = 0; i < mem_properties.memoryTypeCount; i++)
-    {
-      if ((type_filter & (1 << i)) && (mem_properties.memoryTypes[i].propertyFlags & properties) == properties)
-      {
-        return i;
-      }
-    }
-
-    ESP_CORE_ERROR("Failed to find suitable memory type");
-    throw std::runtime_error("Failed to find suitable memory type");
+    complete_queues();
+    vkDestroyDevice(m_device, nullptr);
   }
+
+  void VulkanDevice::complete_queues() { vkDeviceWaitIdle(s_instance->m_device); }
 
   VkFormat VulkanDevice::find_supported_format(const std::vector<VkFormat>& candidates,
-                                                      VkImageTiling tiling,
-                                                      VkFormatFeatureFlags features)
+                                               VkImageTiling tiling,
+                                               VkFormatFeatureFlags features)
   {
     for (VkFormat format : candidates)
     {
@@ -152,15 +144,29 @@ namespace esp
     }
   }
 
-  VulkanDevice::VulkanDevice()
+  VulkanDevice::VulkanDevice(VkPhysicalDevice physical_device, VkDevice device)
   {
-    ESP_ASSERT(!VulkanDevice::s_is_exist, "Vulkan device already exists")
+    ESP_ASSERT(VulkanDevice::s_instance == nullptr, "Vulkan device already exists")
 
-    auto& context_data = VulkanContext::get_context_data();
+    s_instance = this;
 
-    s_is_exist = true;
+    m_physical_device = physical_device;
+    m_device          = device;
+  }
 
-    m_physical_device = context_data.m_physical_device;
-    m_device          = context_data.m_device;
+  uint32_t VulkanDevice::find_memory_type(uint32_t type_filter, VkMemoryPropertyFlags properties)
+  {
+    VkPhysicalDeviceMemoryProperties mem_properties;
+    vkGetPhysicalDeviceMemoryProperties(m_physical_device, &mem_properties);
+    for (uint32_t i = 0; i < mem_properties.memoryTypeCount; i++)
+    {
+      if ((type_filter & (1 << i)) && (mem_properties.memoryTypes[i].propertyFlags & properties) == properties)
+      {
+        return i;
+      }
+    }
+
+    ESP_CORE_ERROR("Failed to find suitable memory type");
+    throw std::runtime_error("Failed to find suitable memory type");
   }
 } // namespace esp
