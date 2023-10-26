@@ -54,8 +54,6 @@ namespace esp
       ESP_CORE_ERROR("Failed to begin recording command buffer");
       throw std::runtime_error("Failed to begin recording command buffer");
     }
-
-    VulkanCommandHandler::set_current_command_buffer(command_buffer);
   }
 
   void VulkanFrameScheduler::end_frame()
