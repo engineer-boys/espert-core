@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 3.16.0)
 
 project(espert-core VERSION 0.0.1 LANGUAGES C CXX)
 
-set (CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 20)
+set(ESPERT_DIR ${PROJECT_SOURCE_DIR})
 
 option(ESP_BUILD_TESTS "Build the Espert-core test programs" OFF)
 
@@ -21,14 +22,59 @@ include_directories(${PROJECT_SOURCE_DIR})
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/esppch.hh)
 
 ############## Add libraries #######################
-add_subdirectory(external)
+include(cmake/get-library.cmake)
+get_library(TARGET catch2
+    PATH lib/cmake/Catch2
+    NAMES Catch2
+)
+
+get_library(TARGET entt
+    PATH lib/EnTT/cmake
+    NAMES EnTT
+)
+
+get_library(TARGET glfw
+    PATH lib/cmake/glfw3
+    NAMES glfw3
+)
+
+get_library(TARGET glm
+    PATH lib/cmake/glm
+    NAMES glm
+)
+
+get_library(TARGET glslang
+    PATH lib/cmake/glslang
+    NAMES glslang
+)
+
+get_library(TARGET spdlog
+    PATH lib/cmake/spdlog
+    NAMES spdlog
+)
+
+get_library(TARGET tinyobjloader
+    PATH lib/tinyobjloader/cmake
+    NAMES tinyobjloader
+)
+
+get_library(TARGET volk
+    PATH lib/cmake/volk
+    NAMES volk
+)
+
+if(NOT EXISTS ${ESPERT_DIR}/libs/vvl/${CMAKE_BUILD_TYPE})
+    include(cmake/install-library.cmake)
+    install_library(NAME vvl)
+endif()
 
 target_link_libraries(${PROJECT_NAME} PUBLIC
-    volk
+    volk::volk
     glfw
-    glm
-    spdlog_header_only
-        tiny_obj_loader
+    glm::glm
+    spdlog::spdlog_header_only
+    tinyobjloader
+    EnTT
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/external/stb)

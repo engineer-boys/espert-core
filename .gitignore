@@ -4,5 +4,7 @@
 
 build
 cmake-build-debug
+Debug
+Release
 
 __pycache__
