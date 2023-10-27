@@ -8,10 +8,14 @@
 
 namespace esp
 {
+  VulkanFrameManager* VulkanFrameManager::s_instance = nullptr;
+
   std::unique_ptr<VulkanFrameManager> VulkanFrameManager::create()
   {
     return std::unique_ptr<VulkanFrameManager>(new VulkanFrameManager());
   }
+
+  VulkanFrameManager::~VulkanFrameManager() { s_instance = nullptr; }
 
   void VulkanFrameManager::init()
   {
@@ -81,6 +85,12 @@ namespace esp
     m_current_frame_index = (m_current_frame_index + 1) % VulkanSwapChain::MAX_FRAMES_IN_FLIGHT;
   }
 
+  VulkanFrameManager::VulkanFrameManager()
+  {
+    ESP_ASSERT(VulkanFrameManager::s_instance == nullptr, "Vulkan frame manager already exists")
+    s_instance = this;
+  }
+
   void VulkanFrameManager::begin_render_pass()
   {
     ESP_ASSERT(m_frame_started,
@@ -128,6 +138,27 @@ namespace esp
     EspFrameManager::on_window_resized(e);
     recreate_swap_chain();
   }
+
+  bool VulkanFrameManager::is_frame_in_progress() { return s_instance->m_frame_started; };
+
+  VkCommandBuffer VulkanFrameManager::get_current_command_buffer()
+  {
+    ESP_ASSERT(s_instance->m_frame_started, "Cannot get command buffer if frame hasn't started")
+    return s_instance->m_command_buffers[s_instance->m_current_frame_index];
+  }
+
+  int VulkanFrameManager::get_current_frame_index()
+  {
+    ESP_ASSERT(s_instance->m_frame_started, "Cannot get frame index if frame hasn't started")
+    return s_instance->m_current_frame_index;
+  }
+
+  VkRenderPass VulkanFrameManager::get_swap_chain_render_pass() { return s_instance->m_swap_chain->get_render_pass(); };
+
+  float VulkanFrameManager::get_aspect_ratio()
+  {
+    return s_instance->m_swap_chain->get_swap_chain_extent_aspect_ratio();
+  };
 
   void VulkanFrameManager::create_command_buffers()
   {

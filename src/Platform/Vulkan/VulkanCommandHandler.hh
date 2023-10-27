@@ -21,11 +21,14 @@ namespace esp
     VulkanCommandHandler(const VulkanCommandHandler&)            = delete;
     VulkanCommandHandler& operator=(const VulkanCommandHandler&) = delete;
 
-    // --------------------- Inherited ---------------------
+    // ------------------------ API ------------------------
     ~VulkanCommandHandler() override;
 
     void init() override;
     void terminate() override;
+
+    static void draw(uint32_t vertex_count);
+    static void draw_indexed(uint32_t index_count);
     // -----------------------------------------------------
 
     static VkCommandBuffer create_command_buffer();

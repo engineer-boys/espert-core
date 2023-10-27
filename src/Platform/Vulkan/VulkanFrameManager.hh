@@ -13,6 +13,8 @@ namespace esp
   class VulkanFrameManager : public EspFrameManager
   {
    private:
+    static VulkanFrameManager* s_instance;
+
     std::unique_ptr<VulkanSwapChain> m_swap_chain;
     std::vector<VkCommandBuffer> m_command_buffers;
 
@@ -26,9 +28,9 @@ namespace esp
     VulkanFrameManager(const VulkanFrameManager&)            = delete;
     VulkanFrameManager& operator=(const VulkanFrameManager&) = delete;
 
-    ~VulkanFrameManager() = default;
+    // ------------------------ API ------------------------
+    ~VulkanFrameManager() override;
 
-    // --------------------- Inherited ---------------------
     void init() override;
 
     void begin_frame() override;
@@ -39,25 +41,14 @@ namespace esp
     void on_window_resized(WindowResizedEvent& e) override;
     // -----------------------------------------------------
 
-    inline bool is_frame_in_progress() const { return m_frame_started; };
-
-    inline VkCommandBuffer get_current_command_buffer() const
-    {
-      ESP_ASSERT(m_frame_started, "Cannot get command buffer if frame hasn't started")
-      return m_command_buffers[m_current_frame_index];
-    }
-
-    inline int get_current_frame_index()
-    {
-      ESP_ASSERT(m_frame_started, "Cannot get frame index if frame hasn't started")
-      return m_current_frame_index;
-    }
-
-    inline VkRenderPass get_swap_chain_render_pass() const { return m_swap_chain->get_render_pass(); };
-    inline float get_aspect_ratio() const { return m_swap_chain->get_swap_chain_extent_aspect_ratio(); };
+    static bool is_frame_in_progress();
+    static VkCommandBuffer get_current_command_buffer();
+    static int get_current_frame_index();
+    static VkRenderPass get_swap_chain_render_pass();
+    static float get_aspect_ratio();
 
    private:
-    VulkanFrameManager() = default;
+    VulkanFrameManager();
 
     void begin_render_pass();
     void end_render_pass();

@@ -21,6 +21,9 @@ namespace esp
 
     virtual void init()      = 0;
     virtual void terminate() = 0;
+
+    static void draw(uint32_t vertex_count);
+    static void draw_indexed(uint32_t index_count);
   };
 } // namespace esp
 

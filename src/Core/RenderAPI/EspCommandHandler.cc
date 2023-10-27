@@ -24,4 +24,34 @@ namespace esp
     command_handler->init();
     return command_handler;
   }
+
+  void EspCommandHandler::draw(uint32_t vertex_count)
+  {
+    /* ---------------------------------------------------------*/
+    /* ------------- PLATFORM DEPENDENT ------------------------*/
+    /* ---------------------------------------------------------*/
+    // #if defined(OPENGL_PLATFORM)
+    //     auto context = std::make_unique<OpenGLContext>();
+    // #elif defined(VULKAN_PLATFORM)
+    VulkanCommandHandler::draw(vertex_count);
+    // #else
+    // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
+    // #endif
+    /* ---------------------------------------------------------*/
+  }
+
+  void EspCommandHandler::draw_indexed(uint32_t index_count)
+  {
+    /* ---------------------------------------------------------*/
+    /* ------------- PLATFORM DEPENDENT ------------------------*/
+    /* ---------------------------------------------------------*/
+    // #if defined(OPENGL_PLATFORM)
+    //     auto context = std::make_unique<OpenGLContext>();
+    // #elif defined(VULKAN_PLATFORM)
+    VulkanCommandHandler::draw_indexed(index_count);
+    // #else
+    // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
+    // #endif
+    /* ---------------------------------------------------------*/
+  }
 } // namespace esp
