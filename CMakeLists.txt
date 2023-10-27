@@ -48,6 +48,14 @@ get_library(TARGET glslang
     NAMES glslang
 )
 
+string(TOLOWER ${CMAKE_BUILD_TYPE} BUILD_TYPE_LOWER)
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND python3 scripts/post-build.py --${BUILD_TYPE_LOWER} ${CMAKE_CURRENT_BINARY_DIR}
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+    COMMENT "Running post-build script..."
+)
+
 get_library(TARGET spdlog
     PATH lib/cmake/spdlog
     NAMES spdlog
@@ -73,8 +81,8 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     glfw
     glm::glm
     spdlog::spdlog_header_only
-    tinyobjloader
-    EnTT
+    tinyobjloader::tinyobjloader
+    EnTT::EnTT
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/external/stb)
