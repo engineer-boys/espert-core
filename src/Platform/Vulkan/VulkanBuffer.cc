@@ -7,6 +7,7 @@
 
 #include "VulkanBuffer.hh"
 #include "VulkanDevice.hh"
+#include "VulkanResourceManager.hh"
 
 // std
 #include <cstring>
@@ -40,7 +41,11 @@ namespace esp
     m_alignment_size = get_alignment(instance_size, min_offset_alignment);
     m_buffer_size    = m_alignment_size * instance_count;
 
-    VulkanDevice::get_instance().create_buffer(m_buffer_size, usage_flags, memory_property_flags, m_buffer, m_memory);
+    VulkanResourceManager::allocate_buffer_on_device(m_buffer_size,
+                                                     usage_flags,
+                                                     memory_property_flags,
+                                                     m_buffer,
+                                                     m_memory);
   }
 
   VulkanBuffer::~VulkanBuffer()
