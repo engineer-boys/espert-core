@@ -26,23 +26,11 @@ namespace esp
 
     ~VulkanDevice();
 
-    static inline VulkanDevice& get_instance() { return *s_instance; }
-    static inline VkPhysicalDevice get_physical_device() { return s_instance->m_physical_device; }
     static inline VkDevice get_logical_device() { return s_instance->m_device; }
 
     static void complete_queues();
 
     void terminate();
-
-    // ---------------------------------------- Buffer Helper Functions ----------------------------------------
-    void create_buffer(VkDeviceSize size,
-                       VkBufferUsageFlags usage,
-                       VkMemoryPropertyFlags properties,
-                       VkBuffer& buffer,
-                       VkDeviceMemory& buffer_memory);
-    void copy_buffer(VkBuffer src_buffer, VkBuffer dst_buffer, VkDeviceSize size);
-    void copy_buffer_to_image(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layer_count);
-    // ---------------------------------------------------------------------------------------------------------
 
     // -------------------------------------- Swap Chain Helper Functions --------------------------------------
     static VkFormat
