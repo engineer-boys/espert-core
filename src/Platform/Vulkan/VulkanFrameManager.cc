@@ -103,7 +103,7 @@ namespace esp
     render_pass_info.framebuffer = m_swap_chain->get_frame_buffer(m_current_image_index);
     // renderArea - area where shader loads and stores will take place
     render_pass_info.renderArea.offset = { 0, 0 };
-    render_pass_info.renderArea.extent = m_swap_chain->get_swap_chain_extent();
+    render_pass_info.renderArea.extent = m_swap_chain->get_extent();
 
     // clear_values - values the frame buffer will use to clear itself
     std::array<VkClearValue, 2> clear_values = get_clear_values();
@@ -156,9 +156,7 @@ namespace esp
   VkRenderPass VulkanFrameManager::get_swap_chain_render_pass() { return s_instance->m_swap_chain->get_render_pass(); };
 
   float VulkanFrameManager::get_aspect_ratio()
-  {
-    return s_instance->m_swap_chain->get_swap_chain_extent_aspect_ratio();
-  };
+  { return s_instance->m_swap_chain->get_extent_aspect_ratio(); };
 
   void VulkanFrameManager::create_command_buffers()
   {
@@ -219,8 +217,8 @@ namespace esp
     VkViewport viewport{};
     viewport.x        = 0.0f;
     viewport.y        = 0.0f;
-    viewport.width    = static_cast<float>(m_swap_chain->get_swap_chain_extent().width);
-    viewport.height   = static_cast<float>(m_swap_chain->get_swap_chain_extent().height);
+    viewport.width    = static_cast<float>(m_swap_chain->get_extent().width);
+    viewport.height   = static_cast<float>(m_swap_chain->get_extent().height);
     viewport.minDepth = 0.0f;
     viewport.maxDepth = 1.0f;
 
@@ -229,7 +227,7 @@ namespace esp
 
   void VulkanFrameManager::set_scissors()
   {
-    VkRect2D scissor{ { 0, 0 }, m_swap_chain->get_swap_chain_extent() };
+    VkRect2D scissor{ { 0, 0 }, m_swap_chain->get_extent() };
     vkCmdSetScissor(get_current_command_buffer(), 0, 1, &scissor);
   }
 

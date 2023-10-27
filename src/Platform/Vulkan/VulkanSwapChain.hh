@@ -2,6 +2,8 @@
 #define RENDERER_ESP_SWAP_CHAIN_HH
 
 #include "esppch.hh"
+
+// libs
 #include "volk.h"
 
 namespace esp
@@ -9,24 +11,22 @@ namespace esp
   class VulkanSwapChain
   {
    private:
-    static bool s_first_initialization;
-
-    VkFormat m_swap_chain_image_format;
-    VkFormat m_swap_chain_depth_format;
-    VkExtent2D m_swap_chain_extent;
-
     VkDevice m_device{};
 
     std::vector<VkFramebuffer> m_swap_chain_framebuffers;
     VkRenderPass m_render_pass;
 
-    std::vector<VkImage> m_depth_images;
-    std::vector<VkDeviceMemory> m_depth_image_memories;
-    std::vector<VkImageView> m_depth_image_views;
     std::vector<VkImage> m_swap_chain_images;
     std::vector<VkImageView> m_swap_chain_image_views;
+    VkFormat m_swap_chain_image_format;
+
+    VkImage m_depth_image;
+    VkDeviceMemory m_depth_image_memory;
+    VkImageView m_depth_image_view;
+    VkFormat m_swap_chain_depth_format;
 
     VkExtent2D m_window_extent;
+    VkExtent2D m_swap_chain_extent;
 
     VkSwapchainKHR m_swap_chain;
     std::shared_ptr<VulkanSwapChain> m_old_swap_chain;
@@ -39,6 +39,7 @@ namespace esp
 
    public:
     static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
+    static bool s_first_initialization;
 
     static std::unique_ptr<VulkanSwapChain> create(VkExtent2D window_extent);
     static std::unique_ptr<VulkanSwapChain> recreate(VkExtent2D window_extent,
@@ -52,17 +53,15 @@ namespace esp
     inline VkFramebuffer get_frame_buffer(int index) { return m_swap_chain_framebuffers[index]; }
     inline VkRenderPass get_render_pass() { return m_render_pass; }
     inline VkImageView get_image_view(int index) { return m_swap_chain_image_views[index]; }
-    inline size_t image_count() { return m_swap_chain_images.size(); }
-    inline VkFormat get_swap_chain_image_format() { return m_swap_chain_image_format; }
-    inline VkExtent2D get_swap_chain_extent() { return m_swap_chain_extent; }
-    inline uint32_t get_swap_chain_extent_width() { return m_swap_chain_extent.width; }
-    inline uint32_t get_swap_chain_extent_height() { return m_swap_chain_extent.height; }
-
-    inline float get_swap_chain_extent_aspect_ratio()
+    inline size_t get_image_count() { return m_swap_chain_images.size(); }
+    inline VkFormat get_image_format() { return m_swap_chain_image_format; }
+    inline VkExtent2D get_extent() { return m_swap_chain_extent; }
+    inline uint32_t get_extent_width() { return m_swap_chain_extent.width; }
+    inline uint32_t get_extent_height() { return m_swap_chain_extent.height; }
+    inline float get_extent_aspect_ratio()
     {
       return static_cast<float>(m_swap_chain_extent.width) / static_cast<float>(m_swap_chain_extent.height);
     }
-    VkFormat find_depth_format();
 
     VkResult acquire_next_image(uint32_t* image_index);
     VkResult submit_command_buffers(const VkCommandBuffer* buffers, uint32_t* image_index);
@@ -86,12 +85,6 @@ namespace esp
     void create_render_pass();
     void create_framebuffers();
     void create_sync_objects();
-
-    // helpful functions
-    VkSurfaceFormatKHR choose_swap_chain_surface_format(const std::vector<VkSurfaceFormatKHR>& available_formats);
-    VkPresentModeKHR choose_swap_chain_present_mode(const std::vector<VkPresentModeKHR>& available_present_modes);
-    VkExtent2D choose_swap_chain_extent(const VkSurfaceCapabilitiesKHR& capabilities);
-    void log_chosen_swap_chain_present_mode(const std::string& mode);
   };
 } // namespace esp
 
