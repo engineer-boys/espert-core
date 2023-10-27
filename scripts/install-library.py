@@ -34,6 +34,8 @@ def update_wsi_params(args: Namespace) -> None:
 
 
 def configure_library(args: Namespace) -> None:
+    if not os.path.exists(LIB_DIR / args.name):
+        os.mkdir(LIB_DIR / args.name)
     if os.path.exists(LIB_DIR / args.name / CMAKE_LISTS_FILENAME):
         source_dir = "."
     else:
