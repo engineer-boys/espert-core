@@ -2,8 +2,8 @@
 
 ```Python
 class EspRenderContext():
-    def create_and_init(window=EspWindow) -> None:
-    # Init the render context.
+    def create_and_init(window: EspWindow) -> None:
+    # Init render context.
 
     def terminate() -> None:
     # Terminate render context.
@@ -11,45 +11,47 @@ class EspRenderContext():
 
 ```Python
 class EspFrameManager:
-    def create_and_init(window=EspWindow,
-                        clear_color=(0.1, 0.1, 0.1, 1.0)) -> None:
+    def create_and_init(
+            window: EspWindow,
+            clear_color: glm::vec4(0.1, 0.1, 0.1, 1.0)) -> None:
+        # Init frame manager.
 
-    # Class members:
-    self.window_width
-    self.window_height
-    self.depth_stencil
-    self.clear_color
+        # Class members:
+        self.window_width
+        self.window_height
+        self.depth_stencil
+        self.clear_color
 
     def begin_frame() -> None:
-    # Set clear values
-    # Set viewport & scissors
-    # Bind appropriate commandBuffer.
-    # Begin appropriate commandBuffer.
-    # Begin appropriate renderPass.
+        # Set clear values
+        # Set viewport & scissors
+        # Bind appropriate commandBuffer.
+        # Begin appropriate commandBuffer.
+        # Begin appropriate renderPass.
 
     def end_frame() -> None:
-    # End appropriate renderPass.
-    # End appropriate commandBuffer.
+        # End appropriate renderPass.
+        # End appropriate commandBuffer.
 
     def termiate() -> None:
-    # Terminate frame manager
+        # Terminate frame manager
 
-    def on_window_resized(e=WindowResizedEvent) -> None:
-    # Recreate swap chain
+    def on_window_resized(e: WindowResizedEvent) -> None:
+        # Recreate swap chain
 
     def get_swap_chain_extent() -> std::pair<uint32,uint32>:
-    # Get swap chain (window) width and height.
+        # Get swap chain (window) width and height.
     
-    def set_depth_stencil(depth=float,
-                          stencil=uint32_t) -> None:
-    # Set both depth and stencil values
-    # for render pass
+    def set_depth_stencil(depth: float,
+                          stencil: uint32_t) -> None:
+        # Set both depth and stencil values
+        # for render pass
     
-    def set_clear_color(color=glm::vec3) -> None:
-    # Set clear color r,g,b
+    def set_clear_color(color: glm::vec3) -> None:
+        # Set clear color r,g,b
     
-    def set_clear_color(color=glm::vec4) -> None:
-    # Set clear color r,g,b,a
+    def set_clear_color(color: glm::vec4) -> None:
+        # Set clear color r,g,b,a
 ```
 
 ```Python
@@ -147,14 +149,20 @@ class PipelineLayoutManufacture():
 ```
 
 ```Python
-class EspCommands:
+class EspCommandHandler:
+    def create_and_init() -> None:
+        # Init command handler.
+
+    def terminate() -> None:
+        # Terminate command handler.
+    
     @staticmethod
-    def draw_indices(size_of_indices: int) -> None:
-        # Draw using index buffer.
+    def draw(vertex_count: uint32_t) -> None:
+        # Draw using vertex buffer.
 
     @staticmethod
-    def draw_vertices(size_of_vertices: int) -> None:
-        # Draw using vertex buffer.
+    def draw_indexed(index_count: uint32_t) -> None:
+        # Draw using index buffer.
 ```
 
 # USAGE

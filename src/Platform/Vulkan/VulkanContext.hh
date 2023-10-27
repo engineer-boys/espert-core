@@ -71,27 +71,29 @@ namespace esp
 
     std::unique_ptr<VulkanDevice> m_vulkan_device{};
 
+   public:
+    static std::unique_ptr<VulkanContext> create();
+
+    VulkanContext(const VulkanContext& other)            = delete;
+    VulkanContext& operator=(const VulkanContext& other) = delete;
+
+    // ------------------------ API ------------------------
+    ~VulkanContext() override = default;
+
+    void init(EspWindow& window) override;
+    void terminate() override;
+    // -----------------------------------------------------
+
+    static const ContextData& get_context_data();
+
    private:
+    VulkanContext();
+
     void create_instance();
     void setup_debug_messenger();
     void create_surface(EspWindow& window);
     void pick_physical_device();
     void create_logical_device();
-
-    VulkanContext();
-
-   public:
-    VulkanContext(const VulkanContext& other)            = delete;
-    VulkanContext& operator=(const VulkanContext& other) = delete;
-
-    /* ---------------- API ------------------------------------------- */
-    virtual ~VulkanContext() override = default;
-
-    void init(EspWindow& window) override;
-    void terminate() override;
-
-    static std::unique_ptr<VulkanContext> create();
-    static const ContextData& get_context_data();
   };
 } // namespace esp
 

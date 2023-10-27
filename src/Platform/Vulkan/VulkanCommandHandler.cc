@@ -1,6 +1,7 @@
 #include "VulkanCommandHandler.hh"
 #include "VulkanContext.hh"
 #include "VulkanDevice.hh"
+#include "VulkanFrameManager.hh"
 
 namespace esp
 {
@@ -18,6 +19,16 @@ namespace esp
   void VulkanCommandHandler::terminate()
   {
     vkDestroyCommandPool(VulkanDevice::get_logical_device(), m_command_pool, nullptr);
+  }
+
+  void VulkanCommandHandler::draw(uint32_t vertex_count)
+  {
+    vkCmdDraw(VulkanFrameManager::get_current_command_buffer(), vertex_count, 1, 0, 0);
+  }
+
+  void VulkanCommandHandler::draw_indexed(uint32_t index_count)
+  {
+    vkCmdDrawIndexed(VulkanFrameManager::get_current_command_buffer(), index_count, 1, 0, 0, 0);
   }
 
   VkCommandBuffer VulkanCommandHandler::create_command_buffer()
@@ -76,7 +87,7 @@ namespace esp
 
   VulkanCommandHandler::VulkanCommandHandler()
   {
-    ESP_ASSERT(VulkanCommandHandler::s_instance == nullptr, "Vulkan command manager already exists")
+    ESP_ASSERT(VulkanCommandHandler::s_instance == nullptr, "Vulkan command handler already exists")
     s_instance = this;
   }
 
