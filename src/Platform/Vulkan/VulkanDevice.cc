@@ -24,24 +24,37 @@ namespace esp
     for (VkFormat format : candidates)
     {
       VkFormatProperties props;
-      vkGetPhysicalDeviceFormatProperties(m_physical_device, format, &props);
+      vkGetPhysicalDeviceFormatProperties(s_instance->m_physical_device, format, &props);
 
       if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) { return format; }
-      else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features)
-      {
-        return format;
-      }
+      if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) { return format; }
     }
 
     ESP_CORE_ERROR("Failed to find supported format");
     throw std::runtime_error("Failed to find supported format");
   }
 
+  uint32_t VulkanDevice::find_memory_type(uint32_t type_filter, VkMemoryPropertyFlags properties)
+  {
+    VkPhysicalDeviceMemoryProperties mem_properties;
+    vkGetPhysicalDeviceMemoryProperties(s_instance->m_physical_device, &mem_properties);
+    for (uint32_t i = 0; i < mem_properties.memoryTypeCount; i++)
+    {
+      if ((type_filter & (1 << i)) && (mem_properties.memoryTypes[i].propertyFlags & properties) == properties)
+      {
+        return i;
+      }
+    }
+
+    ESP_CORE_ERROR("Failed to find suitable memory type");
+    throw std::runtime_error("Failed to find suitable memory type");
+  }
+
   void VulkanDevice::create_buffer(VkDeviceSize size,
-                                          VkBufferUsageFlags usage,
-                                          VkMemoryPropertyFlags properties,
-                                          VkBuffer& buffer,
-                                          VkDeviceMemory& buffer_memory)
+                                   VkBufferUsageFlags usage,
+                                   VkMemoryPropertyFlags properties,
+                                   VkBuffer& buffer,
+                                   VkDeviceMemory& buffer_memory)
   {
     VkBufferCreateInfo buffer_info{};
     buffer_info.sType       = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -110,38 +123,6 @@ namespace esp
     VulkanCommandHandler::end_single_time_commands(command_buffer);
   }
 
-  void VulkanDevice::create_image_with_info(const VkImageCreateInfo& image_info,
-                                            VkMemoryPropertyFlags properties,
-                                            VkImage& image,
-                                            VkDeviceMemory& image_memory)
-  {
-    if (vkCreateImage(m_device, &image_info, nullptr, &image) != VK_SUCCESS)
-    {
-      ESP_CORE_ERROR("Failed to create image");
-      throw std::runtime_error("Failed to create image");
-    }
-
-    VkMemoryRequirements mem_requirements;
-    vkGetImageMemoryRequirements(m_device, image, &mem_requirements);
-
-    VkMemoryAllocateInfo alloc_info{};
-    alloc_info.sType           = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    alloc_info.allocationSize  = mem_requirements.size;
-    alloc_info.memoryTypeIndex = find_memory_type(mem_requirements.memoryTypeBits, properties);
-
-    if (vkAllocateMemory(m_device, &alloc_info, nullptr, &image_memory) != VK_SUCCESS)
-    {
-      ESP_CORE_ERROR("Failed to allocate image memory");
-      throw std::runtime_error("Failed to allocate image memory");
-    }
-
-    if (vkBindImageMemory(m_device, image, image_memory, 0) != VK_SUCCESS)
-    {
-      ESP_CORE_ERROR("Failed to bind image memory");
-      throw std::runtime_error("Failed to bind image memory");
-    }
-  }
-
   VulkanDevice::VulkanDevice(VkPhysicalDevice physical_device, VkDevice device)
   {
     ESP_ASSERT(VulkanDevice::s_instance == nullptr, "Vulkan device already exists")
@@ -150,21 +131,5 @@ namespace esp
 
     m_physical_device = physical_device;
     m_device          = device;
-  }
-
-  uint32_t VulkanDevice::find_memory_type(uint32_t type_filter, VkMemoryPropertyFlags properties)
-  {
-    VkPhysicalDeviceMemoryProperties mem_properties;
-    vkGetPhysicalDeviceMemoryProperties(m_physical_device, &mem_properties);
-    for (uint32_t i = 0; i < mem_properties.memoryTypeCount; i++)
-    {
-      if ((type_filter & (1 << i)) && (mem_properties.memoryTypes[i].propertyFlags & properties) == properties)
-      {
-        return i;
-      }
-    }
-
-    ESP_CORE_ERROR("Failed to find suitable memory type");
-    throw std::runtime_error("Failed to find suitable memory type");
   }
 } // namespace esp

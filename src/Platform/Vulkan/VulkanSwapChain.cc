@@ -1,14 +1,22 @@
 #include "VulkanSwapChain.hh"
 #include "VulkanContext.hh"
 #include "VulkanDevice.hh"
+#include "VulkanResourceManager.hh"
 
 // std
 #include <array>
 #include <cstdlib>
-#include <iostream>
 #include <limits>
 #include <set>
 #include <stdexcept>
+
+// signatures
+static VkFormat find_depth_format();
+static VkSurfaceFormatKHR choose_swap_chain_surface_format(const std::vector<VkSurfaceFormatKHR>& available_formats);
+static VkPresentModeKHR choose_swap_chain_present_mode(const std::vector<VkPresentModeKHR>& available_present_modes);
+static VkExtent2D choose_swap_chain_extent(const VkSurfaceCapabilitiesKHR& capabilities,
+                                           const VkExtent2D& window_extent);
+static void log_chosen_swap_chain_present_mode(const std::string& mode);
 
 /* --------------------------------------------------------- */
 /* ---------------- CLASS IMPLEMENTATION ------------------- */
@@ -128,12 +136,9 @@ namespace esp
       m_swap_chain = nullptr;
     }
 
-    for (int i = 0; i < m_depth_images.size(); i++)
-    {
-      vkDestroyImageView(m_device, m_depth_image_views[i], nullptr);
-      vkDestroyImage(m_device, m_depth_images[i], nullptr);
-      vkFreeMemory(m_device, m_depth_image_memories[i], nullptr);
-    }
+    vkDestroyImageView(m_device, m_depth_image_view, nullptr);
+    vkDestroyImage(m_device, m_depth_image, nullptr);
+    vkFreeMemory(m_device, m_depth_image_memory, nullptr);
 
     for (auto framebuffer : m_swap_chain_framebuffers)
     {
@@ -169,7 +174,7 @@ namespace esp
 
     VkSurfaceFormatKHR surface_format = choose_swap_chain_surface_format(swap_chain_support.m_formats);
     VkPresentModeKHR present_mode     = choose_swap_chain_present_mode(swap_chain_support.m_present_modes);
-    VkExtent2D extent                 = choose_swap_chain_extent(swap_chain_support.m_capabilities);
+    VkExtent2D extent                 = choose_swap_chain_extent(swap_chain_support.m_capabilities, m_window_extent);
 
     uint32_t image_count = swap_chain_support.m_capabilities.minImageCount + 1;
     if (swap_chain_support.m_capabilities.maxImageCount > 0 &&
@@ -239,22 +244,9 @@ namespace esp
     m_swap_chain_image_views.resize(m_swap_chain_images.size());
     for (size_t i = 0; i < m_swap_chain_images.size(); i++)
     {
-      VkImageViewCreateInfo view_info{};
-      view_info.sType                           = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-      view_info.image                           = m_swap_chain_images[i];
-      view_info.viewType                        = VK_IMAGE_VIEW_TYPE_2D;
-      view_info.format                          = m_swap_chain_image_format;
-      view_info.subresourceRange.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
-      view_info.subresourceRange.baseMipLevel   = 0;
-      view_info.subresourceRange.levelCount     = 1;
-      view_info.subresourceRange.baseArrayLayer = 0;
-      view_info.subresourceRange.layerCount     = 1;
-
-      if (vkCreateImageView(m_device, &view_info, nullptr, &m_swap_chain_image_views[i]) != VK_SUCCESS)
-      {
-        ESP_CORE_ERROR("Failed to create texture image view");
-        throw std::runtime_error("Failed to create texture image view");
-      }
+      m_swap_chain_image_views[i] = VulkanResourceManager::create_image_view(m_swap_chain_images[i],
+                                                                             m_swap_chain_image_format,
+                                                                             VK_IMAGE_ASPECT_COLOR_BIT);
     }
   }
 
@@ -275,7 +267,7 @@ namespace esp
     depth_attachment_ref.layout     = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
     VkAttachmentDescription color_attachment = {};
-    color_attachment.format                  = get_swap_chain_image_format();
+    color_attachment.format                  = get_image_format();
     color_attachment.samples                 = VK_SAMPLE_COUNT_1_BIT;
     color_attachment.loadOp                  = VK_ATTACHMENT_LOAD_OP_CLEAR;
     color_attachment.storeOp                 = VK_ATTACHMENT_STORE_OP_STORE;
@@ -323,12 +315,12 @@ namespace esp
 
   void VulkanSwapChain::create_framebuffers()
   {
-    m_swap_chain_framebuffers.resize(image_count());
-    for (size_t i = 0; i < image_count(); i++)
+    m_swap_chain_framebuffers.resize(get_image_count());
+    for (size_t i = 0; i < get_image_count(); i++)
     {
-      std::array<VkImageView, 2> attachments = { m_swap_chain_image_views[i], m_depth_image_views[i] };
+      std::array<VkImageView, 2> attachments = { m_swap_chain_image_views[i], m_depth_image_view };
 
-      VkExtent2D swap_chain_extent             = get_swap_chain_extent();
+      VkExtent2D swap_chain_extent             = get_extent();
       VkFramebufferCreateInfo framebuffer_info = {};
       framebuffer_info.sType                   = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
       framebuffer_info.renderPass              = m_render_pass;
@@ -348,57 +340,20 @@ namespace esp
 
   void VulkanSwapChain::create_depth_resources()
   {
-    VkFormat depth_format        = find_depth_format();
-    m_swap_chain_depth_format    = depth_format;
-    VkExtent2D swap_chain_extent = get_swap_chain_extent();
+    m_swap_chain_depth_format    = find_depth_format();
+    VkExtent2D swap_chain_extent = get_extent();
 
-    m_depth_images.resize(image_count());
-    m_depth_image_memories.resize(image_count());
-    m_depth_image_views.resize(image_count());
+    VulkanResourceManager::create_image(swap_chain_extent.width,
+                                        swap_chain_extent.height,
+                                        m_swap_chain_depth_format,
+                                        VK_IMAGE_TILING_OPTIMAL,
+                                        VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+                                        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                                        m_depth_image,
+                                        m_depth_image_memory);
 
-    // TODO: verify 2 depth images
-    auto& context_data = VulkanContext::get_context_data();
-
-    for (int i = 0; i < m_depth_images.size(); i++)
-    {
-      VkImageCreateInfo image_info{};
-      image_info.sType         = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
-      image_info.imageType     = VK_IMAGE_TYPE_2D;
-      image_info.extent.width  = swap_chain_extent.width;
-      image_info.extent.height = swap_chain_extent.height;
-      image_info.extent.depth  = 1;
-      image_info.mipLevels     = 1;
-      image_info.arrayLayers   = 1;
-      image_info.format        = depth_format;
-      image_info.tiling        = VK_IMAGE_TILING_OPTIMAL;
-      image_info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-      image_info.usage         = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-      image_info.samples       = VK_SAMPLE_COUNT_1_BIT;
-      image_info.sharingMode   = VK_SHARING_MODE_EXCLUSIVE;
-      image_info.flags         = 0;
-
-      VulkanDevice::get_instance().create_image_with_info(image_info,
-                                                          VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                                                          m_depth_images[i],
-                                                          m_depth_image_memories[i]);
-
-      VkImageViewCreateInfo view_info{};
-      view_info.sType                           = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-      view_info.image                           = m_depth_images[i];
-      view_info.viewType                        = VK_IMAGE_VIEW_TYPE_2D;
-      view_info.format                          = depth_format;
-      view_info.subresourceRange.aspectMask     = VK_IMAGE_ASPECT_DEPTH_BIT;
-      view_info.subresourceRange.baseMipLevel   = 0;
-      view_info.subresourceRange.levelCount     = 1;
-      view_info.subresourceRange.baseArrayLayer = 0;
-      view_info.subresourceRange.layerCount     = 1;
-
-      if (vkCreateImageView(m_device, &view_info, nullptr, &m_depth_image_views[i]) != VK_SUCCESS)
-      {
-        ESP_CORE_ERROR("Failed to create texture image view");
-        throw std::runtime_error("Failed to create texture image view");
-      }
-    }
+    m_depth_image_view =
+        VulkanResourceManager::create_image_view(m_depth_image, m_swap_chain_depth_format, VK_IMAGE_ASPECT_DEPTH_BIT);
   }
 
   void VulkanSwapChain::create_sync_objects()
@@ -406,7 +361,7 @@ namespace esp
     m_image_available_semaphores.resize(MAX_FRAMES_IN_FLIGHT);
     m_render_finished_semaphores.resize(MAX_FRAMES_IN_FLIGHT);
     m_in_flight_fences.resize(MAX_FRAMES_IN_FLIGHT);
-    m_images_in_flight.resize(image_count(), VK_NULL_HANDLE);
+    m_images_in_flight.resize(get_image_count(), VK_NULL_HANDLE);
 
     VkSemaphoreCreateInfo semaphore_info = {};
     semaphore_info.sType                 = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
@@ -426,69 +381,66 @@ namespace esp
       }
     }
   }
-
-  VkFormat VulkanSwapChain::find_depth_format()
-  {
-    auto& context_data = esp::VulkanContext::get_context_data();
-
-    return VulkanDevice::get_instance().find_supported_format(
-        { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
-        VK_IMAGE_TILING_OPTIMAL,
-        VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
-  }
-
-  VkSurfaceFormatKHR
-  VulkanSwapChain::choose_swap_chain_surface_format(const std::vector<VkSurfaceFormatKHR>& available_formats)
-  {
-    for (const auto& available_format : available_formats)
-    {
-      if (available_format.format == VK_FORMAT_B8G8R8A8_SRGB &&
-          available_format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
-      {
-        return available_format;
-      }
-    }
-
-    return available_formats[0];
-  }
-
-  VkPresentModeKHR
-  VulkanSwapChain::choose_swap_chain_present_mode(const std::vector<VkPresentModeKHR>& available_present_modes)
-  {
-    /*for (const auto& available_present_mode : available_present_modes)
-    {
-      if (available_present_mode == VK_PRESENT_MODE_MAILBOX_KHR)
-      {
-        log_chosen_swap_chain_present_mode("Mailbox");
-        return available_present_mode;
-      }
-    }*/
-
-    log_chosen_swap_chain_present_mode("V-Sync");
-    return VK_PRESENT_MODE_FIFO_KHR;
-  }
-
-  VkExtent2D VulkanSwapChain::choose_swap_chain_extent(const VkSurfaceCapabilitiesKHR& capabilities)
-  {
-    if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) { return capabilities.currentExtent; }
-    else
-    {
-      VkExtent2D actual_extent = m_window_extent;
-      actual_extent.width =
-          std::max(capabilities.minImageExtent.width, std::min(capabilities.maxImageExtent.width, actual_extent.width));
-      actual_extent.height = std::max(capabilities.minImageExtent.height,
-                                      std::min(capabilities.maxImageExtent.height, actual_extent.height));
-
-      return actual_extent;
-    }
-  }
-
-  void VulkanSwapChain::log_chosen_swap_chain_present_mode(const std::string& mode)
-  {
-    if (s_first_initialization)
-    {
-      ESP_CORE_INFO("Present mode: {0}", mode);
-      s_first_initialization = false;
-    }
-  }
 } // namespace esp
+
+static VkFormat find_depth_format()
+{
+  return esp::VulkanDevice::find_supported_format(
+      { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
+      VK_IMAGE_TILING_OPTIMAL,
+      VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT);
+}
+
+static VkSurfaceFormatKHR choose_swap_chain_surface_format(const std::vector<VkSurfaceFormatKHR>& available_formats)
+{
+  for (const auto& available_format : available_formats)
+  {
+    if (available_format.format == VK_FORMAT_B8G8R8A8_SRGB &&
+        available_format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+    {
+      return available_format;
+    }
+  }
+
+  return available_formats[0];
+}
+
+static VkPresentModeKHR choose_swap_chain_present_mode(const std::vector<VkPresentModeKHR>& available_present_modes)
+{
+  /*for (const auto& available_present_mode : available_present_modes)
+  {
+    if (available_present_mode == VK_PRESENT_MODE_MAILBOX_KHR)
+    {
+      log_chosen_swap_chain_present_mode("Mailbox");
+      return available_present_mode;
+    }
+  }*/
+
+  log_chosen_swap_chain_present_mode("V-Sync");
+  return VK_PRESENT_MODE_FIFO_KHR;
+}
+
+static VkExtent2D choose_swap_chain_extent(const VkSurfaceCapabilitiesKHR& capabilities,
+                                           const VkExtent2D& window_extent)
+{
+  if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) { return capabilities.currentExtent; }
+  else
+  {
+    VkExtent2D actual_extent = window_extent;
+    actual_extent.width =
+        std::max(capabilities.minImageExtent.width, std::min(capabilities.maxImageExtent.width, actual_extent.width));
+    actual_extent.height = std::max(capabilities.minImageExtent.height,
+                                    std::min(capabilities.maxImageExtent.height, actual_extent.height));
+
+    return actual_extent;
+  }
+}
+
+static void log_chosen_swap_chain_present_mode(const std::string& mode)
+{
+  if (esp::VulkanSwapChain::s_first_initialization)
+  {
+    ESP_CORE_INFO("Present mode: {0}", mode);
+    esp::VulkanSwapChain::s_first_initialization = false;
+  }
+}

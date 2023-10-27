@@ -45,18 +45,13 @@ namespace esp
     // ---------------------------------------------------------------------------------------------------------
 
     // -------------------------------------- Swap Chain Helper Functions --------------------------------------
-    VkFormat
+    static VkFormat
     find_supported_format(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
-    void create_image_with_info(const VkImageCreateInfo& image_info,
-                                VkMemoryPropertyFlags properties,
-                                VkImage& image,
-                                VkDeviceMemory& image_memory);
+    static uint32_t find_memory_type(uint32_t type_filter, VkMemoryPropertyFlags properties);
     // ---------------------------------------------------------------------------------------------------------
 
    private:
     VulkanDevice(VkPhysicalDevice physical_device, VkDevice device);
-
-    uint32_t find_memory_type(uint32_t type_filter, VkMemoryPropertyFlags properties);
   };
 
 } // namespace esp
