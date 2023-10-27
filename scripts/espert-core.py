@@ -10,28 +10,24 @@
 ###########################################################################
 
 from argparse import ArgumentParser, Namespace
-from common import EnumAction, ROOT, BUILD_DIR
+from common import (
+    EnumAction,
+    ROOT,
+    BUILD_DIR,
+    LIB_DIR,
+    BuildType,
+    run_command,
+    get_wsi_type,
+    WSI,
+    get_optimal_job_count,
+    get_lib_names,
+)
 from enum import Enum
-import multiprocessing
 import os
 from shutil import rmtree
-import subprocess
 import sys
 
-GET_WSI_COMMAND = "loginctl show-session $(loginctl | grep $(whoami) | awk '{print $1}') -p Type | cut -d'=' -f2"
 CTEST_FILE = "CTestTestfile.cmake"
-
-
-class WSI(Enum):
-    XCM = "xcm"
-    XLIB = "xlib"
-    WAYLAND = "wayland"
-    D2D = "d2d"
-
-
-class BuildType(Enum):
-    DEBUG = "debug"
-    RELEASE = "release"
 
 
 class Compiler(Enum):
@@ -39,27 +35,10 @@ class Compiler(Enum):
     CLANG = "clang"
 
 
-def get_cpu_count() -> int:
-    return multiprocessing.cpu_count()
-
-
-def get_number_of_jobs() -> int:
-    return max(1, get_cpu_count() - 2)
-
-
-def get_wsi_type() -> str:
-    proc = subprocess.Popen(GET_WSI_COMMAND, shell=True, stdout=subprocess.PIPE)
-    proc.wait()
-    return proc.stdout.read().decode("utf-8").strip()
-
-
 def get_configure_command(args: Namespace) -> str:
     CMD = "cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
 
-    if args.build_type == BuildType.DEBUG:
-        CMD += f" -DCMAKE_BUILD_TYPE=Debug"
-    elif args.build_type == BuildType.RELEASE:
-        CMD += f" -DCMAKE_BUILD_TYPE=Release"
+    CMD += f" -DCMAKE_BUILD_TYPE={args.build_type.value}"
 
     if args.compiler == Compiler.GCC:
         CMD += " -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++"
@@ -69,11 +48,7 @@ def get_configure_command(args: Namespace) -> str:
     if sys.platform.startswith("linux"):
         if args.wsi is None:
             wsi = get_wsi_type()
-        else:
-            wsi = args.wsi.value
-        if wsi == "x11":
-            wsi = "xlib"
-        CMD += f" -DVKB_WSI_SELECTION={wsi.upper()}"
+        CMD += f" -DVKB_WSI_SELECTION={wsi.value.upper()}"
 
     if args.build_tests:
         CMD += f" -DESP_BUILD_TESTS=ON"
@@ -81,21 +56,23 @@ def get_configure_command(args: Namespace) -> str:
     return CMD
 
 
-def get_build_command(args) -> str:
+def get_build_command(args: Namespace) -> str:
     CMD = f"make -j{args.jobs}"
 
     return CMD
 
 
-def run_command_detached(command: str, cwd: str) -> None:
-    print(command)
-    proc = subprocess.Popen(command, cwd=cwd, shell=True)
-    proc.wait()
-    if proc.returncode != 0:
-        sys.exit(proc.returncode)
+def clean_libs(args: Namespace):
+    for libname in get_lib_names():
+        libpath = LIB_DIR / libname / args.build_type.value
+        if os.path.exists(libpath):
+            rmtree(libpath)
 
 
 def run_configure(args: Namespace) -> None:
+    if args.hard_clean:
+        clean_libs(args)
+
     if args.clean and os.path.exists(BUILD_DIR):
         rmtree(BUILD_DIR)
 
@@ -103,7 +80,7 @@ def run_configure(args: Namespace) -> None:
         os.mkdir(BUILD_DIR)
 
     configure_command = get_configure_command(args)
-    run_command_detached(configure_command, ROOT)
+    run_command(configure_command, ROOT)
 
 
 def run_build(args: Namespace) -> None:
@@ -111,7 +88,7 @@ def run_build(args: Namespace) -> None:
         run_configure(args)
 
     build_command = get_build_command(args)
-    run_command_detached(build_command, BUILD_DIR)
+    run_command(build_command, BUILD_DIR)
 
 
 def run_tests(args: Namespace) -> None:
@@ -120,7 +97,7 @@ def run_tests(args: Namespace) -> None:
         run_build(args)
 
     test_command = "ctest"
-    run_command_detached(test_command, BUILD_DIR)
+    run_command(test_command, BUILD_DIR)
 
 
 def get_parser() -> ArgumentParser:
@@ -182,6 +159,14 @@ def get_parser() -> ArgumentParser:
         help="Clean out build directory first.",
     )
     main_parser.add_argument(
+        "-a",
+        "--hard-clean",
+        required=False,
+        default=False,
+        action="store_true",
+        help="Clean out build directory and cached libs.",
+    )
+    main_parser.add_argument(
         "-t",
         "--build-tests",
         required=False,
@@ -194,7 +179,7 @@ def get_parser() -> ArgumentParser:
         "--jobs",
         required=False,
         type=int,
-        default=get_number_of_jobs(),
+        default=get_optimal_job_count(),
         help="Number of paralell jobs during build. (default: max system threads - 2)",
     )
     main_parser.add_argument(
@@ -212,6 +197,8 @@ def get_parser() -> ArgumentParser:
 if __name__ == "__main__":
     parser = get_parser()
     args = parser.parse_args()
+    if args.hard_clean:
+        args.clean = True
     if args.cmd is None:
         print("Command not given.")
         parser.print_usage()
