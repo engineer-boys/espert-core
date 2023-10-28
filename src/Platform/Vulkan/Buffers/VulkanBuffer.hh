@@ -1,5 +1,5 @@
-#ifndef RENDERER_ESP_BUFFER_HH
-#define RENDERER_ESP_BUFFER_HH
+#ifndef VULKAN_RENDER_API_VULKAN_BUFFER_HH
+#define VULKAN_RENDER_API_VULKAN_BUFFER_HH
 
 #include "esppch.hh"
 
@@ -23,6 +23,13 @@ namespace esp
     VkMemoryPropertyFlags m_memory_property_flags;
 
    public:
+    static std::unique_ptr<VulkanBuffer> create_and_fill(void* data,
+                                                         uint32_t instance_size,
+                                                         uint32_t instance_count,
+                                                         VkBufferUsageFlags usage_flags,
+                                                         VkMemoryPropertyFlags memory_property_flags,
+                                                         VkDeviceSize min_offset_alignment = 1);
+
     VulkanBuffer(VkDeviceSize instance_size,
                  uint32_t instance_count,
                  VkBufferUsageFlags usage_flags,
@@ -60,4 +67,4 @@ namespace esp
   };
 } // namespace esp
 
-#endif // RENDERER_ESP_BUFFER_HH
+#endif // VULKAN_RENDER_API_VULKAN_BUFFER_HH
