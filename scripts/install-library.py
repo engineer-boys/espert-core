@@ -14,6 +14,7 @@ from common import (
     get_optimal_job_count,
     get_lib_names,
     get_wsi_type,
+    is_platform_linux,
 )
 from libconf import ESPERT_LIBS_CONF
 import os
@@ -116,10 +117,11 @@ def get_parsed_args() -> Namespace:
 if __name__ == "__main__":
     args = get_parsed_args()
 
-    if args.wsi is None:
-        args.wsi = get_wsi_type()
+    if is_platform_linux():
+        if args.wsi is None:
+            args.wsi = get_wsi_type()
 
-    update_wsi_params(args)
+        update_wsi_params(args)
 
     configure_library(args)
 
