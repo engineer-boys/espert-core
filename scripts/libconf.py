@@ -14,7 +14,9 @@ ESPERT_LIBS_CONF = {
         CmakeParameter("BUILD_SHARED_LIBS", "OFF"),
         CmakeParameter("GLFW_VULKAN_STATIC", "ON"),
     ],
-    "glm": [],
+    "glm": [
+        CmakeParameter("BUILD_TESTING", "OFF"),
+    ],
     "glslang": [
         CmakeParameter("ENABLE_SPVREMAPPER", "OFF"),
         CmakeParameter("ENABLE_GLSLANG_BINARIES", "ON"),
