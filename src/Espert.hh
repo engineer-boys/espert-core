@@ -14,6 +14,12 @@
 /* --------- Client Point ------------------- */
 
 #include "Core/ClientPoint.hh"
+#include "Core/RenderAPI/Buffers/EspIndexBuffer.hh"
+#include "Core/RenderAPI/Buffers/EspVertexBuffer.hh"
+#include "Core/RenderAPI/EspCommandHandler.hh"
+/* TEMPORARY */
+#include "Core/RenderAPI/TEMPORARY/ExamplePipeline.hh"
+/* --------- */
 #include "Renderer/Camera.hh"
 #include "Scene/Components/Components.hh"
 

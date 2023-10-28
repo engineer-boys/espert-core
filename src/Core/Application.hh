@@ -21,7 +21,7 @@ namespace esp
 
     std::unique_ptr<EspRenderContext> m_render_context;
     std::unique_ptr<EspCommandHandler> m_command_handler;
-    std::unique_ptr<EspFrameManager> m_frame_scheduler;
+    std::unique_ptr<EspFrameManager> m_frame_manager;
 
     bool m_running;
 

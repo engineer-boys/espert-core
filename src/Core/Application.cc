@@ -10,47 +10,49 @@ namespace esp
 
     m_render_context  = EspRenderContext::create_and_init(*m_window);
     m_command_handler = EspCommandHandler::create_and_init();
-    m_frame_scheduler = EspFrameManager::create_and_init(*m_window, glm::vec4{ .5f, .1f, .1f, 1.f });
+    m_frame_manager   = EspFrameManager::create_and_init(*m_window, glm::vec4{ .1f, .1f, .3f, 1.f });
 
     m_layer_stack = new LayerStack();
   }
 
-  Application::~Application() {}
+  Application::~Application()
+  {
+    m_frame_manager->terminate();
+    m_command_handler->terminate();
+
+    delete m_layer_stack;
+
+    m_render_context->terminate();
+  }
 
   void Application::run()
   {
     while (m_running)
     {
+      m_frame_manager->begin_frame();
+
       for (auto layer : *m_layer_stack)
       {
         layer->update();
       }
 
-      m_frame_scheduler->begin_frame();
-      /*...*/
-      m_frame_scheduler->end_frame();
+      m_frame_manager->end_frame();
 
       m_window->update();
     }
-
-    delete m_layer_stack;
   }
 
   void Application::set_context(std::unique_ptr<ApplicationContext> context) { this->m_context = std::move(context); }
 
   bool Application::on_window_resized(WindowResizedEvent& e)
   {
-    m_frame_scheduler->on_window_resized(e);
+    m_frame_manager->on_window_resized(e);
     return true;
   }
 
   bool Application::on_window_closed(WindowClosedEvent& e)
   {
     m_running = false;
-
-    m_frame_scheduler->terminate();
-    m_command_handler->terminate();
-    m_render_context->terminate();
 
     return true;
   }

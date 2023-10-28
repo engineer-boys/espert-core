@@ -1,12 +1,13 @@
 #ifndef VULKAN_RENDER_API_VULKAN_VERTEX_BUFFER_HH
 #define VULKAN_RENDER_API_VULKAN_VERTEX_BUFFER_HH
 
-#include "Core/RenderAPI/Buffers/EspVertexBuffers.hh"
+#include "Core/RenderAPI/Buffers/EspVertexBuffer.hh"
 #include "VulkanBuffer.hh"
 
 namespace esp
 {
-  class VulkanVertexBuffer : public EspVertexBuffers::EspVertexBuffer
+  // class VulkanVertexBuffer : public EspVertexBuffers::EspVertexBuffer
+  class VulkanVertexBuffer : public EspVertexBuffer
   {
     std::unique_ptr<VulkanBuffer> m_vertex_buffer{};
 
