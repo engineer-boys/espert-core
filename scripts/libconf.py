@@ -1,12 +1,5 @@
 import sys
-from common import get_wsi_type, WSI, CmakeParameter
-
-
-def should_use_wayland() -> bool:
-    if not sys.platform.startswith("linux"):
-        return False
-
-    return get_wsi_type() == WSI.WAYLAND
+from common import CmakeParameter
 
 
 ESPERT_LIBS_CONF = {

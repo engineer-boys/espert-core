@@ -21,6 +21,7 @@ from common import (
     WSI,
     get_optimal_job_count,
     get_lib_names,
+    is_platform_linux,
 )
 from enum import Enum
 import os
@@ -45,10 +46,8 @@ def get_configure_command(args: Namespace) -> str:
     elif args.compiler == Compiler.CLANG:
         CMD += " -DCMAKE_C_COMPILER=clang-17 -DCMAKE_CXX_COMPILER=clang++-17"
 
-    if sys.platform.startswith("linux"):
-        if args.wsi is None:
-            wsi = get_wsi_type()
-        CMD += f" -DVKB_WSI_SELECTION={wsi.value.upper()}"
+    if is_platform_linux():
+        CMD += f" -DVKB_WSI_SELECTION={args.wsi.value.upper()}"
 
     if args.build_tests:
         CMD += f" -DESP_BUILD_TESTS=ON"
@@ -197,10 +196,16 @@ def get_parser() -> ArgumentParser:
 if __name__ == "__main__":
     parser = get_parser()
     args = parser.parse_args()
+
     if args.hard_clean:
         args.clean = True
+
+    if args.wsi is None and is_platform_linux():
+        args.wsi = get_wsi_type()
+
     if args.cmd is None:
         print("Command not given.")
         parser.print_usage()
         sys.exit(1)
+
     args.func(args)

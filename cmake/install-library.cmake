@@ -21,6 +21,7 @@ macro(install_library)
     endif()
 
     if(NOT ${PROC_RESULT} EQUAL 0)
+        message(${PROC_RESULT})
         message(FATAL_ERROR "Could not build ${INSTALL_LIBRARY_NAME}")
     endif()
 endmacro()

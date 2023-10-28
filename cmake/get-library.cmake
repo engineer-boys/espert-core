@@ -11,14 +11,6 @@ macro(get_library)
     )
 
     if(NOT ${GET_LIBRARY_TARGET}_FOUND)
-        # execute_process(COMMAND python3 ${ESPERT_DIR}/scripts/install-library.py ${GET_LIBRARY_TARGET} ${GET_LIBRARY_ARGS}
-        #     RESULT_VARIABLE PROC_RESULT
-        # )
-
-        # if(NOT ${PROC_RESULT} EQUAL 0)
-        #     message(FATAL_ERROR "Could not build ${GET_LIBRARY_TARGET}")
-        # endif()
-
         include(${ESPERT_DIR}/cmake/install-library.cmake)
         install_library(NAME ${GET_LIBRARY_TARGET}
             ARGS ${GET_LIBRARY_ARGS}

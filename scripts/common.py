@@ -116,3 +116,7 @@ def get_wsi_type() -> WSI:
 def get_lib_names() -> list:
     libraries = os.listdir(EXTERNAL_DIR)
     return libraries
+
+
+def is_platform_linux() -> bool:
+    return sys.platform.startswith("linux")
