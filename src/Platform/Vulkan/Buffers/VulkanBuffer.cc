@@ -6,8 +6,8 @@
  */
 
 #include "VulkanBuffer.hh"
-#include "VulkanDevice.hh"
-#include "VulkanResourceManager.hh"
+#include "espert-core/src/Platform/Vulkan/VulkanDevice.hh"
+#include "espert-core/src/Platform/Vulkan/VulkanResourceManager.hh"
 
 // std
 #include <cstring>
@@ -28,6 +28,35 @@ namespace esp
   {
     if (min_offset_alignment > 0) { return (instance_size + min_offset_alignment - 1) & ~(min_offset_alignment - 1); }
     return instance_size;
+  }
+
+  std::unique_ptr<VulkanBuffer> VulkanBuffer::create_and_fill(void* data,
+                                                              uint32_t instance_size,
+                                                              uint32_t instance_count,
+                                                              VkBufferUsageFlags usage_flags,
+                                                              VkMemoryPropertyFlags memory_property_flags,
+                                                              VkDeviceSize min_offset_alignment)
+  {
+    VkDeviceSize buffer_size = instance_size * instance_count;
+
+    VulkanBuffer staging_buffer{ instance_size,
+                                 instance_count,
+                                 VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                                 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                                 min_offset_alignment };
+
+    staging_buffer.map();
+    staging_buffer.write_to_buffer(data);
+
+    auto buffer = std::make_unique<VulkanBuffer>(instance_size,
+                                                 instance_count,
+                                                 usage_flags,
+                                                 memory_property_flags,
+                                                 min_offset_alignment);
+
+    VulkanResourceManager::copy_buffer(staging_buffer.get_buffer(), buffer->get_buffer(), buffer_size);
+
+    return buffer;
   }
 
   VulkanBuffer::VulkanBuffer(VkDeviceSize instance_size,

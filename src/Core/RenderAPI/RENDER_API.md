@@ -112,11 +112,11 @@ class EspPipeline:
 
 ```Python
 class EspIndexBuffer():
-    def __init__(indices):
+    def create(indices, index_count):
         # The constructor get a vector of indices and
         # allocate needed buffers.
     
-    def size() -> int:
+    def get_index_count() -> int:
         # Return the number of indices.
 
     def attach():
@@ -125,7 +125,7 @@ class EspIndexBuffer():
 
 ```Python
 class EspVertexBuffers():
-    def add(vertices):
+    def add(data, vertex_size, vertex_count):
         # This function get a vector of vertices and
         # allocate needed buffor for it. All added buffors are
         # stored in this object.
