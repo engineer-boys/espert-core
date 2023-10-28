@@ -5,23 +5,23 @@
 
 namespace esp
 {
-  class EspVertexBuffers
+  // This class should probably be moved to EspVertexBuffers class in the future
+  class EspVertexBuffer : public EspBuffer
   {
    public:
-    class EspVertexBuffer : public EspBuffer
-    {
-     public:
-      static std::unique_ptr<EspVertexBuffer> create(void* data, uint32_t vertex_size, uint32_t vertex_count);
+    static std::unique_ptr<EspVertexBuffer> create(void* data, uint32_t vertex_size, uint32_t vertex_count);
 
-      EspVertexBuffer(const EspVertexBuffer&)            = delete;
-      EspVertexBuffer& operator=(const EspVertexBuffer&) = delete;
+    EspVertexBuffer(const EspVertexBuffer&)            = delete;
+    EspVertexBuffer& operator=(const EspVertexBuffer&) = delete;
 
-      EspVertexBuffer()          = default;
-      virtual ~EspVertexBuffer() = default;
+    EspVertexBuffer()          = default;
+    virtual ~EspVertexBuffer() = default;
 
-      virtual void attach() = 0;
-    };
+    virtual void attach() = 0;
+  };
 
+  class EspVertexBuffers
+  {
    private:
     std::vector<std::unique_ptr<EspVertexBuffer>> m_vertex_buffers{};
 
@@ -35,7 +35,7 @@ namespace esp
 
     void add(void* data, uint32_t vertex_size, uint32_t vertex_count);
 
-    void attach();
+    void attach(); // TODO: figure this out...
 
    private:
     EspVertexBuffers() = default;

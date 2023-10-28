@@ -1,8 +1,8 @@
-#include "EspVertexBuffers.hh"
+#include "EspVertexBuffer.hh"
 
 #include "Platform/Vulkan/Buffers/VulkanVertexBuffer.hh"
 
-using EspVertexBuffer = esp::EspVertexBuffers::EspVertexBuffer;
+// using EspVertexBuffer = esp::EspVertexBuffers::EspVertexBuffer;
 
 namespace esp
 {
@@ -35,9 +35,6 @@ namespace esp
 
   void EspVertexBuffers::attach()
   {
-    for (auto& vertex_buffer : m_vertex_buffers)
-    {
-      vertex_buffer->attach();
-    }
+    //...//
   }
 } // namespace esp
