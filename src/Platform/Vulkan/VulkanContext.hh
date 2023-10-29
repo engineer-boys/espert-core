@@ -30,15 +30,14 @@ namespace esp
     bool is_complete() const { return m_graphics_family_has_value && m_present_family_has_value; }
   };
 
+  struct DeviceContextData
+  {
+    VkPhysicalDevice m_physical_device = VK_NULL_HANDLE;
+    VkDevice m_device;
+  };
+
   class VulkanContext : public EspRenderContext
   {
-   private:
-    struct DeviceContextData
-    {
-      VkPhysicalDevice m_physical_device = VK_NULL_HANDLE;
-      VkDevice m_device;
-    };
-
    public:
     struct ContextData
     {
@@ -66,7 +65,6 @@ namespace esp
    private:
     static VulkanContext* s_instance;
 
-    DeviceContextData m_device_context_data;
     ContextData m_context_data;
 
     std::unique_ptr<VulkanDevice> m_vulkan_device{};
@@ -92,8 +90,7 @@ namespace esp
     void create_instance();
     void setup_debug_messenger();
     void create_surface(EspWindow& window);
-    void pick_physical_device();
-    void create_logical_device();
+    void create_vulkan_device();
   };
 } // namespace esp
 

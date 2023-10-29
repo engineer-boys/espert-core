@@ -8,7 +8,8 @@
 #include <unordered_set>
 
 // helpful data type
-using ContextData = esp::VulkanContext::ContextData;
+using ContextData       = esp::VulkanContext::ContextData;
+using DeviceContextData = esp::DeviceContextData;
 
 // signatures
 static bool check_validation_layer_support(ContextData& context_data);
@@ -26,6 +27,8 @@ static bool check_device_extension_support(VkPhysicalDevice device, ContextData&
 static void destroy_debug_utils_messenger_EXT(VkInstance instance,
                                               VkDebugUtilsMessengerEXT debugMessenger,
                                               const VkAllocationCallbacks* pAllocator);
+static void pick_physical_device(ContextData& context_data, DeviceContextData& device_context_data);
+static void create_logical_device(ContextData& context_data, DeviceContextData& device_context_data);
 
 /* --------------------------------------------------------- */
 /* ---------------- CLASS IMPLEMENTATION ------------------- */
@@ -57,14 +60,8 @@ namespace esp
     // create_surface - connection between our GLFWwindow and vulkan's ability
     // do display results
     create_surface(window);
-    // pick_physical_device - selects graphics device in our system which our
-    // application will be using
-    pick_physical_device();
-    // create_logical_device - describes what features of our physical device we
-    // want to use
-    create_logical_device();
-
-    m_vulkan_device = VulkanDevice::create(m_device_context_data.m_physical_device, m_device_context_data.m_device);
+    // create_vulkan_device - wraps VkPhysicalDevice and VkDevice into a single unit
+    create_vulkan_device();
   }
 
   void VulkanContext::terminate()
@@ -171,94 +168,18 @@ namespace esp
     window.create_window_surface(m_context_data.m_instance, &m_context_data.m_surface);
   }
 
-  void VulkanContext::pick_physical_device()
+  void VulkanContext::create_vulkan_device()
   {
-    uint32_t device_count = 0;
-    vkEnumeratePhysicalDevices(m_context_data.m_instance, &device_count, nullptr);
-    if (device_count == 0)
-    {
-      ESP_CORE_ERROR("Failed to find GPUs with Vulkan support");
-      throw std::runtime_error("Failed to find GPUs with Vulkan support");
-    }
-    ESP_CORE_INFO("Device count: {0}", device_count);
-    std::vector<VkPhysicalDevice> devices(device_count);
-    vkEnumeratePhysicalDevices(m_context_data.m_instance, &device_count, devices.data());
+    DeviceContextData device_context_data{};
 
-    for (const auto& device : devices)
-    {
-      if (is_device_suitable(device, m_context_data))
-      {
-        m_device_context_data.m_physical_device = device;
-        break;
-      }
-    }
+    // pick_physical_device - selects graphics device in our system which our
+    // application will be using
+    pick_physical_device(m_context_data, device_context_data);
+    // create_logical_device - describes what features of our physical device we
+    // want to use
+    create_logical_device(m_context_data, device_context_data);
 
-    if (m_device_context_data.m_physical_device == VK_NULL_HANDLE)
-    {
-      ESP_CORE_ERROR("Failed to find a suitable GPU");
-      throw std::runtime_error("Failed to find a suitable GPU");
-    }
-
-    m_context_data.m_queue_family_indices =
-        find_queue_families(m_device_context_data.m_physical_device, m_context_data);
-
-    VkPhysicalDeviceProperties properties;
-    vkGetPhysicalDeviceProperties(m_device_context_data.m_physical_device, &properties);
-    ESP_CORE_INFO("Physical device: {0}", properties.deviceName);
-  }
-
-  void VulkanContext::create_logical_device()
-  {
-    QueueFamilyIndices& indices = m_context_data.m_queue_family_indices;
-
-    std::vector<VkDeviceQueueCreateInfo> queue_create_infos;
-    std::set<uint32_t> unique_queue_families = { indices.m_graphics_family, indices.m_present_family };
-
-    float queue_priority = 1.0f;
-    for (uint32_t queue_family : unique_queue_families)
-    {
-      VkDeviceQueueCreateInfo queue_create_info = {};
-      queue_create_info.sType                   = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-      queue_create_info.queueFamilyIndex        = queue_family;
-      queue_create_info.queueCount              = 1;
-      queue_create_info.pQueuePriorities        = &queue_priority;
-      queue_create_infos.push_back(queue_create_info);
-    }
-
-    VkPhysicalDeviceFeatures device_features = {};
-    device_features.samplerAnisotropy        = VK_TRUE;
-
-    VkDeviceCreateInfo create_info = {};
-    create_info.sType              = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-
-    create_info.queueCreateInfoCount = static_cast<uint32_t>(queue_create_infos.size());
-    create_info.pQueueCreateInfos    = queue_create_infos.data();
-
-    create_info.pEnabledFeatures        = &device_features;
-    create_info.enabledExtensionCount   = static_cast<uint32_t>(m_context_data.m_device_extensions.size());
-    create_info.ppEnabledExtensionNames = m_context_data.m_device_extensions.data();
-
-    // might not really be necessary anymore because device specific validation
-    // layers have been deprecated
-    if (m_context_data.m_enable_validation_layers)
-    {
-      create_info.enabledLayerCount   = static_cast<uint32_t>(m_context_data.m_validation_layers.size());
-      create_info.ppEnabledLayerNames = m_context_data.m_validation_layers.data();
-    }
-    else { create_info.enabledLayerCount = 0; }
-
-    if (vkCreateDevice(m_device_context_data.m_physical_device,
-                       &create_info,
-                       nullptr,
-                       &m_device_context_data.m_device) != VK_SUCCESS)
-    {
-      ESP_CORE_ERROR("Failed to create logical device");
-      throw std::runtime_error("Failed to create logical device");
-    }
-    volkLoadDevice(m_device_context_data.m_device);
-
-    vkGetDeviceQueue(m_device_context_data.m_device, indices.m_graphics_family, 0, &m_context_data.m_graphics_queue);
-    vkGetDeviceQueue(m_device_context_data.m_device, indices.m_present_family, 0, &m_context_data.m_present_queue);
+    m_vulkan_device = VulkanDevice::create(device_context_data.m_physical_device, device_context_data.m_device);
   }
 
   void render_context_glfw_hints()
@@ -487,4 +408,91 @@ static void destroy_debug_utils_messenger_EXT(VkInstance instance,
 {
   auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
   if (func != nullptr) { func(instance, debugMessenger, pAllocator); }
+}
+
+static void pick_physical_device(ContextData& context_data, DeviceContextData& device_context_data)
+{
+  uint32_t device_count = 0;
+  vkEnumeratePhysicalDevices(context_data.m_instance, &device_count, nullptr);
+  if (device_count == 0)
+  {
+    ESP_CORE_ERROR("Failed to find GPUs with Vulkan support");
+    throw std::runtime_error("Failed to find GPUs with Vulkan support");
+  }
+  ESP_CORE_INFO("Device count: {0}", device_count);
+  std::vector<VkPhysicalDevice> devices(device_count);
+  vkEnumeratePhysicalDevices(context_data.m_instance, &device_count, devices.data());
+
+  for (const auto& device : devices)
+  {
+    if (is_device_suitable(device, context_data))
+    {
+      device_context_data.m_physical_device = device;
+      break;
+    }
+  }
+
+  if (device_context_data.m_physical_device == VK_NULL_HANDLE)
+  {
+    ESP_CORE_ERROR("Failed to find a suitable GPU");
+    throw std::runtime_error("Failed to find a suitable GPU");
+  }
+
+  context_data.m_queue_family_indices = find_queue_families(device_context_data.m_physical_device, context_data);
+
+  VkPhysicalDeviceProperties properties;
+  vkGetPhysicalDeviceProperties(device_context_data.m_physical_device, &properties);
+  ESP_CORE_INFO("Physical device: {0}", properties.deviceName);
+}
+
+static void create_logical_device(ContextData& context_data, DeviceContextData& device_context_data)
+{
+  esp::QueueFamilyIndices& indices = context_data.m_queue_family_indices;
+
+  std::vector<VkDeviceQueueCreateInfo> queue_create_infos;
+  std::set<uint32_t> unique_queue_families = { indices.m_graphics_family, indices.m_present_family };
+
+  float queue_priority = 1.0f;
+  for (uint32_t queue_family : unique_queue_families)
+  {
+    VkDeviceQueueCreateInfo queue_create_info = {};
+    queue_create_info.sType                   = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+    queue_create_info.queueFamilyIndex        = queue_family;
+    queue_create_info.queueCount              = 1;
+    queue_create_info.pQueuePriorities        = &queue_priority;
+    queue_create_infos.push_back(queue_create_info);
+  }
+
+  VkPhysicalDeviceFeatures device_features = {};
+  device_features.samplerAnisotropy        = VK_TRUE;
+
+  VkDeviceCreateInfo create_info = {};
+  create_info.sType              = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+
+  create_info.queueCreateInfoCount = static_cast<uint32_t>(queue_create_infos.size());
+  create_info.pQueueCreateInfos    = queue_create_infos.data();
+
+  create_info.pEnabledFeatures        = &device_features;
+  create_info.enabledExtensionCount   = static_cast<uint32_t>(context_data.m_device_extensions.size());
+  create_info.ppEnabledExtensionNames = context_data.m_device_extensions.data();
+
+  // might not really be necessary anymore because device specific validation
+  // layers have been deprecated
+  if (context_data.m_enable_validation_layers)
+  {
+    create_info.enabledLayerCount   = static_cast<uint32_t>(context_data.m_validation_layers.size());
+    create_info.ppEnabledLayerNames = context_data.m_validation_layers.data();
+  }
+  else { create_info.enabledLayerCount = 0; }
+
+  if (vkCreateDevice(device_context_data.m_physical_device, &create_info, nullptr, &device_context_data.m_device) !=
+      VK_SUCCESS)
+  {
+    ESP_CORE_ERROR("Failed to create logical device");
+    throw std::runtime_error("Failed to create logical device");
+  }
+  volkLoadDevice(device_context_data.m_device);
+
+  vkGetDeviceQueue(device_context_data.m_device, indices.m_graphics_family, 0, &context_data.m_graphics_queue);
+  vkGetDeviceQueue(device_context_data.m_device, indices.m_present_family, 0, &context_data.m_present_queue);
 }
