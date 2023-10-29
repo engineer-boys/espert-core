@@ -161,8 +161,22 @@ class EspCommandHandler:
         # Draw using vertex buffer.
 
     @staticmethod
+    def draw(vertex_count: uint32_t, 
+             instance_count: uint32_t) -> None:
+        # Draw with instancing using vertex buffer - 
+        # vertex buffer for instances must be provided
+        # and specified in pipeline creation.
+    
+    @staticmethod
     def draw_indexed(index_count: uint32_t) -> None:
         # Draw using index buffer.
+
+    @staticmethod
+    def draw_indexed(index_count: uint32_t,
+             instance_count: uint32_t) -> None:
+    # Draw with instancing using index buffer - 
+    # vertex buffer for instances must be provided
+    # and specified in pipeline creation.
 ```
 
 # USAGE

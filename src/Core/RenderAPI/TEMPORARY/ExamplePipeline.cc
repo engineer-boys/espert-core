@@ -12,13 +12,16 @@ namespace esp
 {
   std::vector<VkVertexInputBindingDescription> get_binding_descriptions()
   {
-    std::vector<VkVertexInputBindingDescription> binding_descriptions(2);
-    binding_descriptions[0].binding   = 0;
-    binding_descriptions[0].stride    = sizeof(glm::vec2);
-    binding_descriptions[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-    binding_descriptions[1].binding   = 1;
-    binding_descriptions[1].stride    = sizeof(glm::vec3);
-    binding_descriptions[1].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+    std::vector<VkVertexInputBindingDescription> binding_descriptions(3);
+    binding_descriptions[0].binding   = 0;                             //
+    binding_descriptions[0].stride    = sizeof(glm::vec2);             // position
+    binding_descriptions[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;   //
+    binding_descriptions[1].binding   = 1;                             //
+    binding_descriptions[1].stride    = sizeof(glm::vec2);             // instance_position
+    binding_descriptions[1].inputRate = VK_VERTEX_INPUT_RATE_INSTANCE; //
+    binding_descriptions[2].binding   = 2;                             //
+    binding_descriptions[2].stride    = sizeof(glm::vec3);             // color
+    binding_descriptions[2].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;   //
 
     return binding_descriptions;
   }
@@ -27,8 +30,9 @@ namespace esp
   {
     std::vector<VkVertexInputAttributeDescription> attribute_descriptions{};
 
-    attribute_descriptions.push_back({ 0, 0, VK_FORMAT_R32G32_SFLOAT, 0 });
-    attribute_descriptions.push_back({ 1, 1, VK_FORMAT_R32G32B32_SFLOAT, 0 });
+    attribute_descriptions.push_back({ 0, 0, VK_FORMAT_R32G32_SFLOAT, 0 });    // position
+    attribute_descriptions.push_back({ 1, 1, VK_FORMAT_R32G32_SFLOAT, 0 });    // instance_position
+    attribute_descriptions.push_back({ 2, 2, VK_FORMAT_R32G32B32_SFLOAT, 0 }); // color
 
     return attribute_descriptions;
   }

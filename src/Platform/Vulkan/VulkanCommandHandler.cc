@@ -26,9 +26,19 @@ namespace esp
     vkCmdDraw(VulkanFrameManager::get_current_command_buffer(), vertex_count, 1, 0, 0);
   }
 
+  void VulkanCommandHandler::draw(uint32_t vertex_count, uint32_t instance_count)
+  {
+    vkCmdDraw(VulkanFrameManager::get_current_command_buffer(), vertex_count, instance_count, 0, 0);
+  }
+
   void VulkanCommandHandler::draw_indexed(uint32_t index_count)
   {
     vkCmdDrawIndexed(VulkanFrameManager::get_current_command_buffer(), index_count, 1, 0, 0, 0);
+  }
+
+  void VulkanCommandHandler::draw_indexed(uint32_t index_count, uint32_t instance_count)
+  {
+    vkCmdDrawIndexed(VulkanFrameManager::get_current_command_buffer(), index_count, instance_count, 0, 0, 0);
   }
 
   VkCommandBuffer VulkanCommandHandler::create_command_buffer()
