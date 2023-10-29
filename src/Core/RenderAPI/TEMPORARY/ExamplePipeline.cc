@@ -10,22 +10,25 @@
 
 namespace esp
 {
-  std::vector<VkVertexInputBindingDescription> ExampleVertex::get_binding_descriptions()
+  std::vector<VkVertexInputBindingDescription> get_binding_descriptions()
   {
-    std::vector<VkVertexInputBindingDescription> binding_descriptions(1);
+    std::vector<VkVertexInputBindingDescription> binding_descriptions(2);
     binding_descriptions[0].binding   = 0;
-    binding_descriptions[0].stride    = sizeof(ExampleVertex);
+    binding_descriptions[0].stride    = sizeof(glm::vec2);
     binding_descriptions[0].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+    binding_descriptions[1].binding   = 1;
+    binding_descriptions[1].stride    = sizeof(glm::vec3);
+    binding_descriptions[1].inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
     return binding_descriptions;
   }
 
-  std::vector<VkVertexInputAttributeDescription> ExampleVertex::get_attribute_descriptions()
+  std::vector<VkVertexInputAttributeDescription> get_attribute_descriptions()
   {
     std::vector<VkVertexInputAttributeDescription> attribute_descriptions{};
 
-    attribute_descriptions.push_back({ 0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(ExampleVertex, position) });
-    attribute_descriptions.push_back({ 1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(ExampleVertex, color) });
+    attribute_descriptions.push_back({ 0, 0, VK_FORMAT_R32G32_SFLOAT, 0 });
+    attribute_descriptions.push_back({ 1, 1, VK_FORMAT_R32G32B32_SFLOAT, 0 });
 
     return attribute_descriptions;
   }
@@ -295,8 +298,8 @@ namespace esp
     config_info.m_dynamic_state_info.dynamicStateCount = static_cast<uint32_t>(config_info.m_dynamic_states.size());
     config_info.m_dynamic_state_info.flags             = 0;
 
-    config_info.m_binding_descriptions   = ExampleVertex::get_binding_descriptions();
-    config_info.m_attribute_descriptions = ExampleVertex::get_attribute_descriptions();
+    config_info.m_binding_descriptions   = get_binding_descriptions();
+    config_info.m_attribute_descriptions = get_attribute_descriptions();
   }
 
   // this method requires rendering solid objects first and then
