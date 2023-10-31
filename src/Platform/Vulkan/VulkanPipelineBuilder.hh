@@ -42,7 +42,7 @@ namespace esp
     virtual void set_fragment_shader(std::string path_fragment_shr) override;
 
     virtual void set_vertex_layouts(std::vector<EspVertexLayout> vertex_layouts) override;
-    virtual void set_pipeline_layout(std::unique_ptr<EspUniformMetaData> pipeline_layout) override;
+    virtual void set_pipeline_layout(std::unique_ptr<EspUniformMetaData> uniforms_meta_data) override;
 
     virtual std::unique_ptr<EspPipeline> build_pipeline() override;
   };

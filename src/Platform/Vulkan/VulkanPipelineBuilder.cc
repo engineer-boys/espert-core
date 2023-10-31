@@ -11,7 +11,6 @@
 // signatures
 static std::vector<char> read_file(const std::string& filename);
 static VkShaderModule create_shader_module(const std::vector<char>& code, VkDevice device);
-static VkDescriptorSetLayoutBinding create_dslb(esp::VulkanMetaUniform& data);
 
 /* --------------------------------------------------------- */
 /* ---------------- CLASS IMPLEMENTATION ------------------- */
@@ -20,7 +19,7 @@ static VkDescriptorSetLayoutBinding create_dslb(esp::VulkanMetaUniform& data);
 namespace esp
 {
   VulaknPipelineBuilder::VulaknPipelineBuilder() :
-      m_vertex_shader_info({}), m_fragment_shader_info({}), m_vertex_input_info({})
+      m_vertex_shader_info{}, m_fragment_shader_info{}, m_vertex_input_info{}
   {
   }
 
@@ -76,22 +75,22 @@ namespace esp
   {
     for (auto& vtx_layout : vertex_layouts)
     {
-      VkVertexInputBindingDescription bindingDescription{};
+      VkVertexInputBindingDescription binding_description{};
 
-      bindingDescription.binding   = vtx_layout.m_binding;
-      bindingDescription.stride    = vtx_layout.m_size;
-      bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-      m_binding_descriptions.push_back(bindingDescription);
+      binding_description.binding   = vtx_layout.m_binding;
+      binding_description.stride    = vtx_layout.m_size;
+      binding_description.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+      m_binding_descriptions.push_back(binding_description);
 
       for (auto& attr : vtx_layout.m_attrs)
       {
-        VkVertexInputAttributeDescription attributeDescription{};
+        VkVertexInputAttributeDescription attribute_description{};
 
-        attributeDescription.binding  = vtx_layout.m_binding;
-        attributeDescription.location = attr.m_location;
-        attributeDescription.format   = static_cast<VkFormat>(attr.m_format);
-        attributeDescription.offset   = attr.m_offset;
-        m_attribute_descriptions.push_back(attributeDescription);
+        attribute_description.binding  = vtx_layout.m_binding;
+        attribute_description.location = attr.m_location;
+        attribute_description.format   = static_cast<VkFormat>(attr.m_format);
+        attribute_description.offset   = attr.m_offset;
+        m_attribute_descriptions.push_back(attribute_description);
       }
     }
 
@@ -102,25 +101,25 @@ namespace esp
     m_vertex_input_info.pVertexAttributeDescriptions    = m_attribute_descriptions.data();
   }
 
-  void VulaknPipelineBuilder::set_pipeline_layout(std::unique_ptr<EspUniformMetaData> pipeline_layout)
+  void VulaknPipelineBuilder::set_pipeline_layout(std::unique_ptr<EspUniformMetaData> uniforms_meta_data)
   {
-    std::unique_ptr<VulkanUniformMetaData> metaData(static_cast<VulkanUniformMetaData*>(pipeline_layout.release()));
+    std::unique_ptr<VulkanUniformMetaData> meta_data(static_cast<VulkanUniformMetaData*>(uniforms_meta_data.release()));
 
     uint32_t size                  = 0;
     VkDescriptorSetLayout* layouts = nullptr;
-    if (*metaData)
+    if (*meta_data)
     {
-      m_uniform_manager = std::make_unique<VulkanUniformManager>(std::move(metaData));
+      m_uniform_manager = std::make_unique<VulkanUniformManager>(std::move(meta_data));
       layouts           = m_uniform_manager->get_layouts().data();
-      size              = m_uniform_manager->count_layouts();
+      size              = m_uniform_manager->get_layouts_number();
     }
 
-    VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-    pipelineLayoutInfo.sType          = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutInfo.setLayoutCount = size;
-    pipelineLayoutInfo.pSetLayouts    = layouts;
+    VkPipelineLayoutCreateInfo pipeline_layoutInfo{};
+    pipeline_layoutInfo.sType          = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    pipeline_layoutInfo.setLayoutCount = size;
+    pipeline_layoutInfo.pSetLayouts    = layouts;
 
-    if (vkCreatePipelineLayout(VulkanDevice::get_logical_device(), &pipelineLayoutInfo, nullptr, &m_pipeline_layout) !=
+    if (vkCreatePipelineLayout(VulkanDevice::get_logical_device(), &pipeline_layoutInfo, nullptr, &m_pipeline_layout) !=
         VK_SUCCESS)
     {
       ESP_CORE_ERROR("Failed to create graphics pipeline");
@@ -165,25 +164,25 @@ namespace esp
     ESP_ASSERT(m_is_vertex_shader_module, "You cannot create pipeline a without a vertex shader.");
     ESP_ASSERT(m_is_pipeline_layout, "You cannot create a pipeline without a pipeline layout.")
 
-    VkPipelineShaderStageCreateInfo shaderStages[] = { m_vertex_shader_info, m_fragment_shader_info };
+    VkPipelineShaderStageCreateInfo shader_stages[] = { m_vertex_shader_info, m_fragment_shader_info };
 
-    VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
+    VkPipelineVertexInputStateCreateInfo vertex_input_info{};
     {
-      vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+      vertex_input_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
     }
 
-    VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
+    VkPipelineInputAssemblyStateCreateInfo input_assembly{};
     {
-      inputAssembly.sType                  = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-      inputAssembly.topology               = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
-      inputAssembly.primitiveRestartEnable = VK_FALSE;
+      input_assembly.sType                  = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+      input_assembly.topology               = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+      input_assembly.primitiveRestartEnable = VK_FALSE;
     }
 
-    VkPipelineViewportStateCreateInfo viewportState{};
+    VkPipelineViewportStateCreateInfo viewport_state{};
     {
-      viewportState.sType         = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-      viewportState.viewportCount = 1;
-      viewportState.scissorCount  = 1;
+      viewport_state.sType         = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+      viewport_state.viewportCount = 1;
+      viewport_state.scissorCount  = 1;
     }
 
     VkPipelineRasterizationStateCreateInfo rasterizer{};
@@ -205,40 +204,40 @@ namespace esp
       multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
     }
 
-    VkPipelineDepthStencilStateCreateInfo depthStencil{};
+    VkPipelineDepthStencilStateCreateInfo depth_stencil{};
     {
-      depthStencil.sType                 = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-      depthStencil.depthTestEnable       = VK_TRUE;
-      depthStencil.depthWriteEnable      = VK_TRUE;
-      depthStencil.depthCompareOp        = VK_COMPARE_OP_LESS;
-      depthStencil.depthBoundsTestEnable = VK_FALSE;
-      depthStencil.stencilTestEnable     = VK_FALSE;
+      depth_stencil.sType                 = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+      depth_stencil.depthTestEnable       = VK_TRUE;
+      depth_stencil.depthWriteEnable      = VK_TRUE;
+      depth_stencil.depthCompareOp        = VK_COMPARE_OP_LESS;
+      depth_stencil.depthBoundsTestEnable = VK_FALSE;
+      depth_stencil.stencilTestEnable     = VK_FALSE;
     }
 
-    VkPipelineColorBlendStateCreateInfo colorBlending{};
-    VkPipelineColorBlendAttachmentState colorBlendAttachment{};
+    VkPipelineColorBlendStateCreateInfo color_blending{};
+    VkPipelineColorBlendAttachmentState color_blend_attachment{};
     {
-      colorBlendAttachment.colorWriteMask =
+      color_blend_attachment.colorWriteMask =
           VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-      colorBlendAttachment.blendEnable = VK_FALSE;
+      color_blend_attachment.blendEnable = VK_FALSE;
 
-      colorBlending.sType             = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
-      colorBlending.logicOpEnable     = VK_FALSE;
-      colorBlending.logicOp           = VK_LOGIC_OP_COPY;
-      colorBlending.attachmentCount   = 1;
-      colorBlending.pAttachments      = &colorBlendAttachment;
-      colorBlending.blendConstants[0] = 0.0f;
-      colorBlending.blendConstants[1] = 0.0f;
-      colorBlending.blendConstants[2] = 0.0f;
-      colorBlending.blendConstants[3] = 0.0f;
+      color_blending.sType             = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+      color_blending.logicOpEnable     = VK_FALSE;
+      color_blending.logicOp           = VK_LOGIC_OP_COPY;
+      color_blending.attachmentCount   = 1;
+      color_blending.pAttachments      = &color_blend_attachment;
+      color_blending.blendConstants[0] = 0.0f;
+      color_blending.blendConstants[1] = 0.0f;
+      color_blending.blendConstants[2] = 0.0f;
+      color_blending.blendConstants[3] = 0.0f;
     }
 
-    VkPipelineDynamicStateCreateInfo dynamicState{};
-    std::vector<VkDynamicState> dynamicStates = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
+    VkPipelineDynamicStateCreateInfo dynamic_state{};
+    std::vector<VkDynamicState> dynamic_states = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
     {
-      dynamicState.sType             = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
-      dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
-      dynamicState.pDynamicStates    = dynamicStates.data();
+      dynamic_state.sType             = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+      dynamic_state.dynamicStateCount = static_cast<uint32_t>(dynamic_states.size());
+      dynamic_state.pDynamicStates    = dynamic_states.data();
     }
 
     /* ----- GRAPHICS PIPELINE CREATE INFO ------ */
@@ -247,29 +246,29 @@ namespace esp
 
     pipelineInfo.sType               = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
     pipelineInfo.stageCount          = 2;
-    pipelineInfo.pStages             = shaderStages;
+    pipelineInfo.pStages             = shader_stages;
     pipelineInfo.pVertexInputState   = &m_vertex_input_info;
-    pipelineInfo.pInputAssemblyState = &inputAssembly;
-    pipelineInfo.pViewportState      = &viewportState;
+    pipelineInfo.pInputAssemblyState = &input_assembly;
+    pipelineInfo.pViewportState      = &viewport_state;
     pipelineInfo.pRasterizationState = &rasterizer;
     pipelineInfo.pMultisampleState   = &multisampling;
-    pipelineInfo.pDepthStencilState  = &depthStencil;
-    pipelineInfo.pColorBlendState    = &colorBlending;
-    pipelineInfo.pDynamicState       = &dynamicState;
+    pipelineInfo.pDepthStencilState  = &depth_stencil;
+    pipelineInfo.pColorBlendState    = &color_blending;
+    pipelineInfo.pDynamicState       = &dynamic_state;
     pipelineInfo.layout              = m_pipeline_layout;
     pipelineInfo.renderPass          = VulkanFrameManager::get_swap_chain_render_pass();
     pipelineInfo.subpass             = 0;
     pipelineInfo.basePipelineIndex   = -1;
     pipelineInfo.basePipelineHandle  = VK_NULL_HANDLE;
 
-    VkPipeline graphicsPipeline;
+    VkPipeline graphics_pipeline;
 
     if (vkCreateGraphicsPipelines(VulkanDevice::get_logical_device(),
                                   VK_NULL_HANDLE,
                                   1,
                                   &pipelineInfo,
                                   nullptr,
-                                  &graphicsPipeline) != VK_SUCCESS)
+                                  &graphics_pipeline) != VK_SUCCESS)
     {
       throw std::runtime_error("failed to create graphics pipeline!\n");
     }
@@ -283,7 +282,7 @@ namespace esp
     m_is_pipeline_layout        = false;
 
     return std::unique_ptr<EspPipeline>{
-      new VulkanPipeline(m_pipeline_layout, graphicsPipeline, std::move(m_uniform_manager))
+      new VulkanPipeline(m_pipeline_layout, graphics_pipeline, std::move(m_uniform_manager))
     };
   }
 } // namespace esp
@@ -328,45 +327,4 @@ static VkShaderModule create_shader_module(const std::vector<char>& code, VkDevi
   }
 
   return shaderModule;
-}
-
-static VkDescriptorSetLayoutBinding create_dslb(esp::VulkanMetaUniform& data)
-{
-  auto stage = VK_SHADER_STAGE_VERTEX_BIT;
-  if (data.m_stage == esp::EspUniformShaderStage::ESP_FRAG_STAGE) { stage = VK_SHADER_STAGE_FRAGMENT_BIT; }
-
-  switch (data.m_uniform_type)
-  {
-  case esp::EspUniformType::ESP_BUFFER_UNIFORM:
-  {
-    VkDescriptorSetLayoutBinding uboLayoutBinding{};
-    uboLayoutBinding.binding            = data.m_binding;
-    uboLayoutBinding.descriptorCount    = data.m_count_of_elements;
-    uboLayoutBinding.descriptorType     = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-    uboLayoutBinding.pImmutableSamplers = nullptr;
-    uboLayoutBinding.stageFlags         = stage;
-    return uboLayoutBinding;
-  }
-
-  case esp::EspUniformType::ESP_SMALL_FAST_UNIFORM:
-    /* code */
-    throw std::runtime_error("Not implemented ESP_SMALL_FAST_UNIFORM!");
-    break;
-
-  case esp::EspUniformType::ESP_TEXTURE:
-  {
-    VkDescriptorSetLayoutBinding samplerLayoutBinding{};
-    samplerLayoutBinding.binding            = data.m_binding;
-    samplerLayoutBinding.descriptorCount    = data.m_count_of_elements;
-    samplerLayoutBinding.descriptorType     = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-    samplerLayoutBinding.pImmutableSamplers = nullptr;
-    samplerLayoutBinding.stageFlags         = stage;
-    return samplerLayoutBinding;
-  }
-
-  default:
-    ESP_CORE_ERROR("Given uniform type doesn't exist!");
-    throw std::runtime_error("Given uniform type doesn't exist!");
-    break;
-  }
 }
