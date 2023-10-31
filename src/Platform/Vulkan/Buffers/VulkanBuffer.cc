@@ -6,8 +6,8 @@
  */
 
 #include "VulkanBuffer.hh"
-#include "espert-core/src/Platform/Vulkan/VulkanDevice.hh"
-#include "espert-core/src/Platform/Vulkan/VulkanResourceManager.hh"
+#include "Platform/Vulkan/VulkanDevice.hh"
+#include "Platform/Vulkan/VulkanResourceManager.hh"
 
 // std
 #include <cstring>

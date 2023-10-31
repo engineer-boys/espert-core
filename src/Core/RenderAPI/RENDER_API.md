@@ -1,7 +1,7 @@
 # RENDER API
 
 ```Python
-class EspRenderContext():
+class EspRenderContext:
     def create_and_init(window: EspWindow) -> None:
     # Init render context.
 
@@ -56,17 +56,23 @@ class EspFrameManager:
 
 ```Python
 class EspPipelineBuilder:
-    def set_shader(path_vertex, path_fragment) -> None:
+    def set_shaders(path_vertex, path_fragment) -> None:
         # Set given shaders as a pipeline shader program.
+    
+    def set_vertex_shader(path_vertex) -> None:
+        # Set given shader
+    
+    def set_fragment_shader(path_fragment) -> None:
+        # Set given shader
 
-    def set_vertex_layout( vertex_vectors: list = {
+    def set_vertex_layouts( vertex_layouts: list = {
             {
                 .size: int
                 .binding: int
-                .attr: list = {
+                .attrs: list = {
                     {
                         .location: int
-                        .format: EspFormatEnum
+                        .format: EspAttrFormat
                         .offset: int # This may be automatised in the future
                     },
                     {
@@ -83,7 +89,7 @@ class EspPipelineBuilder:
         # Set structure info about vertices in vertex buffers
         # which can be attach. This will be called vertex layout.
 
-    def set_pipeline_layout(pipeline_layout) -> None:
+    def set_pipeline_layout(pipeline_layout: EspUniformMetaData) -> None:
         # Set layout for this pipeline. The layout describes
         # what data can be eaten by pipeline. The parameter is
         # PipelineLayoutManufacture which contains info about
@@ -106,12 +112,18 @@ class EspPipeline:
     def attach() -> None:
         # Bind this pipeline to using command buffer.
     
-    def update_buffer_uniform(idx: int, size: int, data: void*) -> None:
+    def update_buffer_uniform(set: int, binding: int, size: int, data: void*) -> None:
         # Update buffer uniform with given index.
+    
+    def update_buffer_uniform(set: int, binding: int, elem: int, size: int, data: void*) -> None:
+        # Update buffer uniform with given index.
+    
+    def attach_uniforms() -> None:
+        # Attach uniforms to the current command buffer.
 ```
 
 ```Python
-class EspIndexBuffer():
+class EspIndexBuffer:
     def create(indices, index_count):
         # The constructor get a vector of indices and
         # allocate needed buffers.
@@ -124,7 +136,7 @@ class EspIndexBuffer():
 ```
 
 ```Python
-class EspVertexBuffers():
+class EspVertexBuffers:
     def add(data, vertex_size, vertex_count):
         # This function get a vector of vertices and
         # allocate needed buffor for it. All added buffors are
@@ -135,17 +147,20 @@ class EspVertexBuffers():
 ```
 
 ```Python
-class PipelineLayoutManufacture():
-    def add_buffer_uniform(size: int) -> None:
-        # This class create buffer uniforms without knowledge of user
-        # to be coherent with render in flight. The first add_buffer_uniform
-        # give this uniform an index 0 and so on.
-    
-    def add_push_constant_uniform() -> None:
-        # I don't know this.
+class EspUniformMetaData:
+    def __init__():
+        self.current_ds_counter = -1
 
-    def add_texture() -> None:
-        # In the immediate future.
+    def establish_descriptor_set() -> self:
+        sefl.current_ds_counter += 1
+    
+    def add_buffer_uniform(stage: EspUniformShaderStage, size_of_data_chunk: int, count_of_data_chunks: int = 1) -> self:
+        # Add buffer uniform to currently established ds.
+        # If the count_of_data_chunks is greater than 1
+        # the uniform is an array.
+    
+    def add_texture_uniform(count_of_textures: int = 1) -> None:
+        # Add texture uniform to currently established ds.
 ```
 
 ```Python
