@@ -16,7 +16,7 @@
 
 namespace esp
 {
-  struct VulkanDescriptorSetPacgake
+  struct VulkanDescriptorSetPackage
   {
    public:
     struct DescriptorSetBuffers
@@ -37,7 +37,7 @@ namespace esp
     std::vector<DescriptorSetBuffers> m_buffer_groups;
 
    public:
-    VulkanDescriptorSetPacgake(VulkanUniformMetaData& meta_data,
+    VulkanDescriptorSetPackage(VulkanUniformMetaData& meta_data,
                                std::vector<VkDescriptorSetLayout>& descriptor_set_layouts,
                                VkDescriptorPool& descriptor_pool);
 
@@ -55,11 +55,11 @@ namespace esp
   class VulkanUniformManager
   {
    private:
-    std::unique_ptr<std::vector<VkDescriptorSetLayout>> m_ds_layouts;
+    std::vector<VkDescriptorSetLayout> m_ds_layouts;
     std::unique_ptr<VulkanUniformMetaData> m_meta_data;
 
-    VkDescriptorPool descriptor_pool;
-    std::vector<VulkanDescriptorSetPacgake> ds_packages;
+    VkDescriptorPool m_descriptor_pool;
+    std::vector<VulkanDescriptorSetPackage> m_descriptor_set_packages;
 
    private:
     void init_descriptor_pool();
@@ -70,13 +70,13 @@ namespace esp
 
     ~VulkanUniformManager();
 
-    inline std::vector<VkDescriptorSetLayout>& get_layouts() { return *m_ds_layouts; }
-    inline uint32_t count_layouts() { return static_cast<uint32_t>(m_ds_layouts->size()); }
+    inline std::vector<VkDescriptorSetLayout>& get_layouts() { return m_ds_layouts; }
+    inline uint32_t get_layouts_number() { return static_cast<uint32_t>(m_ds_layouts.size()); }
 
     void write(int set, int binding, int size, void* data);
     void write(int set, int binding, int elem, int size, void* data);
 
-    void attach_ds(const VkPipelineLayout& pipeline_layout) const;
+    void attach_descriptor_set_package(const VkPipelineLayout& pipeline_layout) const;
   };
 } // namespace esp
 

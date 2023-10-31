@@ -12,8 +12,8 @@ namespace esp
   VulkanPipeline::VulkanPipeline(VkPipelineLayout pipeline_layout,
                                  VkPipeline graphics_pipeline,
                                  std::unique_ptr<VulkanUniformManager> uniform_manager) :
-      m_pipeline_layout(pipeline_layout),
-      m_graphics_pipeline(graphics_pipeline), m_uniform_manager(std::move(uniform_manager))
+      m_pipeline_layout{ pipeline_layout },
+      m_graphics_pipeline{ graphics_pipeline }, m_uniform_manager{ std::move(uniform_manager) }
   {
   }
 
@@ -23,7 +23,7 @@ namespace esp
     vkDestroyPipeline(VulkanDevice::get_logical_device(), m_graphics_pipeline, nullptr);
   }
 
-  void VulkanPipeline::attach_uniforms() const { m_uniform_manager->attach_ds(m_pipeline_layout); }
+  void VulkanPipeline::attach_uniforms() const { m_uniform_manager->attach_descriptor_set_package(m_pipeline_layout); }
 
   void VulkanPipeline::VulkanPipeline::attach() const
   {

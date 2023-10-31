@@ -22,7 +22,7 @@ namespace esp
   {
    protected:
     // Current descriptor set counter.
-    int32_t current_ds_counter = -1;
+    int32_t m_current_ds_counter = -1;
 
    public:
     virtual ~EspUniformMetaData() {}

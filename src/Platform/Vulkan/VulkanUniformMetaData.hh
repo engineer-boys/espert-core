@@ -17,7 +17,7 @@ namespace esp
     uint32_t m_size_of_data_chunk;
 
     // Number of textures or objects for uniform.
-    uint32_t m_count_of_elements;
+    uint32_t m_number_of_elements;
 
     uint32_t m_binding;
 
@@ -45,10 +45,10 @@ namespace esp
     }
 
    public:
-    uint32_t buffer_uniform_counter  = 0;
-    uint32_t texture_uniform_counter = 0;
+    uint32_t m_buffer_uniform_counter  = 0;
+    uint32_t m_texture_uniform_counter = 0;
 
-    uint32_t binding_count;
+    uint32_t m_binding_count;
     std::vector<VulkanMetaDescriptorSet> m_meta_descriptor_sets;
 
    public:
