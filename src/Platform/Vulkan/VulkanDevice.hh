@@ -26,7 +26,7 @@ namespace esp
 
     ~VulkanDevice();
 
-    static inline VkDevice get_logical_device() { return s_instance->m_device; }
+    static inline VkDevice& get_logical_device() { return s_instance->m_device; }
 
     static void complete_queues();
 

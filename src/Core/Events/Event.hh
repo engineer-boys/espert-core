@@ -12,7 +12,7 @@ namespace esp
    public:
     enum class EventSubtype
     {
-      None,
+      Nothing,
       /* for window class */
       WindowClosed,
       WindowResized,
@@ -27,7 +27,7 @@ namespace esp
 
     enum EventType
     {
-      None              = 0,
+      Nothing           = 0,
       EventTypeWindow   = SET_BIT(0),
       EventTypeInput    = SET_BIT(1),
       EventTypeKeyboard = SET_BIT(2),
