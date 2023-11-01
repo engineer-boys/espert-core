@@ -1,5 +1,5 @@
 macro(install_library)
-    set(oneValueArgs NAME)
+    set(oneValueArgs NAME PREFIX)
     set(multiValueArgs)
     cmake_parse_arguments(INSTALL_LIBRARY "" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
@@ -11,11 +11,11 @@ macro(install_library)
 
     if (VKB_WSI_SELECTION)
         string(TOLOWER ${VKB_WSI_SELECTION} WSI)
-        execute_process(COMMAND python3 ${ESPERT_DIR}/scripts/install-library.py --wsi ${WSI} ${BUILD_TYPE} ${INSTALL_LIBRARY_NAME}
-        RESULT_VARIABLE PROC_RESULT
+        execute_process(COMMAND python3 ${ESPERT_DIR}/scripts/install-library.py --prefix ${INSTALL_LIBRARY_PREFIX} --wsi ${WSI} ${BUILD_TYPE} ${INSTALL_LIBRARY_NAME}
+            RESULT_VARIABLE PROC_RESULT
         )
     else()
-        execute_process(COMMAND python3 ${ESPERT_DIR}/scripts/install-library.py ${BUILD_TYPE} ${INSTALL_LIBRARY_NAME}
+        execute_process(COMMAND python3 ${ESPERT_DIR}/scripts/install-library.py --prefix ${INSTALL_LIBRARY_PREFIX} ${BUILD_TYPE} ${INSTALL_LIBRARY_NAME}
             RESULT_VARIABLE PROC_RESULT
         )
     endif()

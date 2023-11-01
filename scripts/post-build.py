@@ -1,10 +1,13 @@
 #!/usr/bin/python3
 
 from argparse import ArgumentParser, Namespace
-from common import LIB_DIR, BuildType
+from common import LIB_DIR, BuildType, is_platform_windows
 from pathlib import Path
 from shutil import copyfile
 import os
+import sys
+
+EXTENSION = ".exe" if sys.platform.startswith("win32") else ""
 
 
 def create_dir_if_doesnt_exist(path: str) -> None:
@@ -16,8 +19,8 @@ def copy_clslang_bin(args: Namespace) -> None:
     create_dir_if_doesnt_exist(args.build_dir / "bin")
 
     copyfile(
-        LIB_DIR / "glslang" / args.build_type.value / "bin" / "glslang",
-        args.build_dir / "bin" / "glslang",
+        LIB_DIR / "glslang" / args.build_type.value / "bin" / f"glslang{EXTENSION}",
+        args.build_dir / "bin" / f"glslang{EXTENSION}",
     )
 
 
@@ -84,4 +87,5 @@ if __name__ == "__main__":
 
     copy_clslang_bin(args)
 
-    copy_validation_layers(args)
+    if not is_platform_windows():
+        copy_validation_layers(args)
