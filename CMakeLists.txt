@@ -23,61 +23,56 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE src/esppch.hh)
 
 ############## Add libraries #######################
 include(cmake/get-library.cmake)
-get_library(TARGET catch2
-    PATH lib/cmake/Catch2
-    NAMES Catch2
+get_library(NAME catch2
+    CONF_PATH lib/cmake/Catch2
+    CONF_NAMES Catch2
 )
 
-get_library(TARGET entt
-    PATH lib/EnTT/cmake
-    NAMES EnTT
+get_library(NAME entt
+    CONF_PATH lib/EnTT/cmake
+    CONF_NAMES EnTT
 )
 
-get_library(TARGET glfw
-    PATH lib/cmake/glfw3
-    NAMES glfw3
+get_library(NAME glfw
+    CONF_PATH lib/cmake/glfw3
+    CONF_NAMES glfw3
 )
 
-get_library(TARGET glm
-    PATH lib/cmake/glm
-    NAMES glm
+get_library(NAME glm
+    CONF_PATH lib/cmake/glm
 )
 
-get_library(TARGET glslang
-    PATH lib/cmake/glslang
-    NAMES glslang
+get_library(NAME glslang
+    CONF_PATH lib/cmake/glslang
 )
+
+get_library(NAME spdlog
+    CONF_PATH lib/cmake/spdlog
+)
+
+get_library(NAME tinyobjloader
+    CONF_PATH lib/tinyobjloader/cmake
+)
+
+include(${ESPERT_DIR}/cmake/get-vulkan.cmake)
+get_vulkan()
+
+if(NOT WIN32 AND NOT EXISTS ${ESPERT_DIR}/libs/vvl/${CMAKE_BUILD_TYPE})
+    include(cmake/install-library.cmake)
+    install_library(NAME vvl
+        PREFIX ${ESPERT_DIR}/libs/vvl/${CMAKE_BUILD_TYPE}
+    )
+endif()
 
 string(TOLOWER ${CMAKE_BUILD_TYPE} BUILD_TYPE_LOWER)
-
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
     COMMAND python3 scripts/post-build.py --${BUILD_TYPE_LOWER} ${CMAKE_CURRENT_BINARY_DIR}
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     COMMENT "Running post-build script..."
 )
 
-get_library(TARGET spdlog
-    PATH lib/cmake/spdlog
-    NAMES spdlog
-)
-
-get_library(TARGET tinyobjloader
-    PATH lib/tinyobjloader/cmake
-    NAMES tinyobjloader
-)
-
-get_library(TARGET volk
-    PATH lib/cmake/volk
-    NAMES volk
-)
-
-if(NOT EXISTS ${ESPERT_DIR}/libs/vvl/${CMAKE_BUILD_TYPE})
-    include(cmake/install-library.cmake)
-    install_library(NAME vvl)
-endif()
-
 target_link_libraries(${PROJECT_NAME} PUBLIC
-    volk::volk
+    volk
     glfw
     glm::glm
     spdlog::spdlog_header_only
@@ -113,6 +108,7 @@ add_custom_target(
     DEPENDS ${SPIRV_BINARY_FILES}
 )
 add_dependencies(${PROJECT_NAME} core_shaders)
+add_dependencies(core_shaders glslang::glslang-standalone)
 
 ############## Build tests #########################
 if (ESP_BUILD_TESTS)

@@ -18,6 +18,7 @@ from common import (
 )
 from libconf import ESPERT_LIBS_CONF
 import os
+from pathlib import Path
 from shutil import rmtree
 
 CMAKE_LISTS_FILENAME = "CMakeLists.txt"
@@ -41,7 +42,7 @@ def configure_library(args: Namespace) -> None:
         source_dir = "."
     else:
         source_dir = EXTERNAL_DIR / args.name
-    CMD = CmakeConfigureCommand(build_dir="build", source_dir=source_dir)
+    CMD = CmakeConfigureCommand(build_dir="build", source_dir=source_dir, prefix=args.prefix)
 
     CMD.add_parameter(CmakeParameter("CMAKE_BUILD_TYPE", args.build_type.value))
 
@@ -57,9 +58,7 @@ def build_library(args: Namespace) -> None:
 
 
 def install_library(args: Namespace) -> None:
-    prefix = LIB_DIR / args.name / args.build_type.value
-
-    CMD = CmakeInstallCommand(install_dir="build", prefix=prefix)
+    CMD = CmakeInstallCommand(install_dir="build", prefix=args.prefix)
 
     run_command(str(CMD), LIB_DIR / args.name)
 
@@ -110,6 +109,13 @@ def get_parsed_args() -> Namespace:
         action=EnumAction,
         help="Select WSI type for linux systems.",
     )
+    parser.add_argument(
+        "-p",
+        "--prefix",
+        required=False,
+        type=Path,
+        help="Install prefix for library.",
+    )
 
     return parser.parse_args()
 
@@ -122,6 +128,9 @@ if __name__ == "__main__":
             args.wsi = get_wsi_type()
 
         update_wsi_params(args)
+
+    if args.prefix is None:
+        args.prefix = LIB_DIR / args.name / args.build_type.value
 
     configure_library(args)
 

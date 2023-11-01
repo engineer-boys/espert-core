@@ -22,6 +22,10 @@ from common import (
     get_optimal_job_count,
     get_lib_names,
     is_platform_linux,
+    CmakeConfigureCommand,
+    CmakeBuildCommand,
+    CmakeInstallCommand,
+    CmakeParameter
 )
 from enum import Enum
 import os
@@ -37,28 +41,46 @@ class Compiler(Enum):
 
 
 def get_configure_command(args: Namespace) -> str:
-    CMD = "cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON"
-
-    CMD += f" -DCMAKE_BUILD_TYPE={args.build_type.value}"
+    CMD = CmakeConfigureCommand(build_dir="build", source_dir=".")
+    CMD.add_parameter(CmakeParameter("CMAKE_BUILD_TYPE", args.build_type.value))
+    CMD.add_parameter(CmakeParameter("CMAKE_EXPORT_COMPILE_COMMANDS", "ON"))
 
     if args.compiler == Compiler.GCC:
-        CMD += " -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++"
+        CMD.add_parameter(CmakeParameter("CMAKE_C_COMPILER", "gcc"))
+        CMD.add_parameter(CmakeParameter("CMAKE_CXX_COMPILER", "g++"))
     elif args.compiler == Compiler.CLANG:
-        CMD += " -DCMAKE_C_COMPILER=clang-17 -DCMAKE_CXX_COMPILER=clang++-17"
+        CMD.add_parameter(CmakeParameter("CMAKE_C_COMPILER", "clang-17"))
+        CMD.add_parameter(CmakeParameter("CMAKE_CXX_COMPILER", "clang++-17"))
 
     if is_platform_linux():
-        CMD += f" -DVKB_WSI_SELECTION={args.wsi.value.upper()}"
+        CMD.add_parameter(CmakeParameter("VKB_WSI_SELECTION", args.wsi.value.upper()))
 
     if args.build_tests:
-        CMD += f" -DESP_BUILD_TESTS=ON"
+        CMD.add_parameter(CmakeParameter("ESP_BUILD_TESTS", "ON"))
 
-    return CMD
+    # CMD = "cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -G \"MinGW Makefiles\""
+
+    # CMD += f" -DCMAKE_BUILD_TYPE={args.build_type.value}"
+
+    # if args.compiler == Compiler.GCC:
+    #     CMD += " -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++"
+    # elif args.compiler == Compiler.CLANG:
+    #     CMD += " -DCMAKE_C_COMPILER=clang-17 -DCMAKE_CXX_COMPILER=clang++-17"
+
+    # if is_platform_linux():
+    #     CMD += f" -DVKB_WSI_SELECTION={args.wsi.value.upper()}"
+
+    # if args.build_tests:
+    #     CMD += f" -DESP_BUILD_TESTS=ON"
+
+    return str(CMD)
 
 
 def get_build_command(args: Namespace) -> str:
-    CMD = f"make -j{args.jobs}"
+    # CMD = f"make -j{args.jobs}"
+    CMD = CmakeBuildCommand(build_dir="build", jobs=args.jobs)
 
-    return CMD
+    return str(CMD)
 
 
 def clean_libs(args: Namespace):
@@ -87,7 +109,7 @@ def run_build(args: Namespace) -> None:
         run_configure(args)
 
     build_command = get_build_command(args)
-    run_command(build_command, BUILD_DIR)
+    run_command(build_command, ROOT)
 
 
 def run_tests(args: Namespace) -> None:

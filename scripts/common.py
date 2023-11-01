@@ -79,10 +79,14 @@ class CmakeCommand(ABC):
 
 
 class CmakeConfigureCommand(CmakeCommand):
-    def __init__(self, build_dir: str = "build", source_dir: str = ".") -> None:
+    def __init__(self, build_dir: str = "build", source_dir: str = ".", prefix: str = None) -> None:
         super().__init__()
         self._command += f" -B {build_dir}"
         self._command += f" -S {source_dir}"
+        if is_platform_windows():
+            self._command += " -G \"MinGW Makefiles\""
+        if prefix is not None:
+            self._command += f" -DCMAKE_INSTALL_PREFIX={prefix}"
 
 
 class CmakeBuildCommand(CmakeCommand):
@@ -94,9 +98,11 @@ class CmakeBuildCommand(CmakeCommand):
 
 
 class CmakeInstallCommand(CmakeCommand):
-    def __init__(self, install_dir: str = "build", prefix: str = "/usr/local") -> None:
+    def __init__(self, install_dir: str = "build", prefix: str = None) -> None:
         super().__init__()
-        self._command += f" --install {install_dir} --prefix {prefix}"
+        self._command += f" --install {install_dir}"
+        if prefix is not None:
+            self._command += f" --prefix {prefix}"
 
 
 def run_command(command: str, cwd: str) -> None:
@@ -120,3 +126,6 @@ def get_lib_names() -> list:
 
 def is_platform_linux() -> bool:
     return sys.platform.startswith("linux")
+
+def is_platform_windows() -> bool:
+    return sys.platform.startswith("win32")
