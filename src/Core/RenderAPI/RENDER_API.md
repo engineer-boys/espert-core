@@ -69,6 +69,7 @@ class EspPipelineBuilder:
             {
                 .size: int
                 .binding: int
+                .inputRate: EspVertexInputRate
                 .attrs: list = {
                     {
                         .location: int

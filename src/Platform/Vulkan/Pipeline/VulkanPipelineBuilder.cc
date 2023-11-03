@@ -80,7 +80,7 @@ namespace esp
 
       binding_description.binding   = vtx_layout.m_binding;
       binding_description.stride    = vtx_layout.m_size;
-      binding_description.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+      binding_description.inputRate = static_cast<VkVertexInputRate>(vtx_layout.m_input_rate);
       m_binding_descriptions.push_back(binding_description);
 
       for (auto& attr : vtx_layout.m_attrs)

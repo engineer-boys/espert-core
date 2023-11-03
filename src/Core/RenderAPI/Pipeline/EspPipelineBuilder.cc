@@ -9,8 +9,12 @@ namespace esp
   {
   }
 
-  EspVertexLayout::EspVertexLayout(uint32_t size, uint32_t binding, std::vector<EspVertexAttribute> attr) :
-      m_size{ size }, m_binding{ binding }, m_attrs{ attr }
+  EspVertexLayout::EspVertexLayout(uint32_t size,
+                                   uint32_t binding,
+                                   EspVertexInputRate input_rate,
+                                   std::vector<EspVertexAttribute> attr) :
+      m_size{ size },
+      m_binding{ binding }, m_input_rate{ input_rate }, m_attrs{ std::move(attr) }
   {
   }
 
