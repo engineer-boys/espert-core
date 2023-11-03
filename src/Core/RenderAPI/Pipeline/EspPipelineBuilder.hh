@@ -23,9 +23,13 @@ namespace esp
   {
     uint32_t m_size;
     uint32_t m_binding;
+    EspVertexInputRate m_input_rate;
     std::vector<EspVertexAttribute> m_attrs;
 
-    EspVertexLayout(uint32_t size, uint32_t binding, std::vector<EspVertexAttribute> attr);
+    EspVertexLayout(uint32_t size,
+                    uint32_t binding,
+                    EspVertexInputRate input_rate,
+                    std::vector<EspVertexAttribute> attr);
   };
 
   class EspPipelineBuilder
@@ -46,9 +50,9 @@ namespace esp
   };
 } // namespace esp
 
-#define VTX_LAYOUT(size, binding, ...) \
-  {                                    \
-    (size), (binding), { __VA_ARGS__ } \
+#define VTX_LAYOUT(size, binding, input_rate, ...)   \
+  {                                                  \
+    (size), (binding), (input_rate), { __VA_ARGS__ } \
   }
 
 #define ATTR(location, format, offset) \

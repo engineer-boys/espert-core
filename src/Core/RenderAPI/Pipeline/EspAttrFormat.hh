@@ -3,6 +3,12 @@
 
 namespace esp
 {
+  enum EspVertexInputRate
+  {
+    ESP_VERTEX_INPUT_RATE_VERTEX   = 0,
+    ESP_VERTEX_INPUT_RATE_INSTANCE = 1,
+  };
+
   enum EspAttrFormat
   {
     ESP_FORMAT_UNDEFINED                  = 0,
