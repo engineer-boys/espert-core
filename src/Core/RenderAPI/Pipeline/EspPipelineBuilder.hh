@@ -4,9 +4,9 @@
 #include "esppch.hh"
 
 // Render API
+#include "Core/RenderAPI/Uniforms/EspUniformMetaData.hh"
 #include "EspAttrFormat.hh"
 #include "EspPipeline.hh"
-#include "EspUniformMetaData.hh"
 
 namespace esp
 {

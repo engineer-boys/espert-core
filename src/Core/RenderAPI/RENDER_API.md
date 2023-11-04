@@ -108,18 +108,13 @@ class EspPipeline:
         # can only be created by EspPipelineBuilder.
         # Inner members:
         self.buf_uniforms: map[int, list[void*]]
-    
+
     def attach() -> None:
         # Bind this pipeline to using command buffer.
-    
-    def update_buffer_uniform(set: int, binding: int, size: int, data: void*) -> None:
-        # Update buffer uniform with given index.
-    
-    def update_buffer_uniform(set: int, binding: int, elem: int, size: int, data: void*) -> None:
-        # Update buffer uniform with given index.
-    
-    def attach_uniforms() -> None:
-        # Attach uniforms to the current command buffer.
+
+    def create_uniform_manager() -> EspUniformManager:
+        # Create the object of EspUniformManager
+        # which can be used to manipulate pipile inner data (uniforms).
 ```
 
 ```Python
@@ -159,8 +154,25 @@ class EspUniformMetaData:
         # If the count_of_data_chunks is greater than 1
         # the uniform is an array.
     
-    def add_texture_uniform(count_of_textures: int = 1) -> None:
+    def add_texture_uniform(stage: EspUniformShaderStage, count_of_textures: int = 1) -> self:
         # Add texture uniform to currently established ds.
+```
+
+```Python
+class EspUniformManager:
+    def __init__():
+        # The constructor is private and the object can be
+        # created only by pipeline.
+
+    def attach() -> None:
+        # After this action a pipeline will use data defined in this object.
+
+    def update_buffer_uniform(set: int, binding: int, offset: int, size: int, data: void*) -> self:
+        # Update buffer uniform with given index (set, binding, offset).
+    
+    def load_texture(set: int, binding: int, offset: int, path_to_texture: str) -> self:
+        # Load the given texture under the given index. The offset here is the number of a texture is
+        # uniform which is a table.
 ```
 
 ```Python
@@ -201,6 +213,10 @@ class MVP:
     view: mat4
     proj: mat4
 
+class ExampleVertex:
+    position: vec2
+    color: vec3
+
 def main() -> None:
     renderContext = EspRenderContext()
     renderContext.init()
@@ -211,15 +227,16 @@ def main() -> None:
 
 
     # 3 * float (for position), 3 * float (for color)
-    cube_vertices: list[float] = get_cube_v_function()
-    v_buffer = EspVertexBuffers()
-    v_buffer.add(cube_vertices)
+    cube_vertices: list[ExampleVertex] = get_cube_v_function()
+    v_buffers = EspVertexBuffers()
+    v_buffers.add(cube_vertices, len(ExampleVertex), len(cube_vertices))
     
     cube_indices: list[int] = get_cube_i_function()
-    i_buffer = EspIndexBuffer(cube_indices)
+    i_buffer = EspIndexBuffer(cube_indices, len(cube_indices))
 
-    pp_layout = PipelineLayoutManufacture()
-    pp_layout.add_buffer_uniform(len(MVP))
+    pp_layout_metadata = EspUniformMetaData()
+    pp_layout_metadata.establish_descriptor_set()
+    pp_layout_metadata.add_buffer_uniform(EspUniformShaderStage::ESP_VTX_STAGE, len(MVP))
 
     builder = EspPipelineBuilder()
     builder.set_shader(
@@ -246,20 +263,22 @@ def main() -> None:
             }
         ]
     )
-    builder.set_pipeline_layout(pp_layout)
+    builder.set_pipeline_layout(pp_layout_metadata)
     pp_graphic = builder.build_pipeline()
+    uniform_manager = pp_graphic.create_uniform_manager()
 
     while not end_of_program():
-        frameManager.counter_update()
         frameManager.begin_frame()
 
             # ---- IN RENDER PASS -----
             pp_graphic.attach()
-            frameManager.view_update()
+            v_buffers.attach()
+
+            mvp = get_new_mvp()
+            uniform_manager.update_buffer_uniform(0,0,0,len(MVP), mvp)
+            uniform_manager.attach()
 
             i_buffer.attach()
-            v_buffer.attach()
-
             pp_graphic.update_buffer_uniform(
                 idx = 0,
                 size = len(MVP),
