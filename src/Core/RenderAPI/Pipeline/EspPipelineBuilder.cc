@@ -1,6 +1,6 @@
 #include "EspPipelineBuilder.hh"
 
-#include "Platform/Vulkan/VulkanPipelineBuilder.hh"
+#include "Platform/Vulkan/Pipeline/VulkanPipelineBuilder.hh"
 
 namespace esp
 {

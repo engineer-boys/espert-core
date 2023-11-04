@@ -1,6 +1,6 @@
 #include "EspUniformMetaData.hh"
 
-#include "Platform/Vulkan/VulkanUniformMetaData.hh"
+#include "Platform/Vulkan/Uniforms/VulkanUniformMetaData.hh"
 
 namespace esp
 {
