@@ -4,8 +4,9 @@
 #include <fstream>
 
 // Platform
-#include "VulkanDevice.hh"
-#include "VulkanFrameManager.hh"
+#include "Platform/Vulkan/Uniforms/VulkanUniformMetaData.hh"
+#include "Platform/Vulkan/VulkanDevice.hh"
+#include "Platform/Vulkan/VulkanFrameManager.hh"
 #include "VulkanPipeline.hh"
 
 // signatures
@@ -105,19 +106,15 @@ namespace esp
   {
     std::unique_ptr<VulkanUniformMetaData> meta_data(static_cast<VulkanUniformMetaData*>(uniforms_meta_data.release()));
 
-    uint32_t size                  = 0;
-    VkDescriptorSetLayout* layouts = nullptr;
+    VkPipelineLayoutCreateInfo pipeline_layoutInfo{};
+    pipeline_layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+
     if (*meta_data)
     {
-      m_uniform_manager = std::make_unique<VulkanUniformManager>(std::move(meta_data));
-      layouts           = m_uniform_manager->get_layouts().data();
-      size              = m_uniform_manager->get_layouts_number();
+      m_uniform_data_storage             = std::make_unique<EspUniformDataStorage>(std::move(meta_data));
+      pipeline_layoutInfo.setLayoutCount = m_uniform_data_storage->get_layouts_number();
+      pipeline_layoutInfo.pSetLayouts    = m_uniform_data_storage->get_layouts_data();
     }
-
-    VkPipelineLayoutCreateInfo pipeline_layoutInfo{};
-    pipeline_layoutInfo.sType          = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipeline_layoutInfo.setLayoutCount = size;
-    pipeline_layoutInfo.pSetLayouts    = layouts;
 
     if (vkCreatePipelineLayout(VulkanDevice::get_logical_device(), &pipeline_layoutInfo, nullptr, &m_pipeline_layout) !=
         VK_SUCCESS)
@@ -282,7 +279,7 @@ namespace esp
     m_is_pipeline_layout        = false;
 
     return std::unique_ptr<EspPipeline>{
-      new VulkanPipeline(m_pipeline_layout, graphics_pipeline, std::move(m_uniform_manager))
+      new VulkanPipeline(m_pipeline_layout, graphics_pipeline, std::move(m_uniform_data_storage))
     };
   }
 } // namespace esp
