@@ -5,11 +5,10 @@
 #include "volk.h"
 
 // Render API
-#include "Core/RenderAPI/EspPipelineBuilder.hh"
+#include "Core/RenderAPI/Pipeline/EspPipelineBuilder.hh"
 
 // Platform
-#include "VulkanUniformManager.hh"
-#include "VulkanUniformMetaData.hh"
+#include "Platform/Vulkan/Uniforms/EspUniformDataStorage.hh"
 
 namespace esp
 {
@@ -31,7 +30,7 @@ namespace esp
 
     bool m_is_pipeline_layout = false;
     VkPipelineLayout m_pipeline_layout; /* it will be moved to the graphic pipieline. */
-    std::unique_ptr<VulkanUniformManager> m_uniform_manager;
+    std::unique_ptr<EspUniformDataStorage> m_uniform_data_storage;
 
    public:
     VulaknPipelineBuilder();
