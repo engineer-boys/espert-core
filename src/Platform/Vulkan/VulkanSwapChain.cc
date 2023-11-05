@@ -428,9 +428,9 @@ static VkExtent2D choose_swap_chain_extent(const VkSurfaceCapabilitiesKHR& capab
   {
     VkExtent2D actual_extent = window_extent;
     actual_extent.width =
-        std::max(capabilities.minImageExtent.width, std::min(capabilities.maxImageExtent.width, actual_extent.width));
-    actual_extent.height = std::max(capabilities.minImageExtent.height,
-                                    std::min(capabilities.maxImageExtent.height, actual_extent.height));
+        std::clamp(actual_extent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
+    actual_extent.height =
+        std::clamp(actual_extent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
 
     return actual_extent;
   }
