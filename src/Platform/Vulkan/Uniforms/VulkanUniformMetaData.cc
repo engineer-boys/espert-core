@@ -45,12 +45,13 @@ namespace esp
     return *this;
   }
 
-  EspUniformMetaData& VulkanUniformMetaData::add_texture_uniform(EspUniformShaderStage stage, uint32_t count_of_texturs)
+  EspUniformMetaData& VulkanUniformMetaData::add_texture_uniform(EspUniformShaderStage stage,
+                                                                 uint32_t count_of_textures)
   {
     ESP_ASSERT(m_current_ds_counter != -1, "You forgot to create descriptor set!!!");
 
     push_back_to_current_meta_ds(
-        EspMetaUniform(stage, 0, count_of_texturs, m_binding_count, EspUniformType::ESP_TEXTURE));
+        EspMetaUniform(stage, 0, count_of_textures, m_binding_count, EspUniformType::ESP_TEXTURE));
 
     m_binding_count += 1;
     m_general_texture_uniform_counter++;

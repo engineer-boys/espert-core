@@ -21,6 +21,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+// volk
+#include "volk.h"
+
 // espert
 #include "Core/Core.hh"
 #include "Core/Logger.hh"

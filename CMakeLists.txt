@@ -30,6 +30,8 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     spdlog_header_only
 )
 
+target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/external/stb)
+
 ############## Build shaders #######################
 # get all .vert and .frag files in shaders directory
 file(GLOB_RECURSE GLSL_SOURCE_FILES

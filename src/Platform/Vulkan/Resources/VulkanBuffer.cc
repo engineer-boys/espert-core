@@ -116,6 +116,19 @@ namespace esp
     }
   }
 
+  void VulkanBuffer::read_from_buffer(void* data, VkDeviceSize size, VkDeviceSize offset)
+  {
+    ESP_ASSERT(m_mapped, "Cannot read from unmapped buffer")
+
+    if (size == VK_WHOLE_SIZE) { memcpy(data, m_mapped, m_buffer_size); }
+    else
+    {
+      char* mem_offset = (char*)m_mapped;
+      mem_offset += offset;
+      memcpy(data, mem_offset, size);
+    }
+  }
+
   /**
    * Copies the specified data to the mapped buffer. Default value writes whole
    * buffer range

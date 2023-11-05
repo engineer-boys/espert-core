@@ -62,12 +62,15 @@ namespace esp
     create_surface(window);
     // create_vulkan_device - wraps VkPhysicalDevice and VkDevice into a single unit
     create_vulkan_device();
+
+    create_vulkan_resource_manager();
   }
 
   void VulkanContext::terminate()
   {
     ESP_ASSERT(s_instance != nullptr, "You cannot terminate vulkan context because it doesn't exist!");
 
+    m_vulkan_resource_manager->terminate();
     m_vulkan_device->terminate();
 
     if (m_context_data.m_enable_validation_layers)
@@ -179,8 +182,12 @@ namespace esp
     // want to use
     create_logical_device(m_context_data, device_context_data);
 
-    m_vulkan_device = VulkanDevice::create(device_context_data.m_physical_device, device_context_data.m_device);
+    m_vulkan_device = VulkanDevice::create(device_context_data.m_physical_device,
+                                           device_context_data.m_device,
+                                           device_context_data.m_properties);
   }
+
+  void VulkanContext::create_vulkan_resource_manager() { m_vulkan_resource_manager = VulkanResourceManager::create(); }
 
   void render_context_glfw_hints()
   {
@@ -440,9 +447,8 @@ static void pick_physical_device(ContextData& context_data, DeviceContextData& d
 
   context_data.m_queue_family_indices = find_queue_families(device_context_data.m_physical_device, context_data);
 
-  VkPhysicalDeviceProperties properties;
-  vkGetPhysicalDeviceProperties(device_context_data.m_physical_device, &properties);
-  ESP_CORE_INFO("Physical device: {0}", properties.deviceName);
+  vkGetPhysicalDeviceProperties(device_context_data.m_physical_device, &device_context_data.m_properties);
+  ESP_CORE_INFO("Physical device: {0}", device_context_data.m_properties.deviceName);
 }
 
 static void create_logical_device(ContextData& context_data, DeviceContextData& device_context_data)
