@@ -34,7 +34,35 @@ namespace esp
     m_window_height = e.get_height();
   }
 
-  std::pair<uint32_t, uint32_t> EspFrameManager::get_swap_chain_extent() { return { m_window_width, m_window_height }; }
+  std::pair<uint32_t, uint32_t> EspFrameManager::get_swap_chain_extent()
+  {
+    /* ---------------------------------------------------------*/
+    /* ------------- PLATFORM DEPENDENT ------------------------*/
+    /* ---------------------------------------------------------*/
+    // #if defined(OPENGL_PLATFORM)
+    //     auto context = std::make_unique<OpenGLContext>();
+    // #elif defined(VULKAN_PLATFORM)
+    return VulkanFrameManager::get_swap_chain_extent();
+    // #else
+    // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
+    // #endif
+    /* ---------------------------------------------------------*/
+  }
+
+  float EspFrameManager::get_swap_chain_extent_aspect_ratio()
+  {
+    /* ---------------------------------------------------------*/
+    /* ------------- PLATFORM DEPENDENT ------------------------*/
+    /* ---------------------------------------------------------*/
+    // #if defined(OPENGL_PLATFORM)
+    //     auto context = std::make_unique<OpenGLContext>();
+    // #elif defined(VULKAN_PLATFORM)
+    return VulkanFrameManager::get_swap_chain_extent_aspect_ratio();
+    // #else
+    // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
+    // #endif
+    /* ---------------------------------------------------------*/
+  }
 
   void EspFrameManager::set_depth_stencil(float depth, uint32_t stencil)
   {

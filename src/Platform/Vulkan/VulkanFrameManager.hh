@@ -45,7 +45,8 @@ namespace esp
     static VkCommandBuffer get_current_command_buffer();
     static int get_current_frame_index();
     static VkRenderPass get_swap_chain_render_pass();
-    static float get_aspect_ratio();
+    static std::pair<uint32_t, uint32_t> get_swap_chain_extent();
+    static float get_swap_chain_extent_aspect_ratio();
 
    private:
     VulkanFrameManager();

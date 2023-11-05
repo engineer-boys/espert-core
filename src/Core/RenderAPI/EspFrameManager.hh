@@ -20,8 +20,8 @@ namespace esp
       uint32_t m_stencil;
     };
 
-    unsigned int m_window_width;
-    unsigned int m_window_height;
+    uint32_t m_window_width;
+    uint32_t m_window_height;
 
     DepthStencilInfo m_depth_stencil{ 1.f, 0 };
     glm::vec4 m_clear_color;
@@ -47,7 +47,8 @@ namespace esp
 
     virtual void on_window_resized(WindowResizedEvent& e);
 
-    std::pair<uint32_t, uint32_t> get_swap_chain_extent();
+    static std::pair<uint32_t, uint32_t> get_swap_chain_extent();
+    static float get_swap_chain_extent_aspect_ratio();
 
     void set_depth_stencil(float depth, uint32_t stencil);
     void set_clear_color(glm::vec3 color);
