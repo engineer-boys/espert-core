@@ -10,7 +10,7 @@ namespace esp
 
     m_render_context  = EspRenderContext::create_and_init(*m_window);
     m_command_handler = EspCommandHandler::create_and_init();
-    m_frame_manager   = EspFrameManager::create_and_init(*m_window, glm::vec4{ .1f, .1f, .3f, 1.f });
+    m_frame_manager   = EspFrameManager::create_and_init(*m_window);
 
     m_layer_stack = new LayerStack();
   }
