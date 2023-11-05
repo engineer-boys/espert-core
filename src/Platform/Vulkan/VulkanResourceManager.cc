@@ -3,6 +3,11 @@
 #include "VulkanCommandHandler.hh"
 #include "VulkanDevice.hh"
 
+#if defined(__GNUC__) && !defined(NDEBUG) && defined(__OPTIMIZE__)
+#warning "Undefing __OPTIMIZE__ because of fmt. This problem occurs after adding stb."
+#undef __OPTIMIZE__
+#endif
+
 // stb
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
