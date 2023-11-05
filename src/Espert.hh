@@ -19,10 +19,6 @@
 #include "Core/RenderAPI/Resources/EspVertexBuffers.hh"
 #include "Core/RenderAPI/Uniforms/EspUniformMetaData.hh"
 
-/* - TO DELETE PART - */
-#include "Renderer/Camera.hh"
-#include "Scene/Components/Components.hh"
-
 /* --------- Client Point ------------------- */
 #include "Core/ClientPoint.hh"
 
