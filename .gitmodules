@@ -25,3 +25,9 @@
 [submodule "external/entt"]
 	path = external/entt
 	url = git@github.com:skypjack/entt.git
+[submodule "stb"]
+	path = stb
+	url = git@github.com:nothings/stb.git
+[submodule "external/stb"]
+	path = external/stb
+	url = git@github.com:nothings/stb.git

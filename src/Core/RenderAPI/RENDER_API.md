@@ -165,6 +165,10 @@ class EspUniformManager:
         # The constructor is private and the object can be
         # created only by pipeline.
 
+    def build() -> None:
+        # Use after defining all necesarry
+        # descriptors (uniforms, textures, etc.)
+    
     def attach() -> None:
         # After this action a pipeline will use data defined in this object.
 
@@ -268,6 +272,12 @@ def main() -> None:
     pp_graphic = builder.build_pipeline()
     uniform_manager = pp_graphic.create_uniform_manager()
 
+    # Load texture
+    uniform_manager.load_texture(0, 1, "path/to/texture");
+    
+    # Initialize all descriptor sets
+    uniform_manager.build();
+    
     while not end_of_program():
         frameManager.begin_frame()
 

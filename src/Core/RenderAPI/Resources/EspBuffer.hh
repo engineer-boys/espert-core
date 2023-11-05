@@ -3,9 +3,6 @@
 
 #include "esppch.hh"
 
-// libs
-#include "volk.h"
-
 namespace esp
 {
   class EspBuffer

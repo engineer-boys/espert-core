@@ -3,14 +3,12 @@
 
 #include "esppch.hh"
 
-// libs
-#include "volk.h"
-
 // Render API
 #include "Core/RenderAPI/Uniforms/EspUniformManager.hh"
 
 // platform
 #include "EspUniformDataStorage.hh"
+#include "Platform/Vulkan/Resources/VulkanTexture.hh"
 #include "Platform/Vulkan/VulkanFrameManager.hh"
 
 namespace esp
@@ -41,8 +39,8 @@ namespace esp
    private:
     void update_descriptor_set(EspBufferSet& buffer_set,
                                const VkDescriptorSet& descriptor,
-                               const std::vector<EspMetaUniform>& uniforms
-                               /*, std::map<uint32_t, std::vector<Texture>> vec_textures*/);
+                               const std::vector<EspMetaUniform>& uniforms,
+                               std::map<uint32_t, std::vector<std::unique_ptr<VulkanTexture>>>& vec_textures);
 
    public:
     inline void attach(const VkPipelineLayout& pipeline_layout) const
@@ -63,8 +61,9 @@ namespace esp
     EspUniformPackage& operator=(const EspUniformPackage& other) = delete;
     EspUniformPackage(const EspUniformPackage& other)            = delete;
 
-    EspUniformPackage(const EspUniformDataStorage& uniform_data_storage, const VkDescriptorPool& descriptor_pool
-                      /*, std::map<uint32_t, std::map<uint32_t, std::vector<Texture>>>& textures */);
+    EspUniformPackage(const EspUniformDataStorage& uniform_data_storage,
+                      const VkDescriptorPool& descriptor_pool,
+                      std::map<uint32_t, std::map<uint32_t, std::vector<std::unique_ptr<VulkanTexture>>>>& textures);
     ~EspUniformPackage();
   };
 
@@ -73,7 +72,7 @@ namespace esp
     friend class VulkanPipeline;
 
    private:
-    // std::map<uint32_t, std::map<uint32_t, std::vector<Texture>>> m_textures;
+    std::map<uint32_t, std::map<uint32_t, std::vector<std::unique_ptr<VulkanTexture>>>> m_textures;
     std::vector<EspUniformPackage*> m_packages;
 
     VkDescriptorPool m_descriptor_pool;
@@ -84,12 +83,13 @@ namespace esp
 
    private:
     void init_pool();
-    void init_packages();
 
     VulkanUniformManager(const EspUniformDataStorage& uniform_data_storage,
                          const VkPipelineLayout& out_pipeline_layout);
 
    public:
+    void build() override;
+
     inline virtual void attach() const override
     {
       m_packages[VulkanFrameManager::get_current_frame_index()]->attach(m_out_pipeline_layout);
@@ -104,11 +104,15 @@ namespace esp
       return *this;
     }
 
+    inline virtual EspUniformManager& load_texture(uint32_t set, uint32_t binding, std::string path_to_texture) override
+    {
+      m_textures[set][binding].emplace_back(VulkanTexture::create(path_to_texture));
+
+      return *this;
+    }
+
    public:
     ~VulkanUniformManager();
-
-    virtual EspUniformManager&
-    load_texture(uint32_t set, uint32_t binding, uint64_t offset, std::string path_to_texture) override;
   };
 } // namespace esp
 

@@ -2,7 +2,7 @@
 
 // platform
 #include "Platform/Vulkan/VulkanDevice.hh"
-#include "Platform/Vulkan/VulkanFrameManager.hh"
+#include "Platform/Vulkan/VulkanResourceManager.hh"
 #include "Platform/Vulkan/VulkanSwapChain.hh"
 
 /* --------------------------------------------------------- */
@@ -16,7 +16,6 @@ namespace esp
       m_out_uniform_data_storage(uniform_data_storage)
   {
     init_pool();
-    init_packages();
   }
 
   VulkanUniformManager::~VulkanUniformManager()
@@ -27,13 +26,6 @@ namespace esp
     {
       delete package;
     }
-  }
-
-  EspUniformManager&
-  VulkanUniformManager::load_texture(uint32_t set, uint32_t binding, uint64_t offset, std::string path_to_texture)
-  {
-    // add elements to m_textures
-    return *this;
   }
 
   void VulkanUniformManager::init_pool()
@@ -77,11 +69,11 @@ namespace esp
     }
   }
 
-  void VulkanUniformManager::init_packages()
+  void VulkanUniformManager::build()
   {
     for (int frame_idx = 0; frame_idx < VulkanSwapChain::MAX_FRAMES_IN_FLIGHT; ++frame_idx)
     {
-      m_packages.push_back(new EspUniformPackage(m_out_uniform_data_storage, m_descriptor_pool /*, m_packages */));
+      m_packages.push_back(new EspUniformPackage(m_out_uniform_data_storage, m_descriptor_pool, m_textures));
     }
   }
 } // namespace esp
@@ -119,9 +111,10 @@ namespace esp
     }
   }
 
-  EspUniformPackage::EspUniformPackage(const EspUniformDataStorage& uniform_data_storage,
-                                       const VkDescriptorPool& descriptor_pool
-                                       /*, std::map<uint32_t, std::map<uint32_t, std::vector<Texture>>>& textures */)
+  EspUniformPackage::EspUniformPackage(
+      const EspUniformDataStorage& uniform_data_storage,
+      const VkDescriptorPool& descriptor_pool,
+      std::map<uint32_t, std::map<uint32_t, std::vector<std::unique_ptr<VulkanTexture>>>>& textures)
   {
     VkDescriptorSetAllocateInfo alloc_info{};
     alloc_info.sType              = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -146,8 +139,8 @@ namespace esp
 
       update_descriptor_set(*(m_set_to_bufferset[meta_ds.m_set_index]),
                             m_descriptor_sets[meta_ds.m_set_index],
-                            meta_ds.m_meta_uniforms
-                            /* textures[meta_ds.m_set_index] */);
+                            meta_ds.m_meta_uniforms,
+                            textures[meta_ds.m_set_index]);
     }
   }
 
@@ -159,11 +152,11 @@ namespace esp
     }
   }
 
-  void EspUniformPackage::update_descriptor_set(EspBufferSet& buffer_set,
-                                                const VkDescriptorSet& descriptor,
-                                                const std::vector<EspMetaUniform>& uniforms
-                                                /*, std::map<uint32_t, std::vector<Texture>> vec_textures*/
-  )
+  void EspUniformPackage::update_descriptor_set(
+      EspBufferSet& buffer_set,
+      const VkDescriptorSet& descriptor,
+      const std::vector<EspMetaUniform>& uniforms,
+      std::map<uint32_t, std::vector<std::unique_ptr<VulkanTexture>>>& vec_textures)
   {
     // these objects have to exist until updating ds
     std::vector<VkWriteDescriptorSet> descriptor_writes;
@@ -203,12 +196,12 @@ namespace esp
 
         for (int elem_idx = 0; elem_idx < uniform.m_number_of_elements; elem_idx++)
         {
-          // Texture& txt = vec_textures[uniform.m_binding][elem_idx];
+          VulkanTexture& texture = *(vec_textures[uniform.m_binding][elem_idx]);
 
           VkDescriptorImageInfo image_info{};
           image_info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-          // imageInfo.imageView = txt.texture_image_view;
-          // imageInfo.sampler = txt.texture_sampler;
+          image_info.imageView   = texture.get_texture_image_view();
+          image_info.sampler     = VulkanResourceManager::get_texture_sampler();
           image_infos.push_back(image_info);
         }
         all_image_infos.push_back(image_infos);
@@ -223,9 +216,6 @@ namespace esp
         descriptor_write.pImageInfo      = all_image_infos.back().data();
 
         descriptor_writes.push_back(descriptor_write);
-
-        ESP_CORE_ERROR("NO IMPLEMENTED TEXTURES!");
-        throw std::runtime_error("NO IMPLEMENTED TEXTURES!");
       }
     }
 

@@ -1,9 +1,28 @@
 #include "VulkanResourceManager.hh"
+#include "Resources/VulkanBuffer.hh"
 #include "VulkanCommandHandler.hh"
 #include "VulkanDevice.hh"
 
+// stb
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
 namespace esp
 {
+  VulkanResourceManager* VulkanResourceManager::s_instance = nullptr;
+
+  std::unique_ptr<VulkanResourceManager> VulkanResourceManager::create()
+  {
+    return std::unique_ptr<VulkanResourceManager>(new VulkanResourceManager());
+  }
+
+  VulkanResourceManager::~VulkanResourceManager() { s_instance = nullptr; }
+
+  void VulkanResourceManager::terminate()
+  {
+    vkDestroySampler(VulkanDevice::get_logical_device(), m_texture_sampler, nullptr);
+  }
+
   void VulkanResourceManager::allocate_buffer_on_device(VkDeviceSize size,
                                                         VkBufferUsageFlags usage,
                                                         VkMemoryPropertyFlags properties,
@@ -85,7 +104,7 @@ namespace esp
                                            VkImageUsageFlags usage,
                                            VkMemoryPropertyFlags properties,
                                            VkImage& image,
-                                           VkDeviceMemory& imageMemory)
+                                           VkDeviceMemory& image_memory)
   {
     VkImageCreateInfo image_info{};
     image_info.sType         = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -116,13 +135,13 @@ namespace esp
     alloc_info.allocationSize  = mem_requirements.size;
     alloc_info.memoryTypeIndex = VulkanDevice::find_memory_type(mem_requirements.memoryTypeBits, properties);
 
-    if (vkAllocateMemory(VulkanDevice::get_logical_device(), &alloc_info, nullptr, &imageMemory) != VK_SUCCESS)
+    if (vkAllocateMemory(VulkanDevice::get_logical_device(), &alloc_info, nullptr, &image_memory) != VK_SUCCESS)
     {
       ESP_CORE_ERROR("Failed to allocate image memory");
       throw std::runtime_error("Failed to allocate image memory");
     }
 
-    vkBindImageMemory(VulkanDevice::get_logical_device(), image, imageMemory, 0);
+    vkBindImageMemory(VulkanDevice::get_logical_device(), image, image_memory, 0);
   }
 
   VkImageView VulkanResourceManager::create_image_view(VkImage image, VkFormat format, VkImageAspectFlags aspect_flags)
@@ -146,5 +165,139 @@ namespace esp
     }
 
     return image_view;
+  }
+
+  void VulkanResourceManager::create_texture_image(const std::string& path,
+                                                   VkImage& texture_image,
+                                                   VkDeviceMemory& texture_image_memory)
+  {
+    int tex_width, tex_height, tex_channels;
+    stbi_uc* pixels = stbi_load(path.c_str(), &tex_width, &tex_height, &tex_channels, STBI_rgb_alpha);
+
+    VkDeviceSize image_size = tex_width * tex_height * 4;
+
+    ESP_ASSERT(pixels, "Failed to load texture image")
+
+    VulkanBuffer staging_buffer{ image_size,
+                                 1,
+                                 VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                                 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT };
+
+    staging_buffer.map();
+    staging_buffer.write_to_buffer(pixels);
+
+    stbi_image_free(pixels);
+
+    create_image(tex_width,
+                 tex_height,
+                 VK_FORMAT_R8G8B8A8_SRGB,
+                 VK_IMAGE_TILING_OPTIMAL,
+                 VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+                 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                 texture_image,
+                 texture_image_memory);
+
+    transition_image_layout(texture_image,
+                            VK_FORMAT_R8G8B8A8_SRGB,
+                            VK_IMAGE_LAYOUT_UNDEFINED,
+                            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+
+    copy_buffer_to_image(staging_buffer.get_buffer(),
+                         texture_image,
+                         static_cast<uint32_t>(tex_width),
+                         static_cast<uint32_t>(tex_height),
+                         1);
+
+    transition_image_layout(texture_image,
+                            VK_FORMAT_R8G8B8A8_SRGB,
+                            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+  }
+
+  void VulkanResourceManager::transition_image_layout(VkImage image,
+                                                      VkFormat format,
+                                                      VkImageLayout old_layout,
+                                                      VkImageLayout new_layout)
+  {
+    VkCommandBuffer command_buffer = VulkanCommandHandler::begin_single_time_commands();
+
+    VkImageMemoryBarrier barrier{};
+    barrier.sType                           = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+    barrier.oldLayout                       = old_layout;
+    barrier.newLayout                       = new_layout;
+    barrier.srcQueueFamilyIndex             = VK_QUEUE_FAMILY_IGNORED;
+    barrier.dstQueueFamilyIndex             = VK_QUEUE_FAMILY_IGNORED;
+    barrier.image                           = image;
+    barrier.subresourceRange.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
+    barrier.subresourceRange.baseMipLevel   = 0;
+    barrier.subresourceRange.levelCount     = 1;
+    barrier.subresourceRange.baseArrayLayer = 0;
+    barrier.subresourceRange.layerCount     = 1;
+
+    VkPipelineStageFlags source_stage;
+    VkPipelineStageFlags destination_stage;
+
+    if (old_layout == VK_IMAGE_LAYOUT_UNDEFINED && new_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL)
+    {
+      barrier.srcAccessMask = 0;
+      barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+
+      source_stage      = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+      destination_stage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+    }
+    else if (old_layout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL &&
+             new_layout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL)
+    {
+      barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+      barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+      source_stage      = VK_PIPELINE_STAGE_TRANSFER_BIT;
+      destination_stage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+    }
+    else
+    {
+      ESP_CORE_ERROR("Unsupported layout transition");
+      throw std::invalid_argument("Unsupported layout transition");
+    }
+
+    vkCmdPipelineBarrier(command_buffer, source_stage, destination_stage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
+
+    VulkanCommandHandler::end_single_time_commands(command_buffer);
+  }
+
+  VulkanResourceManager::VulkanResourceManager()
+  {
+    ESP_ASSERT(VulkanResourceManager::s_instance == nullptr, "Vulkan resource manager already exists")
+
+    s_instance = this;
+
+    create_texture_sampler();
+  }
+
+  void VulkanResourceManager::create_texture_sampler()
+  {
+    VkSamplerCreateInfo sampler_info{};
+    sampler_info.sType                   = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+    sampler_info.magFilter               = VK_FILTER_LINEAR;
+    sampler_info.minFilter               = VK_FILTER_LINEAR;
+    sampler_info.addressModeU            = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    sampler_info.addressModeV            = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    sampler_info.addressModeW            = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    sampler_info.anisotropyEnable        = VK_TRUE;
+    sampler_info.maxAnisotropy           = VulkanDevice::get_properties().limits.maxSamplerAnisotropy;
+    sampler_info.borderColor             = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+    sampler_info.unnormalizedCoordinates = VK_FALSE;
+    sampler_info.compareEnable           = VK_FALSE;
+    sampler_info.compareOp               = VK_COMPARE_OP_ALWAYS;
+    sampler_info.mipmapMode              = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+    sampler_info.mipLodBias              = 0.0f;
+    sampler_info.minLod                  = 0.0f;
+    sampler_info.maxLod                  = 0.0f;
+
+    if (vkCreateSampler(VulkanDevice::get_logical_device(), &sampler_info, nullptr, &m_texture_sampler) != VK_SUCCESS)
+    {
+      ESP_CORE_ERROR("Failed to create texture sampler");
+      throw std::runtime_error("Failed to create texture sampler");
+    }
   }
 } // namespace esp

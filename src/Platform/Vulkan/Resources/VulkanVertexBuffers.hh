@@ -1,7 +1,7 @@
 #ifndef VULKAN_RENDER_API_VULKAN_VERTEX_BUFFER_HH
 #define VULKAN_RENDER_API_VULKAN_VERTEX_BUFFER_HH
 
-#include "Core/RenderAPI/Buffers/EspVertexBuffers.hh"
+#include "Core/RenderAPI/Resources/EspVertexBuffers.hh"
 #include "VulkanBuffer.hh"
 
 namespace esp
