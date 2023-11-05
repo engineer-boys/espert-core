@@ -153,10 +153,17 @@ namespace esp
     return s_instance->m_current_frame_index;
   }
 
-  VkRenderPass VulkanFrameManager::get_swap_chain_render_pass() { return s_instance->m_swap_chain->get_render_pass(); };
+  VkRenderPass VulkanFrameManager::get_swap_chain_render_pass() { return s_instance->m_swap_chain->get_render_pass(); }
 
-  float VulkanFrameManager::get_aspect_ratio()
-  { return s_instance->m_swap_chain->get_extent_aspect_ratio(); };
+  std::pair<uint32_t, uint32_t> VulkanFrameManager::get_swap_chain_extent()
+  {
+    return { s_instance->m_swap_chain->get_extent_width(), s_instance->m_swap_chain->get_extent_height() };
+  }
+
+  float VulkanFrameManager::get_swap_chain_extent_aspect_ratio()
+  {
+    return s_instance->m_swap_chain->get_extent_aspect_ratio();
+  }
 
   void VulkanFrameManager::create_command_buffers()
   {

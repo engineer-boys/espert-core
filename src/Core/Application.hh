@@ -19,10 +19,12 @@ namespace esp
     std::unique_ptr<ApplicationContext> m_context;
     std::unique_ptr<EspWindow> m_window;
 
+   protected:
     std::unique_ptr<EspRenderContext> m_render_context;
     std::unique_ptr<EspCommandHandler> m_command_handler;
     std::unique_ptr<EspFrameManager> m_frame_manager;
 
+   private:
     bool m_running;
 
     LayerStack* m_layer_stack;
