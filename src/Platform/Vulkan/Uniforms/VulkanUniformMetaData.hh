@@ -4,8 +4,7 @@
 // Render API
 #include "Core/RenderAPI/Uniforms/EspUniformMetaData.hh"
 
-// libs
-#include "volk.h"
+#include "esppch.hh"
 
 namespace esp
 {
@@ -74,7 +73,7 @@ namespace esp
                                                    uint32_t count_of_data_chunks = 1) override;
 
     virtual EspUniformMetaData& add_texture_uniform(EspUniformShaderStage stage,
-                                                    uint32_t count_of_texturs = 1) override;
+                                                    uint32_t count_of_textures = 1) override;
   };
 } // namespace esp
 

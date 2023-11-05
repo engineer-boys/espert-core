@@ -1,6 +1,6 @@
 #include "EspIndexBuffer.hh"
 
-#include "Platform/Vulkan/Buffers/VulkanIndexBuffer.hh"
+#include "Platform/Vulkan/Resources/VulkanIndexBuffer.hh"
 
 namespace esp
 {

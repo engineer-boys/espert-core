@@ -4,9 +4,6 @@
 #include "Core/Events/Event.hh"
 #include "esppch.hh"
 
-// libs
-#include "volk.h"
-
 #include "GLFW/glfw3.h"
 
 namespace esp

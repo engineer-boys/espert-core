@@ -5,11 +5,9 @@
 
 #include "VulkanCommandHandler.hh"
 #include "VulkanDevice.hh"
+#include "VulkanResourceManager.hh"
 
 #include "esppch.hh"
-
-// libs
-#include "volk.h"
 
 namespace esp
 {
@@ -34,6 +32,7 @@ namespace esp
   {
     VkPhysicalDevice m_physical_device = VK_NULL_HANDLE;
     VkDevice m_device;
+    VkPhysicalDeviceProperties m_properties;
   };
 
   class VulkanContext : public EspRenderContext
@@ -68,6 +67,7 @@ namespace esp
     ContextData m_context_data;
 
     std::unique_ptr<VulkanDevice> m_vulkan_device{};
+    std::unique_ptr<VulkanResourceManager> m_vulkan_resource_manager{};
 
    public:
     static std::unique_ptr<VulkanContext> create();
@@ -91,6 +91,7 @@ namespace esp
     void setup_debug_messenger();
     void create_surface(EspWindow& window);
     void create_vulkan_device();
+    void create_vulkan_resource_manager();
   };
 } // namespace esp
 

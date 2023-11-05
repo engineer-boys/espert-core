@@ -1,14 +1,14 @@
 #include "VulkanCommandHandler.hh"
-#include "VulkanContext.hh"
 #include "VulkanDevice.hh"
 
 namespace esp
 {
   VulkanDevice* VulkanDevice::s_instance = nullptr;
 
-  std::unique_ptr<VulkanDevice> VulkanDevice::create(VkPhysicalDevice physical_device, VkDevice device)
+  std::unique_ptr<VulkanDevice>
+  VulkanDevice::create(VkPhysicalDevice physical_device, VkDevice device, VkPhysicalDeviceProperties properties)
   {
-    return std::unique_ptr<VulkanDevice>(new VulkanDevice(physical_device, device));
+    return std::unique_ptr<VulkanDevice>(new VulkanDevice(physical_device, device, properties));
   }
 
   VulkanDevice::~VulkanDevice() { s_instance = nullptr; }
@@ -49,8 +49,8 @@ namespace esp
     ESP_CORE_ERROR("Failed to find suitable memory type");
     throw std::runtime_error("Failed to find suitable memory type");
   }
-  
-  VulkanDevice::VulkanDevice(VkPhysicalDevice physical_device, VkDevice device)
+
+  VulkanDevice::VulkanDevice(VkPhysicalDevice physical_device, VkDevice device, VkPhysicalDeviceProperties properties)
   {
     ESP_ASSERT(VulkanDevice::s_instance == nullptr, "Vulkan device already exists")
 
@@ -58,5 +58,6 @@ namespace esp
 
     m_physical_device = physical_device;
     m_device          = device;
+    m_properties      = properties;
   }
 } // namespace esp

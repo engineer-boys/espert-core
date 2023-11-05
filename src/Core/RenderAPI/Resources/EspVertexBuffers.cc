@@ -1,6 +1,6 @@
 #include "EspVertexBuffers.hh"
 
-#include "Platform/Vulkan/Buffers/VulkanVertexBuffers.hh"
+#include "Platform/Vulkan/Resources/VulkanVertexBuffers.hh"
 
 namespace esp
 {

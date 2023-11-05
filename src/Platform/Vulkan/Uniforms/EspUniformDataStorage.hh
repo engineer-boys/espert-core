@@ -3,11 +3,8 @@
 
 #include "esppch.hh"
 
-// libs
-#include "volk.h"
-
 // platfrom
-#include "Platform/Vulkan/Buffers/VulkanBuffer.hh"
+#include "Platform/Vulkan/Resources/VulkanBuffer.hh"
 #include "VulkanUniformMetaData.hh"
 
 // std

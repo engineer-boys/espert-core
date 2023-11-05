@@ -3,9 +3,6 @@
 
 #include "esppch.hh"
 
-// libs
-#include "volk.h"
-
 namespace esp
 {
   class VulkanBuffer
@@ -43,6 +40,7 @@ namespace esp
     VkResult map(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
     void unmap();
 
+    void read_from_buffer(void* data, VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
     void write_to_buffer(void* data, VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
     VkResult flush(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
     VkDescriptorBufferInfo descriptor_info(VkDeviceSize size = VK_WHOLE_SIZE, VkDeviceSize offset = 0);
@@ -54,6 +52,7 @@ namespace esp
     VkResult invalidate_index(int index);
 
     inline VkBuffer get_buffer() const { return m_buffer; }
+    inline VkDeviceMemory get_memory() const { return m_memory; }
     inline void* get_mapped_memory() const { return m_mapped; }
     inline uint32_t get_instance_count() const { return m_instance_count; }
     inline VkDeviceSize get_instance_size() const { return m_instance_size; }
