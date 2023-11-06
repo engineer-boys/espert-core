@@ -3,6 +3,10 @@
 
 #define ESP_BIND_EVENT_FOR_FUN(obj) std::bind(&obj, this, std::placeholders::_1)
 
+#define PREVENT_COPY(class_name)                     \
+  class_name(const class_name&)            = delete; \
+  class_name& operator=(const class_name&) = delete
+
 #ifdef NDEBUG
 #define ESP_ASSERT(...) ((void)0);
 #else
