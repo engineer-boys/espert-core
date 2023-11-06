@@ -43,7 +43,7 @@ def get_tidy_command(args: Namespace) -> str:
     CMD = f"{CLANG_TIDY} -p {BUILD_DIR} --quiet"
 
     if args.inplace:
-        CMD += " --format-stle=file"
+        CMD += " --format-style=file"
 
     if args.fix:
         CMD += " --fix"
