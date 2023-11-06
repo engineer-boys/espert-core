@@ -1,5 +1,8 @@
 # RENDER API
 
+Disclaimers:
+1. Our Vulkan API uses 'VK_KHR_maintenance1' extension to flip the viewport's Y coordinate so it points upwards (like in OpenGL). 
+
 ```Python
 class EspRenderContext:
     def create_and_init(window: EspWindow) -> None:
