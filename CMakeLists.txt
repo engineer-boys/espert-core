@@ -28,6 +28,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     glfw
     glm
     spdlog_header_only
+        tiny_obj_loader
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/external/stb)
