@@ -123,6 +123,7 @@ if (ESP_BUILD_TESTS)
     file(GLOB_RECURSE TEST_SOURCES ${PROJECT_SOURCE_DIR}/tests/*.cc)
     add_executable(tests ${TEST_SOURCES})
     target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
+    target_link_libraries(tests PUBLIC espert-core)
 
     list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/external/catch2/extras)
     include(CTest)
