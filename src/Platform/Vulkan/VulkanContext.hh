@@ -54,9 +54,7 @@ namespace esp
       const std::vector<const char*> m_validation_layers = { "VK_LAYER_KHRONOS_validation" };
 
       std::vector<const char*> m_instance_extensions = {};
-      std::vector<const char*> m_device_extensions   = {
-        VK_KHR_SWAPCHAIN_EXTENSION_NAME,
-      };
+      std::vector<const char*> m_device_extensions   = { VK_KHR_SWAPCHAIN_EXTENSION_NAME, "VK_KHR_maintenance1" };
 
       const bool m_enable_validation_layers = true;
     };
