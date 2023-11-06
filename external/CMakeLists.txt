@@ -9,11 +9,12 @@ target_sources(glm INTERFACE ${GLM_DIR}/glm/glm.hpp)
 target_include_directories(glm INTERFACE ${GLM_DIR})
 
 target_compile_definitions(glm INTERFACE
-    GLM_FORCE_SWIZZLE
-    GLM_FORCE_RADIANS
-    GLM_FORCE_CTOR_INIT
-    GLM_ENABLE_EXPERIMENTAL
-)
+        GLM_FORCE_SWIZZLE
+        GLM_FORCE_RADIANS
+        GLM_FORCE_DEPTH_ZERO_TO_ONE
+        GLM_FORCE_CTOR_INIT
+        GLM_ENABLE_EXPERIMENTAL
+        )
 if(NOT CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     target_compile_definitions(glm INTERFACE GLM_FORCE_CXX14)
 endif()
@@ -142,3 +143,11 @@ set_property(TARGET spdlog PROPERTY FOLDER "External")
 add_subdirectory(catch2)
 set_property(TARGET Catch2 PROPERTY FOLDER "External")
 set_property(TARGET Catch2WithMain PROPERTY FOLDER "External")
+
+# tiny_obj_loader
+add_library(tiny_obj_loader INTERFACE)
+set(TINY_OBJ_LOADER_PATH ${CMAKE_CURRENT_SOURCE_DIR}/tinyobjloader)
+target_sources(tiny_obj_loader INTERFACE ${TINY_OBJ_LOADER_PATH}/tiny_obj_loader.h)
+target_include_directories(tiny_obj_loader INTERFACE ${TINY_OBJ_LOADER_PATH})
+
+target_compile_definitions(tiny_obj_loader INTERFACE TINYOBJLOADER_IMPLEMENTATION)
