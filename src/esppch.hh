@@ -2,13 +2,17 @@
 #define ESPERT_ESPPCH_HH
 
 #include <algorithm>
+#include <filesystem>
+#include <fstream>
 #include <functional>
 #include <iostream>
 #include <memory>
 #include <stdexcept>
+#include <typeindex>
 #include <utility>
 
 // data types
+#include <cstdint>
 #include <sstream>
 #include <string>
 #include <unordered_map>
@@ -26,5 +30,8 @@
 // espert
 #include "Core/Core.hh"
 #include "Core/Logger.hh"
+
+// namespaces
+namespace fs = std::filesystem;
 
 #endif // ESPERT_ESPPCH_HH
