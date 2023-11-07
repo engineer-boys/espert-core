@@ -91,6 +91,7 @@ namespace esp
     void setup_debug_messenger();
     void create_surface(EspWindow& window);
     void create_vulkan_device();
+    void create_default_sampler();
     void create_vulkan_resource_manager();
   };
 } // namespace esp

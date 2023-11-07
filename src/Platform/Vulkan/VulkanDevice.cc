@@ -13,6 +13,13 @@ namespace esp
 
   VulkanDevice::~VulkanDevice() { s_instance = nullptr; }
 
+  VkFormatProperties VulkanDevice::get_format_properties(VkFormat format)
+  {
+    VkFormatProperties properties;
+    vkGetPhysicalDeviceFormatProperties(s_instance->m_physical_device, format, &properties);
+    return properties;
+  }
+
   void VulkanDevice::complete_queues() { vkDeviceWaitIdle(s_instance->m_device); }
 
   void VulkanDevice::terminate() { vkDestroyDevice(m_device, nullptr); }
@@ -23,8 +30,7 @@ namespace esp
   {
     for (VkFormat format : candidates)
     {
-      VkFormatProperties props;
-      vkGetPhysicalDeviceFormatProperties(s_instance->m_physical_device, format, &props);
+      VkFormatProperties props = get_format_properties(format);
 
       if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) { return format; }
       if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) { return format; }
