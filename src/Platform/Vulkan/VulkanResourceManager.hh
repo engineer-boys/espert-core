@@ -10,8 +10,6 @@ namespace esp
    private:
     static VulkanResourceManager* s_instance;
 
-    VkSampler m_texture_sampler;
-
    public:
     static std::unique_ptr<VulkanResourceManager> create();
 
@@ -21,8 +19,6 @@ namespace esp
     ~VulkanResourceManager();
 
     void terminate();
-
-    inline static VkSampler get_texture_sampler() { return s_instance->m_texture_sampler; }
 
     // ---------------------------------------- Buffer Helper Functions ----------------------------------------
     static void allocate_buffer_on_device(VkDeviceSize size,
@@ -40,6 +36,7 @@ namespace esp
 
     static void create_image(uint32_t width,
                              uint32_t height,
+                             uint32_t mip_levels,
                              VkFormat format,
                              VkImageTiling tiling,
                              VkImageUsageFlags usage,
@@ -47,19 +44,31 @@ namespace esp
                              VkImage& image,
                              VkDeviceMemory& image_memory);
 
-    static VkImageView create_image_view(VkImage image, VkFormat format, VkImageAspectFlags aspect_flags);
+    static VkImageView
+    create_image_view(VkImage image, VkFormat format, VkImageAspectFlags aspect_flags, uint32_t mip_levels);
 
-    static void
-    create_texture_image(const std::string& path, VkImage& texture_image, VkDeviceMemory& texture_image_memory);
+    static void create_texture_image(const std::string& path,
+                                     uint32_t& texture_width,
+                                     uint32_t& texture_height,
+                                     uint32_t& texture_mip_levels,
+                                     VkImage& texture_image,
+                                     VkDeviceMemory& texture_image_memory);
 
-    static void
-    transition_image_layout(VkImage image, VkFormat format, VkImageLayout old_layout, VkImageLayout new_layout);
+    static void transition_image_layout(VkImage image,
+                                        VkFormat format,
+                                        VkImageLayout old_layout,
+                                        VkImageLayout new_layout,
+                                        uint32_t mip_levels);
+
+    static void generate_mipmaps(VkImage image,
+                                 VkFormat format,
+                                 uint32_t texture_width,
+                                 uint32_t texture_height,
+                                 uint32_t mip_levels);
     // ---------------------------------------------------------------------------------------------------------
 
    private:
     VulkanResourceManager();
-
-    void create_texture_sampler();
   };
 } // namespace esp
 

@@ -1,5 +1,6 @@
 #include "VulkanContext.hh"
 #include "GLFW/glfw3.h"
+#include "Platform/Vulkan/Resources/VulkanSampler.hh"
 
 // std
 #include <cstring>
@@ -63,13 +64,15 @@ namespace esp
     // create_vulkan_device - wraps VkPhysicalDevice and VkDevice into a single unit
     create_vulkan_device();
 
-    create_vulkan_resource_manager();
+    create_default_sampler();
+    create_vulkan_resource_manager(); // TODO: decide what will be done with this class
   }
 
   void VulkanContext::terminate()
   {
     ESP_ASSERT(s_instance != nullptr, "You cannot terminate vulkan context because it doesn't exist!");
 
+    VulkanSampler::terminate_default_sampler();
     m_vulkan_resource_manager->terminate();
     m_vulkan_device->terminate();
 
@@ -186,6 +189,8 @@ namespace esp
                                            device_context_data.m_device,
                                            device_context_data.m_properties);
   }
+
+  void VulkanContext::create_default_sampler() { VulkanSampler::create_default_sampler(); }
 
   void VulkanContext::create_vulkan_resource_manager() { m_vulkan_resource_manager = VulkanResourceManager::create(); }
 

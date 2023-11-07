@@ -201,7 +201,7 @@ namespace esp
           VkDescriptorImageInfo image_info{};
           image_info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
           image_info.imageView   = texture.get_texture_image_view();
-          image_info.sampler     = VulkanResourceManager::get_texture_sampler();
+          image_info.sampler     = texture.get_sampler();
           image_infos.push_back(image_info);
         }
         all_image_infos.push_back(image_infos);

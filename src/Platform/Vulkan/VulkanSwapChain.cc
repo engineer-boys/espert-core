@@ -246,7 +246,8 @@ namespace esp
     {
       m_swap_chain_image_views[i] = VulkanResourceManager::create_image_view(m_swap_chain_images[i],
                                                                              m_swap_chain_image_format,
-                                                                             VK_IMAGE_ASPECT_COLOR_BIT);
+                                                                             VK_IMAGE_ASPECT_COLOR_BIT,
+                                                                             1);
     }
   }
 
@@ -345,6 +346,7 @@ namespace esp
 
     VulkanResourceManager::create_image(swap_chain_extent.width,
                                         swap_chain_extent.height,
+                                        1,
                                         m_swap_chain_depth_format,
                                         VK_IMAGE_TILING_OPTIMAL,
                                         VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
@@ -352,8 +354,10 @@ namespace esp
                                         m_depth_image,
                                         m_depth_image_memory);
 
-    m_depth_image_view =
-        VulkanResourceManager::create_image_view(m_depth_image, m_swap_chain_depth_format, VK_IMAGE_ASPECT_DEPTH_BIT);
+    m_depth_image_view = VulkanResourceManager::create_image_view(m_depth_image,
+                                                                  m_swap_chain_depth_format,
+                                                                  VK_IMAGE_ASPECT_DEPTH_BIT,
+                                                                  1);
   }
 
   void VulkanSwapChain::create_sync_objects()

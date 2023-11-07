@@ -29,6 +29,7 @@ namespace esp
 
     static inline const VkDevice& get_logical_device() { return s_instance->m_device; }
     static inline const VkPhysicalDeviceProperties& get_properties() { return s_instance->m_properties; }
+    static VkFormatProperties get_format_properties(VkFormat format);
 
     static void complete_queues();
 
