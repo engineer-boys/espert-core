@@ -175,9 +175,9 @@ class EspUniformManager:
     def update_buffer_uniform(set: int, binding: int, offset: int, size: int, data: void*) -> self:
         # Update buffer uniform with given index (set, binding, offset).
     
-    def load_texture(set: int, binding: int, offset: int, path_to_texture: str) -> self:
+    def load_texture(set: int, binding: int, offset: int, path_to_texture: str, mipmapping: bool = false) -> self:
         # Load the given texture under the given index. The offset here is the number of a texture is
-        # uniform which is a table.
+        # uniform which is a table. Mipmaps can be enabled by setting mipmapping to true 
 ```
 
 ```Python
