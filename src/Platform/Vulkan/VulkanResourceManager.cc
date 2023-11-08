@@ -23,9 +23,7 @@ namespace esp
 
   VulkanResourceManager::~VulkanResourceManager() { s_instance = nullptr; }
 
-  void VulkanResourceManager::terminate()
-  {
-  }
+  void VulkanResourceManager::terminate() {}
 
   void VulkanResourceManager::allocate_buffer_on_device(VkDeviceSize size,
                                                         VkBufferUsageFlags usage,

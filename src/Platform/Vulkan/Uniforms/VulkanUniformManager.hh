@@ -95,8 +95,11 @@ namespace esp
       m_packages[VulkanFrameManager::get_current_frame_index()]->attach(m_out_pipeline_layout);
     }
 
-    inline virtual EspUniformManager&
-    update_buffer_uniform(uint32_t set, uint32_t binding, uint64_t offset, uint32_t size, void* data) override
+    inline virtual EspUniformManager& update_buffer_uniform(uint32_t set,
+                                                            uint32_t binding,
+                                                            uint64_t offset,
+                                                            uint32_t size,
+                                                            void* data) override
     {
       m_packages[VulkanFrameManager::get_current_frame_index()]->operator[](set)[binding].write_to_buffer(data,
                                                                                                           size,
@@ -104,8 +107,10 @@ namespace esp
       return *this;
     }
 
-    inline virtual EspUniformManager&
-    load_texture(uint32_t set, uint32_t binding, std::string path_to_texture, bool mipmapping = false) override
+    inline virtual EspUniformManager& load_texture(uint32_t set,
+                                                   uint32_t binding,
+                                                   std::string path_to_texture,
+                                                   bool mipmapping = false) override
     {
       m_textures[set][binding].emplace_back(VulkanTexture::create(path_to_texture, mipmapping));
 
