@@ -56,7 +56,11 @@ namespace esp
       std::vector<const char*> m_instance_extensions = {};
       std::vector<const char*> m_device_extensions   = { VK_KHR_SWAPCHAIN_EXTENSION_NAME, "VK_KHR_maintenance1" };
 
+#ifdef NDEBUG
+      const bool m_enable_validation_layers = false;
+#else
       const bool m_enable_validation_layers = true;
+#endif
     };
 
    private:
