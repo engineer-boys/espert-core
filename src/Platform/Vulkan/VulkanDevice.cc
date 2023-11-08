@@ -5,8 +5,9 @@ namespace esp
 {
   VulkanDevice* VulkanDevice::s_instance = nullptr;
 
-  std::unique_ptr<VulkanDevice>
-  VulkanDevice::create(VkPhysicalDevice physical_device, VkDevice device, VkPhysicalDeviceProperties properties)
+  std::unique_ptr<VulkanDevice> VulkanDevice::create(VkPhysicalDevice physical_device,
+                                                     VkDevice device,
+                                                     VkPhysicalDeviceProperties properties)
   {
     return std::unique_ptr<VulkanDevice>(new VulkanDevice(physical_device, device, properties));
   }

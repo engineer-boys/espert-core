@@ -31,8 +31,11 @@ namespace esp
     // ---------------------------------------------------------------------------------------------------------
 
     // ---------------------------------------- Image Helper Functions ----------------------------------------
-    static void
-    copy_buffer_to_image(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t layer_count);
+    static void copy_buffer_to_image(VkBuffer buffer,
+                                     VkImage image,
+                                     uint32_t width,
+                                     uint32_t height,
+                                     uint32_t layer_count);
 
     static void create_image(uint32_t width,
                              uint32_t height,
@@ -44,8 +47,10 @@ namespace esp
                              VkImage& image,
                              VkDeviceMemory& image_memory);
 
-    static VkImageView
-    create_image_view(VkImage image, VkFormat format, VkImageAspectFlags aspect_flags, uint32_t mip_levels);
+    static VkImageView create_image_view(VkImage image,
+                                         VkFormat format,
+                                         VkImageAspectFlags aspect_flags,
+                                         uint32_t mip_levels);
 
     static void create_texture_image(const std::string& path,
                                      uint32_t& texture_width,

@@ -30,8 +30,9 @@ namespace esp
 
     virtual EspUniformMetaData& establish_descriptor_set() = 0;
 
-    virtual EspUniformMetaData&
-    add_buffer_uniform(EspUniformShaderStage stage, uint32_t size_of_data_chunk, uint32_t count_of_data_chunks = 1) = 0;
+    virtual EspUniformMetaData& add_buffer_uniform(EspUniformShaderStage stage,
+                                                   uint32_t size_of_data_chunk,
+                                                   uint32_t count_of_data_chunks = 1) = 0;
 
     virtual EspUniformMetaData& add_texture_uniform(EspUniformShaderStage stage, uint32_t count_of_textures = 1) = 0;
 

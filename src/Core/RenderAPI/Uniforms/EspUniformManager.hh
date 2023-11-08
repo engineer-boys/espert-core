@@ -14,11 +14,16 @@ namespace esp
 
     virtual void attach() const = 0;
 
-    virtual EspUniformManager&
-    update_buffer_uniform(uint32_t set, uint32_t binding, uint64_t offset, uint32_t size, void* data) = 0;
+    virtual EspUniformManager& update_buffer_uniform(uint32_t set,
+                                                     uint32_t binding,
+                                                     uint64_t offset,
+                                                     uint32_t size,
+                                                     void* data) = 0;
 
-    virtual EspUniformManager&
-    load_texture(uint32_t set, uint32_t binding, std::string path_to_texture, bool mipmapping = false) = 0;
+    virtual EspUniformManager& load_texture(uint32_t set,
+                                            uint32_t binding,
+                                            std::string path_to_texture,
+                                            bool mipmapping = false) = 0;
   };
 
 } // namespace esp

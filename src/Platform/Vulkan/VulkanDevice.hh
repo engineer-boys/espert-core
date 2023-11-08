@@ -19,8 +19,9 @@ namespace esp
     VkPhysicalDeviceProperties m_properties;
 
    public:
-    static std::unique_ptr<VulkanDevice>
-    create(VkPhysicalDevice physical_device, VkDevice device, VkPhysicalDeviceProperties properties);
+    static std::unique_ptr<VulkanDevice> create(VkPhysicalDevice physical_device,
+                                                VkDevice device,
+                                                VkPhysicalDeviceProperties properties);
 
     VulkanDevice(const VulkanDevice&)            = delete;
     VulkanDevice& operator=(const VulkanDevice&) = delete;
@@ -36,8 +37,9 @@ namespace esp
     void terminate();
 
     // -------------------------------------- Swap Chain Helper Functions --------------------------------------
-    static VkFormat
-    find_supported_format(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+    static VkFormat find_supported_format(const std::vector<VkFormat>& candidates,
+                                          VkImageTiling tiling,
+                                          VkFormatFeatureFlags features);
     static uint32_t find_memory_type(uint32_t type_filter, VkMemoryPropertyFlags properties);
     // ---------------------------------------------------------------------------------------------------------
 
