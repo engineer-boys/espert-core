@@ -31,7 +31,7 @@ ESPERT_LIBS_CONF = {
         CmakeParameter("SPDLOG_BUILD_EXAMPLE", "OFF"),
     ],
     "tinyobjloader": [],
-    "volk": [CmakeParameter("VOLK_PULL_IN_VULKAN", "OFF")],
+    "volk": [],
     "vulkan": [],
     "vvl": [
         CmakeParameter("UPDATE_DEPS", "ON"),

@@ -26,7 +26,8 @@ To build project run:
 ```
 python3 scripts/espert-core.py build
 ```
-Running configure before build is not necessary as the script will take care of it.
+Running configure before build is not necessary as the script will take care of it. \
+By default the project doesn't build Vulkan validation layers. If you want to run espert in debug mode and haven't installed Vulkan SDK add --vvl flag to build validation layers. Keep in mind that this process does take a WHILE. Please wait patiently and do not abort the build. Once you have build vvl one you won't have to do it again.
 
 To run tests run:
 ```

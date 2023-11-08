@@ -1,13 +1,18 @@
 #!/usr/bin/python3
 
 from argparse import ArgumentParser, Namespace
-from common import LIB_DIR, BuildType, is_platform_windows
+from common import LIB_DIR, BuildType, is_platform_windows, is_platform_linux
 from pathlib import Path
 from shutil import copyfile
 import os
-import sys
 
-EXTENSION = ".exe" if sys.platform.startswith("win32") else ""
+BIN_EXTENSION = ".exe" if is_platform_windows() else ""
+if is_platform_windows():
+    DYNLIB_EXTENSION = ".dll"
+elif is_platform_linux():
+    DYNLIB_EXTENSION = ".so"
+else:
+    DYNLIB_EXTENSION = ".dylib"
 
 
 def create_dir_if_doesnt_exist(path: str) -> None:
@@ -19,12 +24,15 @@ def copy_clslang_bin(args: Namespace) -> None:
     create_dir_if_doesnt_exist(args.build_dir / "bin")
 
     copyfile(
-        LIB_DIR / "glslang" / args.build_type.value / "bin" / f"glslang{EXTENSION}",
-        args.build_dir / "bin" / f"glslang{EXTENSION}",
+        LIB_DIR / "glslang" / args.build_type.value / "bin" / f"glslang{BIN_EXTENSION}",
+        args.build_dir / "bin" / f"glslang{BIN_EXTENSION}",
     )
 
 
 def copy_validation_layers(args: Namespace) -> None:
+    if not os.path.exists(LIB_DIR / "vvl" / args.build_type.value):
+        return
+
     create_dir_if_doesnt_exist(args.build_dir / "validation_layers" / "lib")
     create_dir_if_doesnt_exist(args.build_dir / "validation_layers" / "layers")
 
@@ -33,11 +41,11 @@ def copy_validation_layers(args: Namespace) -> None:
         / "vvl"
         / args.build_type.value
         / "lib"
-        / "libVkLayer_khronos_validation.so",
+        / f"libVkLayer_khronos_validation{DYNLIB_EXTENSION}",
         args.build_dir
         / "validation_layers"
         / "lib"
-        / "libVkLayer_khronos_validation.so",
+        / f"libVkLayer_khronos_validation{DYNLIB_EXTENSION}",
     )
     copyfile(
         LIB_DIR

@@ -24,8 +24,7 @@ from common import (
     is_platform_linux,
     CmakeConfigureCommand,
     CmakeBuildCommand,
-    CmakeInstallCommand,
-    CmakeParameter
+    CmakeParameter,
 )
 from enum import Enum
 import os
@@ -58,26 +57,13 @@ def get_configure_command(args: Namespace) -> str:
     if args.build_tests:
         CMD.add_parameter(CmakeParameter("ESP_BUILD_TESTS", "ON"))
 
-    # CMD = "cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -G \"MinGW Makefiles\""
-
-    # CMD += f" -DCMAKE_BUILD_TYPE={args.build_type.value}"
-
-    # if args.compiler == Compiler.GCC:
-    #     CMD += " -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++"
-    # elif args.compiler == Compiler.CLANG:
-    #     CMD += " -DCMAKE_C_COMPILER=clang-17 -DCMAKE_CXX_COMPILER=clang++-17"
-
-    # if is_platform_linux():
-    #     CMD += f" -DVKB_WSI_SELECTION={args.wsi.value.upper()}"
-
-    # if args.build_tests:
-    #     CMD += f" -DESP_BUILD_TESTS=ON"
+    if args.vvl:
+        CMD.add_parameter(CmakeParameter("ESP_BUILD_VVL", "ON"))
 
     return str(CMD)
 
 
 def get_build_command(args: Namespace) -> str:
-    # CMD = f"make -j{args.jobs}"
     CMD = CmakeBuildCommand(build_dir="build", jobs=args.jobs)
 
     return str(CMD)
@@ -210,6 +196,13 @@ def get_parser() -> ArgumentParser:
         type=WSI,
         action=EnumAction,
         help="Select WSI type for linux systems.",
+    )
+    main_parser.add_argument(
+        "--vvl",
+        required=False,
+        default=False,
+        action="store_true",
+        help="Build vulkan validation layers.",
     )
 
     return main_parser
