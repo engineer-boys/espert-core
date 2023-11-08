@@ -136,6 +136,10 @@ namespace esp
       m_swap_chain = nullptr;
     }
 
+    vkDestroyImageView(m_device, m_color_image_view, nullptr);
+    vkDestroyImage(m_device, m_color_image, nullptr);
+    vkFreeMemory(m_device, m_color_image_memory, nullptr);
+
     vkDestroyImageView(m_device, m_depth_image_view, nullptr);
     vkDestroyImage(m_device, m_depth_image, nullptr);
     vkFreeMemory(m_device, m_depth_image_memory, nullptr);
@@ -161,6 +165,7 @@ namespace esp
     create_swap_chain();
     create_image_views();
     create_render_pass();
+    create_color_resources();
     create_depth_resources();
     create_framebuffers();
     create_sync_objects();
@@ -253,9 +258,23 @@ namespace esp
 
   void VulkanSwapChain::create_render_pass()
   {
+    VkAttachmentDescription color_attachment = {};
+    color_attachment.format                  = get_image_format();
+    color_attachment.samples                 = VulkanContext::get_context_data().m_msaa_samples;
+    color_attachment.loadOp                  = VK_ATTACHMENT_LOAD_OP_CLEAR;
+    color_attachment.storeOp                 = VK_ATTACHMENT_STORE_OP_STORE;
+    color_attachment.stencilStoreOp          = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+    color_attachment.stencilLoadOp           = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    color_attachment.initialLayout           = VK_IMAGE_LAYOUT_UNDEFINED;
+    color_attachment.finalLayout             = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+    VkAttachmentReference color_attachment_ref = {};
+    color_attachment_ref.attachment            = 0;
+    color_attachment_ref.layout                = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
     VkAttachmentDescription depth_attachment{};
     depth_attachment.format         = find_depth_format();
-    depth_attachment.samples        = VK_SAMPLE_COUNT_1_BIT;
+    depth_attachment.samples        = VulkanContext::get_context_data().m_msaa_samples;
     depth_attachment.loadOp         = VK_ATTACHMENT_LOAD_OP_CLEAR;
     depth_attachment.storeOp        = VK_ATTACHMENT_STORE_OP_DONT_CARE;
     depth_attachment.stencilLoadOp  = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -267,25 +286,26 @@ namespace esp
     depth_attachment_ref.attachment = 1;
     depth_attachment_ref.layout     = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
-    VkAttachmentDescription color_attachment = {};
-    color_attachment.format                  = get_image_format();
-    color_attachment.samples                 = VK_SAMPLE_COUNT_1_BIT;
-    color_attachment.loadOp                  = VK_ATTACHMENT_LOAD_OP_CLEAR;
-    color_attachment.storeOp                 = VK_ATTACHMENT_STORE_OP_STORE;
-    color_attachment.stencilStoreOp          = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    color_attachment.stencilLoadOp           = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-    color_attachment.initialLayout           = VK_IMAGE_LAYOUT_UNDEFINED;
-    color_attachment.finalLayout             = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+    VkAttachmentDescription color_attachment_resolve{};
+    color_attachment_resolve.format         = m_swap_chain_image_format;
+    color_attachment_resolve.samples        = VK_SAMPLE_COUNT_1_BIT;
+    color_attachment_resolve.loadOp         = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    color_attachment_resolve.storeOp        = VK_ATTACHMENT_STORE_OP_STORE;
+    color_attachment_resolve.stencilLoadOp  = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+    color_attachment_resolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+    color_attachment_resolve.initialLayout  = VK_IMAGE_LAYOUT_UNDEFINED;
+    color_attachment_resolve.finalLayout    = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
-    VkAttachmentReference color_attachment_ref = {};
-    color_attachment_ref.attachment            = 0;
-    color_attachment_ref.layout                = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    VkAttachmentReference color_attachment_resolve_ref{};
+    color_attachment_resolve_ref.attachment = 2;
+    color_attachment_resolve_ref.layout     = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
     VkSubpassDescription subpass    = {};
     subpass.pipelineBindPoint       = VK_PIPELINE_BIND_POINT_GRAPHICS;
     subpass.colorAttachmentCount    = 1;
     subpass.pColorAttachments       = &color_attachment_ref;
     subpass.pDepthStencilAttachment = &depth_attachment_ref;
+    subpass.pResolveAttachments     = &color_attachment_resolve_ref;
 
     VkSubpassDependency dependency = {};
     dependency.srcSubpass          = VK_SUBPASS_EXTERNAL;
@@ -297,7 +317,9 @@ namespace esp
         VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
     dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
-    std::array<VkAttachmentDescription, 2> attachments = { color_attachment, depth_attachment };
+    std::array<VkAttachmentDescription, 3> attachments = { color_attachment,
+                                                           depth_attachment,
+                                                           color_attachment_resolve };
     VkRenderPassCreateInfo render_pass_info            = {};
     render_pass_info.sType                             = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
     render_pass_info.attachmentCount                   = static_cast<uint32_t>(attachments.size());
@@ -319,7 +341,7 @@ namespace esp
     m_swap_chain_framebuffers.resize(get_image_count());
     for (size_t i = 0; i < get_image_count(); i++)
     {
-      std::array<VkImageView, 2> attachments = { m_swap_chain_image_views[i], m_depth_image_view };
+      std::array<VkImageView, 3> attachments = { m_color_image_view, m_depth_image_view, m_swap_chain_image_views[i] };
 
       VkExtent2D swap_chain_extent             = get_extent();
       VkFramebufferCreateInfo framebuffer_info = {};
@@ -339,6 +361,25 @@ namespace esp
     }
   }
 
+  void VulkanSwapChain::create_color_resources()
+  {
+    VulkanResourceManager::create_image(m_swap_chain_extent.width,
+                                        m_swap_chain_extent.height,
+                                        1,
+                                        VulkanContext::get_context_data().m_msaa_samples,
+                                        m_swap_chain_image_format,
+                                        VK_IMAGE_TILING_OPTIMAL,
+                                        VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT,
+                                        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                                        m_color_image,
+                                        m_color_image_memory);
+
+    m_color_image_view = VulkanResourceManager::create_image_view(m_color_image,
+                                                                  m_swap_chain_image_format,
+                                                                  VK_IMAGE_ASPECT_COLOR_BIT,
+                                                                  1);
+  }
+
   void VulkanSwapChain::create_depth_resources()
   {
     m_swap_chain_depth_format    = find_depth_format();
@@ -347,6 +388,7 @@ namespace esp
     VulkanResourceManager::create_image(swap_chain_extent.width,
                                         swap_chain_extent.height,
                                         1,
+                                        VulkanContext::get_context_data().m_msaa_samples,
                                         m_swap_chain_depth_format,
                                         VK_IMAGE_TILING_OPTIMAL,
                                         VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,

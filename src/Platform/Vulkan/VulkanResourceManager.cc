@@ -102,6 +102,7 @@ namespace esp
   void VulkanResourceManager::create_image(uint32_t width,
                                            uint32_t height,
                                            uint32_t mip_levels,
+                                           VkSampleCountFlagBits num_samples,
                                            VkFormat format,
                                            VkImageTiling tiling,
                                            VkImageUsageFlags usage,
@@ -121,7 +122,7 @@ namespace esp
     image_info.tiling        = tiling;
     image_info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     image_info.usage         = usage;
-    image_info.samples       = VK_SAMPLE_COUNT_1_BIT;
+    image_info.samples       = num_samples;
     image_info.sharingMode   = VK_SHARING_MODE_EXCLUSIVE;
 
     if (vkCreateImage(VulkanDevice::get_logical_device(), &image_info, nullptr, &image) != VK_SUCCESS)
@@ -204,6 +205,7 @@ namespace esp
     create_image(texture_width,
                  texture_height,
                  texture_mip_levels,
+                 VK_SAMPLE_COUNT_1_BIT,
                  VK_FORMAT_R8G8B8A8_SRGB,
                  VK_IMAGE_TILING_OPTIMAL,
                  VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,

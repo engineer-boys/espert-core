@@ -30,6 +30,7 @@ static void destroy_debug_utils_messenger_ext(VkInstance instance,
                                               const VkAllocationCallbacks* p_allocator);
 static void pick_physical_device(ContextData& context_data, DeviceContextData& device_context_data);
 static void create_logical_device(ContextData& context_data, DeviceContextData& device_context_data);
+static VkSampleCountFlagBits get_max_usable_sample_count();
 
 /* --------------------------------------------------------- */
 /* ---------------- CLASS IMPLEMENTATION ------------------- */
@@ -188,6 +189,8 @@ namespace esp
     m_vulkan_device = VulkanDevice::create(device_context_data.m_physical_device,
                                            device_context_data.m_device,
                                            device_context_data.m_properties);
+
+    m_context_data.m_msaa_samples = get_max_usable_sample_count();
   }
 
   void VulkanContext::create_default_sampler() { VulkanSampler::create_default_sampler(); }
@@ -476,6 +479,8 @@ static void create_logical_device(ContextData& context_data, DeviceContextData& 
 
   VkPhysicalDeviceFeatures device_features = {};
   device_features.samplerAnisotropy        = VK_TRUE;
+  // TODO: let user decide whether he wants higher quality or better performance - put this in some if statement
+  // device_features.sampleRateShading        = VK_TRUE; // enable sample shading feature for the device
 
   VkDeviceCreateInfo create_info = {};
   create_info.sType              = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
@@ -506,4 +511,20 @@ static void create_logical_device(ContextData& context_data, DeviceContextData& 
 
   vkGetDeviceQueue(device_context_data.m_device, indices.m_graphics_family, 0, &context_data.m_graphics_queue);
   vkGetDeviceQueue(device_context_data.m_device, indices.m_present_family, 0, &context_data.m_present_queue);
+}
+
+static VkSampleCountFlagBits get_max_usable_sample_count()
+{
+  VkPhysicalDeviceProperties properties = esp::VulkanDevice::get_properties();
+
+  VkSampleCountFlags counts =
+      properties.limits.framebufferColorSampleCounts & properties.limits.framebufferDepthSampleCounts;
+  if (counts & VK_SAMPLE_COUNT_64_BIT) { return VK_SAMPLE_COUNT_64_BIT; }
+  if (counts & VK_SAMPLE_COUNT_32_BIT) { return VK_SAMPLE_COUNT_32_BIT; }
+  if (counts & VK_SAMPLE_COUNT_16_BIT) { return VK_SAMPLE_COUNT_16_BIT; }
+  if (counts & VK_SAMPLE_COUNT_8_BIT) { return VK_SAMPLE_COUNT_8_BIT; }
+  if (counts & VK_SAMPLE_COUNT_4_BIT) { return VK_SAMPLE_COUNT_4_BIT; }
+  if (counts & VK_SAMPLE_COUNT_2_BIT) { return VK_SAMPLE_COUNT_2_BIT; }
+
+  return VK_SAMPLE_COUNT_1_BIT;
 }
