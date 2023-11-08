@@ -25,7 +25,6 @@ namespace esp
 
   void VulkanResourceManager::terminate()
   {
-    vkDestroySampler(VulkanDevice::get_logical_device(), m_texture_sampler, nullptr);
   }
 
   void VulkanResourceManager::allocate_buffer_on_device(VkDeviceSize size,
@@ -393,7 +392,5 @@ namespace esp
     ESP_ASSERT(VulkanResourceManager::s_instance == nullptr, "Vulkan resource manager already exists")
 
     s_instance = this;
-
-    create_texture_sampler();
   }
 } // namespace esp
