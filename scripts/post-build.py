@@ -27,6 +27,7 @@ def copy_clslang_bin(args: Namespace) -> None:
         LIB_DIR / "glslang" / args.build_type.value / "bin" / f"glslang{BIN_EXTENSION}",
         args.build_dir / "bin" / f"glslang{BIN_EXTENSION}",
     )
+    os.chmod(args.build_dir / "bin" / f"glslang{BIN_EXTENSION}", 0o755)
 
 
 def copy_validation_layers(args: Namespace) -> None:
