@@ -23,10 +23,13 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE src/esppch.hh)
 
 ############## Add libraries #######################
 include(cmake/get-library.cmake)
-get_library(NAME catch2
-    CONF_PATH lib/cmake/Catch2
-    CONF_NAMES Catch2
-)
+
+if (ESP_BUILD_TESTS)
+    get_library(NAME catch2
+        CONF_PATH lib/cmake/Catch2
+        CONF_NAMES Catch2
+    )
+endif()
 
 get_library(NAME entt
     CONF_PATH lib/EnTT/cmake
@@ -57,7 +60,7 @@ get_library(NAME tinyobjloader
 include(${ESPERT_DIR}/cmake/get-vulkan.cmake)
 get_vulkan()
 
-if(NOT WIN32 AND NOT EXISTS ${ESPERT_DIR}/libs/vvl/${CMAKE_BUILD_TYPE})
+if(ESP_BUILD_VVL AND NOT WIN32 AND NOT EXISTS ${ESPERT_DIR}/libs/vvl/${CMAKE_BUILD_TYPE})
     include(cmake/install-library.cmake)
     install_library(NAME vvl
         PREFIX ${ESPERT_DIR}/libs/vvl/${CMAKE_BUILD_TYPE}
