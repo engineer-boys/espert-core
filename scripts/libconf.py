@@ -30,6 +30,7 @@ ESPERT_LIBS_CONF = {
         CmakeParameter("SPDLOG_ENABLE_PCH", "ON"),
         CmakeParameter("SPDLOG_BUILD_EXAMPLE", "OFF"),
     ],
+    "stb": [],
     "tinyobjloader": [],
     "volk": [],
     "vulkan": [],

@@ -53,6 +53,10 @@ get_library(NAME spdlog
     CONF_PATH lib/cmake/spdlog
 )
 
+get_library(NAME stb
+    CONF_PATH include/cmake/stb
+)
+
 get_library(NAME tinyobjloader
     CONF_PATH lib/tinyobjloader/cmake
 )
@@ -81,6 +85,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     spdlog::spdlog_header_only
     tinyobjloader::tinyobjloader
     EnTT::EnTT
+    stb
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/external/stb)
