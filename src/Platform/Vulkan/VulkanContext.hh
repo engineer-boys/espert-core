@@ -51,6 +51,8 @@ namespace esp
 
       SwapChainSupportDetails m_swap_chain_support_details;
 
+      VkSampleCountFlagBits m_msaa_samples = VK_SAMPLE_COUNT_1_BIT;
+
       const std::vector<const char*> m_validation_layers = { "VK_LAYER_KHRONOS_validation" };
 
       std::vector<const char*> m_instance_extensions = {};

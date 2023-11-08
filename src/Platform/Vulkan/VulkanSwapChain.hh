@@ -17,6 +17,10 @@ namespace esp
     std::vector<VkImageView> m_swap_chain_image_views;
     VkFormat m_swap_chain_image_format;
 
+    VkImage m_color_image;
+    VkDeviceMemory m_color_image_memory;
+    VkImageView m_color_image_view;
+
     VkImage m_depth_image;
     VkDeviceMemory m_depth_image_memory;
     VkImageView m_depth_image_view;
@@ -78,6 +82,7 @@ namespace esp
     void init();
     void create_swap_chain();
     void create_image_views();
+    void create_color_resources();
     void create_depth_resources();
     void create_render_pass();
     void create_framebuffers();
