@@ -106,18 +106,20 @@ namespace esp
   {
     std::unique_ptr<VulkanUniformMetaData> meta_data(static_cast<VulkanUniformMetaData*>(uniforms_meta_data.release()));
 
-    VkPipelineLayoutCreateInfo pipeline_layoutInfo{};
-    pipeline_layoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+    VkPipelineLayoutCreateInfo pipeline_layout_info{};
+    pipeline_layout_info.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 
     if (*meta_data)
     {
-      m_uniform_data_storage             = std::make_unique<EspUniformDataStorage>(std::move(meta_data));
-      pipeline_layoutInfo.setLayoutCount = m_uniform_data_storage->get_layouts_number();
-      pipeline_layoutInfo.pSetLayouts    = m_uniform_data_storage->get_layouts_data();
+      m_uniform_data_storage              = std::make_unique<EspUniformDataStorage>(std::move(meta_data));
+      pipeline_layout_info.setLayoutCount = m_uniform_data_storage->get_layouts_number();
+      pipeline_layout_info.pSetLayouts    = m_uniform_data_storage->get_layouts_data();
     }
 
-    if (vkCreatePipelineLayout(VulkanDevice::get_logical_device(), &pipeline_layoutInfo, nullptr, &m_pipeline_layout) !=
-        VK_SUCCESS)
+    if (vkCreatePipelineLayout(VulkanDevice::get_logical_device(),
+                               &pipeline_layout_info,
+                               nullptr,
+                               &m_pipeline_layout) != VK_SUCCESS)
     {
       ESP_CORE_ERROR("Failed to create graphics pipeline");
       throw std::runtime_error("Failed to create graphics pipeline");
@@ -239,31 +241,31 @@ namespace esp
 
     /* ----- GRAPHICS PIPELINE CREATE INFO ------ */
     /* ------------------------------------------ */
-    VkGraphicsPipelineCreateInfo pipelineInfo{};
+    VkGraphicsPipelineCreateInfo pipeline_info{};
 
-    pipelineInfo.sType               = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-    pipelineInfo.stageCount          = 2;
-    pipelineInfo.pStages             = shader_stages;
-    pipelineInfo.pVertexInputState   = &m_vertex_input_info;
-    pipelineInfo.pInputAssemblyState = &input_assembly;
-    pipelineInfo.pViewportState      = &viewport_state;
-    pipelineInfo.pRasterizationState = &rasterizer;
-    pipelineInfo.pMultisampleState   = &multisampling;
-    pipelineInfo.pDepthStencilState  = &depth_stencil;
-    pipelineInfo.pColorBlendState    = &color_blending;
-    pipelineInfo.pDynamicState       = &dynamic_state;
-    pipelineInfo.layout              = m_pipeline_layout;
-    pipelineInfo.renderPass          = VulkanFrameManager::get_swap_chain_render_pass();
-    pipelineInfo.subpass             = 0;
-    pipelineInfo.basePipelineIndex   = -1;
-    pipelineInfo.basePipelineHandle  = VK_NULL_HANDLE;
+    pipeline_info.sType               = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+    pipeline_info.stageCount          = 2;
+    pipeline_info.pStages             = shader_stages;
+    pipeline_info.pVertexInputState   = &m_vertex_input_info;
+    pipeline_info.pInputAssemblyState = &input_assembly;
+    pipeline_info.pViewportState      = &viewport_state;
+    pipeline_info.pRasterizationState = &rasterizer;
+    pipeline_info.pMultisampleState   = &multisampling;
+    pipeline_info.pDepthStencilState  = &depth_stencil;
+    pipeline_info.pColorBlendState    = &color_blending;
+    pipeline_info.pDynamicState       = &dynamic_state;
+    pipeline_info.layout              = m_pipeline_layout;
+    pipeline_info.renderPass          = VulkanFrameManager::get_swap_chain_render_pass();
+    pipeline_info.subpass             = 0;
+    pipeline_info.basePipelineIndex   = -1;
+    pipeline_info.basePipelineHandle  = VK_NULL_HANDLE;
 
     VkPipeline graphics_pipeline;
 
     if (vkCreateGraphicsPipelines(VulkanDevice::get_logical_device(),
                                   VK_NULL_HANDLE,
                                   1,
-                                  &pipelineInfo,
+                                  &pipeline_info,
                                   nullptr,
                                   &graphics_pipeline) != VK_SUCCESS)
     {
@@ -298,11 +300,11 @@ static std::vector<char> read_file(const std::string& filename)
     throw std::runtime_error("The file doesn't exist.");
   }
 
-  size_t fileSize = (size_t)file.tellg();
-  std::vector<char> buffer(fileSize);
+  size_t file_size = (size_t)file.tellg();
+  std::vector<char> buffer(file_size);
 
   file.seekg(0);
-  file.read(buffer.data(), fileSize);
+  file.read(buffer.data(), file_size);
 
   file.close();
 
@@ -311,17 +313,17 @@ static std::vector<char> read_file(const std::string& filename)
 
 static VkShaderModule create_shader_module(const std::vector<char>& code, VkDevice device)
 {
-  VkShaderModuleCreateInfo createInfo{};
-  createInfo.sType    = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-  createInfo.codeSize = code.size();
-  createInfo.pCode    = reinterpret_cast<const uint32_t*>(code.data());
+  VkShaderModuleCreateInfo create_info{};
+  create_info.sType    = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+  create_info.codeSize = code.size();
+  create_info.pCode    = reinterpret_cast<const uint32_t*>(code.data());
 
-  VkShaderModule shaderModule;
-  if (vkCreateShaderModule(device, &createInfo, nullptr, &shaderModule) != VK_SUCCESS)
+  VkShaderModule shader_module;
+  if (vkCreateShaderModule(device, &create_info, nullptr, &shader_module) != VK_SUCCESS)
   {
     ESP_CORE_ERROR("Failed to create shader module");
     throw std::runtime_error("Failed to create shader module");
   }
 
-  return shaderModule;
+  return shader_module;
 }
