@@ -17,7 +17,7 @@ static bool check_validation_layer_support(ContextData& context_data);
 static std::vector<const char*> get_required_extensions(ContextData& context_data);
 static void populate_debug_messenger_create_info(VkDebugUtilsMessengerCreateInfoEXT& create_info);
 static void has_glfw_required_instance_extensions(ContextData& context_data);
-static VkResult create_debug_utils_messenger_EXT(VkInstance instance,
+static VkResult create_debug_utils_messenger_ext(VkInstance instance,
                                                  const VkDebugUtilsMessengerCreateInfoEXT* p_create_info,
                                                  const VkAllocationCallbacks* p_allocator,
                                                  VkDebugUtilsMessengerEXT* p_debug_messenger);
@@ -25,9 +25,9 @@ static bool is_device_suitable(VkPhysicalDevice device, ContextData& context_dat
 static esp::SwapChainSupportDetails query_swap_chain_support(VkPhysicalDevice device, ContextData& context_data);
 static esp::QueueFamilyIndices find_queue_families(VkPhysicalDevice device, ContextData& context_data);
 static bool check_device_extension_support(VkPhysicalDevice device, ContextData& context_data);
-static void destroy_debug_utils_messenger_EXT(VkInstance instance,
-                                              VkDebugUtilsMessengerEXT debugMessenger,
-                                              const VkAllocationCallbacks* pAllocator);
+static void destroy_debug_utils_messenger_ext(VkInstance instance,
+                                              VkDebugUtilsMessengerEXT debug_messenger,
+                                              const VkAllocationCallbacks* p_allocator);
 static void pick_physical_device(ContextData& context_data, DeviceContextData& device_context_data);
 static void create_logical_device(ContextData& context_data, DeviceContextData& device_context_data);
 
@@ -78,7 +78,7 @@ namespace esp
 
     if (m_context_data.m_enable_validation_layers)
     {
-      destroy_debug_utils_messenger_EXT(m_context_data.m_instance, m_context_data.m_debug_messenger, nullptr);
+      destroy_debug_utils_messenger_ext(m_context_data.m_instance, m_context_data.m_debug_messenger, nullptr);
     }
 
     vkDestroySurfaceKHR(m_context_data.m_instance, m_context_data.m_surface, nullptr);
@@ -159,7 +159,7 @@ namespace esp
     if (!m_context_data.m_enable_validation_layers) return;
     VkDebugUtilsMessengerCreateInfoEXT create_info;
     populate_debug_messenger_create_info(create_info);
-    if (create_debug_utils_messenger_EXT(m_context_data.m_instance,
+    if (create_debug_utils_messenger_ext(m_context_data.m_instance,
                                          &create_info,
                                          nullptr,
                                          &m_context_data.m_debug_messenger) != VK_SUCCESS)
@@ -304,7 +304,7 @@ static void has_glfw_required_instance_extensions(ContextData& context_data)
   }
 }
 
-static VkResult create_debug_utils_messenger_EXT(VkInstance instance,
+static VkResult create_debug_utils_messenger_ext(VkInstance instance,
                                                  const VkDebugUtilsMessengerCreateInfoEXT* p_create_info,
                                                  const VkAllocationCallbacks* p_allocator,
                                                  VkDebugUtilsMessengerEXT* p_debug_messenger)
@@ -414,12 +414,12 @@ static bool check_device_extension_support(VkPhysicalDevice device, ContextData&
   return required_extensions.empty();
 }
 
-static void destroy_debug_utils_messenger_EXT(VkInstance instance,
-                                              VkDebugUtilsMessengerEXT debugMessenger,
-                                              const VkAllocationCallbacks* pAllocator)
+static void destroy_debug_utils_messenger_ext(VkInstance instance,
+                                              VkDebugUtilsMessengerEXT debug_messenger,
+                                              const VkAllocationCallbacks* p_allocator)
 {
   auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
-  if (func != nullptr) { func(instance, debugMessenger, pAllocator); }
+  if (func != nullptr) { func(instance, debug_messenger, p_allocator); }
 }
 
 static void pick_physical_device(ContextData& context_data, DeviceContextData& device_context_data)
