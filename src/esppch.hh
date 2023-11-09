@@ -8,7 +8,7 @@
 #include <iostream>
 #include <memory>
 #include <stdexcept>
-#include <typeindex>
+#include <typeinfo>
 #include <utility>
 
 // data types

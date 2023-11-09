@@ -4,10 +4,9 @@
 
 namespace esp
 {
-  std::unique_ptr<Resource>
-  BinaryLoader::load(const std::string& name, ResourceType resource_type, const ResourceParams& params)
+  std::unique_ptr<Resource> BinaryLoader::load(const fs::path& path, const ResourceParams& params)
   {
-    fs::path full_path = ResourceSystem::get_asset_base_path() / params.relative_directory / name;
+    fs::path full_path = ResourceSystem::get_asset_base_path() / path;
     ESP_ASSERT(fs::is_regular_file(fs::status(full_path)),
                "Could not find {} or it is not a regular file.",
                full_path.string());
@@ -17,7 +16,7 @@ namespace esp
 
     // TODO: use custom allocator
     void* data = (void*)calloc(sizeof(char), file_size);
-    ESP_ASSERT(data != nullptr, "Could not allocate memory for {}.", full_path.string());
+    ESP_ASSERT(data != nullptr, "Could not allocate memory for " + full_path.string() + ".");
 
     std::ifstream file(full_path, std::ios::binary);
     file.read(static_cast<char*>(data), file_size);
