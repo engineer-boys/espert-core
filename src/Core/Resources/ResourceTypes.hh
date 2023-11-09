@@ -7,8 +7,6 @@
 
 namespace esp
 {
-  using ResourceType = std::type_index;
-
   class Resource
   {
    public:
@@ -17,13 +15,13 @@ namespace esp
     {
     }
 
+    virtual ~Resource() {}
+
     PREVENT_COPY(Resource);
 
     inline const fs::path& get_path() const { return m_path; }
     inline const std::string get_filename() const { return m_path.filename(); }
-    inline virtual const ResourceType get_resource_type() { return typeid(*this); }
     inline const void* get_data() { return m_data.get(); }
-    inline static const ResourceType type() { return typeid(Resource); }
 
    private:
     fs::path m_path;
@@ -33,7 +31,6 @@ namespace esp
 
   struct ResourceParams
   {
-    std::string relative_directory = "";
   };
 
   class BinaryResource : public Resource
@@ -45,8 +42,6 @@ namespace esp
     }
 
     PREVENT_COPY(BinaryResource);
-
-    inline static const ResourceType type() { return typeid(BinaryResource); }
   };
 
   struct BinaryResourceParams : public ResourceParams
@@ -67,7 +62,6 @@ namespace esp
 
     PREVENT_COPY(TextResource);
 
-    inline static const ResourceType type() { return typeid(TextResource); }
     inline const uint64_t& get_num_of_lines() { return m_num_of_lines; }
 
    private:

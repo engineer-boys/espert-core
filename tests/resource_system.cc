@@ -1,4 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
+#include <filesystem>
 #include <iostream>
 #include <string>
 
@@ -6,19 +7,21 @@
 #include "Core/Resources/ResourceTypes.hh"
 #include "Core/Systems/ResourceSystem.hh"
 
+namespace fs = std::filesystem;
+
 TEST_CASE("Resource system", "[resource_system]")
 {
   auto logger = esp::Logger::create();
 
   REQUIRE_FALSE(esp::ResourceSystem::is_initialized());
 
-  fs::path asset_path = fs::current_path() / ".." / "tests" / "assets";
-  auto resourceSystem = esp::ResourceSystem::init(asset_path);
+  fs::path asset_path  = fs::current_path() / ".." / "tests" / "assets";
+  auto resource_system = esp::ResourceSystem::init(asset_path);
 
   REQUIRE(esp::ResourceSystem::is_initialized);
-  REQUIRE(resourceSystem->get_asset_base_path() == asset_path);
+  REQUIRE(resource_system->get_asset_base_path() == asset_path);
 
-  resourceSystem->shutdown();
+  resource_system->shutdown();
   REQUIRE_FALSE(esp::ResourceSystem::is_initialized());
 }
 
@@ -26,40 +29,39 @@ TEST_CASE("Resource system - binary loader", "[resource_system]")
 {
   auto logger = esp::Logger::create();
 
-  fs::path asset_path = fs::current_path() / ".." / "tests" / "assets";
-  auto resourceSystem = esp::ResourceSystem::init(asset_path);
+  fs::path asset_path  = fs::current_path() / ".." / "tests" / "assets";
+  auto resource_system = esp::ResourceSystem::init(asset_path);
 
-  auto params               = esp::BinaryResourceParams();
-  params.relative_directory = "bin";
+  auto params = esp::BinaryResourceParams();
 
-  auto resource = resourceSystem->load("test.bin", esp::BinaryResource::type(), params);
+  auto resource = resource_system->load<esp::BinaryResource>("bin/test.bin", params);
 
   REQUIRE(strcmp(static_cast<const char*>(resource->get_data()), "test") == 0);
 
-  resourceSystem->unload(std::move(resource));
+  resource_system->unload(std::move(resource));
 
-  resourceSystem->shutdown();
+  resource_system->shutdown();
 }
 
 TEST_CASE("Resource system - text loader", "[resource_system]")
 {
   auto logger = esp::Logger::create();
 
-  fs::path asset_path = fs::current_path() / ".." / "tests" / "assets";
-  auto resourceSystem = esp::ResourceSystem::init(asset_path);
+  fs::path asset_path  = fs::current_path() / ".." / "tests" / "assets";
+  auto resource_system = esp::ResourceSystem::init(asset_path);
 
   auto params = esp::TextResourceParams();
 
-  auto resource = resourceSystem->load("test.txt", esp::TextResource::type(), params);
-  std::unique_ptr<esp::TextResource> textResource =
+  auto resource = resource_system->load<esp::TextResource>("test.txt", params);
+  std::unique_ptr<esp::TextResource> text_resource =
       std::unique_ptr<esp::TextResource>(static_cast<esp::TextResource*>(resource.release()));
 
-  REQUIRE(strcmp(static_cast<const char*>(textResource->get_data()), "test") == 0);
-  REQUIRE(textResource->get_num_of_lines() == 1);
+  REQUIRE(strcmp(static_cast<const char*>(text_resource->get_data()), "test") == 0);
+  REQUIRE(text_resource->get_num_of_lines() == 1);
 
-  resourceSystem->unload(std::move(textResource));
+  resource_system->unload(std::move(text_resource));
 
-  resourceSystem->shutdown();
+  resource_system->shutdown();
 }
 
 class TestResource : public esp::Resource
@@ -71,8 +73,6 @@ class TestResource : public esp::Resource
   }
 
   PREVENT_COPY(TestResource);
-
-  inline static const esp::ResourceType type() { return typeid(TestResource); }
 };
 
 struct TestResourceParams : public esp::ResourceParams
@@ -82,10 +82,9 @@ struct TestResourceParams : public esp::ResourceParams
 class TestLoader : public esp::Loader
 {
  public:
-  inline virtual std::unique_ptr<esp::Resource>
-  load(const std::string& name, esp::ResourceType resourceType, const esp::ResourceParams& params) override
+  inline virtual std::unique_ptr<esp::Resource> load(const fs::path& path, const esp::ResourceParams& params) override
   {
-    fs::path full_path = esp::ResourceSystem::get_asset_base_path() / params.relative_directory / name;
+    fs::path full_path = esp::ResourceSystem::get_asset_base_path() / path;
 
     void* data = (void*)calloc(sizeof(char), 5);
     ESP_ASSERT(data != nullptr, "Could not allocate memory for {}.", full_path.string());
@@ -96,27 +95,23 @@ class TestLoader : public esp::Loader
         new TestResource(full_path, 5, std::unique_ptr<void, VOID_DELETER_TYPE>(data, VOID_DELETER)));
   }
   inline virtual void unload(std::unique_ptr<esp::Resource> resource) override { resource.reset(nullptr); }
-  inline virtual const esp::ResourceType& get_resource_type() override { return m_resource_type; }
-
- private:
-  const esp::ResourceType m_resource_type = typeid(TestResource);
 };
 
 TEST_CASE("Resource system - custom loader", "[resource_system]")
 {
   auto logger = esp::Logger::create();
 
-  fs::path asset_path = fs::current_path() / ".." / "tests" / "assets";
-  auto resourceSystem = esp::ResourceSystem::init(asset_path);
+  fs::path asset_path  = fs::current_path() / ".." / "tests" / "assets";
+  auto resource_system = esp::ResourceSystem::init(asset_path);
 
-  resourceSystem->register_loader(std::unique_ptr<esp::Loader>(new TestLoader()));
+  resource_system->register_loader<TestResource>(std::unique_ptr<esp::Loader>(new TestLoader()));
 
   auto params   = TestResourceParams();
-  auto resource = resourceSystem->load("Test", TestResource::type(), params);
+  auto resource = resource_system->load<TestResource>("Test", params);
 
   REQUIRE(strcmp(static_cast<const char*>(resource->get_data()), "test") == 0);
 
-  resourceSystem->unload(std::move(resource));
+  resource_system->unload(std::move(resource));
 
-  resourceSystem->shutdown();
+  resource_system->shutdown();
 }

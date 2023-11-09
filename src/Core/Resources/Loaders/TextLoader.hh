@@ -10,13 +10,8 @@ namespace esp
   class TextLoader : public Loader
   {
    public:
-    virtual std::unique_ptr<Resource>
-    load(const std::string& name, ResourceType resource_type, const ResourceParams& params) override;
+    virtual std::unique_ptr<Resource> load(const fs::path& path, const ResourceParams& params) override;
     virtual void unload(std::unique_ptr<Resource> resource) override;
-    inline virtual const ResourceType& get_resource_type() override { return m_resource_type; }
-
-   private:
-    const ResourceType m_resource_type = typeid(TextResource);
   };
 
 } // namespace esp
