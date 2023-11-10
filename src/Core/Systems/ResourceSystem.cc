@@ -8,7 +8,7 @@ namespace esp
   bool ResourceSystem::s_initalized = false;
   fs::path ResourceSystem::s_asset_base_path;
 
-  std::unique_ptr<ResourceSystem> ResourceSystem::init(const fs::path& asset_base_path)
+  std::unique_ptr<ResourceSystem> ResourceSystem::create(const fs::path& asset_base_path)
   {
     ESP_ASSERT(!ResourceSystem::s_initalized, "Resource system has already been initialized.");
     ResourceSystem::s_asset_base_path = asset_base_path;
@@ -24,7 +24,7 @@ namespace esp
     return resource_system;
   }
 
-  void ResourceSystem::shutdown()
+  void ResourceSystem::terminate()
   {
     ESP_ASSERT(s_initalized, "Cannot shutdown uninitialized resource system.");
 

@@ -16,12 +16,12 @@ TEST_CASE("Resource system", "[resource_system]")
   REQUIRE_FALSE(esp::ResourceSystem::is_initialized());
 
   fs::path asset_path  = fs::current_path() / ".." / "tests" / "assets";
-  auto resource_system = esp::ResourceSystem::init(asset_path);
+  auto resource_system = esp::ResourceSystem::create(asset_path);
 
   REQUIRE(esp::ResourceSystem::is_initialized);
   REQUIRE(resource_system->get_asset_base_path() == asset_path);
 
-  resource_system->shutdown();
+  resource_system->terminate();
   REQUIRE_FALSE(esp::ResourceSystem::is_initialized());
 }
 
@@ -30,7 +30,7 @@ TEST_CASE("Resource system - binary loader", "[resource_system]")
   auto logger = esp::Logger::create();
 
   fs::path asset_path  = fs::current_path() / ".." / "tests" / "assets";
-  auto resource_system = esp::ResourceSystem::init(asset_path);
+  auto resource_system = esp::ResourceSystem::create(asset_path);
 
   auto params = esp::BinaryResourceParams();
 
@@ -40,7 +40,7 @@ TEST_CASE("Resource system - binary loader", "[resource_system]")
 
   resource_system->unload(std::move(resource));
 
-  resource_system->shutdown();
+  resource_system->terminate();
 }
 
 TEST_CASE("Resource system - text loader", "[resource_system]")
@@ -48,7 +48,7 @@ TEST_CASE("Resource system - text loader", "[resource_system]")
   auto logger = esp::Logger::create();
 
   fs::path asset_path  = fs::current_path() / ".." / "tests" / "assets";
-  auto resource_system = esp::ResourceSystem::init(asset_path);
+  auto resource_system = esp::ResourceSystem::create(asset_path);
 
   auto params = esp::TextResourceParams();
 
@@ -61,7 +61,7 @@ TEST_CASE("Resource system - text loader", "[resource_system]")
 
   resource_system->unload(std::move(text_resource));
 
-  resource_system->shutdown();
+  resource_system->terminate();
 }
 
 class TestResource : public esp::Resource
@@ -102,7 +102,7 @@ TEST_CASE("Resource system - custom loader", "[resource_system]")
   auto logger = esp::Logger::create();
 
   fs::path asset_path  = fs::current_path() / ".." / "tests" / "assets";
-  auto resource_system = esp::ResourceSystem::init(asset_path);
+  auto resource_system = esp::ResourceSystem::create(asset_path);
 
   resource_system->register_loader<TestResource>(std::unique_ptr<esp::Loader>(new TestLoader()));
 
@@ -113,5 +113,5 @@ TEST_CASE("Resource system - custom loader", "[resource_system]")
 
   resource_system->unload(std::move(resource));
 
-  resource_system->shutdown();
+  resource_system->terminate();
 }
