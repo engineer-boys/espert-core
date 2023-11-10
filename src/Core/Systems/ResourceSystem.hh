@@ -36,8 +36,8 @@ namespace esp
    public:
     PREVENT_COPY(ResourceSystem);
 
-    static std::unique_ptr<ResourceSystem> init(const fs::path& asset_base_path);
-    void shutdown();
+    static std::unique_ptr<ResourceSystem> create(const fs::path& asset_base_path);
+    void terminate();
 
     template<class ResourceType> inline void register_loader(std::unique_ptr<Loader> loader)
     {
