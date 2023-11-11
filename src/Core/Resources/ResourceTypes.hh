@@ -22,6 +22,7 @@ namespace esp
     inline const fs::path& get_path() const { return m_path; }
     inline const std::string get_filename() const { return m_path.filename(); }
     inline const void* get_data() { return m_data.get(); }
+    inline const uint64_t get_size() { return m_data_size; }
 
    private:
     fs::path m_path;
@@ -70,6 +71,40 @@ namespace esp
 
   struct TextResourceParams : public ResourceParams
   {
+  };
+
+  class ImageResource : public Resource
+  {
+   public:
+    ImageResource(const fs::path& path,
+                  std::unique_ptr<void, VOID_DELETER_TYPE> data,
+                  uint8_t channel_count,
+                  uint32_t width,
+                  uint32_t height,
+                  uint32_t mip_levels) :
+        Resource(path, width * height * sizeof(uint8_t), std::move(data)),
+        m_channel_count(channel_count), m_width(width), m_height(height), m_mip_levels(mip_levels)
+    {
+    }
+
+    inline const uint8_t get_channel_count() const { return m_channel_count; }
+    inline const uint32_t get_width() const { return m_width; }
+    inline const uint32_t get_height() const { return m_height; }
+    inline const uint32_t get_mip_levels() const { return m_mip_levels; }
+
+    PREVENT_COPY(ImageResource);
+
+   private:
+    uint8_t m_channel_count;
+    uint32_t m_width;
+    uint32_t m_height;
+    uint32_t m_mip_levels;
+  };
+
+  struct ImageResourceParams : public ResourceParams
+  {
+    bool flip_y               = true;
+    uint8_t required_channels = 4;
   };
 
 } // namespace esp
