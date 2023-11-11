@@ -45,7 +45,7 @@ namespace esp
 
     inline bool is_type(EventType type) { return get_type() & type; }
 
-    template<typename T> static bool try_hanlder(Event& event, EventHandler<T> handler)
+    template<typename T> static bool try_handler(Event& event, EventHandler<T> handler)
     {
       if (event.get_subtype() == T::get_class_subtype())
       {

@@ -12,8 +12,8 @@ namespace esp
 
     virtual void attach() {}
     virtual void detach() {}
-    virtual void update() {}
-    virtual void handle_event(Event& event) {}
+    virtual void update(float dt) {}
+    virtual void handle_event(Event& event, float dt) {}
   };
 } // namespace esp
 

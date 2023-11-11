@@ -17,7 +17,11 @@ namespace esp
     m_head_of_normal_layers = m_layers.emplace(m_head_of_normal_layers, layer);
   }
 
-  void LayerStack::push_overlayer(Layer* layer) { m_layers.emplace_back(layer); }
+  void LayerStack::push_overlayer(Layer* layer)
+  {
+    m_layers.emplace_back(layer);
+    if (m_layers.size() == 1) { m_head_of_normal_layers = m_layers.begin(); } // TODO: fix layer stack Dawid!
+  }
 
   void LayerStack::pop_layer(Layer* layer)
   {
