@@ -1,11 +1,11 @@
 #ifndef ESPERT_CORE_CORE_HH
 #define ESPERT_CORE_CORE_HH
 
-#define ESP_BIND_EVENT_FOR_FUN(obj) std::bind(&obj, this, std::placeholders::_1)
+#define ESP_BIND_EVENT_FOR_FUN(obj, ...) std::bind(&obj, this, std::placeholders::_1, ##__VA_ARGS__)
 
 #define PREVENT_COPY(class_name)                     \
   class_name(const class_name&)            = delete; \
-  class_name& operator=(const class_name&) = delete
+  class_name& operator=(const class_name&) = delete;
 
 #ifdef NDEBUG
 #define ESP_ASSERT(...) ((void)0);
@@ -22,6 +22,8 @@
     std::abort();                                                       \
   }
 #endif
+
+#define MAX_FRAME_RATE 1.0f / 60.0f
 
 // std
 #include <functional>

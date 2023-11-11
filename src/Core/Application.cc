@@ -1,4 +1,5 @@
 #include "Application.hh"
+#include "Layers/InputLayer.hh"
 #include <ranges>
 
 namespace esp
@@ -8,11 +9,14 @@ namespace esp
     m_window = EspWindow::create(EspWindow::WindowData());
     m_window->set_events_manager_fun(ESP_BIND_EVENT_FOR_FUN(Application::events_manager));
 
+    m_timer = Timer::create();
+
     m_render_context  = EspRenderContext::create_and_init(*m_window);
     m_command_handler = EspCommandHandler::create_and_init();
     m_frame_manager   = EspFrameManager::create_and_init(*m_window);
 
     m_layer_stack = new LayerStack();
+    add_application_layers();
   }
 
   Application::~Application()
@@ -29,11 +33,15 @@ namespace esp
   {
     while (m_running)
     {
+      m_timer->tick();
+      if (m_timer->get_dt() < MAX_FRAME_RATE) continue;
+      m_timer->reset();
+
       m_frame_manager->begin_frame();
 
       for (auto layer : *m_layer_stack)
       {
-        layer->update();
+        layer->update(m_timer->get_dt());
       }
 
       m_frame_manager->end_frame();
@@ -53,18 +61,19 @@ namespace esp
   bool Application::on_window_closed(WindowClosedEvent& e)
   {
     m_running = false;
-
     return true;
   }
 
+  void Application::add_application_layers() { push_overlayer(new InputLayer()); }
+
   void Application::events_manager(Event& e)
   {
-    Event::try_hanlder<WindowResizedEvent>(e, ESP_BIND_EVENT_FOR_FUN(Application::on_window_resized));
-    Event::try_hanlder<WindowClosedEvent>(e, ESP_BIND_EVENT_FOR_FUN(Application::on_window_closed));
+    Event::try_handler<WindowResizedEvent>(e, ESP_BIND_EVENT_FOR_FUN(Application::on_window_resized));
+    Event::try_handler<WindowClosedEvent>(e, ESP_BIND_EVENT_FOR_FUN(Application::on_window_closed));
 
     for (auto& iter : *m_layer_stack | std::views::reverse)
     {
-      iter->handle_event(e);
+      iter->handle_event(e, m_timer->get_dt());
       if (e.handled) { break; }
     }
   }

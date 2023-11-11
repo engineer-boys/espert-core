@@ -9,6 +9,7 @@
 #include "RenderAPI/EspCommandHandler.hh"
 #include "RenderAPI/EspFrameManager.hh"
 #include "RenderAPI/EspRenderContext.hh"
+#include "Timer.hh"
 #include "esppch.hh"
 
 namespace esp
@@ -18,6 +19,8 @@ namespace esp
    private:
     std::unique_ptr<ApplicationContext> m_context;
     std::unique_ptr<EspWindow> m_window;
+
+    std::unique_ptr<Timer> m_timer;
 
    protected:
     std::unique_ptr<EspRenderContext> m_render_context;
@@ -32,6 +35,8 @@ namespace esp
    private:
     bool on_window_resized(WindowResizedEvent& e);
     bool on_window_closed(WindowClosedEvent& e);
+
+    void add_application_layers();
 
    protected:
     inline EspWindow& get_window() { return *m_window; }
