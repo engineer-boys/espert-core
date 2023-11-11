@@ -1,5 +1,6 @@
 #include "EspWindow.hh"
 #include "Events/Events.hh"
+#include "Platform/Vulkan/VulkanContext.hh"
 
 namespace esp
 {
@@ -156,12 +157,26 @@ namespace esp
                              });
   }
 
-  void EspWindow::create_window_surface(VkInstance instance, VkSurfaceKHR* surface)
+  void EspWindow::create_window_surface()
   {
-    if (glfwCreateWindowSurface(instance, m_window, nullptr, surface) != VK_SUCCESS)
+    /* ---------------------------------------------------------*/
+    /* ------------- PLATFORM DEPENDENT ------------------------*/
+    /* ---------------------------------------------------------*/
+    // #if defined(OPENGL_PLATFORM)
+    //     ...
+    // #elif defined(VULKAN_PLATFORM)
+    auto& context_data = VulkanContext::get_context_data();
+    if (glfwCreateWindowSurface(context_data.m_instance,
+                                m_window,
+                                nullptr,
+                                const_cast<VkSurfaceKHR*>(&context_data.m_surface)) != VK_SUCCESS)
     {
       ESP_CORE_ERROR("Failed to create window surface");
       throw std::runtime_error("Failed to create window surface");
     }
+    // #else
+    // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
+    // #endif
+    /* ---------------------------------------------------------*/
   }
 } // namespace esp

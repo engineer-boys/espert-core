@@ -1,5 +1,5 @@
-#ifndef ESPERT_CORE_ESPERTWINDOW_HH
-#define ESPERT_CORE_ESPERTWINDOW_HH
+#ifndef ESPERT_CORE_ESP_WINDOW_HH
+#define ESPERT_CORE_ESP_WINDOW_HH
 
 #include "Core/Events/Event.hh"
 #include "esppch.hh"
@@ -57,8 +57,8 @@ namespace esp
 
     static std::unique_ptr<EspWindow> create(const WindowData& data);
 
-    void create_window_surface(VkInstance instance, VkSurfaceKHR* surface);
+    void create_window_surface();
   };
 } // namespace esp
 
-#endif // ESPERT_CORE_ESPERTWINDOW_HH
+#endif // ESPERT_CORE_ESP_WINDOW_HH
