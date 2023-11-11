@@ -3,7 +3,7 @@
 
 /* In this header file are all needed headers */
 /* ------------------------------------------ */
-#include "Core/Core.hh"
+#include "Core/Utils.hh"
 
 #include "Core/Application.hh"
 #include "Core/Logger.hh"
