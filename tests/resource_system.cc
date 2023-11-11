@@ -1,13 +1,12 @@
 #include <catch2/catch_test_macros.hpp>
 #include <filesystem>
+#include <fstream>
 #include <iostream>
 #include <string>
 
 #include "Core/Logger.hh"
 #include "Core/Resources/ResourceTypes.hh"
 #include "Core/Systems/ResourceSystem.hh"
-
-namespace fs = std::filesystem;
 
 TEST_CASE("Resource system", "[resource_system]")
 {
@@ -62,6 +61,37 @@ TEST_CASE("Resource system - text loader", "[resource_system]")
   resource_system->unload(std::move(text_resource));
 
   resource_system->terminate();
+}
+
+TEST_CASE("Resource system - image loader", "[resource_system]")
+{
+  auto logger = esp::Logger::create();
+
+  fs::path asset_path  = fs::current_path() / ".." / "tests" / "assets";
+  auto resource_system = esp::ResourceSystem::init(asset_path);
+
+  auto image_params = esp::ImageResourceParams();
+  auto resource     = resource_system->load<esp::ImageResource>("test.jpg", image_params);
+  std::unique_ptr<esp::ImageResource> image_resource =
+      std::unique_ptr<esp::ImageResource>(static_cast<esp::ImageResource*>(resource.release()));
+
+  auto binary_params = esp::BinaryResourceParams();
+  resource           = resource_system->load<esp::BinaryResource>("test.jpg.bin", binary_params);
+  std::unique_ptr<esp::BinaryResource> binary_resource =
+      std::unique_ptr<esp::BinaryResource>(static_cast<esp::BinaryResource*>(resource.release()));
+
+  REQUIRE(memcmp(static_cast<const char*>(image_resource->get_data()),
+                 static_cast<const char*>(binary_resource->get_data()),
+                 image_resource->get_size()) == 0);
+  REQUIRE(image_resource->get_width() == 700);
+  REQUIRE(image_resource->get_height() == 576);
+  REQUIRE(image_resource->get_channel_count() == 3);
+  REQUIRE(image_resource->get_mip_levels() == 10);
+
+  resource_system->unload(std::move(image_resource));
+  resource_system->unload(std::move(binary_resource));
+
+  resource_system->shutdown();
 }
 
 class TestResource : public esp::Resource
