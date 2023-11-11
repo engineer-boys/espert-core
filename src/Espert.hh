@@ -18,7 +18,12 @@
 #include "Core/RenderAPI/Resources/EspIndexBuffer.hh"
 #include "Core/RenderAPI/Resources/EspVertexBuffers.hh"
 #include "Core/RenderAPI/Uniforms/EspUniformMetaData.hh"
+
+/* --------- Scene --------------------- */
 #include "Core/Scene/Components/Components.hh"
+
+/* --------- Renderer --------------------- */
+#include "Core/Renderer/Camera.hh"
 
 /* --------- Client Point ------------------- */
 #include "Core/ClientPoint.hh"
