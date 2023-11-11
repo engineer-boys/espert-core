@@ -469,7 +469,10 @@ static VkPresentModeKHR choose_swap_chain_present_mode(const std::vector<VkPrese
 static VkExtent2D choose_swap_chain_extent(const VkSurfaceCapabilitiesKHR& capabilities,
                                            const VkExtent2D& window_extent)
 {
-  if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) { return capabilities.currentExtent; }
+  if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max())
+  {
+    return window_extent;
+  } // TODO: monitor this
   else
   {
     VkExtent2D actual_extent = window_extent;
