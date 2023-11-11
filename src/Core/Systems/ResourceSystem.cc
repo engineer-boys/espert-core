@@ -1,6 +1,7 @@
 #include "Core/Systems/ResourceSystem.hh"
 
 #include "Core/Resources/Loaders/BinaryLoader.hh"
+#include "Core/Resources/Loaders/ImageLoader.hh"
 #include "Core/Resources/Loaders/TextLoader.hh"
 
 namespace esp
@@ -17,6 +18,7 @@ namespace esp
 
     resource_system->register_loader<BinaryResource>(std::move(std::unique_ptr<Loader>(new BinaryLoader())));
     resource_system->register_loader<TextResource>(std::move(std::unique_ptr<Loader>(new TextLoader())));
+    resource_system->register_loader<ImageResource>(std::move(std::unique_ptr<Loader>(new ImageLoader())));
 
     ResourceSystem::s_initalized = true;
     ESP_CORE_TRACE("Resource system initialized with base path {}.", s_asset_base_path.string());
