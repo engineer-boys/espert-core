@@ -39,6 +39,7 @@ namespace esp
     void init(const WindowData& data);
     void destroy();
     void set_callbacks();
+    void handle_keys_presses();
 
     EspWindow(const WindowData& data);
 

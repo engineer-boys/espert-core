@@ -64,7 +64,7 @@ namespace esp
     return true;
   }
 
-  void Application::add_application_layers() { push_overlayer(new InputLayer()); }
+  void Application::add_application_layers() { push_layer(new InputLayer()); }
 
   void Application::events_manager(Event& e)
   {
