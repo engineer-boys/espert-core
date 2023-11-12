@@ -170,8 +170,7 @@ namespace esp
     }
   }
 
-  void VulkanContext::create_surface(EspWindow& window)
-  { window.create_window_surface(); }
+  void VulkanContext::create_surface(EspWindow& window) { window.create_window_surface(); }
 
   void VulkanContext::create_vulkan_device()
   {
