@@ -32,7 +32,11 @@ namespace esp
     return window;
   }
 
-  void EspWindow::update() { glfwPollEvents(); }
+  void EspWindow::update()
+  {
+    glfwPollEvents();
+    handle_keys_presses();
+  }
 
   void EspWindow::init(const WindowData& data)
   {
@@ -56,6 +60,10 @@ namespace esp
       throw std::runtime_error("GLFW cannot create a window instance");
     }
     glfwSetWindowUserPointer(m_window, &m_data);
+
+    // TODO: set flag for cursor disabled
+    // glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    //
 
     set_callbacks();
   }
@@ -107,12 +115,6 @@ namespace esp
                            data->m_events_manager_fun(event);
                            break;
                          }
-                         case GLFW_REPEAT:
-                         {
-                           KeyPressedEvent event(key, true);
-                           data->m_events_manager_fun(event);
-                           break;
-                         }
                          }
                        });
 
@@ -155,6 +157,40 @@ namespace esp
                                MouseMovedEvent event((float)x_pos, (float)y_pos);
                                data->m_events_manager_fun(event);
                              });
+  }
+
+  void EspWindow::handle_keys_presses()
+  {
+    if (glfwGetKey(m_window, GLFW_KEY_W) == GLFW_PRESS)
+    {
+      KeyPressedEvent event(GLFW_KEY_W, true);
+      m_data.m_events_manager_fun(event);
+    }
+    if (glfwGetKey(m_window, GLFW_KEY_S) == GLFW_PRESS)
+    {
+      KeyPressedEvent event(GLFW_KEY_S, true);
+      m_data.m_events_manager_fun(event);
+    }
+    if (glfwGetKey(m_window, GLFW_KEY_A) == GLFW_PRESS)
+    {
+      KeyPressedEvent event(GLFW_KEY_A, true);
+      m_data.m_events_manager_fun(event);
+    }
+    if (glfwGetKey(m_window, GLFW_KEY_D) == GLFW_PRESS)
+    {
+      KeyPressedEvent event(GLFW_KEY_D, true);
+      m_data.m_events_manager_fun(event);
+    }
+    if (glfwGetKey(m_window, GLFW_KEY_SPACE) == GLFW_PRESS)
+    {
+      KeyPressedEvent event(GLFW_KEY_SPACE, true);
+      m_data.m_events_manager_fun(event);
+    }
+    if (glfwGetKey(m_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+    {
+      KeyPressedEvent event(GLFW_KEY_LEFT_SHIFT, true);
+      m_data.m_events_manager_fun(event);
+    }
   }
 
   void EspWindow::create_window_surface()

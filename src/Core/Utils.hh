@@ -24,6 +24,7 @@
 #endif
 
 #define MAX_FRAME_RATE 1.0f / 60.0f
+#define ESP_PI         3.14159265f
 
 // std
 #include <functional>
