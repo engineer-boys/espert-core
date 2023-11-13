@@ -34,7 +34,7 @@ namespace esp
     while (m_running)
     {
       m_timer->tick();
-      if (m_timer->get_dt() < MAX_FRAME_RATE) continue;
+      if (m_timer->get_dt() < ESP_MIN_FRAME_RATE) continue;
       m_timer->reset();
 
       m_frame_manager->begin_frame();

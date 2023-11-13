@@ -18,12 +18,29 @@ namespace esp
 
     if (camera == nullptr || !event.is_repeated()) { return false; }
 
-    if (event.get_code() == GLFW_KEY_W) { camera->move(Camera::FORWARD, dt); }
-    if (event.get_code() == GLFW_KEY_S) { camera->move(Camera::BACKWARD, dt); }
-    if (event.get_code() == GLFW_KEY_A) { camera->move(Camera::LEFT, dt); }
-    if (event.get_code() == GLFW_KEY_D) { camera->move(Camera::RIGHT, dt); }
-    if (event.get_code() == GLFW_KEY_SPACE) { camera->move(Camera::UP, dt); }
-    if (event.get_code() == GLFW_KEY_LEFT_SHIFT) { camera->move(Camera::DOWN, dt); }
+    switch (event.get_code())
+    {
+    case GLFW_KEY_W:
+      camera->move(Camera::FORWARD, dt);
+      break;
+    case GLFW_KEY_S:
+      camera->move(Camera::BACKWARD, dt);
+      break;
+    case GLFW_KEY_A:
+      camera->move(Camera::LEFT, dt);
+      break;
+    case GLFW_KEY_D:
+      camera->move(Camera::RIGHT, dt);
+      break;
+    case GLFW_KEY_SPACE:
+      camera->move(Camera::UP, dt);
+      break;
+    case GLFW_KEY_LEFT_SHIFT:
+      camera->move(Camera::DOWN, dt);
+      break;
+    default:
+      break;
+    }
 
     return true;
   }
