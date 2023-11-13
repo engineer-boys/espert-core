@@ -31,7 +31,9 @@ namespace esp
    private:
     static bool s_is_exist;
 
-   private:
+    std::array<int, 6> m_camera_keys = { GLFW_KEY_W, GLFW_KEY_S,     GLFW_KEY_A,
+                                         GLFW_KEY_D, GLFW_KEY_SPACE, GLFW_KEY_LEFT_SHIFT };
+
     WindowData m_data;
     GLFWwindow* m_window;
 
@@ -39,7 +41,7 @@ namespace esp
     void init(const WindowData& data);
     void destroy();
     void set_callbacks();
-    void handle_keys_presses();
+    void handle_camera_key_presses();
 
     EspWindow(const WindowData& data);
 

@@ -23,8 +23,8 @@
   }
 #endif
 
-#define MAX_FRAME_RATE 1.0f / 60.0f
-#define ESP_PI         3.14159265f
+#define ESP_MIN_FRAME_RATE 0.01666666666f // = 1/60s
+#define ESP_PI             3.14159265f    // = PI
 
 // std
 #include <functional>

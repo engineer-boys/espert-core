@@ -35,7 +35,7 @@ namespace esp
   void EspWindow::update()
   {
     glfwPollEvents();
-    handle_keys_presses();
+    handle_camera_key_presses();
   }
 
   void EspWindow::init(const WindowData& data)
@@ -159,37 +159,15 @@ namespace esp
                              });
   }
 
-  void EspWindow::handle_keys_presses()
+  void EspWindow::handle_camera_key_presses()
   {
-    if (glfwGetKey(m_window, GLFW_KEY_W) == GLFW_PRESS)
+    for (auto& key : m_camera_keys)
     {
-      KeyPressedEvent event(GLFW_KEY_W, true);
-      m_data.m_events_manager_fun(event);
-    }
-    if (glfwGetKey(m_window, GLFW_KEY_S) == GLFW_PRESS)
-    {
-      KeyPressedEvent event(GLFW_KEY_S, true);
-      m_data.m_events_manager_fun(event);
-    }
-    if (glfwGetKey(m_window, GLFW_KEY_A) == GLFW_PRESS)
-    {
-      KeyPressedEvent event(GLFW_KEY_A, true);
-      m_data.m_events_manager_fun(event);
-    }
-    if (glfwGetKey(m_window, GLFW_KEY_D) == GLFW_PRESS)
-    {
-      KeyPressedEvent event(GLFW_KEY_D, true);
-      m_data.m_events_manager_fun(event);
-    }
-    if (glfwGetKey(m_window, GLFW_KEY_SPACE) == GLFW_PRESS)
-    {
-      KeyPressedEvent event(GLFW_KEY_SPACE, true);
-      m_data.m_events_manager_fun(event);
-    }
-    if (glfwGetKey(m_window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-    {
-      KeyPressedEvent event(GLFW_KEY_LEFT_SHIFT, true);
-      m_data.m_events_manager_fun(event);
+      if (glfwGetKey(m_window, key) == GLFW_PRESS)
+      {
+        KeyPressedEvent event(key, true);
+        m_data.m_events_manager_fun(event);
+      }
     }
   }
 
