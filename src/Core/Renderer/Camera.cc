@@ -49,8 +49,10 @@ namespace esp
     else { m_front = glm::normalize(target - m_position); }
 
     m_pitch = std::clamp(ESP_PI / 2 - glm::acos(glm::dot(m_front, -S_UP)), -S_PITCH_TRESHOLD, S_PITCH_TRESHOLD);
-    m_jaw   = m_front.x > 0 ? ESP_PI / 2 - glm::acos(glm::dot(m_front, S_FRONT))
-                            : ESP_PI / 2 + glm::acos(glm::dot(m_front, S_FRONT));
+
+    glm::vec3 front_xz = glm::normalize(glm::vec3{ m_front.x, 0.f, m_front.z });
+    m_jaw              = m_front.x > 0 ? ESP_PI / 2 - glm::acos(glm::dot(front_xz, S_FRONT))
+                                       : ESP_PI / 2 + glm::acos(glm::dot(front_xz, S_FRONT));
 
     update_camera_up();
   }
