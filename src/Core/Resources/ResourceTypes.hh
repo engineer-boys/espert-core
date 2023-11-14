@@ -23,6 +23,7 @@ namespace esp
     inline const std::string get_filename() const { return m_path.filename(); }
     inline const void* get_data() { return m_data.get(); }
     inline const uint64_t get_size() { return m_data_size; }
+    inline void* release() { return m_data.release(); }
 
    private:
     fs::path m_path;
