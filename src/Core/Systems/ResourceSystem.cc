@@ -8,6 +8,7 @@ namespace esp
 {
   bool ResourceSystem::s_initalized = false;
   fs::path ResourceSystem::s_asset_base_path;
+  LoaderMap ResourceSystem::m_loader_map;
 
   std::unique_ptr<ResourceSystem> ResourceSystem::create(const fs::path& asset_base_path)
   {

@@ -69,7 +69,7 @@ namespace esp
 
     static bool s_initalized;
     static fs::path s_asset_base_path;
-    LoaderMap m_loader_map;
+    static LoaderMap m_loader_map;
   };
 
 } // namespace esp

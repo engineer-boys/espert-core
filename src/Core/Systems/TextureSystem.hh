@@ -3,6 +3,7 @@
 
 #include "esppch.hh"
 
+#include "Core/Resources/ResourceTypes.hh"
 #include "Core/Resources/ResourceUtils.hh"
 
 namespace esp
@@ -10,6 +11,26 @@ namespace esp
   class Texture
   {
    public:
+    Texture(const std::string& name,
+            uint8_t* data,
+            uint8_t channel_count,
+            uint32_t width,
+            uint32_t height,
+            uint32_t mip_levels) :
+        m_name(name),
+        m_pixels(data), m_channel_count(channel_count), m_width(width), m_height(height), m_mip_levels(mip_levels),
+        m_has_transparency(false)
+    {
+      if (m_channel_count != 4) { return; }
+      for (int i = 0; i < get_size(); i += m_channel_count)
+      {
+        if (m_pixels.get()[i + 3] < 255)
+        {
+          m_has_transparency = true;
+          break;
+        }
+      }
+    }
     Texture(const std::string& name, std::unique_ptr<ImageResource> image_resource) :
         m_name(name), m_pixels(static_cast<uint8_t*>(image_resource->release())),
         m_channel_count(image_resource->get_channel_count()), m_width(image_resource->get_width()),
@@ -56,11 +77,17 @@ namespace esp
     void shutdown();
     std::shared_ptr<Texture> acquire(const std::string& name);
     void release(const std::string& name);
+    inline const static bool is_initialized() { return s_initalized; }
+    std::shared_ptr<Texture> get_default_texture();
+    std::shared_ptr<Texture> get_default_diffuse_texture();
+    std::shared_ptr<Texture> get_default_specular_texture();
+    std::shared_ptr<Texture> get_default_normal_texture();
 
    private:
     TextureSystem() = default;
 
     std::shared_ptr<Texture> load(const std::string& name);
+    void create_default_textures();
 
     static const std::string s_default_texture_name;
     static const std::string s_default_diffuse_texture_name;
