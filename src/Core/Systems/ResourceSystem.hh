@@ -50,8 +50,9 @@ namespace esp
     }
 
     template<class ResourceType>
-    inline std::unique_ptr<Resource> load(const fs::path& path, const ResourceParams& params)
+    inline static std::unique_ptr<Resource> load(const fs::path& path, const ResourceParams& params)
     {
+      ESP_ASSERT(s_initalized, "Resource system hasn't been initialized.")
       ESP_ASSERT(m_loader_map.contains(typeid(ResourceType)),
                  "Cannot load resource " + path.filename().string() + ". Loader of type " +
                      std::string(typeid(ResourceType).name()) + " has not been registered.");
