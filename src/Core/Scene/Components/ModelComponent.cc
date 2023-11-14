@@ -73,7 +73,10 @@ namespace esp
         {
           vertex.m_tex_coord = {
             attrib.texcoords[2 * index.texcoord_index + 0],
-            attrib.texcoords[2 * index.texcoord_index + 1],
+            // TODO: make calculating tex coord platform agnostic
+            1.0f - attrib.texcoords[2 * index.texcoord_index + 1], // vertical texture component has to be flipped in
+                                                                   // Vulkan because of it's coordinate system
+            //
           };
         }
 
