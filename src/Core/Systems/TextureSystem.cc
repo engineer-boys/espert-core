@@ -8,6 +8,7 @@ namespace esp
   const std::string TextureSystem::s_default_specular_texture_name = "default_SPEC";
   const std::string TextureSystem::s_default_normal_texture_name   = "default_NORM";
   bool TextureSystem::s_initalized                                 = false;
+  TextureMap TextureSystem::m_texture_map;
 
   std::unique_ptr<TextureSystem> TextureSystem::init()
   {

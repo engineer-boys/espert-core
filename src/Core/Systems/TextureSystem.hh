@@ -75,7 +75,7 @@ namespace esp
 
     static std::unique_ptr<TextureSystem> init();
     void shutdown();
-    std::shared_ptr<Texture> acquire(const std::string& name);
+    static std::shared_ptr<Texture> acquire(const std::string& name);
     void release(const std::string& name);
     inline const static bool is_initialized() { return s_initalized; }
     std::shared_ptr<Texture> get_default_texture();
@@ -86,7 +86,7 @@ namespace esp
    private:
     TextureSystem() = default;
 
-    std::shared_ptr<Texture> load(const std::string& name);
+    static std::shared_ptr<Texture> load(const std::string& name);
     void create_default_textures();
 
     static const std::string s_default_texture_name;
@@ -94,7 +94,7 @@ namespace esp
     static const std::string s_default_specular_texture_name;
     static const std::string s_default_normal_texture_name;
     static bool s_initalized;
-    TextureMap m_texture_map;
+    static TextureMap m_texture_map;
   };
 } // namespace esp
 

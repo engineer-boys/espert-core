@@ -9,8 +9,8 @@ namespace esp
   class Loader
   {
    public:
-    Loader()  = default;
-    ~Loader() = default;
+    Loader() = default;
+    virtual ~Loader() {}
 
     virtual std::unique_ptr<Resource> load(const fs::path& path, const ResourceParams& params) = 0;
     virtual void unload(std::unique_ptr<Resource> resource)                                    = 0;
