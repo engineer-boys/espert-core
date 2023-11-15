@@ -139,7 +139,7 @@ namespace esp
    * @param offset (Optional) Byte offset from beginning of mapped region
    *
    */
-  void VulkanBuffer::write_to_buffer(void* data, VkDeviceSize size, VkDeviceSize offset)
+  void VulkanBuffer::write_to_buffer(const void* data, VkDeviceSize size, VkDeviceSize offset)
   {
     ESP_ASSERT(m_mapped, "Cannot copy to unmapped buffer")
 

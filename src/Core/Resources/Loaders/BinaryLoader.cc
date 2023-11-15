@@ -22,8 +22,7 @@ namespace esp
     file.read(static_cast<char*>(data), file_size);
     file.close();
 
-    return std::unique_ptr<Resource>(
-        new BinaryResource(full_path, file_size, std::unique_ptr<void, VOID_DELETER_TYPE>(data, VOID_DELETER)));
+    return std::unique_ptr<Resource>(new BinaryResource(full_path, file_size, resource_data_t(data, VOID_DELETER)));
   }
 
   void BinaryLoader::unload(std::unique_ptr<Resource> resource) { resource.reset(nullptr); }

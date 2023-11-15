@@ -3,6 +3,8 @@
 
 #include "esppch.hh"
 
+#include "Core/Systems/TextureSystem.hh"
+
 namespace esp
 {
   class VulkanResourceManager
@@ -53,10 +55,7 @@ namespace esp
                                          VkImageAspectFlags aspect_flags,
                                          uint32_t mip_levels);
 
-    static void create_texture_image(const std::string& path,
-                                     uint32_t& texture_width,
-                                     uint32_t& texture_height,
-                                     uint32_t& texture_mip_levels,
+    static void create_texture_image(const std::shared_ptr<Texture> texture,
                                      VkImage& texture_image,
                                      VkDeviceMemory& texture_image_memory);
 

@@ -3,6 +3,8 @@
 
 #include "esppch.hh"
 
+#include "Core/Systems/TextureSystem.hh"
+
 namespace esp
 {
   struct EspUniformManager
@@ -22,7 +24,7 @@ namespace esp
 
     virtual EspUniformManager& load_texture(uint32_t set,
                                             uint32_t binding,
-                                            std::string path_to_texture,
+                                            std::shared_ptr<Texture> texture,
                                             bool mipmapping = false) = 0;
   };
 
