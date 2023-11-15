@@ -93,7 +93,7 @@ namespace esp
 
   struct ImageResourceParams : public ResourceParams
   {
-    bool flip_y               = true;
+    bool flip_y               = false;
     uint8_t required_channels = 4;
   };
 
