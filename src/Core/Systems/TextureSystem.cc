@@ -57,7 +57,7 @@ namespace esp
     }
 
     s_instance->m_texture_map.erase(s_instance->m_texture_map.find(name));
-    ESP_CORE_TRACE("Released " + name + " texture.");
+    ESP_CORE_TRACE("Released texture {}.", name);
   }
 
   std::shared_ptr<Texture> TextureSystem::load(const std::string& name)
@@ -66,13 +66,13 @@ namespace esp
     auto resource = ResourceSystem::load<ImageResource>(name, params);
     if (!resource)
     {
-      ESP_CORE_ERROR("Could not load {} txture.", name);
+      ESP_CORE_ERROR("Could not load txture {}.", name);
       return get_default_texture();
     }
     auto image_resource = std::unique_ptr<ImageResource>(dynamic_cast<ImageResource*>(resource.release()));
     auto texture        = std::make_shared<Texture>(name, std::move(image_resource));
     s_instance->m_texture_map.insert({ name, texture });
-    ESP_CORE_TRACE("Loaded {} texture.", name);
+    ESP_CORE_TRACE("Loaded texture {}.", name);
     return texture;
   }
 
