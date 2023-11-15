@@ -109,10 +109,10 @@ namespace esp
 
     inline virtual EspUniformManager& load_texture(uint32_t set,
                                                    uint32_t binding,
-                                                   std::string path_to_texture,
+                                                   std::shared_ptr<Texture> texture,
                                                    bool mipmapping = false) override
     {
-      m_textures[set][binding].emplace_back(VulkanTexture::create(path_to_texture, mipmapping));
+      m_textures[set][binding].emplace_back(VulkanTexture::create(texture, mipmapping));
 
       return *this;
     }

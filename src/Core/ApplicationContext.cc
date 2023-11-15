@@ -19,7 +19,9 @@ namespace esp
 
     /* create context dependencies */
     {
-      context->m_logger = Logger::create();
+      context->m_logger          = Logger::create();
+      context->m_resource_system = ResourceSystem::create(fs::current_path() / "resources");
+      context->m_texture_system  = TextureSystem::create();
     }
     /* end of creating context dependencies */
 

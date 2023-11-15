@@ -1,8 +1,9 @@
 #ifndef ESPERT_CORE_SYSTEMS_RESOURCESYSTEM_HH
 #define ESPERT_CORE_SYSTEMS_RESOURCESYSTEM_HH
 
-#include "Core/Resources/ResourceTypes.hh"
 #include "esppch.hh"
+
+#include "Core/Resources/ResourceTypes.hh"
 
 namespace esp
 {
@@ -33,43 +34,65 @@ namespace esp
 
   class ResourceSystem
   {
+   private:
+    static ResourceSystem* s_instance;
+
+   private:
+    fs::path m_asset_base_path;
+    LoaderMap m_loader_map;
+
+    ResourceSystem();
+
    public:
+    ~ResourceSystem();
     PREVENT_COPY(ResourceSystem);
 
     static std::unique_ptr<ResourceSystem> create(const fs::path& asset_base_path);
-    void terminate();
 
-    template<class ResourceType> inline void register_loader(std::unique_ptr<Loader> loader)
+    inline static ResourceSystem* get_instance() { return ResourceSystem::s_instance; }
+    inline static const fs::path& get_asset_base_path() { return s_instance->m_asset_base_path; }
+
+    template<class ResourceType> inline static void register_loader(std::unique_ptr<Loader> loader)
     {
-      ESP_ASSERT(!m_loader_map.contains(typeid(ResourceType)),
-                 "Loader for resource type " + std::string(typeid(ResourceType).name()) +
-                     " has already been registered.");
+      if (s_instance->m_loader_map.contains(typeid(ResourceType)))
+      {
+        ESP_CORE_ERROR("Loader for resource type {} has already been registered.", typeid(ResourceType).name());
+        return;
+      }
 
       ESP_CORE_TRACE("Loader for resource type {} registered.", typeid(ResourceType).name());
-      m_loader_map.insert({ typeid(ResourceType), std::move(loader) });
+      s_instance->m_loader_map.insert({ typeid(ResourceType), std::move(loader) });
     }
 
     template<class ResourceType>
     inline static std::unique_ptr<Resource> load(const fs::path& path, const ResourceParams& params)
     {
-      ESP_ASSERT(s_initalized, "Resource system hasn't been initialized.")
-      ESP_ASSERT(m_loader_map.contains(typeid(ResourceType)),
-                 "Cannot load resource " + path.filename().string() + ". Loader of type " +
-                     std::string(typeid(ResourceType).name()) + " has not been registered.");
-      auto resource = m_loader_map.at(typeid(ResourceType))->load(path, params);
+      if (!s_instance->m_loader_map.contains(typeid(ResourceType)))
+      {
+        ESP_CORE_ERROR("Cannot load resource {}. Loader for type {} has not been registered.",
+                       path.filename().string(),
+                       typeid(ResourceType).name());
+        return nullptr;
+      }
+
+      auto resource = s_instance->m_loader_map.at(typeid(ResourceType))->load(path, params);
       ESP_CORE_TRACE("Loaded {} {}.", typeid(ResourceType).name(), resource->get_filename());
       return resource;
     }
-    void unload(std::unique_ptr<Resource> resource);
-    inline const static fs::path& get_asset_base_path() { return s_asset_base_path; }
-    inline const static bool is_initialized() { return s_initalized; }
-
-   private:
-    ResourceSystem() = default;
-
-    static bool s_initalized;
-    static fs::path s_asset_base_path;
-    static LoaderMap m_loader_map;
+    inline static void unload(std::unique_ptr<Resource> resource)
+    {
+      auto& r = *resource.get();
+      if (!s_instance->m_loader_map.contains(typeid(r)))
+      {
+        ESP_CORE_ERROR("Cannot unload resource {}. Loader of type {} has not been registered.",
+                       resource->get_filename(),
+                       typeid(r).name());
+        return;
+      }
+      auto msg = "Unloaded " + std::string(typeid(r).name()) + " " + resource->get_filename();
+      s_instance->m_loader_map.at(typeid(r))->unload(std::move(resource));
+      ESP_CORE_TRACE(msg);
+    }
   };
 
 } // namespace esp

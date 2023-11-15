@@ -26,14 +26,8 @@ namespace esp
     void* data = (void*)stbi_load(full_path.c_str(), &width, &height, &channel_count, image_params.required_channels);
     ESP_ASSERT(data != nullptr, "Could not load " + full_path.string() + ".");
 
-    int mip_levels = std::floor(std::log2(std::max(width, height))) + 1;
-
-    return std::unique_ptr<Resource>(new ImageResource(full_path,
-                                                       std::unique_ptr<void, VOID_DELETER_TYPE>(data, VOID_DELETER),
-                                                       channel_count,
-                                                       width,
-                                                       height,
-                                                       mip_levels));
+    return std::unique_ptr<Resource>(
+        new ImageResource(full_path, resource_data_t(data, VOID_DELETER), channel_count, width, height));
   }
 
   void ImageLoader::unload(std::unique_ptr<Resource> resource) { resource.reset(nullptr); }

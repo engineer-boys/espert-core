@@ -3,15 +3,6 @@
 #include "VulkanCommandHandler.hh"
 #include "VulkanDevice.hh"
 
-#if defined(__GNUC__) && !defined(NDEBUG) && defined(__OPTIMIZE__)
-#warning "Undefing __OPTIMIZE__ because of fmt. This problem occurs after adding stb."
-#undef __OPTIMIZE__
-#endif
-
-// stb
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
-
 namespace esp
 {
   VulkanResourceManager* VulkanResourceManager::s_instance = nullptr;
@@ -174,23 +165,11 @@ namespace esp
     return image_view;
   }
 
-  void VulkanResourceManager::create_texture_image(const std::string& path,
-                                                   uint32_t& texture_width,
-                                                   uint32_t& texture_height,
-                                                   uint32_t& texture_mip_levels,
+  void VulkanResourceManager::create_texture_image(const std::shared_ptr<Texture> texture,
                                                    VkImage& texture_image,
                                                    VkDeviceMemory& texture_image_memory)
   {
-    int tex_width, tex_height, tex_channels;
-    stbi_uc* pixels = stbi_load(path.c_str(), &tex_width, &tex_height, &tex_channels, STBI_rgb_alpha);
-
-    VkDeviceSize image_size = tex_width * tex_height * 4;
-
-    ESP_ASSERT(pixels, "Failed to load texture image")
-
-    texture_width      = static_cast<uint32_t>(tex_width);
-    texture_height     = static_cast<uint32_t>(tex_height);
-    texture_mip_levels = std::floor(std::log2(std::max(texture_width, texture_height))) + 1;
+    VkDeviceSize image_size = texture->get_width() * texture->get_height() * 4;
 
     VulkanBuffer staging_buffer{ image_size,
                                  1,
@@ -198,13 +177,11 @@ namespace esp
                                  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT };
 
     staging_buffer.map();
-    staging_buffer.write_to_buffer(pixels);
+    staging_buffer.write_to_buffer(static_cast<const void*>(texture->get_pixels()));
 
-    stbi_image_free(pixels);
-
-    create_image(texture_width,
-                 texture_height,
-                 texture_mip_levels,
+    create_image(texture->get_width(),
+                 texture->get_height(),
+                 texture->get_mip_levels(),
                  VK_SAMPLE_COUNT_1_BIT,
                  VK_FORMAT_R8G8B8A8_SRGB,
                  VK_IMAGE_TILING_OPTIMAL,
@@ -217,11 +194,15 @@ namespace esp
                             VK_FORMAT_R8G8B8A8_SRGB,
                             VK_IMAGE_LAYOUT_UNDEFINED,
                             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                            texture_mip_levels);
+                            texture->get_mip_levels());
 
-    copy_buffer_to_image(staging_buffer.get_buffer(), texture_image, texture_width, texture_height, 1);
+    copy_buffer_to_image(staging_buffer.get_buffer(), texture_image, texture->get_width(), texture->get_height(), 1);
 
-    generate_mipmaps(texture_image, VK_FORMAT_R8G8B8A8_SRGB, texture_width, texture_height, texture_mip_levels);
+    generate_mipmaps(texture_image,
+                     VK_FORMAT_R8G8B8A8_SRGB,
+                     texture->get_width(),
+                     texture->get_height(),
+                     texture->get_mip_levels());
   }
 
   void VulkanResourceManager::transition_image_layout(VkImage image,

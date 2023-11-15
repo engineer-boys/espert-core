@@ -28,10 +28,8 @@ namespace esp
 
     file.close();
 
-    return std::unique_ptr<Resource>(new TextResource(full_path,
-                                                      file_size,
-                                                      std::unique_ptr<void, VOID_DELETER_TYPE>(data, VOID_DELETER),
-                                                      line_count));
+    return std::unique_ptr<Resource>(
+        new TextResource(full_path, file_size, resource_data_t(data, VOID_DELETER), line_count));
   }
 
   void TextLoader::unload(std::unique_ptr<Resource> resource) { resource.reset(nullptr); }

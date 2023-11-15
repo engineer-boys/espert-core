@@ -6,6 +6,9 @@
 // Render API
 #include "VulkanSampler.hh"
 
+// Core
+#include "Core/Systems/TextureSystem.hh"
+
 namespace esp
 {
   class VulkanTexture
@@ -22,7 +25,7 @@ namespace esp
     std::shared_ptr<VulkanSampler> m_sampler;
 
    public:
-    static std::unique_ptr<VulkanTexture> create(const std::string& path, bool mipmapping = false);
+    static std::unique_ptr<VulkanTexture> create(const std::shared_ptr<Texture> texture, bool mipmapping = false);
 
     VulkanTexture(const VulkanTexture&)            = delete;
     VulkanTexture& operator=(const VulkanTexture&) = delete;

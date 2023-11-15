@@ -34,9 +34,9 @@ namespace esp
     Texture(const std::string& name, std::unique_ptr<ImageResource> image_resource) :
         m_name(name), m_pixels(static_cast<uint8_t*>(image_resource->release())),
         m_channel_count(image_resource->get_channel_count()), m_width(image_resource->get_width()),
-        m_height(image_resource->get_height()), m_mip_levels(image_resource->get_mip_levels()),
-        m_has_transparency(false)
+        m_height(image_resource->get_height()), m_has_transparency(false)
     {
+      m_mip_levels = std::floor(std::log2(std::max(m_width, m_height))) + 1;
       if (m_channel_count != 4) { return; }
       for (int i = 0; i < get_size(); i += m_channel_count)
       {
@@ -54,6 +54,7 @@ namespace esp
     inline const uint32_t get_width() const { return m_width; }
     inline const uint32_t get_height() const { return m_height; }
     inline const uint32_t get_mip_levels() const { return m_mip_levels; }
+    inline const uint8_t* get_pixels() const { return m_pixels.get(); }
     inline const bool has_transparency() const { return m_has_transparency; }
 
    private:
@@ -70,31 +71,33 @@ namespace esp
 
   class TextureSystem
   {
-   public:
-    PREVENT_COPY(TextureSystem);
-
-    static std::unique_ptr<TextureSystem> init();
-    void shutdown();
-    static std::shared_ptr<Texture> acquire(const std::string& name);
-    void release(const std::string& name);
-    inline const static bool is_initialized() { return s_initalized; }
-    std::shared_ptr<Texture> get_default_texture();
-    std::shared_ptr<Texture> get_default_diffuse_texture();
-    std::shared_ptr<Texture> get_default_specular_texture();
-    std::shared_ptr<Texture> get_default_normal_texture();
+   private:
+    static TextureSystem* s_instance;
 
    private:
-    TextureSystem() = default;
-
-    static std::shared_ptr<Texture> load(const std::string& name);
-    void create_default_textures();
-
     static const std::string s_default_texture_name;
     static const std::string s_default_diffuse_texture_name;
     static const std::string s_default_specular_texture_name;
     static const std::string s_default_normal_texture_name;
-    static bool s_initalized;
-    static TextureMap m_texture_map;
+    TextureMap m_texture_map;
+
+    TextureSystem();
+
+    static std::shared_ptr<Texture> load(const std::string& name);
+    static void create_default_textures();
+
+   public:
+    ~TextureSystem();
+    PREVENT_COPY(TextureSystem);
+
+    static std::unique_ptr<TextureSystem> create();
+
+    static std::shared_ptr<Texture> acquire(const std::string& name);
+    static void release(const std::string& name);
+    static std::shared_ptr<Texture> get_default_texture();
+    static std::shared_ptr<Texture> get_default_diffuse_texture();
+    static std::shared_ptr<Texture> get_default_specular_texture();
+    static std::shared_ptr<Texture> get_default_normal_texture();
   };
 } // namespace esp
 
