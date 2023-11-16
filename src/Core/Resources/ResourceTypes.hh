@@ -97,6 +97,53 @@ namespace esp
     uint8_t required_channels = 4;
   };
 
+  enum class ShaderStage : uint8_t
+  {
+    VERTEX                 = 0x01,
+    TESSELATION_CONTROL    = 0x02,
+    TESSELATION_EVALUATION = 0x04,
+    GEOMETRY               = 0x08,
+    FRAGMENT               = 0x10,
+    COMPUTE                = 0x20
+  };
+
+  class ShaderResource : public Resource
+  {
+   public:
+    ShaderResource(const fs::path& path, uint64_t size, resource_data_t data) : Resource(path, size, std::move(data)) {}
+
+    PREVENT_COPY(ShaderResource);
+
+    inline void addShaderSource(ShaderStage stage, std::unique_ptr<TextResource> shader_source)
+    {
+      if (m_shader_source_map.contains(stage))
+      {
+        ESP_CORE_ERROR("Shader source code for stage {} already added.", stage);
+        return;
+      }
+
+      m_shader_source_map.insert({ stage, std::move(shader_source) });
+    }
+
+    inline std::unique_ptr<TextResource> getShaderSource(ShaderStage stage)
+    {
+      if (!m_shader_source_map.contains(stage))
+      {
+        ESP_CORE_ERROR("No shader source code for stage {}.", stage);
+        return nullptr;
+      }
+
+      return std::move(m_shader_source_map.extract(stage).mapped());
+    }
+
+   private:
+    std::unordered_map<ShaderStage, std::unique_ptr<TextResource>> m_shader_source_map;
+  };
+
+  struct ShaderResourceParams : public ResourceParams
+  {
+  };
+
 } // namespace esp
 
 #endif // ESPERT_CORE_RESOURCES_RESOURCETYPES_HH
