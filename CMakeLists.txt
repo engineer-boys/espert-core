@@ -49,6 +49,36 @@ get_library(NAME glslang
     CONF_PATH lib/cmake/glslang
 )
 
+get_library(NAME spirv-cross
+    CONF_PATH share/spirv_cross_c/cmake
+    CONF_NAMES spirv_cross_c
+)
+
+get_library(NAME spirv-cross
+    CONF_PATH share/spirv_cross_core/cmake
+    CONF_NAMES spirv_cross_core
+)
+
+get_library(NAME spirv-cross
+    CONF_PATH share/spirv_cross_cpp/cmake
+    CONF_NAMES spirv_cross_cpp
+)
+
+get_library(NAME spirv-cross
+    CONF_PATH share/spirv_cross_glsl/cmake
+    CONF_NAMES spirv_cross_glsl
+)
+
+get_library(NAME spirv-cross
+    CONF_PATH share/spirv_cross_reflect/cmake
+    CONF_NAMES spirv_cross_reflect
+)
+
+get_library(NAME spirv-cross
+    CONF_PATH share/spirv_cross_util/cmake
+    CONF_NAMES spirv_cross_util
+)
+
 get_library(NAME spdlog
     CONF_PATH lib/cmake/spdlog
 )
@@ -86,6 +116,12 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     tinyobjloader::tinyobjloader
     EnTT::EnTT
     stb
+    spirv-cross-c
+    spirv-cross-core
+    spirv-cross-cpp
+    spirv-cross-glsl
+    spirv-cross-reflect
+    spirv-cross-util
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/external/stb)

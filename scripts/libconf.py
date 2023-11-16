@@ -30,6 +30,12 @@ ESPERT_LIBS_CONF = {
         CmakeParameter("SPDLOG_ENABLE_PCH", "ON"),
         CmakeParameter("SPDLOG_BUILD_EXAMPLE", "OFF"),
     ],
+    "spirv-cross": [
+        CmakeParameter("SPIRV_CROSS_ENABLE_TESTS", "OFF"),
+        CmakeParameter("SPIRV_CROSS_CLI", "OFF"),
+        CmakeParameter("SPIRV_CROSS_ENABLE_HLSL", "OFF"),
+        CmakeParameter("SPIRV_CROSS_ENABLE_MSL", "OFF"),
+    ],
     "stb": [],
     "tinyobjloader": [],
     "volk": [],

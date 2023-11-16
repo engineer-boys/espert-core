@@ -31,3 +31,6 @@
 [submodule "external/vvl"]
 	path = external/vvl
 	url = https://github.com/KhronosGroup/Vulkan-ValidationLayers
+[submodule "external/spirv-cross"]
+	path = external/spirv-cross
+	url = https://github.com/KhronosGroup/SPIRV-Cross.git
