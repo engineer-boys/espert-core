@@ -14,8 +14,11 @@ namespace esp
   std::unique_ptr<Resource> ImageLoader::load(const fs::path& path, const ResourceParams& params)
   {
     fs::path full_path = ResourceSystem::get_asset_base_path() / path;
-    ESP_ASSERT(fs::is_regular_file(fs::status(full_path)),
-               "Could not find " + full_path.string() + " or it is not a regular file.");
+    if (!fs::is_regular_file(fs::status(full_path)))
+    {
+      ESP_CORE_ERROR("Could not find {} or it is not a regular file.", full_path.string());
+      return nullptr;
+    }
 
     int width, height, channel_count;
     auto image_params = static_cast<const ImageResourceParams&>(params);
@@ -23,11 +26,20 @@ namespace esp
     stbi_set_flip_vertically_on_load_thread(image_params.flip_y);
 
     // TODO: use custom allocator
-    void* data = (void*)stbi_load(full_path.c_str(), &width, &height, &channel_count, image_params.required_channels);
-    ESP_ASSERT(data != nullptr, "Could not load " + full_path.string() + ".");
+    stbi_uc* data = stbi_load(full_path.c_str(), &width, &height, &channel_count, image_params.required_channels);
+
+    if (data == nullptr)
+    {
+      ESP_CORE_ERROR("Could not load {}.", full_path.string());
+      return nullptr;
+    }
 
     return std::unique_ptr<Resource>(
-        new ImageResource(full_path, resource_data_t(data, VOID_DELETER), channel_count, width, height));
+        new ImageResource(full_path,
+                          std::move(std::unique_ptr<uint8_t[]>(static_cast<uint8_t*>(data))),
+                          channel_count,
+                          width,
+                          height));
   }
 
   void ImageLoader::unload(std::unique_ptr<Resource> resource) { resource.reset(nullptr); }

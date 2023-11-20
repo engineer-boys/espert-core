@@ -76,7 +76,7 @@ namespace esp
       }
 
       auto resource = s_instance->m_loader_map.at(typeid(ResourceType))->load(path, params);
-      ESP_CORE_TRACE("Loaded {} {}.", typeid(ResourceType).name(), resource->get_filename());
+      if (resource) { ESP_CORE_TRACE("Loaded {} {}.", typeid(ResourceType).name(), path.filename().string()); }
       return resource;
     }
     inline static void unload(std::unique_ptr<Resource> resource)

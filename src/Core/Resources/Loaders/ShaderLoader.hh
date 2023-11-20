@@ -21,6 +21,9 @@ namespace esp
    public:
     virtual std::unique_ptr<Resource> load(const fs::path& path, const ResourceParams& params) override;
     virtual void unload(std::unique_ptr<Resource> resource) override;
+
+   private:
+    std::vector<uint32_t> load_shader_source(const fs::path& full_path);
   };
 
 } // namespace esp

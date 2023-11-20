@@ -29,11 +29,12 @@ TEST_CASE("Resource system - binary loader", "[resource_system]")
 
     auto params = esp::BinaryResourceParams();
 
-    auto resource = esp::ResourceSystem::load<esp::BinaryResource>("bin/test.bin", params);
+    auto resource        = esp::ResourceSystem::load<esp::BinaryResource>("bin/test.bin", params);
+    auto binary_resource = esp::unique_cast<esp::BinaryResource, esp::Resource>(std::move(resource));
 
-    REQUIRE(strcmp(static_cast<const char*>(resource->get_data()), "test") == 0);
+    REQUIRE(strcmp(static_cast<const char*>(binary_resource->get_data()), "test") == 0);
 
-    esp::ResourceSystem::unload(std::move(resource));
+    esp::ResourceSystem::unload(std::move(binary_resource));
   }
 }
 
@@ -47,9 +48,8 @@ TEST_CASE("Resource system - text loader", "[resource_system]")
 
     auto params = esp::TextResourceParams();
 
-    auto resource = esp::ResourceSystem::load<esp::TextResource>("test.txt", params);
-    std::unique_ptr<esp::TextResource> text_resource =
-        std::unique_ptr<esp::TextResource>(dynamic_cast<esp::TextResource*>(resource.release()));
+    auto resource      = esp::ResourceSystem::load<esp::TextResource>("test.txt", params);
+    auto text_resource = esp::unique_cast<esp::TextResource, esp::Resource>(std::move(resource));
 
     REQUIRE(strcmp(static_cast<const char*>(text_resource->get_data()), "test") == 0);
     REQUIRE(text_resource->get_num_of_lines() == 1);
@@ -66,18 +66,17 @@ TEST_CASE("Resource system - image loader", "[resource_system]")
   {
     auto resource_system = esp::ResourceSystem::create(asset_path);
 
-    auto image_params = esp::ImageResourceParams();
-    auto resource     = esp::ResourceSystem::load<esp::ImageResource>("test.jpg", image_params);
-    std::unique_ptr<esp::ImageResource> image_resource =
-        std::unique_ptr<esp::ImageResource>(dynamic_cast<esp::ImageResource*>(resource.release()));
+    auto image_params   = esp::ImageResourceParams();
+    image_params.flip_y = false;
+    auto resource       = esp::ResourceSystem::load<esp::ImageResource>("test.jpg", image_params);
+    auto image_resource = esp::unique_cast<esp::ImageResource, esp::Resource>(std::move(resource));
 
-    auto binary_params = esp::BinaryResourceParams();
-    resource           = esp::ResourceSystem::load<esp::BinaryResource>("test.jpg.bin", binary_params);
-    std::unique_ptr<esp::BinaryResource> binary_resource =
-        std::unique_ptr<esp::BinaryResource>(dynamic_cast<esp::BinaryResource*>(resource.release()));
+    auto binary_params   = esp::BinaryResourceParams();
+    resource             = esp::ResourceSystem::load<esp::BinaryResource>("test.jpg.bin", binary_params);
+    auto binary_resource = esp::unique_cast<esp::BinaryResource, esp::Resource>(std::move(resource));
 
-    REQUIRE(memcmp(static_cast<const char*>(image_resource->get_data()),
-                   static_cast<const char*>(binary_resource->get_data()),
+    REQUIRE(memcmp(static_cast<const void*>(image_resource->get_data()),
+                   static_cast<const void*>(binary_resource->get_data()),
                    image_resource->get_size()) == 0);
     REQUIRE(image_resource->get_width() == 700);
     REQUIRE(image_resource->get_height() == 576);
@@ -88,15 +87,50 @@ TEST_CASE("Resource system - image loader", "[resource_system]")
   }
 }
 
+TEST_CASE("Resource system - shader loader", "[resource_system]")
+{
+  auto logger         = esp::Logger::create();
+  fs::path asset_path = fs::current_path() / ".." / "tests" / "assets";
+
+  {
+    auto resource_system = esp::ResourceSystem::create(asset_path);
+
+    auto params = esp::ShaderResourceParams();
+
+    auto resource        = esp::ResourceSystem::load<esp::ShaderResource>("shaders/test", params);
+    auto shader_resource = esp::unique_cast<esp::ShaderResource, esp::Resource>(std::move(resource));
+
+    REQUIRE_FALSE(shader_resource->is_stage_avaliable(esp::ShaderStage::TESSELATION_CONTROL));
+    REQUIRE_FALSE(shader_resource->is_stage_avaliable(esp::ShaderStage::TESSELATION_EVALUATION));
+    REQUIRE_FALSE(shader_resource->is_stage_avaliable(esp::ShaderStage::GEOMETRY));
+    REQUIRE_FALSE(shader_resource->is_stage_avaliable(esp::ShaderStage::COMPUTE));
+
+    REQUIRE(shader_resource->is_stage_avaliable(esp::ShaderStage::VERTEX));
+    REQUIRE_NOTHROW(shader_resource->get_reflection(esp::ShaderStage::VERTEX));
+
+    REQUIRE(shader_resource->is_stage_avaliable(esp::ShaderStage::FRAGMENT));
+    REQUIRE_NOTHROW(shader_resource->get_reflection(esp::ShaderStage::FRAGMENT));
+
+    esp::ResourceSystem::unload(std::move(shader_resource));
+  }
+}
+
 class TestResource : public esp::Resource
 {
  public:
-  TestResource(const fs::path& path, uint64_t data_size, resource_data_t data) :
-      Resource(path, data_size, std::move(data))
+  TestResource(const fs::path& path, uint64_t size, std::unique_ptr<char[]> data) :
+      Resource(path), m_size(size), m_data(std::move(data))
   {
   }
 
   PREVENT_COPY(TestResource);
+
+  inline const uint64_t get_size() const { return m_size; }
+  inline const char* get_data() const { return m_data.get(); }
+
+ private:
+  uint64_t m_size;
+  std::unique_ptr<char[]> m_data;
 };
 
 struct TestResourceParams : public esp::ResourceParams
@@ -115,7 +149,8 @@ class TestLoader : public esp::Loader
 
     memcpy(data, "test", 5);
 
-    return std::unique_ptr<esp::Resource>(new TestResource(full_path, 5, resource_data_t(data, VOID_DELETER)));
+    return std::unique_ptr<esp::Resource>(
+        new TestResource(full_path, 5, std::move(std::unique_ptr<char[]>(static_cast<char*>(data)))));
   }
   inline virtual void unload(std::unique_ptr<esp::Resource> resource) override { resource.reset(nullptr); }
 };
@@ -130,11 +165,12 @@ TEST_CASE("Resource system - custom loader", "[resource_system]")
 
     esp::ResourceSystem::register_loader<TestResource>(std::unique_ptr<esp::Loader>(new TestLoader()));
 
-    auto params   = TestResourceParams();
-    auto resource = esp::ResourceSystem::load<TestResource>("Test", params);
+    auto params        = TestResourceParams();
+    auto resource      = esp::ResourceSystem::load<TestResource>("Test", params);
+    auto test_resource = esp::unique_cast<TestResource, esp::Resource>(std::move(resource));
 
-    REQUIRE(strcmp(static_cast<const char*>(resource->get_data()), "test") == 0);
+    REQUIRE(strcmp(static_cast<const char*>(test_resource->get_data()), "test") == 0);
 
-    esp::ResourceSystem::unload(std::move(resource));
+    esp::ResourceSystem::unload(std::move(test_resource));
   }
 }

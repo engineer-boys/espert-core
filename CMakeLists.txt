@@ -50,18 +50,8 @@ get_library(NAME glslang
 )
 
 get_library(NAME spirv-cross
-    CONF_PATH share/spirv_cross_c/cmake
-    CONF_NAMES spirv_cross_c
-)
-
-get_library(NAME spirv-cross
     CONF_PATH share/spirv_cross_core/cmake
     CONF_NAMES spirv_cross_core
-)
-
-get_library(NAME spirv-cross
-    CONF_PATH share/spirv_cross_cpp/cmake
-    CONF_NAMES spirv_cross_cpp
 )
 
 get_library(NAME spirv-cross
@@ -77,6 +67,16 @@ get_library(NAME spirv-cross
 get_library(NAME spirv-cross
     CONF_PATH share/spirv_cross_util/cmake
     CONF_NAMES spirv_cross_util
+)
+
+get_library(NAME spirv-cross
+    CONF_PATH share/spirv_cross_cpp/cmake
+    CONF_NAMES spirv_cross_cpp
+)
+
+get_library(NAME spirv-cross
+    CONF_PATH share/spirv_cross_c/cmake
+    CONF_NAMES spirv_cross_c
 )
 
 get_library(NAME spdlog

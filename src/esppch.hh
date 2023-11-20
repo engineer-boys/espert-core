@@ -24,6 +24,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+// spirv-cross
+#include <spirv_cross.hpp>
+
 // volk
 #include "volk.h"
 

@@ -69,7 +69,7 @@ namespace esp
       ESP_CORE_ERROR("Could not load txture {}.", name);
       return get_default_texture();
     }
-    auto image_resource = std::unique_ptr<ImageResource>(dynamic_cast<ImageResource*>(resource.release()));
+    auto image_resource = unique_cast<ImageResource, Resource>(std::move(resource));
     auto texture        = std::make_shared<Texture>(name, std::move(image_resource));
     s_instance->m_texture_map.insert({ name, texture });
     ESP_CORE_TRACE("Loaded texture {}.", name);
