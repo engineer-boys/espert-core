@@ -62,11 +62,12 @@ namespace esp
 
   std::shared_ptr<Texture> TextureSystem::load(const std::string& name)
   {
+    // TODO: set params.flip_y accordingly to currently used graphics API
     ImageResourceParams params;
     auto resource = ResourceSystem::load<ImageResource>(name, params);
     if (!resource)
     {
-      ESP_CORE_ERROR("Could not load txture {}.", name);
+      ESP_CORE_ERROR("Could not load texture {}.", name);
       return get_default_texture();
     }
     auto image_resource = std::unique_ptr<ImageResource>(dynamic_cast<ImageResource*>(resource.release()));

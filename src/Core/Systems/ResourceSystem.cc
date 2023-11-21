@@ -12,7 +12,7 @@ namespace esp
   {
     if (ResourceSystem::s_instance != nullptr)
     {
-      throw std::runtime_error("The resrouce system instance already exists!");
+      throw std::runtime_error("The resource system instance already exists!");
     }
 
     ResourceSystem::s_instance = this;

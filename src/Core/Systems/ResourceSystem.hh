@@ -81,7 +81,7 @@ namespace esp
     }
     inline static void unload(std::unique_ptr<Resource> resource)
     {
-      auto& r = *resource.get();
+      auto& r = *resource;
       if (!s_instance->m_loader_map.contains(typeid(r)))
       {
         ESP_CORE_ERROR("Cannot unload resource {}. Loader of type {} has not been registered.",
