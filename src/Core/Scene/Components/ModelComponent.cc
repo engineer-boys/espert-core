@@ -29,7 +29,7 @@ namespace esp
                       ATTR(3, ESP_FORMAT_R32G32_SFLOAT, offsetof(ModelComponent::Vertex, m_tex_coord)));
   }
 
-  void ModelComponent::Builder::load_model(const std::string& filepath)
+  ModelComponent::Builder& ModelComponent::Builder::load_model(const std::string& filepath)
   {
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
@@ -88,6 +88,8 @@ namespace esp
         m_indices.push_back(unique_vertices[vertex]);
       }
     }
+
+    return *this;
   }
 
   ModelComponent::ModelComponent(Builder& builder)
