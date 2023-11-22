@@ -34,7 +34,7 @@ namespace esp
       std::vector<Vertex> m_vertices{};
       std::vector<uint32_t> m_indices{};
 
-      void load_model(const std::string& filepath);
+      Builder& load_model(const std::string& filepath);
     };
 
    private:

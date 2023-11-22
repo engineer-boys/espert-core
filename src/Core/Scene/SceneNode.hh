@@ -7,8 +7,6 @@ namespace esp
 {
   class Entity;
 
-  // template<typename... Args> using SceneAction = std::function<void(Entity&, Args...)>;
-
   class SceneNode
   {
    private:
@@ -29,15 +27,6 @@ namespace esp
     inline Entity& get_entity() { return *m_entity; }
 
     void add_child(const std::shared_ptr<SceneNode>& child);
-
-    //    template<typename... Args> void act(const SceneAction<Args...>& f, Args... args)
-    //    {
-    //      f(*m_entity, std::forward<Args>(args)...);
-    //      for (auto& node : m_children)
-    //      {
-    //        node->act(f, std::forward<Args>(args)...);
-    //      }
-    //    }
 
     template<typename Func, typename... Args> void act(const Func& f, Args&&... args)
     {
