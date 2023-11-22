@@ -27,6 +27,9 @@
 // volk
 #include "volk.h"
 
+// entt
+#include "entt/entt.hpp"
+
 // espert
 #include "Core/Logger.hh"
 #include "Core/Utils.hh"

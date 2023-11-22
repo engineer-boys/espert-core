@@ -3,6 +3,7 @@
 
 #include "ColorComponent.hh"
 #include "ModelComponent.hh"
+#include "TagComponent.hh"
 #include "TransformComponent.hh"
 
 #endif // SCENE_COMPONENTS_HH
