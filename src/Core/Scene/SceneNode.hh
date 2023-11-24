@@ -32,9 +32,9 @@ namespace esp
     SceneNode* get_parent();
     Entity* get_entity();
 
-    template<typename... Args> void act(Action<void(Entity&, Args...)> f, Args&&... args)
+    template<typename... Args> void act(Action<void(SceneNode*, Args...)> f, Args&&... args)
     {
-      f(*m_entity, std::forward<Args>(args)...);
+      f(this, std::forward<Args>(args)...);
       for (auto& node : m_children)
       {
         node->act(f, std::forward<Args>(args)...);
