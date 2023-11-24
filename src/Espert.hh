@@ -20,6 +20,7 @@
 #include "Core/RenderAPI/Uniforms/EspUniformMetaData.hh"
 
 /* --------- Scene --------------------- */
+#include "Core/Scene/Action.hh"
 #include "Core/Scene/Components/Components.hh"
 #include "Core/Scene/Entity.hh"
 #include "Core/Scene/Scene.hh"

@@ -1,7 +1,7 @@
-#include <utility>
-
 #ifndef SCENE_SCENE_NODE_HH
 #define SCENE_SCENE_NODE_HH
+
+#include "Action.hh"
 
 namespace esp
 {
@@ -10,6 +10,7 @@ namespace esp
   class SceneNode
   {
    private:
+    std::shared_ptr<SceneNode> m_parent;
     std::vector<std::shared_ptr<SceneNode>> m_children;
     std::shared_ptr<Entity> m_entity;
 
@@ -24,11 +25,14 @@ namespace esp
     PREVENT_COPY(SceneNode)
 
     void attach_entity(const std::shared_ptr<Entity>& entity);
-    inline Entity& get_entity() { return *m_entity; }
 
+    void set_parent(const std::shared_ptr<SceneNode>& parent);
     void add_child(const std::shared_ptr<SceneNode>& child);
 
-    template<typename Func, typename... Args> void act(const Func& f, Args&&... args)
+    SceneNode* get_parent();
+    Entity* get_entity();
+
+    template<typename... Args> void act(Action<void(Entity&, Args...)> f, Args&&... args)
     {
       f(*m_entity, std::forward<Args>(args)...);
       for (auto& node : m_children)
