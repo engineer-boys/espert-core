@@ -47,8 +47,8 @@ namespace esp
 
    public:
     ModelComponent(Builder& builder);
-    ModelComponent(std::vector<Vertex>& vertices);
-    ModelComponent(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices);
+    ModelComponent(std::vector<Vertex> vertices);
+    ModelComponent(std::vector<Vertex> vertices, std::vector<uint32_t> indices);
 
     ModelComponent(const ModelComponent&)            = delete;
     ModelComponent& operator=(const ModelComponent&) = delete;

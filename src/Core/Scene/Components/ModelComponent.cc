@@ -105,7 +105,7 @@ namespace esp
     if (m_has_index_buffer) { m_index_buffer = EspIndexBuffer::create(builder.m_indices.data(), m_index_count); }
   }
 
-  ModelComponent::ModelComponent(std::vector<Vertex>& vertices)
+  ModelComponent::ModelComponent(std::vector<Vertex> vertices)
   {
     m_vertex_buffers = EspVertexBuffers::create();
 
@@ -115,7 +115,7 @@ namespace esp
     m_vertex_buffers->add(vertices.data(), sizeof(Vertex), m_vertex_count);
   }
 
-  ModelComponent::ModelComponent(std::vector<Vertex>& vertices, std::vector<uint32_t>& indices)
+  ModelComponent::ModelComponent(std::vector<Vertex> vertices, std::vector<uint32_t> indices)
   {
     m_vertex_buffers = EspVertexBuffers::create();
 
