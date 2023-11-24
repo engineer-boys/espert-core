@@ -9,7 +9,7 @@ namespace esp
 {
   class Entity;
 
-  class Scene : public std::enable_shared_from_this<Scene>
+  class Scene
   {
    private:
     entt::registry m_registry;
