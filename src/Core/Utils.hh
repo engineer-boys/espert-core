@@ -25,6 +25,7 @@
 
 #define ESP_MIN_FRAME_RATE 0.01666666666f // = 1/60s
 #define ESP_PI             3.14159265f    // = PI
+#define ESP_EPSILON        0.0001f
 
 // std
 #include <functional>
@@ -36,6 +37,18 @@ namespace esp
   {
     seed ^= std::hash<T>{}(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
     (hashCombine(seed, rest), ...);
+  }
+} // namespace esp
+
+#include <glm/glm.hpp>
+#include <glm/gtc/epsilon.hpp>
+
+namespace esp
+{
+  template<typename T> T normalize(const T& v)
+  {
+    if (glm::abs(glm::length(v) - 1.0f) < ESP_EPSILON || glm::abs(glm::length(v)) < ESP_EPSILON) return v;
+    return glm::normalize(v);
   }
 } // namespace esp
 

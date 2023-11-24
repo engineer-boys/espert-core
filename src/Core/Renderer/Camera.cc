@@ -29,10 +29,10 @@ namespace esp
       m_position -= m_front * m_move_speed * dt;
       break;
     case LEFT:
-      m_position -= glm::normalize(glm::cross(m_front, m_camera_up)) * m_move_speed * dt;
+      m_position -= esp::normalize(glm::cross(m_front, m_camera_up)) * m_move_speed * dt;
       break;
     case RIGHT:
-      m_position += glm::normalize(glm::cross(m_front, m_camera_up)) * m_move_speed * dt;
+      m_position += esp::normalize(glm::cross(m_front, m_camera_up)) * m_move_speed * dt;
       break;
     case UP:
       m_position += m_camera_up * m_move_speed * dt;
@@ -45,12 +45,11 @@ namespace esp
 
   void Camera::look_at(glm::vec3 target)
   {
-    if (target == m_position) { m_front = { 0.f, 0.f, 1.f }; }
-    else { m_front = glm::normalize(target - m_position); }
+    m_front = esp::normalize(target - m_position);
 
     m_pitch = std::clamp(ESP_PI / 2 - glm::acos(glm::dot(m_front, -S_UP)), -S_PITCH_TRESHOLD, S_PITCH_TRESHOLD);
 
-    glm::vec3 front_xz = glm::normalize(glm::vec3{ m_front.x, 0.f, m_front.z });
+    glm::vec3 front_xz = esp::normalize(glm::vec3{ m_front.x, 0.f, m_front.z });
     m_jaw              = m_front.x > 0 ? ESP_PI / 2 - glm::acos(glm::dot(front_xz, S_FRONT))
                                        : ESP_PI / 2 + glm::acos(glm::dot(front_xz, S_FRONT));
 
@@ -79,14 +78,14 @@ namespace esp
     direction.y = sin(m_pitch);
     direction.z = sin(m_jaw) * cos(m_pitch);
 
-    m_front = glm::normalize(direction);
+    m_front = esp::normalize(direction);
 
     update_camera_up();
   }
 
   void Camera::update_camera_up()
   {
-    glm::vec3 camera_right = glm::normalize(glm::cross(S_UP, m_front));
+    glm::vec3 camera_right = esp::normalize(glm::cross(S_UP, m_front));
     m_camera_up            = glm::cross(m_front, camera_right);
   }
 } // namespace esp
