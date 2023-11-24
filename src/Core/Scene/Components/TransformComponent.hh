@@ -7,46 +7,54 @@ namespace esp
 {
   struct TransformComponent
   {
-    glm::vec3 m_translation{}; // (position offset)
-    glm::vec3 m_scale{ 1.0f };
-    glm::vec3 m_rotation{};
+   private:
+    glm::vec3 m_translation{ 0.f, 0.f, 0.f };
+    float m_scale{ 1.f };
+    glm::quat m_rotation{ glm::angleAxis(0.f, glm::vec3{ 0.f, 0.f, 0.f }) };
 
+    glm::mat4 m_model{ 1.f };
+
+   public:
     TransformComponent()                          = default;
     TransformComponent(const TransformComponent&) = default;
-    TransformComponent(const glm::vec3& translation, const glm::vec3& scale, const glm::vec3& rotation) :
-        m_translation{ translation }, m_scale{ scale }, m_rotation{ rotation }
+    TransformComponent(const glm::vec3& translation,
+                       const float& s                 = 1.f,
+                       const float& rotation_angle    = 0,
+                       const glm::vec3& rotation_axis = {
+                           0.f,
+                           0.f,
+                           0.f,
+                       })
     {
+      translate(translation);
+      rotate(rotation_angle, rotation_axis);
+      scale(s);
     }
 
-    inline glm::mat4 get_model_mat()
+    inline void translate(const glm::vec3& translation)
     {
-      const float c3 = glm::cos(m_rotation.z);
-      const float s3 = glm::sin(m_rotation.z);
-      const float c2 = glm::cos(m_rotation.x);
-      const float s2 = glm::sin(m_rotation.x);
-      const float c1 = glm::cos(m_rotation.y);
-      const float s1 = glm::sin(m_rotation.y);
-
-      return glm::mat4{ {
-                            m_scale.x * (c1 * c3 + s1 * s2 * s3),
-                            m_scale.x * (c2 * s3),
-                            m_scale.x * (c1 * s2 * s3 - c3 * s1),
-                            0.0f,
-                        },
-                        {
-                            m_scale.y * (c3 * s1 * s2 - c1 * s3),
-                            m_scale.y * (c2 * c3),
-                            m_scale.y * (c1 * c3 * s2 + s1 * s3),
-                            0.0f,
-                        },
-                        {
-                            m_scale.z * (c2 * s1),
-                            m_scale.z * (-s2),
-                            m_scale.z * (c1 * c2),
-                            0.0f,
-                        },
-                        { m_translation.x, m_translation.y, m_translation.z, 1.0f } };
+      m_translation += translation;
+      translate();
     }
+    inline void translate() { m_model = glm::translate(m_model, m_translation); }
+
+    inline void scale(const float& s)
+    {
+      m_scale *= s;
+      scale();
+    }
+    inline void scale() { m_model = glm::scale(m_model, { m_scale, m_scale, m_scale }); }
+
+    // TODO: try to separate axis and self rotations
+    inline void rotate(const float& angle, const glm::vec3& axis)
+    {
+      m_rotation *= glm::angleAxis(angle, esp::normalize(axis));
+      rotate();
+    }
+    inline void rotate() { m_model *= glm::mat4_cast(m_rotation); }
+
+    inline void reset_model_mat() { m_model = glm::mat4{ 1.f }; }
+    inline glm::mat4& get_model_mat() { return m_model; }
   };
 } // namespace esp
 
