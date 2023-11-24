@@ -5,6 +5,11 @@
 
 namespace esp
 {
+  namespace action
+  {
+    struct TransformAction;
+  }
+
   struct TransformComponent
   {
    private:
@@ -15,28 +20,17 @@ namespace esp
     glm::mat4 m_model{ 1.f };
 
    public:
-    TransformComponent();
-    TransformComponent(const glm::vec3& translation,
-                       const float& s                 = 1.f,
-                       const float& rotation_angle    = 0,
-                       const glm::vec3& rotation_axis = { 0.f, 0.f, 0.f });
+    TransformComponent() : m_translation{ 0.f, 0.f, 0.f }, m_scale{ 1.f }, m_rotation{ 1.f, 0.f, 0.f, 0.f } {}
 
-    void set_translation(const glm::vec3& translation);
-    void translate(const glm::vec3& translation);
-    void translate();
-
-    void set_scale(const float& s);
-    void scale(const float& s);
-    void scale();
-
-    // TODO: try to separate axis and self rotations
-    void set_rotation(const float& angle, const glm::vec3& axis);
-    void rotate(const float& angle, const glm::vec3& axis);
-    void rotate();
-
-    inline const glm::vec3& get_translation() { return m_translation; }
     inline void reset_model_mat() { m_model = glm::mat4{ 1.f }; }
     inline const glm::mat4& get_model_mat() { return m_model; }
+
+   private:
+    inline void translate() { m_model = glm::translate(m_model, m_translation); }
+    inline void rotate() { m_model *= glm::mat4_cast(m_rotation); }
+    inline void scale() { m_model = glm::scale(m_model, { m_scale, m_scale, m_scale }); }
+
+    friend struct action::TransformAction;
   };
 } // namespace esp
 
