@@ -140,4 +140,4 @@ namespace esp::action
     return node->get_entity()->get_component<TransformComponent>();
   }
 
-} // namespace esp
+} // namespace esp::action
