@@ -11,7 +11,7 @@ namespace esp
   {
    private:
     entt::entity m_handle{ 0 };
-    std::shared_ptr<Scene> m_scene;
+    Scene* m_scene;
 
    public:
     template<typename T, typename... Args> T& add_component(Args&&... args)
@@ -35,7 +35,7 @@ namespace esp
     template<typename T> bool has_component() { return m_scene->m_registry.try_get<T>(m_handle); }
 
    private:
-    Entity(entt::entity handle, std::shared_ptr<Scene> scene) : m_handle{ handle }, m_scene{ std::move(scene) } {}
+    Entity(entt::entity handle, Scene* scene) : m_handle{ handle }, m_scene{ scene } {}
 
     friend class Scene;
   };

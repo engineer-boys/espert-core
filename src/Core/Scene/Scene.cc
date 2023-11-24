@@ -9,7 +9,7 @@ namespace esp
 
   std::shared_ptr<Entity> Scene::create_entity(const std::string& name)
   {
-    Entity entity = { m_registry.create(), shared_from_this() };
+    Entity entity = { m_registry.create(), this };
 
     auto& tag = entity.add_component<TagComponent>();
     tag.m_tag = name.empty() ? "entity" : name;
