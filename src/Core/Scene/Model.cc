@@ -1,13 +1,13 @@
-#include "ModelComponent.hh"
+#include "Model.hh"
 
 // tiny_obj_loader
 #include "tiny_obj_loader.h"
 
 namespace std
 {
-  template<> struct hash<esp::ModelComponent::Vertex>
+  template<> struct hash<esp::Model::Vertex>
   {
-    size_t operator()(const esp::ModelComponent::Vertex& vertex) const
+    size_t operator()(const esp::Model::Vertex& vertex) const
     {
       size_t seed = 0;
       esp::hashCombine(seed, vertex.m_position, vertex.m_color, vertex.m_normal, vertex.m_tex_coord);
@@ -18,18 +18,18 @@ namespace std
 
 namespace esp
 {
-  EspVertexLayout ModelComponent::Vertex::get_vertex_layout()
+  EspVertexLayout Model::Vertex::get_vertex_layout()
   {
-    return VTX_LAYOUT(sizeof(ModelComponent::Vertex),
+    return VTX_LAYOUT(sizeof(Model::Vertex),
                       0,
                       ESP_VERTEX_INPUT_RATE_VERTEX,
-                      ATTR(0, ESP_FORMAT_R32G32B32_SFLOAT, offsetof(ModelComponent::Vertex, m_position)),
-                      ATTR(1, ESP_FORMAT_R32G32B32_SFLOAT, offsetof(ModelComponent::Vertex, m_color)),
-                      ATTR(2, ESP_FORMAT_R32G32B32_SFLOAT, offsetof(ModelComponent::Vertex, m_normal)),
-                      ATTR(3, ESP_FORMAT_R32G32_SFLOAT, offsetof(ModelComponent::Vertex, m_tex_coord)));
+                      ATTR(0, ESP_FORMAT_R32G32B32_SFLOAT, offsetof(Model::Vertex, m_position)),
+                      ATTR(1, ESP_FORMAT_R32G32B32_SFLOAT, offsetof(Model::Vertex, m_color)),
+                      ATTR(2, ESP_FORMAT_R32G32B32_SFLOAT, offsetof(Model::Vertex, m_normal)),
+                      ATTR(3, ESP_FORMAT_R32G32_SFLOAT, offsetof(Model::Vertex, m_tex_coord)));
   }
 
-  ModelComponent::Builder& ModelComponent::Builder::load_model(const std::string& filepath)
+  Model::Builder& Model::Builder::load_model(const std::string& filepath)
   {
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
@@ -92,7 +92,7 @@ namespace esp
     return *this;
   }
 
-  ModelComponent::ModelComponent(Builder& builder)
+  Model::Model(Builder& builder)
   {
     m_vertex_buffers = EspVertexBuffers::create();
 
@@ -105,7 +105,7 @@ namespace esp
     if (m_has_index_buffer) { m_index_buffer = EspIndexBuffer::create(builder.m_indices.data(), m_index_count); }
   }
 
-  ModelComponent::ModelComponent(std::vector<Vertex> vertices)
+  Model::Model(std::vector<Vertex> vertices)
   {
     m_vertex_buffers = EspVertexBuffers::create();
 
@@ -115,7 +115,7 @@ namespace esp
     m_vertex_buffers->add(vertices.data(), sizeof(Vertex), m_vertex_count);
   }
 
-  ModelComponent::ModelComponent(std::vector<Vertex> vertices, std::vector<uint32_t> indices)
+  Model::Model(std::vector<Vertex> vertices, std::vector<uint32_t> indices)
   {
     m_vertex_buffers = EspVertexBuffers::create();
 
@@ -128,7 +128,7 @@ namespace esp
     if (m_has_index_buffer) { m_index_buffer = EspIndexBuffer::create(indices.data(), m_index_count); }
   }
 
-  void ModelComponent::attach()
+  void Model::attach()
   {
     m_vertex_buffers->attach();
     if (m_has_index_buffer) { m_index_buffer->attach(); }
