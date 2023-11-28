@@ -16,7 +16,7 @@ namespace esp
 
    public:
     static std::shared_ptr<SceneNode> create();
-    static std::shared_ptr<SceneNode> create(const std::shared_ptr<Entity>& entity);
+    static std::shared_ptr<SceneNode> create(std::shared_ptr<Entity> entity);
 
    private:
     static std::unique_ptr<SceneNode> create_root();
@@ -24,10 +24,10 @@ namespace esp
    public:
     PREVENT_COPY(SceneNode)
 
-    void attach_entity(const std::shared_ptr<Entity>& entity);
+    void attach_entity(std::shared_ptr<Entity> entity);
 
-    void set_parent(const std::shared_ptr<SceneNode>& parent);
-    void add_child(const std::shared_ptr<SceneNode>& child);
+    void set_parent(std::shared_ptr<SceneNode> parent);
+    void add_child(std::shared_ptr<SceneNode> child);
 
     SceneNode* get_parent();
     Entity* get_entity();
