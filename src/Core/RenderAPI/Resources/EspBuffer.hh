@@ -8,6 +8,12 @@ namespace esp
   class EspBuffer
   {
    public:
+    enum BufferType
+    {
+      LOCAL,
+      VISIBLE
+    };
+
     EspBuffer()          = default;
     virtual ~EspBuffer() = default;
 

@@ -136,10 +136,16 @@ class EspIndexBuffer:
 
 ```Python
 class EspVertexBuffers:
-    def add(data, vertex_size, vertex_count):
-        # This function get a vector of vertices and
-        # allocate needed buffor for it. All added buffors are
-        # stored in this object.
+    def add(data, vertex_size, vertex_count, type: BufferType):
+        # Adds data to a buffer storage and allocates needed memory.
+        # 'type' indicates wether the memory should be visible for
+        # cpu (and hence frequently updated) i.e. instance buffer
+        # or not i.e. vertex buffer
+
+    def update(index, data, instance_size, instance_count, offset):
+        # Updates buffer at specified index in buffer storage
+        # with provided data. To update buffer, one must be declared 
+        # with 'type' = BufferType::VISIBLE
     
     def attach():
         # Bind all buffers to pipeline.
