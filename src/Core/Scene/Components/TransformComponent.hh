@@ -22,7 +22,7 @@ namespace esp
    public:
     TransformComponent() : m_translation{ 0.f, 0.f, 0.f }, m_scale{ 1.f }, m_rotation{ 1.f, 0.f, 0.f, 0.f } {}
 
-    inline void reset_model_mat() { m_model = glm::mat4{ 1.f }; }
+    inline void reset() { m_model = glm::mat4{ 1.f }; }
     inline const glm::mat4& get_model_mat() { return m_model; }
 
    private:
