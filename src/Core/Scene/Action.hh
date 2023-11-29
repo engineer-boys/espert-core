@@ -33,18 +33,18 @@ namespace esp
     {
       static Action<void(SceneNode*, glm::vec3, ActionType)> set_translation;
       static Action<void(SceneNode*, glm::vec3, ActionType)> update_translation;
-      static Action<glm::vec3(SceneNode*, ActionType)> get_translation;
+      static Action<glm::vec3(SceneNode*)> get_translation;
       static Action<void(SceneNode*, ActionType)> translate;
 
       static Action<void(SceneNode*, float, ActionType)> set_scale;
       static Action<void(SceneNode*, float, ActionType)> update_scale;
-      static Action<float(SceneNode*, ActionType)> get_scale;
+      static Action<float(SceneNode*)> get_scale;
       static Action<void(SceneNode*, ActionType)> scale;
 
       // TODO: try to separate axis and self rotations
       static Action<void(SceneNode*, float, glm::vec3, ActionType)> set_rotation;
       static Action<void(SceneNode*, float, glm::vec3, ActionType)> update_rotation;
-      static Action<glm::quat(SceneNode*, ActionType)> get_rotation;
+      static Action<glm::quat(SceneNode*)> get_rotation;
       static Action<void(SceneNode*, ActionType)> rotate;
 
      private:

@@ -11,7 +11,7 @@ namespace esp::action
     auto parent     = node->get_parent();
 
     if (type == ActionType::ABSOLUTE || !parent) { transform.m_translation = translation; }
-    else { transform.m_translation = translation + get_translation(parent, type); }
+    else { transform.m_translation = translation + get_translation(parent); }
 
     transform.translate();
   };
@@ -23,19 +23,15 @@ namespace esp::action
     auto parent     = node->get_parent();
 
     if (type == ActionType::ABSOLUTE || !parent) { transform.m_translation += translation; }
-    else { transform.m_translation += translation + get_translation(parent, type); }
+    else { transform.m_translation += translation + get_translation(parent); }
 
     transform.translate();
   };
 
-  Action<glm::vec3(SceneNode*, ActionType)> TransformAction::get_translation = [](SceneNode* node, ActionType type)
+  Action<glm::vec3(SceneNode*)> TransformAction::get_translation = [](SceneNode* node)
   {
     auto& transform = get_component(node);
-    auto parent     = node->get_parent();
-
-    if (type == ActionType::ABSOLUTE || !parent) { return transform.m_translation; }
-
-    return transform.m_translation + get_translation(parent, type);
+    return transform.m_translation;
   };
 
   Action<void(SceneNode*, ActionType)> TransformAction::translate = [](SceneNode* node, ActionType type)
@@ -53,7 +49,7 @@ namespace esp::action
     auto parent     = node->get_parent();
 
     if (type == ActionType::ABSOLUTE || !parent) { transform.m_scale = s; }
-    else { transform.m_scale = s * get_scale(parent, type); }
+    else { transform.m_scale = s * get_scale(parent); }
 
     transform.scale();
   };
@@ -65,19 +61,15 @@ namespace esp::action
     auto parent     = node->get_parent();
 
     if (type == ActionType::ABSOLUTE || !parent) { transform.m_scale *= s; }
-    else { transform.m_scale *= s * get_scale(parent, type); }
+    else { transform.m_scale *= s * get_scale(parent); }
 
     transform.scale();
   };
 
-  Action<float(SceneNode*, ActionType)> TransformAction::get_scale = [](SceneNode* node, ActionType type)
+  Action<float(SceneNode*)> TransformAction::get_scale = [](SceneNode* node)
   {
     auto& transform = get_component(node);
-    auto parent     = node->get_parent();
-
-    if (type == ActionType::ABSOLUTE || !parent) { return transform.m_scale; }
-
-    return transform.m_scale + get_scale(parent, type);
+    return transform.m_scale;
   };
 
   Action<void(SceneNode*, ActionType)> TransformAction::scale = [](SceneNode* node, ActionType type)
@@ -96,7 +88,7 @@ namespace esp::action
     auto parent     = node->get_parent();
 
     if (type == ActionType::ABSOLUTE || !parent) { transform.m_rotation = glm::angleAxis(angle, esp::normalize(axis)); }
-    else { transform.m_rotation = glm::angleAxis(angle, esp::normalize(axis)) * get_rotation(parent, type); }
+    else { transform.m_rotation = glm::angleAxis(angle, esp::normalize(axis)) * get_rotation(parent); }
 
     transform.rotate();
   };
@@ -111,19 +103,15 @@ namespace esp::action
     {
       transform.m_rotation *= glm::angleAxis(angle, esp::normalize(axis));
     }
-    else { transform.m_rotation *= glm::angleAxis(angle, esp::normalize(axis)) * get_rotation(parent, type); }
+    else { transform.m_rotation *= glm::angleAxis(angle, esp::normalize(axis)) * get_rotation(parent); }
 
     transform.rotate();
   };
 
-  Action<glm::quat(SceneNode*, ActionType)> TransformAction::get_rotation = [](SceneNode* node, ActionType type)
+  Action<glm::quat(SceneNode*)> TransformAction::get_rotation = [](SceneNode* node)
   {
     auto& transform = get_component(node);
-    auto parent     = node->get_parent();
-
-    if (type == ActionType::ABSOLUTE || !parent) { return transform.m_rotation; }
-
-    return transform.m_rotation * get_rotation(parent, type);
+    return transform.m_rotation;
   };
 
   Action<void(SceneNode*, ActionType)> TransformAction::rotate = [](SceneNode* node, ActionType type)
