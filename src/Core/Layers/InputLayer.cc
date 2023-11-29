@@ -1,7 +1,7 @@
 #include "InputLayer.hh"
 
 #include "Core/EspWindow.hh"
-#include "Core/Renderer/Camera.hh"
+#include "Core/Scene/Scene.hh"
 
 namespace esp
 {
@@ -14,7 +14,7 @@ namespace esp
 
   bool InputLayer::key_pressed_event_handler(KeyPressedEvent& event, float dt)
   {
-    auto camera = Camera::get_current_camera();
+    auto camera = Scene::get_current_camera();
 
     if (camera == nullptr || !event.is_repeated()) { return false; }
 
@@ -47,7 +47,7 @@ namespace esp
 
   bool InputLayer::mouse_move_event_handler(MouseMovedEvent& event, float dt)
   {
-    auto camera = Camera::get_current_camera();
+    auto camera = Scene::get_current_camera();
 
     if (camera == nullptr) { return false; }
 
@@ -61,7 +61,7 @@ namespace esp
 
   bool InputLayer::mouse_scroll_event_handler(esp::MouseScrolledEvent& event)
   {
-    auto camera = Camera::get_current_camera();
+    auto camera = Scene::get_current_camera();
 
     if (camera == nullptr) { return false; }
 

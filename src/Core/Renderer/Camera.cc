@@ -2,8 +2,6 @@
 
 namespace esp
 {
-  Camera* Camera::s_current_camera = nullptr;
-
   void Camera::set_orthographic(float left, float right, float top, float bottom, float near, float far)
   {
     m_projection_mat = glm::orthoLH(left, right, bottom, top, near, far);
