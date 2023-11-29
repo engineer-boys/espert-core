@@ -31,6 +31,8 @@ namespace esp
     // TODO: try to add default action types
     struct TransformAction
     {
+      static Action<void(SceneNode*)> reset;
+
       static Action<void(SceneNode*, glm::vec3, ActionType)> set_translation;
       static Action<void(SceneNode*, glm::vec3, ActionType)> update_translation;
       static Action<glm::vec3(SceneNode*)> get_translation;

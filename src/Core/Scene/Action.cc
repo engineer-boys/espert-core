@@ -4,6 +4,12 @@
 
 namespace esp::action
 {
+  Action<void(SceneNode*)> TransformAction::reset = [](SceneNode* node)
+  {
+    auto& transform = get_component(node);
+    transform.reset();
+  };
+
   Action<void(SceneNode*, glm::vec3, ActionType)> TransformAction::set_translation =
       [](SceneNode* node, glm::vec3 translation, ActionType type)
   {
