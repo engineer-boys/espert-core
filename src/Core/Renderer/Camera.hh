@@ -23,10 +23,6 @@ namespace esp
     static constexpr glm::vec3 S_FRONT{ 0.f, 0.f, 1.f };
     static constexpr float S_PITCH_TRESHOLD{ glm::radians(89.f) };
 
-    // TODO: this will probably end up in scene class
-    static Camera* s_current_camera;
-    //
-
     glm::mat4 m_view{ 1.f };
     glm::mat4 m_projection_mat{ 1.f };
 
@@ -75,11 +71,6 @@ namespace esp
 
     inline const glm::mat4& get_view() { return m_view = glm::lookAt(m_position, m_position + m_front, m_camera_up); }
     inline const glm::mat4& get_projection() { return m_projection_mat; }
-
-    // TODO: this will probably end up in scene class
-    inline static void set_current_camera(Camera* camera) { s_current_camera = camera; }
-    inline static Camera* get_current_camera() { return s_current_camera; }
-    //
 
    private:
     void update_camera_up();
