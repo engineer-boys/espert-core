@@ -24,8 +24,8 @@
 #include "Core/Scene/Components/Components.hh"
 #include "Core/Scene/Entity.hh"
 #include "Core/Scene/Model.hh"
+#include "Core/Scene/Node.hh"
 #include "Core/Scene/Scene.hh"
-#include "Core/Scene/SceneNode.hh"
 
 /* --------- Renderer --------------------- */
 #include "Core/Renderer/Camera.hh"
