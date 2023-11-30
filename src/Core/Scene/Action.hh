@@ -18,7 +18,7 @@ namespace esp
   template<typename Func> using Action = typename Action_t<Func>::type;
   /* -------------------------------------------------------- */
 
-  class SceneNode;
+  class Node;
 
   namespace action
   {
@@ -31,26 +31,23 @@ namespace esp
     // TODO: try to add default action types
     struct TransformAction
     {
-      static Action<void(SceneNode*)> reset;
+      static Action<void(Node*)> reset;
 
-      static Action<void(SceneNode*, glm::vec3, ActionType)> set_translation;
-      static Action<void(SceneNode*, glm::vec3, ActionType)> update_translation;
-      static Action<glm::vec3(SceneNode*)> get_translation;
-      static Action<void(SceneNode*, ActionType)> translate;
+      static Action<void(Node*, glm::vec3, ActionType)> set_translation;
+      static Action<void(Node*, glm::vec3, ActionType)> update_translation;
+      static Action<void(Node*, ActionType)> translate;
 
-      static Action<void(SceneNode*, float, ActionType)> set_scale;
-      static Action<void(SceneNode*, float, ActionType)> update_scale;
-      static Action<float(SceneNode*)> get_scale;
-      static Action<void(SceneNode*, ActionType)> scale;
+      static Action<void(Node*, float, ActionType)> set_scale;
+      static Action<void(Node*, float, ActionType)> update_scale;
+      static Action<void(Node*, ActionType)> scale;
 
       // TODO: try to separate axis and self rotations
-      static Action<void(SceneNode*, float, glm::vec3, ActionType)> set_rotation;
-      static Action<void(SceneNode*, float, glm::vec3, ActionType)> update_rotation;
-      static Action<glm::quat(SceneNode*)> get_rotation;
-      static Action<void(SceneNode*, ActionType)> rotate;
+      static Action<void(Node*, float, glm::vec3, ActionType)> set_rotation;
+      static Action<void(Node*, float, glm::vec3, ActionType)> update_rotation;
+      static Action<void(Node*, ActionType)> rotate;
 
      private:
-      static TransformComponent& get_component(SceneNode* node);
+      static TransformComponent& get_transform(Node* node);
     };
   } // namespace action
 } // namespace esp

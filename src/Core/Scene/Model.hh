@@ -10,6 +10,7 @@
 
 namespace esp
 {
+  // TODO: move this out of Scene folder
   class Model
   {
    public:
