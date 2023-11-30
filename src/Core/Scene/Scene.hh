@@ -2,7 +2,7 @@
 #define SCENE_SCENE_HH
 
 #include "Core/Renderer/Camera.hh"
-#include "SceneNode.hh"
+#include "Node.hh"
 
 #include "esppch.hh"
 
@@ -14,7 +14,7 @@ namespace esp
   {
    private:
     entt::registry m_registry;
-    std::unique_ptr<SceneNode> m_root_node;
+    std::unique_ptr<Node> m_root_node;
 
     static Camera* s_current_camera;
     std::vector<std::shared_ptr<Camera>> m_cameras;
@@ -36,7 +36,7 @@ namespace esp
       ESP_ASSERT(index < m_cameras.size(), "Index was out of range")
       return m_cameras[index];
     }
-    inline SceneNode& get_root() { return *m_root_node; }
+    inline Node& get_root() { return *m_root_node; }
 
     template<typename... Args> auto& view() const { return m_registry.view<Args...>(); }
 
@@ -44,7 +44,7 @@ namespace esp
     inline static Camera* get_current_camera() { return s_current_camera; }
 
    private:
-    Scene() : m_root_node{ SceneNode::create_root() } {}
+    Scene() : m_root_node{ Node::create_root() } {}
 
     friend class Entity;
   };

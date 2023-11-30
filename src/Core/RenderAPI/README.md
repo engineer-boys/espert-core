@@ -1,7 +1,7 @@
 # RENDER API
 
 Disclaimers:
-1. Our Vulkan API uses 'VK_KHR_maintenance1' extension to flip the viewport's Y coordinate so it points upwards (like in OpenGL). 
+1. Espert's Vulkan API uses 'VK_KHR_maintenance1' extension to flip the viewport's Y coordinate so it points upwards (like in OpenGL). 
 
 ```Python
 class EspRenderContext:
