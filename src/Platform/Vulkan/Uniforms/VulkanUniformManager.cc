@@ -57,9 +57,10 @@ namespace esp
     pool_info.sType         = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     pool_info.poolSizeCount = static_cast<uint32_t>(pool_sizes.size());
     pool_info.pPoolSizes    = pool_sizes.data();
-    pool_info.maxSets       = static_cast<uint32_t>(
-        (meta_data->m_general_buffer_uniform_counter + meta_data->m_general_texture_uniform_counter) *
-        VulkanSwapChain::MAX_FRAMES_IN_FLIGHT);
+    pool_info.maxSets       = static_cast<uint32_t>((meta_data->m_general_buffer_uniform_counter +
+                                               meta_data->m_general_texture_uniform_counter +
+                                               meta_data->m_general_push_uniform_counter) *
+                                              VulkanSwapChain::MAX_FRAMES_IN_FLIGHT);
 
     if (vkCreateDescriptorPool(VulkanDevice::get_logical_device(), &pool_info, nullptr, &m_descriptor_pool) !=
         VK_SUCCESS)
@@ -119,10 +120,10 @@ namespace esp
     VkDescriptorSetAllocateInfo alloc_info{};
     alloc_info.sType              = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     alloc_info.descriptorPool     = descriptor_pool;
-    alloc_info.descriptorSetCount = uniform_data_storage.get_layouts_number();
+    alloc_info.descriptorSetCount = uniform_data_storage.get_layouts_count();
     alloc_info.pSetLayouts        = uniform_data_storage.get_layouts_data();
 
-    m_descriptor_sets.resize(uniform_data_storage.get_layouts_number());
+    m_descriptor_sets.resize(uniform_data_storage.get_layouts_count());
     if (vkAllocateDescriptorSets(VulkanDevice::get_logical_device(), &alloc_info, m_descriptor_sets.data()) !=
         VK_SUCCESS)
     {

@@ -4,6 +4,7 @@
 #include "esppch.hh"
 
 #include "Core/Systems/TextureSystem.hh"
+#include "EspUniformMetaData.hh"
 
 namespace esp
 {
@@ -26,6 +27,8 @@ namespace esp
                                             uint32_t binding,
                                             std::shared_ptr<Texture> texture,
                                             bool mipmapping = false) = 0;
+
+    virtual EspUniformManager& update_push_uniform(uint32_t index, void* data) = 0;
   };
 
 } // namespace esp

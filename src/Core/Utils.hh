@@ -52,4 +52,34 @@ namespace esp
   }
 } // namespace esp
 
+#include <bitset>
+
+namespace esp
+{
+  template<size_t Size> class EspBitset
+  {
+   private:
+    std::bitset<Size> m_bitset;
+
+   public:
+    EspBitset() : m_bitset{ std::bitset<Size>() } {}
+
+    inline void set(uint32_t offset, uint32_t size)
+    {
+      for (uint32_t i = offset; i < size; i++)
+      {
+        m_bitset.set(i);
+      }
+    }
+    inline bool any(uint32_t offset, uint32_t size)
+    {
+      for (uint32_t i = offset; i < size; i++)
+      {
+        if (m_bitset.test(i)) return true;
+      }
+      return false;
+    }
+  };
+} // namespace esp
+
 #endif // ESPERT_CORE_CORE_HH

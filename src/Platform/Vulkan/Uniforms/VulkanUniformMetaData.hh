@@ -8,6 +8,17 @@
 
 namespace esp
 {
+  struct EspMetaPush
+  {
+    static constexpr uint32_t MAX_PUSH_SIZE = 128;
+
+    EspUniformShaderStage m_stage;
+    uint32_t m_offset;
+    uint32_t m_size;
+
+    EspMetaPush(EspUniformShaderStage stage, uint32_t offset, uint32_t size);
+  };
+
   struct EspMetaUniform
   {
     EspUniformShaderStage m_stage;
@@ -56,9 +67,13 @@ namespace esp
    public:
     uint32_t m_general_buffer_uniform_counter  = 0;
     uint32_t m_general_texture_uniform_counter = 0;
+    uint32_t m_general_push_uniform_counter    = 0;
 
     uint32_t m_binding_count;
     std::vector<EspMetaDescriptorSet> m_meta_descriptor_sets;
+
+    EspBitset<EspMetaPush::MAX_PUSH_SIZE> m_occupied_push_memory{};
+    std::vector<EspMetaPush> m_meta_pushes;
 
    public:
     operator bool() const;
@@ -74,6 +89,8 @@ namespace esp
 
     virtual EspUniformMetaData& add_texture_uniform(EspUniformShaderStage stage,
                                                     uint32_t count_of_textures = 1) override;
+
+    virtual EspUniformMetaData& add_push_uniform(EspUniformShaderStage stage, uint32_t offset, uint32_t size) override;
   };
 } // namespace esp
 

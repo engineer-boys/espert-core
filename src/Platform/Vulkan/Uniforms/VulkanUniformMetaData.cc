@@ -2,6 +2,11 @@
 
 namespace esp
 {
+  EspMetaPush::EspMetaPush(esp::EspUniformShaderStage stage, uint32_t offset, uint32_t size) :
+      m_stage{ stage }, m_offset{ offset }, m_size{ size }
+  {
+  }
+
   EspMetaUniform::EspMetaUniform(EspUniformShaderStage stage,
                                  uint32_t size_of_data_chunk,
                                  uint32_t count_of_elements,
@@ -60,8 +65,24 @@ namespace esp
     return *this;
   }
 
+  EspUniformMetaData& VulkanUniformMetaData::add_push_uniform(EspUniformShaderStage stage,
+                                                              uint32_t offset,
+                                                              uint32_t size)
+  {
+    ESP_ASSERT(offset + size <= EspMetaPush::MAX_PUSH_SIZE, "Offset + size can't be larger than MAX_PUSH_SIZE")
+    ESP_ASSERT(!m_occupied_push_memory.any(offset, size), "Some of push memory is already in use")
+
+    m_occupied_push_memory.set(offset, size);
+
+    m_meta_pushes.emplace_back(stage, offset, size);
+    m_general_push_uniform_counter++;
+
+    return *this;
+  }
+
   VulkanUniformMetaData::operator bool() const
   {
-    return m_general_buffer_uniform_counter != 0 || m_general_texture_uniform_counter != 0;
+    return m_general_buffer_uniform_counter != 0 || m_general_texture_uniform_counter != 0 ||
+        m_general_push_uniform_counter != 0;
   }
 } // namespace esp
