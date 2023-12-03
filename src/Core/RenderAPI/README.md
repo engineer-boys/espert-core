@@ -1,7 +1,13 @@
 # RENDER API
 
 Disclaimers:
-1. Espert's Vulkan API uses 'VK_KHR_maintenance1' extension to flip the viewport's Y coordinate so it points upwards (like in OpenGL). 
+1. Espert's Vulkan API uses 'VK_KHR_maintenance1' extension to flip the viewport's Y coordinate so it points upwards (like in OpenGL).
+2. Push uniforms are Vulkan specific (push constants), and therefore used with other platforms will most likely not give any 
+performance boost. Also what's important to know is that
+    - memory for push uniforms is static and limited to 128 bytes
+    - allocated push uniforms can not overlap
+    - as long as pipelines have compatible layout, push uniform can be used between those pipelines, and therefore updated only once per frame
+    - single shader stage can have at most 1 push uniform 
 
 ```Python
 class EspRenderContext:
@@ -166,6 +172,9 @@ class EspUniformMetaData:
     
     def add_texture_uniform(stage: EspUniformShaderStage, count_of_textures: int = 1) -> self:
         # Add texture uniform to currently established ds.
+
+    def add_push_uniform(stage: EspUniformShaderStage, offset: int, size: int) -> self:
+        # Add push uniform to current pipeline (technically to current command buffer)
 ```
 
 ```Python
@@ -186,7 +195,10 @@ class EspUniformManager:
     
     def load_texture(set: int, binding: int, offset: int, path_to_texture: str, mipmapping: bool = false) -> self:
         # Load the given texture under the given index. The offset here is the number of a texture is
-        # uniform which is a table. Mipmaps can be enabled by setting mipmapping to true 
+        # uniform which is a table. Mipmaps can be enabled by setting mipmapping to true
+
+    def update_push_uniform(index: int, data: void*) -> self:
+        # Update push uniform at given index
 ```
 
 ```Python
@@ -231,6 +243,12 @@ class ExampleVertex:
     position: vec2
     color: vec3
 
+class ExamplePush
+{
+    pos: vec2
+    color: vec3
+};
+
 def main() -> None:
     renderContext = EspRenderContext()
     renderContext.init()
@@ -251,6 +269,12 @@ def main() -> None:
     pp_layout_metadata = EspUniformMetaData()
     pp_layout_metadata.establish_descriptor_set()
     pp_layout_metadata.add_buffer_uniform(EspUniformShaderStage::ESP_VTX_STAGE, len(MVP))
+    pp_layout.add_push_uniform(EspUniformShaderStage::ESP_VTX_STAGE,
+                               offsetof(ExamplePush, pos),
+                               sizeof(glm::vec2))
+    pp_layout.add_push_uniform(EspUniformShaderStage::ESP_FRAG_STAGE,
+                               offsetof(ExamplePush, color),
+                               sizeof(glm::vec3))
 
     builder = EspPipelineBuilder()
     builder.set_shader(
@@ -296,6 +320,8 @@ def main() -> None:
 
             mvp = get_new_mvp()
             uniform_manager.update_buffer_uniform(0,0,0,len(MVP), mvp)
+            uniform_manager.update_push_uniform(0, pos);
+            uniform_manager.update_push_uniform(1, color);
             uniform_manager.attach()
 
             i_buffer.attach()

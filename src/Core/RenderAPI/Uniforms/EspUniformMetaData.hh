@@ -16,7 +16,6 @@ namespace esp
   {
     ESP_BUFFER_UNIFORM,
     ESP_TEXTURE,
-    ESP_SMALL_FAST_UNIFORM
   };
 
   struct EspUniformMetaData
@@ -35,6 +34,8 @@ namespace esp
                                                    uint32_t count_of_data_chunks = 1) = 0;
 
     virtual EspUniformMetaData& add_texture_uniform(EspUniformShaderStage stage, uint32_t count_of_textures = 1) = 0;
+
+    virtual EspUniformMetaData& add_push_uniform(EspUniformShaderStage stage, uint32_t offset, uint32_t size) = 0;
 
     static std::unique_ptr<EspUniformMetaData> create();
   };

@@ -45,6 +45,20 @@ namespace esp
       }
       m_descriptor_set_layouts.push_back(descriptor_set_layout);
     }
+
+    for (auto& push : m_meta_data->m_meta_pushes)
+    {
+      auto stage = VK_SHADER_STAGE_VERTEX_BIT;
+      if (push.m_stage == esp::EspUniformShaderStage::ESP_FRAG_STAGE) { stage = VK_SHADER_STAGE_FRAGMENT_BIT; }
+      else if (push.m_stage == esp::EspUniformShaderStage::ESP_ALL_STAGES) { stage = VK_SHADER_STAGE_ALL_GRAPHICS; }
+
+      VkPushConstantRange push_constant_range{};
+      push_constant_range.stageFlags = stage;
+      push_constant_range.offset     = push.m_offset;
+      push_constant_range.size       = push.m_size;
+
+      m_push_constant_ranges.push_back(push_constant_range);
+    }
   }
 
   EspUniformDataStorage::~EspUniformDataStorage()
@@ -78,12 +92,6 @@ static VkDescriptorSetLayoutBinding create_descriptor_set_layout_binding(esp::Es
     ubo_layout_binding.stageFlags         = stage;
     return ubo_layout_binding;
   }
-
-  case esp::EspUniformType::ESP_SMALL_FAST_UNIFORM:
-    /* code */
-    throw std::runtime_error("Not implemented ESP_SMALL_FAST_UNIFORM!");
-    break;
-
   case esp::EspUniformType::ESP_TEXTURE:
   {
     VkDescriptorSetLayoutBinding sampler_layout_binding{};

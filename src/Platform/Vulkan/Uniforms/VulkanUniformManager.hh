@@ -117,6 +117,19 @@ namespace esp
       return *this;
     }
 
+    inline virtual EspUniformManager& update_push_uniform(uint32_t index, void* data) override
+    {
+      auto& push_range = m_out_uniform_data_storage.m_push_constant_ranges[index];
+      vkCmdPushConstants(VulkanFrameManager::get_current_command_buffer(),
+                         m_out_pipeline_layout,
+                         push_range.stageFlags,
+                         push_range.offset,
+                         push_range.size,
+                         data);
+
+      return *this;
+    }
+
    public:
     ~VulkanUniformManager();
   };

@@ -111,9 +111,20 @@ namespace esp
 
     if (*meta_data)
     {
-      m_uniform_data_storage              = std::make_unique<EspUniformDataStorage>(std::move(meta_data));
-      pipeline_layout_info.setLayoutCount = m_uniform_data_storage->get_layouts_number();
-      pipeline_layout_info.pSetLayouts    = m_uniform_data_storage->get_layouts_data();
+      m_uniform_data_storage = std::make_unique<EspUniformDataStorage>(std::move(meta_data));
+      auto set_layout_count  = m_uniform_data_storage->get_layouts_count();
+      auto pushes_count      = m_uniform_data_storage->get_pushes_count();
+
+      if (set_layout_count > 0)
+      {
+        pipeline_layout_info.setLayoutCount = set_layout_count;
+        pipeline_layout_info.pSetLayouts    = m_uniform_data_storage->get_layouts_data();
+      }
+      if (pushes_count > 0)
+      {
+        pipeline_layout_info.pushConstantRangeCount = pushes_count;
+        pipeline_layout_info.pPushConstantRanges    = m_uniform_data_storage->get_push_data();
+      }
     }
 
     if (vkCreatePipelineLayout(VulkanDevice::get_logical_device(),
