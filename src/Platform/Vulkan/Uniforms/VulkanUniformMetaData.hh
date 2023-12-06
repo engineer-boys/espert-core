@@ -72,8 +72,11 @@ namespace esp
     uint32_t m_binding_count;
     std::vector<EspMetaDescriptorSet> m_meta_descriptor_sets;
 
-    EspBitset<EspMetaPush::MAX_PUSH_SIZE> m_occupied_push_memory{};
     std::vector<EspMetaPush> m_meta_pushes;
+
+   private:
+    uint32_t m_push_shader_stage_mask = 0b00;
+    EspBitset<EspMetaPush::MAX_PUSH_SIZE> m_occupied_push_memory{};
 
    public:
     operator bool() const;

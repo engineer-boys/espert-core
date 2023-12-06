@@ -69,8 +69,13 @@ namespace esp
                                                               uint32_t offset,
                                                               uint32_t size)
   {
+    auto stage_mask = (uint32_t)stage + 1;
+
+    ESP_ASSERT(!(m_push_shader_stage_mask & stage_mask), "Single shader stage can't have more than 1 push uniform")
     ESP_ASSERT(offset + size <= EspMetaPush::MAX_PUSH_SIZE, "Offset + size can't be larger than MAX_PUSH_SIZE")
     ESP_ASSERT(!m_occupied_push_memory.any(offset, size), "Some of push memory is already in use")
+
+    m_push_shader_stage_mask |= stage_mask;
 
     m_occupied_push_memory.set(offset, size);
 
