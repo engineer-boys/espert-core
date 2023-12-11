@@ -94,43 +94,31 @@ namespace esp
 
   Model::Model(Builder& builder)
   {
-    m_vertex_buffers = EspVertexBuffers::create();
+    m_vertex_buffer = EspVertexBuffer::create(builder.m_vertices.data(), sizeof(Vertex), builder.m_vertices.size());
 
-    m_vertex_count = builder.m_vertices.size();
-    m_vertex_buffers->add(builder.m_vertices.data(), sizeof(Vertex), m_vertex_count);
-
-    m_index_count      = builder.m_indices.size();
-    m_has_index_buffer = m_index_count > 0;
-
-    if (m_has_index_buffer) { m_index_buffer = EspIndexBuffer::create(builder.m_indices.data(), m_index_count); }
+    auto index_count   = builder.m_indices.size();
+    m_has_index_buffer = index_count > 0;
+    if (m_has_index_buffer) { m_index_buffer = EspIndexBuffer::create(builder.m_indices.data(), index_count); }
   }
 
   Model::Model(std::vector<Vertex> vertices)
   {
-    m_vertex_buffers = EspVertexBuffers::create();
-
-    m_vertex_count = vertices.size();
-    m_index_count  = 0;
-
-    m_vertex_buffers->add(vertices.data(), sizeof(Vertex), m_vertex_count);
+    m_vertex_buffer = EspVertexBuffer::create(vertices.data(), sizeof(Vertex), vertices.size());
   }
 
   Model::Model(std::vector<Vertex> vertices, std::vector<uint32_t> indices)
   {
-    m_vertex_buffers = EspVertexBuffers::create();
+    m_vertex_buffer = EspVertexBuffer::create(vertices.data(), sizeof(Vertex), vertices.size());
 
-    m_vertex_count = vertices.size();
-    m_vertex_buffers->add(vertices.data(), sizeof(Vertex), m_vertex_count);
-
-    m_index_count      = indices.size();
-    m_has_index_buffer = m_index_count > 0;
-
-    if (m_has_index_buffer) { m_index_buffer = EspIndexBuffer::create(indices.data(), m_index_count); }
+    auto index_count   = indices.size();
+    m_has_index_buffer = index_count > 0;
+    if (m_has_index_buffer) { m_index_buffer = EspIndexBuffer::create(indices.data(), index_count); }
   }
 
   void Model::attach()
   {
-    m_vertex_buffers->attach();
+    if (m_has_instance_buffer) { m_vertex_buffer->attach_instanced(*m_instance_buffer); }
+    else { m_vertex_buffer->attach(); }
     if (m_has_index_buffer) { m_index_buffer->attach(); }
   }
 } // namespace esp

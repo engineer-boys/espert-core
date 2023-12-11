@@ -6,7 +6,7 @@
 // Render API
 #include "Core/RenderAPI/Pipeline/EspPipelineBuilder.hh"
 #include "Core/RenderAPI/Resources/EspIndexBuffer.hh"
-#include "Core/RenderAPI/Resources/EspVertexBuffers.hh"
+#include "Core/RenderAPI/Resources/EspVertexBuffer.hh"
 
 namespace esp
 {
@@ -39,15 +39,13 @@ namespace esp
     };
 
    private:
-    std::unique_ptr<EspVertexBuffers> m_vertex_buffers;
-    uint32_t m_vertex_count;
+    std::unique_ptr<EspVertexBuffer> m_vertex_buffer;
 
     bool m_has_index_buffer{ false };
     std::unique_ptr<EspIndexBuffer> m_index_buffer;
-    uint32_t m_index_count;
 
     bool m_has_instance_buffer{ false };
-    uint32_t m_instance_buffer_index;
+    std::unique_ptr<EspVertexBuffer> m_instance_buffer;
 
    public:
     Model(Builder& builder);
@@ -61,23 +59,21 @@ namespace esp
 
     void attach();
 
-    inline uint32_t get_vertex_count() { return m_vertex_count; }
-    inline uint32_t get_index_count() { return m_index_count; }
-    inline bool has_index_buffer() { return m_has_index_buffer; }
+    inline uint32_t get_vertex_count() { return m_vertex_buffer->get_vertex_count(); }
+    inline uint32_t get_index_count() { return m_index_buffer->get_index_count(); }
 
     template<typename T> void add_instance_buffer(std::vector<T> instances)
     {
       ESP_ASSERT(!m_has_instance_buffer, "Model already has instance buffer")
 
-      m_has_instance_buffer   = true;
-      m_instance_buffer_index = m_vertex_buffers->get_buffers_count();
-      m_vertex_buffers->add(instances.data(), sizeof(T), instances.size(), EspBuffer::VISIBLE);
+      m_has_instance_buffer = true;
+      m_instance_buffer = EspVertexBuffer::create(instances.data(), sizeof(T), instances.size(), EspBuffer::VISIBLE);
     }
     template<typename T> void update_instance_buffer(std::vector<T> instances, uint32_t offset)
     {
       ESP_ASSERT(m_has_instance_buffer, "Model doesn't have an instance buffer")
 
-      m_vertex_buffers->update(m_instance_buffer_index, instances.data(), sizeof(T), instances.size(), offset);
+      m_instance_buffer->update(instances.data(), sizeof(T), instances.size(), offset);
     }
   };
 } // namespace esp
