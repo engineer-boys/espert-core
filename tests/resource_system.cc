@@ -66,8 +66,9 @@ TEST_CASE("Resource system - image loader", "[resource_system]")
   {
     auto resource_system = esp::ResourceSystem::create(asset_path);
 
-    auto image_params = esp::ImageResourceParams();
-    auto resource     = esp::ResourceSystem::load<esp::ImageResource>("test.jpg", image_params);
+    auto image_params   = esp::ImageResourceParams();
+    image_params.flip_y = true;
+    auto resource       = esp::ResourceSystem::load<esp::ImageResource>("test.jpg", image_params);
     std::unique_ptr<esp::ImageResource> image_resource =
         std::unique_ptr<esp::ImageResource>(dynamic_cast<esp::ImageResource*>(resource.release()));
 
