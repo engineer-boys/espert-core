@@ -16,9 +16,9 @@ namespace esp
    private:
     VulkanDebugMessenger();
 
-    VkBool32 Log(const VkDebugUtilsMessageSeverityFlagBitsEXT& messageSeverity,
-                 VkDebugUtilsMessageTypeFlagsEXT messageType,
-                 const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData);
+    VkBool32 log(const VkDebugUtilsMessageSeverityFlagBitsEXT& message_severity,
+                 VkDebugUtilsMessageTypeFlagsEXT message_type,
+                 const VkDebugUtilsMessengerCallbackDataEXT* p_callback_data);
 
    public:
     virtual ~VulkanDebugMessenger() override;
@@ -28,10 +28,10 @@ namespace esp
     virtual void init() override;
     virtual void terminate() override;
 
-    static VKAPI_ATTR VkBool32 VKAPI_CALL Log(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-                                              VkDebugUtilsMessageTypeFlagsEXT messageType,
-                                              const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
-                                              void* pUserData);
+    static VKAPI_ATTR VkBool32 VKAPI_CALL log(VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
+                                              VkDebugUtilsMessageTypeFlagsEXT message_type,
+                                              const VkDebugUtilsMessengerCallbackDataEXT* p_callback_data,
+                                              void* p_user_data);
 
     inline static const VkDebugUtilsMessengerCreateInfoEXT* get_create_info()
     {
