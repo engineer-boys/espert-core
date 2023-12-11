@@ -21,7 +21,7 @@ namespace esp
         VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
     m_create_info.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
         VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-    m_create_info.pfnUserCallback = VulkanDebugMessenger::Log;
+    m_create_info.pfnUserCallback = VulkanDebugMessenger::log;
     m_create_info.pUserData       = reinterpret_cast<void*>(s_instance);
   }
 
@@ -55,32 +55,32 @@ namespace esp
     }
   }
 
-  VkBool32 VulkanDebugMessenger::Log(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-                                     VkDebugUtilsMessageTypeFlagsEXT messageType,
-                                     const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
-                                     void* pUserData)
+  VkBool32 VulkanDebugMessenger::log(VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
+                                     VkDebugUtilsMessageTypeFlagsEXT message_type,
+                                     const VkDebugUtilsMessengerCallbackDataEXT* p_callback_data,
+                                     void* p_user_data)
   {
-    auto pThis = reinterpret_cast<VulkanDebugMessenger*>(pUserData);
-    return pThis->Log(messageSeverity, messageType, pCallbackData);
+    auto p_this = reinterpret_cast<VulkanDebugMessenger*>(p_user_data);
+    return p_this->log(message_severity, message_type, p_callback_data);
   }
 
-  VkBool32 VulkanDebugMessenger::Log(const VkDebugUtilsMessageSeverityFlagBitsEXT& messageSeverity,
-                                     VkDebugUtilsMessageTypeFlagsEXT messageType,
-                                     const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData)
+  VkBool32 VulkanDebugMessenger::log(const VkDebugUtilsMessageSeverityFlagBitsEXT& message_severity,
+                                     VkDebugUtilsMessageTypeFlagsEXT message_type,
+                                     const VkDebugUtilsMessengerCallbackDataEXT* p_callback_data)
   {
-    if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT)
+    if (message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT)
     {
-      ESP_CORE_INFO(pCallbackData->pMessage);
+      ESP_CORE_INFO(p_callback_data->pMessage);
       m_info_count++;
     }
-    if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
+    if (message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
     {
-      ESP_CORE_WARN(pCallbackData->pMessage);
+      ESP_CORE_WARN(p_callback_data->pMessage);
       m_warning_count++;
     }
-    if (messageSeverity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
+    if (message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
     {
-      ESP_CORE_ERROR(pCallbackData->pMessage);
+      ESP_CORE_ERROR(p_callback_data->pMessage);
       m_error_count++;
     }
 
