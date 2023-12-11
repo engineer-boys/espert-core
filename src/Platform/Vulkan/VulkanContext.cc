@@ -1,6 +1,7 @@
 #include "VulkanContext.hh"
 #include "GLFW/glfw3.h"
 #include "Platform/Vulkan/Resources/VulkanSampler.hh"
+#include "Platform/Vulkan/VulkanDebugMessenger.hh"
 
 // std
 #include <cstring>
@@ -15,19 +16,11 @@ using DeviceContextData = esp::DeviceContextData;
 // signatures
 static bool check_validation_layer_support(ContextData& context_data);
 static std::vector<const char*> get_required_extensions(ContextData& context_data);
-static void populate_debug_messenger_create_info(VkDebugUtilsMessengerCreateInfoEXT& create_info);
 static void has_glfw_required_instance_extensions(ContextData& context_data);
-static VkResult create_debug_utils_messenger_ext(VkInstance instance,
-                                                 const VkDebugUtilsMessengerCreateInfoEXT* p_create_info,
-                                                 const VkAllocationCallbacks* p_allocator,
-                                                 VkDebugUtilsMessengerEXT* p_debug_messenger);
 static bool is_device_suitable(VkPhysicalDevice device, ContextData& context_data);
 static esp::SwapChainSupportDetails query_swap_chain_support(VkPhysicalDevice device, ContextData& context_data);
 static esp::QueueFamilyIndices find_queue_families(VkPhysicalDevice device, ContextData& context_data);
 static bool check_device_extension_support(VkPhysicalDevice device, ContextData& context_data);
-static void destroy_debug_utils_messenger_ext(VkInstance instance,
-                                              VkDebugUtilsMessengerEXT debug_messenger,
-                                              const VkAllocationCallbacks* p_allocator);
 static void pick_physical_device(ContextData& context_data, DeviceContextData& device_context_data);
 static void create_logical_device(ContextData& context_data, DeviceContextData& device_context_data);
 static VkSampleCountFlagBits get_max_usable_sample_count();
@@ -57,8 +50,6 @@ namespace esp
     // create_instance - initializes vulkan library, it's connection between our
     // application and vulkan
     create_instance();
-    // setup_debug_messenger - enables validation layers for debugging
-    setup_debug_messenger();
     // create_surface - connection between our GLFWwindow and vulkan's ability
     // do display results
     create_surface(window);
@@ -76,11 +67,6 @@ namespace esp
     VulkanSampler::terminate_default_sampler();
     m_vulkan_resource_manager->terminate();
     m_vulkan_device->terminate();
-
-    if (m_context_data.m_enable_validation_layers)
-    {
-      destroy_debug_utils_messenger_ext(m_context_data.m_instance, m_context_data.m_debug_messenger, nullptr);
-    }
 
     vkDestroySurfaceKHR(m_context_data.m_instance, m_context_data.m_surface, nullptr);
     vkDestroyInstance(m_context_data.m_instance, nullptr);
@@ -130,14 +116,12 @@ namespace esp
     create_info.enabledExtensionCount   = static_cast<uint32_t>(extensions.size());
     create_info.ppEnabledExtensionNames = extensions.data();
 
-    VkDebugUtilsMessengerCreateInfoEXT debug_create_info;
     if (m_context_data.m_enable_validation_layers)
     {
       create_info.enabledLayerCount   = static_cast<uint32_t>(m_context_data.m_validation_layers.size());
       create_info.ppEnabledLayerNames = m_context_data.m_validation_layers.data();
 
-      populate_debug_messenger_create_info(debug_create_info);
-      create_info.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debug_create_info;
+      create_info.pNext = VulkanDebugMessenger::get_create_info();
     }
     else
     {
@@ -153,21 +137,6 @@ namespace esp
     volkLoadInstance(m_context_data.m_instance);
 
     has_glfw_required_instance_extensions(m_context_data);
-  }
-
-  void VulkanContext::setup_debug_messenger()
-  {
-    if (!m_context_data.m_enable_validation_layers) return;
-    VkDebugUtilsMessengerCreateInfoEXT create_info;
-    populate_debug_messenger_create_info(create_info);
-    if (create_debug_utils_messenger_ext(m_context_data.m_instance,
-                                         &create_info,
-                                         nullptr,
-                                         &m_context_data.m_debug_messenger) != VK_SUCCESS)
-    {
-      ESP_CORE_ERROR("Failed to set up debug messenger");
-      throw std::runtime_error("Failed to set up debug messenger");
-    }
   }
 
   void VulkanContext::create_surface(EspWindow& window) { window.create_window_surface(); }
@@ -200,20 +169,6 @@ namespace esp
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
   }
 } // namespace esp
-
-/* --------------------------------------------------------- */
-/* --------------------- DEBUG CALLS ----------------------- */
-/* --------------------------------------------------------- */
-
-static VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(VkDebugUtilsMessageSeverityFlagBitsEXT message_severity,
-                                                     VkDebugUtilsMessageTypeFlagsEXT message_type,
-                                                     const VkDebugUtilsMessengerCallbackDataEXT* p_callback_data,
-                                                     void* p_user_data)
-{
-  ESP_CORE_ERROR("Validation layer: {0}", p_callback_data->pMessage);
-
-  return VK_FALSE;
-}
 
 /* --------------------------------------------------------- */
 /* ------------------ HELPFUL FUNCTIONS -------------------- */
@@ -264,18 +219,6 @@ static std::vector<const char*> get_required_extensions(ContextData& context_dat
   return extensions;
 }
 
-static void populate_debug_messenger_create_info(VkDebugUtilsMessengerCreateInfoEXT& create_info)
-{
-  create_info       = {};
-  create_info.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
-  create_info.messageSeverity =
-      VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-  create_info.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT |
-      VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-  create_info.pfnUserCallback = debug_callback;
-  create_info.pUserData       = nullptr; // Optional
-}
-
 static void has_glfw_required_instance_extensions(ContextData& context_data)
 {
   uint32_t extensions_count = 0;
@@ -302,16 +245,6 @@ static void has_glfw_required_instance_extensions(ContextData& context_data)
       throw std::runtime_error("Missing required glfw extension");
     }
   }
-}
-
-static VkResult create_debug_utils_messenger_ext(VkInstance instance,
-                                                 const VkDebugUtilsMessengerCreateInfoEXT* p_create_info,
-                                                 const VkAllocationCallbacks* p_allocator,
-                                                 VkDebugUtilsMessengerEXT* p_debug_messenger)
-{
-  auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
-  if (func != nullptr) { return func(instance, p_create_info, p_allocator, p_debug_messenger); }
-  else { return VK_ERROR_EXTENSION_NOT_PRESENT; }
 }
 
 static bool is_device_suitable(VkPhysicalDevice device, ContextData& context_data)
@@ -412,14 +345,6 @@ static bool check_device_extension_support(VkPhysicalDevice device, ContextData&
   }
 
   return required_extensions.empty();
-}
-
-static void destroy_debug_utils_messenger_ext(VkInstance instance,
-                                              VkDebugUtilsMessengerEXT debug_messenger,
-                                              const VkAllocationCallbacks* p_allocator)
-{
-  auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
-  if (func != nullptr) { func(instance, debug_messenger, p_allocator); }
 }
 
 static void pick_physical_device(ContextData& context_data, DeviceContextData& device_context_data)

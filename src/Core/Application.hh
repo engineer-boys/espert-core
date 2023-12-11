@@ -7,6 +7,7 @@
 #include "Layers/Layer.hh"
 #include "Layers/LayerStack.hh"
 #include "RenderAPI/EspCommandHandler.hh"
+#include "RenderAPI/EspDebugMessenger.hh"
 #include "RenderAPI/EspFrameManager.hh"
 #include "RenderAPI/EspRenderContext.hh"
 #include "Timer.hh"
@@ -26,6 +27,7 @@ namespace esp
     std::unique_ptr<EspRenderContext> m_render_context;
     std::unique_ptr<EspCommandHandler> m_command_handler;
     std::unique_ptr<EspFrameManager> m_frame_manager;
+    std::unique_ptr<EspDebugMessenger> m_debug_messenger;
 
    private:
     bool m_running;

@@ -11,7 +11,9 @@ namespace esp
 
     m_timer = Timer::create();
 
+    m_debug_messenger = EspDebugMessenger::create();
     m_render_context  = EspRenderContext::create_and_init(*m_window);
+    m_debug_messenger->init();
     m_command_handler = EspCommandHandler::create_and_init();
     m_frame_manager   = EspFrameManager::create_and_init(*m_window);
 
@@ -23,6 +25,7 @@ namespace esp
   {
     m_frame_manager->terminate();
     m_command_handler->terminate();
+    m_debug_messenger->terminate();
 
     delete m_layer_stack;
 
