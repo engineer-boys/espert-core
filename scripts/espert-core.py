@@ -22,6 +22,7 @@ from common import (
     get_optimal_job_count,
     get_lib_names,
     is_platform_linux,
+    is_platform_windows,
     CmakeConfigureCommand,
     CmakeBuildCommand,
     CmakeParameter,
@@ -32,6 +33,8 @@ from shutil import rmtree
 import sys
 
 CTEST_FILE = "CTestTestfile.cmake"
+LD_LIBRARY_PATH = BUILD_DIR / "validation_layers" / "lib"
+VK_LAYER_PATH = BUILD_DIR / "validation_layers" / "layers"
 
 
 class Compiler(Enum):
@@ -103,8 +106,12 @@ def run_tests(args: Namespace) -> None:
         args.build_tests = True
         run_build(args)
 
-    test_command = "ctest"
-    run_command(test_command, BUILD_DIR)
+    CMD = ""
+    if args.build_type == BuildType.DEBUG and args.vvl and not is_platform_windows():
+        CMD += f"LD_LIBRARY_PATH={LD_LIBRARY_PATH} VK_LAYER_PATH={VK_LAYER_PATH} "
+
+    CMD += "ctest"
+    run_command(CMD, BUILD_DIR)
 
 
 def get_parser() -> ArgumentParser:
