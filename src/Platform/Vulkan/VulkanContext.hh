@@ -41,7 +41,6 @@ namespace esp
     struct ContextData
     {
       VkInstance m_instance;
-      VkDebugUtilsMessengerEXT m_debug_messenger;
 
       VkSurfaceKHR m_surface;
 
@@ -92,7 +91,6 @@ namespace esp
     VulkanContext();
 
     void create_instance();
-    void setup_debug_messenger();
     void create_surface(EspWindow& window);
     void create_vulkan_device();
     void create_default_sampler();
