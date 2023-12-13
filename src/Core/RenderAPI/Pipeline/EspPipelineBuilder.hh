@@ -37,9 +37,7 @@ namespace esp
    public:
     virtual ~EspPipelineBuilder() {}
 
-    virtual void set_shaders(std::string path_vertex, std::string path_fragment) = 0;
-    virtual void set_vertex_shader(std::string path_vertex)                      = 0;
-    virtual void set_fragment_shader(std::string path_fragment)                  = 0;
+    virtual void set_shader(ShaderStage stage, std::vector<uint32_t> shader_source) = 0;
 
     virtual void set_vertex_layouts(std::vector<EspVertexLayout> vertex_layouts)             = 0;
     virtual void set_pipeline_layout(std::unique_ptr<EspUniformMetaData> uniforms_meta_data) = 0;

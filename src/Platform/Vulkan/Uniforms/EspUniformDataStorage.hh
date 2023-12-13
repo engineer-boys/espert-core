@@ -20,7 +20,15 @@ namespace esp
 
    public:
     inline const VkDescriptorSetLayout* get_layouts_data() const { return m_descriptor_set_layouts.data(); }
+    inline const VkPushConstantRange* get_push_constant_data() const
+    {
+      return m_meta_data->m_push_constant_ranges.data();
+    }
     inline uint32_t get_layouts_number() const { return static_cast<uint32_t>(m_descriptor_set_layouts.size()); }
+    inline uint32_t get_push_constants_number() const
+    {
+      return static_cast<uint32_t>(m_meta_data->m_push_constant_ranges.size());
+    }
 
    public:
     EspUniformDataStorage& operator=(const EspUniformDataStorage& other) = delete;

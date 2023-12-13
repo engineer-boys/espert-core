@@ -28,7 +28,7 @@ namespace esp
       EspBufferSet(const EspBufferSet& other)            = delete;
       EspBufferSet& operator=(const EspBufferSet& other) = delete;
 
-      EspBufferSet(const std::vector<EspMetaUniform>& uniforms);
+      EspBufferSet(const std::vector<ShaderProperty>& shader_properties);
       ~EspBufferSet();
     };
 
@@ -39,7 +39,7 @@ namespace esp
    private:
     void update_descriptor_set(EspBufferSet& buffer_set,
                                const VkDescriptorSet& descriptor,
-                               const std::vector<EspMetaUniform>& uniforms,
+                               const std::vector<ShaderProperty>& shader_properties,
                                std::map<uint32_t, std::vector<std::unique_ptr<VulkanTexture>>>& vec_textures);
 
    public:

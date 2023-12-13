@@ -105,8 +105,12 @@ TEST_CASE("Resource system - shader loader", "[resource_system]")
     REQUIRE_FALSE(shader_resource->is_stage_avaliable(esp::ShaderStage::GEOMETRY));
     REQUIRE_FALSE(shader_resource->is_stage_avaliable(esp::ShaderStage::COMPUTE));
 
+    std::shared_ptr<spirv_cross::Compiler> reflection_object;
+
     REQUIRE(shader_resource->is_stage_avaliable(esp::ShaderStage::VERTEX));
-    REQUIRE_NOTHROW(shader_resource->get_reflection(esp::ShaderStage::VERTEX));
+    REQUIRE_NOTHROW(reflection_object = shader_resource->get_reflection(esp::ShaderStage::VERTEX));
+    spirv_cross::ShaderResources res = reflection_object->get_shader_resources();
+    res.
 
     REQUIRE(shader_resource->is_stage_avaliable(esp::ShaderStage::FRAGMENT));
     REQUIRE_NOTHROW(shader_resource->get_reflection(esp::ShaderStage::FRAGMENT));

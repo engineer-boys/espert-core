@@ -110,15 +110,7 @@ namespace esp
     uint8_t required_channels = 4;
   };
 
-  enum class ShaderStage : uint8_t
-  {
-    VERTEX                 = 0x01,
-    TESSELATION_CONTROL    = 0x02,
-    TESSELATION_EVALUATION = 0x04,
-    GEOMETRY               = 0x08,
-    FRAGMENT               = 0x10,
-    COMPUTE                = 0x20
-  };
+  using ShaderSource = std::vector<uint32_t>;
 
   class ShaderResource : public Resource
   {
@@ -127,38 +119,41 @@ namespace esp
 
     PREVENT_COPY(ShaderResource);
 
-    inline void add_shader_reflection(ShaderStage stage, std::vector<uint32_t> shader_spv)
+    inline void add_shader_source(ShaderStage stage, ShaderSource shader_spv)
     {
-      if (m_shader_reflection_map.contains(stage))
+      if (m_shader_source_map.contains(stage))
       {
-        ESP_CORE_ERROR("Shader reflection object for supplied stage already added.");
+        ESP_CORE_ERROR("Shader source for supplied stage already added.");
         return;
       }
 
-      //   auto reflection_object = spirv_cross::Compiler(std::move(shader_spv));
-      auto reflection_object = std::make_shared<spirv_cross::Compiler>(std::move(shader_spv));
-
-      m_shader_reflection_map.insert({ stage, reflection_object });
+      m_shader_source_map.insert({ stage, std::make_shared<ShaderSource>(std::move(shader_spv)) });
     }
 
-    inline std::shared_ptr<spirv_cross::Compiler> get_reflection(ShaderStage stage)
+    inline std::shared_ptr<ShaderSource> get_source(ShaderStage stage)
     {
-      if (!m_shader_reflection_map.contains(stage))
-      {
-        ESP_CORE_ERROR("No shader reflection object for supplied stage.");
-      }
+      if (!m_shader_source_map.contains(stage)) { ESP_CORE_ERROR("No shader reflection object for supplied stage."); }
 
-      return m_shader_reflection_map.at(stage);
+      return m_shader_source_map.at(stage);
     }
 
-    inline bool is_stage_avaliable(ShaderStage stage) { return m_shader_reflection_map.contains(stage); }
+    inline void enumerate_sources(std::function<void(ShaderStage stage, std::shared_ptr<ShaderSource> shader_spv)> func)
+    {
+      for (auto it : m_shader_source_map)
+      {
+        func(it.first, it.second);
+      }
+    }
+
+    inline bool is_stage_avaliable(ShaderStage stage) { return m_shader_source_map.contains(stage); }
 
    private:
-    std::unordered_map<ShaderStage, std::shared_ptr<spirv_cross::Compiler>> m_shader_reflection_map;
+    std::unordered_map<ShaderStage, std::shared_ptr<ShaderSource>> m_shader_source_map;
   };
 
   struct ShaderResourceParams : public ResourceParams
   {
+    ShaderStageFlags stages = static_cast<ShaderStageFlags>(ShaderStage::ALL);
   };
 
 } // namespace esp

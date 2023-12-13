@@ -9,6 +9,7 @@ namespace esp
   {
     fs::path shader_path = ResourceSystem::get_asset_base_path() / path;
     auto shader_resource = std::unique_ptr<ShaderResource>(new ShaderResource(path));
+    auto shader_params   = static_cast<const ShaderResourceParams&>(params);
     uint8_t iter         = 1;
 
     while (iter <= static_cast<uint8_t>(ShaderStage::COMPUTE))
@@ -16,7 +17,12 @@ namespace esp
       auto data = load_shader_source(shader_path.replace_extension("").replace_extension(
           ShaderExtensionMap.at(static_cast<ShaderStage>(iter)) + ".spv"));
 
-      if (!data.empty()) { shader_resource->add_shader_reflection(static_cast<ShaderStage>(iter), std::move(data)); }
+      if (data.empty() && shader_params.stages && shader_params.stages ^ iter)
+      {
+        ESP_CORE_ERROR("Could not load {} shader stage {}.", path, iter);
+        return nullptr;
+      }
+      if (!data.empty()) { shader_resource->add_shader_source(static_cast<ShaderStage>(iter), std::move(data)); }
 
       iter <<= 1;
     }
@@ -35,7 +41,8 @@ namespace esp
 
     std::ifstream file(full_path, std::ios::binary);
     // TODO: use custom allocator
-    std::vector<uint32_t> data((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    std::vector<uint32_t> data((file_size - 3) / 4 + 1);
+    file.read(reinterpret_cast<char*>(&(data[0])), file_size);
     file.close();
 
     ESP_CORE_TRACE("Loaded {}.", full_path.string());

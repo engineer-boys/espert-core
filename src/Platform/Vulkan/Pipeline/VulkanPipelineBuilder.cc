@@ -20,56 +20,53 @@ static VkShaderModule create_shader_module(const std::vector<char>& code, VkDevi
 namespace esp
 {
   VulaknPipelineBuilder::VulaknPipelineBuilder() :
-      m_vertex_shader_info{}, m_fragment_shader_info{}, m_vertex_input_info{}
+      m_shader_modules{}, m_pipeline_shader_info{}, m_vertex_input_info{}, m_descriptor_set_layouts{},
+      m_push_constant_ranges{}
   {
   }
 
   VulaknPipelineBuilder::~VulaknPipelineBuilder()
   {
-    if (m_is_fragment_shader_module)
+    if (!m_shader_modules.empty())
     {
-      vkDestroyShaderModule(VulkanDevice::get_logical_device(), m_fragment_shader_module, nullptr);
-    }
+      for (auto& shader_module : m_shader_modules)
+      {
+        vkDestroyShaderModule(VulkanDevice::get_logical_device(), shader_module.second, nullptr);
+      }
 
-    if (m_is_vertex_shader_module)
-    {
-      vkDestroyShaderModule(VulkanDevice::get_logical_device(), m_vertex_shader_module, nullptr);
+      std::unordered_map<ShaderStage, VkShaderModule> shader_modules_empty;
+      m_shader_modules.swap(shader_modules_empty);
+
+      std::unordered_map<ShaderStage, VkPipelineShaderStageCreateInfo> pipeline_shader_info_empty;
+      m_pipeline_shader_info.swap(pipeline_shader_info_empty);
     }
 
     if (m_is_pipeline_layout)
     {
       vkDestroyPipelineLayout(VulkanDevice::get_logical_device(), m_pipeline_layout, nullptr);
     }
+
+    if (!m_descriptor_set_layouts.empty())
+    {
+      for (auto& descriptor_set_layout : m_descriptor_set_layouts)
+      {
+        vkDestroyDescriptorSetLayout(VulkanDevice::get_logical_device(), descriptor_set_layout, nullptr);
+      }
+    }
   }
 
-  void VulaknPipelineBuilder::set_shaders(std::string path_vertex_shr, std::string path_fragment_shr)
+  void VulaknPipelineBuilder::set_shader(ShaderStage stage, std::vector<uint32_t> source)
   {
-    set_vertex_shader(path_vertex_shr);
-    set_fragment_shader(path_fragment_shr);
-  }
+    VkShaderModule shader_module = create_shader_module(source, VulkanDevice::get_logical_device());
+    VkPipelineShaderStageCreateInfo pipeline_shader_info;
 
-  void VulaknPipelineBuilder::set_vertex_shader(std::string path_vertex_shr)
-  {
-    auto vertex_shader_code   = read_file(path_vertex_shr);
-    m_vertex_shader_module    = create_shader_module(vertex_shader_code, VulkanDevice::get_logical_device());
-    m_is_vertex_shader_module = true;
+    pipeline_shader_info.sType  = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+    pipeline_shader_info.stage  = VK_SHADER_STAGE_VERTEX_BIT;
+    pipeline_shader_info.module = shader_module;
+    pipeline_shader_info.pName  = "main";
 
-    m_vertex_shader_info.sType  = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-    m_vertex_shader_info.stage  = VK_SHADER_STAGE_VERTEX_BIT;
-    m_vertex_shader_info.module = m_vertex_shader_module;
-    m_vertex_shader_info.pName  = "main";
-  }
-
-  void VulaknPipelineBuilder::set_fragment_shader(std::string path_fragment_shr)
-  {
-    auto fragment_shader_code   = read_file(path_fragment_shr);
-    m_fragment_shader_module    = create_shader_module(fragment_shader_code, VulkanDevice::get_logical_device());
-    m_is_fragment_shader_module = true;
-
-    m_fragment_shader_info.sType  = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-    m_fragment_shader_info.stage  = VK_SHADER_STAGE_FRAGMENT_BIT;
-    m_fragment_shader_info.module = m_fragment_shader_module;
-    m_fragment_shader_info.pName  = "main";
+    m_shader_modules.insert({ stage, shader_module });
+    m_pipeline_shader_info.insert({ stage, pipeline_shader_info });
   }
 
   void VulaknPipelineBuilder::set_vertex_layouts(std::vector<EspVertexLayout> vertex_layouts)
@@ -111,9 +108,11 @@ namespace esp
 
     if (*meta_data)
     {
-      m_uniform_data_storage              = std::make_unique<EspUniformDataStorage>(std::move(meta_data));
-      pipeline_layout_info.setLayoutCount = m_uniform_data_storage->get_layouts_number();
-      pipeline_layout_info.pSetLayouts    = m_uniform_data_storage->get_layouts_data();
+      m_uniform_data_storage                      = std::make_unique<EspUniformDataStorage>(std::move(meta_data));
+      pipeline_layout_info.setLayoutCount         = m_uniform_data_storage->get_layouts_number();
+      pipeline_layout_info.pSetLayouts            = m_uniform_data_storage->get_layouts_data();
+      pipeline_layout_info.pushConstantRangeCount = m_uniform_data_storage->get_push_constants_number();
+      pipeline_layout_info.pPushConstantRanges    = m_uniform_data_storage->get_push_constant_data();
     }
 
     if (vkCreatePipelineLayout(VulkanDevice::get_logical_device(),
@@ -127,6 +126,75 @@ namespace esp
 
     m_is_pipeline_layout = true;
   }
+
+  //   void VulaknPipelineBuilder::set_pipeline_layout(
+  //       std::unordered_map<ShaderStage, std::vector<ShaderProperty>> shader_properties_map)
+  //   {
+  //     std::unordered_map<std::string, ShaderProperty> pipeline_shader_properties;
+
+  //     for (const auto& shader_properties : shader_properties_map)
+  //     {
+  //       for (const auto& shader_property : shader_properties.second)
+  //       {
+  //         std::string key = shader_property.name;
+
+  //         if (shader_property.type == ShaderPropertyType::Input || shader_property.type ==
+  //         ShaderPropertyType::Output)
+  //         {
+  //           key = std::to_string(shader_property.stages) + "_" + key;
+  //         }
+
+  //         auto it = pipeline_shader_properties.find(key);
+
+  //         if (it != pipeline_shader_properties.end()) { it->second.stages |= shader_property.stages; }
+  //         else { pipeline_shader_properties.emplace(key, shader_property); }
+  //       }
+  //     }
+
+  //     std::unordered_map<uint32_t, std::vector<ShaderProperty>> shader_sets;
+
+  //     for (auto& it : pipeline_shader_properties)
+  //     {
+  //       auto& shader_property = it.second;
+
+  //       auto it2 = shader_sets.find(shader_property.set);
+
+  //       if (it2 != shader_sets.end()) { it2->second.push_back(shader_property); }
+  //       else { shader_sets.emplace(shader_property.set, std::vector<ShaderProperty>{ shader_property }); }
+  //     }
+
+  //     for (auto& shader_set_it : shader_sets)
+  //     {
+  //       m_descriptor_set_layouts.emplace_back(create_descriptor_set_layout(shader_set_it.first,
+  //       shader_set_it.second));
+  //     }
+
+  //     for (auto& shader_property : pipeline_shader_properties)
+  //     {
+  //       if (shader_property.second.type == ShaderPropertyType::PushConstant)
+  //       {
+  //         auto& push_constant_property = shader_property.second;
+  //         m_push_constant_ranges.push_back(
+  //             { push_constant_property.stages, push_constant_property.offset, push_constant_property.size });
+  //       }
+  //     }
+
+  //     VkPipelineLayoutCreateInfo create_info{ VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO };
+
+  //     create_info.setLayoutCount         = static_cast<uint32_t>(m_descriptor_set_layouts.size());
+  //     create_info.pSetLayouts            = m_descriptor_set_layouts.data();
+  //     create_info.pushConstantRangeCount = static_cast<uint32_t>(m_push_constant_ranges.size());
+  //     create_info.pPushConstantRanges    = m_push_constant_ranges.data();
+
+  //     if (vkCreatePipelineLayout(VulkanDevice::get_logical_device(), &create_info, nullptr, &m_pipeline_layout) !=
+  //         VK_SUCCESS)
+  //     {
+  //       ESP_CORE_ERROR("Failed to create graphics pipeline");
+  //       throw std::runtime_error("Failed to create graphics pipeline");
+  //     }
+
+  //     m_is_pipeline_layout = true;
+  //   }
 
   std::unique_ptr<EspPipeline> VulaknPipelineBuilder::build_pipeline()
   {
@@ -159,11 +227,7 @@ namespace esp
         - there is 0 subpasses.
 
     */
-    ESP_ASSERT(m_is_fragment_shader_module, "You cannot create pipeline a without a fragment shader.");
-    ESP_ASSERT(m_is_vertex_shader_module, "You cannot create pipeline a without a vertex shader.");
     ESP_ASSERT(m_is_pipeline_layout, "You cannot create a pipeline without a pipeline layout.")
-
-    VkPipelineShaderStageCreateInfo shader_stages[] = { m_vertex_shader_info, m_fragment_shader_info };
 
     VkPipelineVertexInputStateCreateInfo vertex_input_info{};
     {
@@ -248,6 +312,13 @@ namespace esp
     /* ------------------------------------------ */
     VkGraphicsPipelineCreateInfo pipeline_info{};
 
+    VkPipelineShaderStageCreateInfo* shader_stages = new VkPipelineShaderStageCreateInfo[m_pipeline_shader_info.size()];
+    int i                                          = 0;
+    for (auto& it : m_pipeline_shader_info)
+    {
+      shader_stages[i++] = it.second;
+    }
+
     pipeline_info.sType               = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
     pipeline_info.stageCount          = 2;
     pipeline_info.pStages             = shader_stages;
@@ -278,12 +349,18 @@ namespace esp
     }
     else { ESP_CORE_INFO("Graphic pipeline created correctly"); }
 
-    vkDestroyShaderModule(VulkanDevice::get_logical_device(), m_fragment_shader_module, nullptr);
-    vkDestroyShaderModule(VulkanDevice::get_logical_device(), m_vertex_shader_module, nullptr);
+    for (auto& shader_module : m_shader_modules)
+    {
+      vkDestroyShaderModule(VulkanDevice::get_logical_device(), shader_module.second, nullptr);
+    }
 
-    m_is_fragment_shader_module = false;
-    m_is_vertex_shader_module   = false;
-    m_is_pipeline_layout        = false;
+    std::unordered_map<ShaderStage, VkShaderModule> shader_modules_empty;
+    m_shader_modules.swap(shader_modules_empty);
+
+    std::unordered_map<ShaderStage, VkPipelineShaderStageCreateInfo> pipeline_shader_info_empty;
+    m_pipeline_shader_info.swap(pipeline_shader_info_empty);
+
+    m_is_pipeline_layout = false;
 
     return std::unique_ptr<EspPipeline>{
       new VulkanPipeline(m_pipeline_layout, graphics_pipeline, std::move(m_uniform_data_storage))
@@ -295,33 +372,12 @@ namespace esp
 /* ------------------ HELPFUL FUNCTIONS -------------------- */
 /* --------------------------------------------------------- */
 
-static std::vector<char> read_file(const std::string& filename)
-{
-  std::ifstream file(filename, std::ios::ate | std::ios::binary);
-
-  if (!file.is_open())
-  {
-    ESP_CORE_ERROR("The file doesn't exist: {0}", filename);
-    throw std::runtime_error("The file doesn't exist.");
-  }
-
-  size_t file_size = (size_t)file.tellg();
-  std::vector<char> buffer(file_size);
-
-  file.seekg(0);
-  file.read(buffer.data(), file_size);
-
-  file.close();
-
-  return buffer;
-}
-
-static VkShaderModule create_shader_module(const std::vector<char>& code, VkDevice device)
+static VkShaderModule create_shader_module(const std::vector<uint32_t>& code, VkDevice device)
 {
   VkShaderModuleCreateInfo create_info{};
   create_info.sType    = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-  create_info.codeSize = code.size();
-  create_info.pCode    = reinterpret_cast<const uint32_t*>(code.data());
+  create_info.codeSize = code.size() * sizeof(uint32_t);
+  create_info.pCode    = code.data();
 
   VkShaderModule shader_module;
   if (vkCreateShaderModule(device, &create_info, nullptr, &shader_module) != VK_SUCCESS)
@@ -332,3 +388,145 @@ static VkShaderModule create_shader_module(const std::vector<char>& code, VkDevi
 
   return shader_module;
 }
+
+// static VkDescriptorType find_descriptor_type(esp::ShaderPropertyType property_type, bool dynamic)
+// {
+//   switch (property_type)
+//   {
+//   case esp::ShaderPropertyType::InputAttachment:
+//     return VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
+//     break;
+//   case esp::ShaderPropertyType::Image:
+//     return VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+//     break;
+//   case esp::ShaderPropertyType::ImageSampler:
+//     return VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+//     break;
+//   case esp::ShaderPropertyType::ImageStorage:
+//     return VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+//     break;
+//   case esp::ShaderPropertyType::Sampler:
+//     return VK_DESCRIPTOR_TYPE_SAMPLER;
+//     break;
+//   case esp::ShaderPropertyType::BufferUniform:
+//     if (dynamic) { return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC; }
+//     else { return VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER; }
+//     break;
+//   case esp::ShaderPropertyType::BufferStorage:
+//     if (dynamic) { return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC; }
+//     else { return VK_DESCRIPTOR_TYPE_STORAGE_BUFFER; }
+//     break;
+//   default:
+//     throw std::runtime_error("No conversion possible for the shader resource type.");
+//     break;
+//   }
+// }
+
+// static bool validate_binding(const VkDescriptorSetLayoutBinding& binding,
+//                              const std::vector<VkDescriptorType>& blacklist)
+// {
+//   return !(std::find_if(blacklist.begin(),
+//                         blacklist.end(),
+//                         [binding](const VkDescriptorType& type)
+//                         { return type == binding.descriptorType; }) != blacklist.end());
+// }
+
+// static bool validate_flags(const std::vector<VkDescriptorSetLayoutBinding>& bindings,
+//                            const std::vector<VkDescriptorBindingFlagsEXT>& flags)
+// {
+//   if (flags.empty()) { return true; }
+
+//   if (bindings.size() != flags.size())
+//   {
+//     ESP_CORE_ERROR("Binding count has to be equal to flag count.");
+//     return false;
+//   }
+
+//   return true;
+// }
+
+// static VkDescriptorSetLayout create_descriptor_set_layout(const uint32_t set_index,
+//                                                           const std::vector<esp::ShaderProperty>& property_set)
+// {
+//   std::vector<VkDescriptorSetLayoutBinding> bindings;
+//   std::vector<VkDescriptorBindingFlagsEXT> binding_flags;
+
+//   for (auto& property : property_set)
+//   {
+//     if (property.type == esp::ShaderPropertyType::Input || property.type == esp::ShaderPropertyType::Output ||
+//         property.type == esp::ShaderPropertyType::PushConstant ||
+//         property.type == esp::ShaderPropertyType::SpecializationConstant)
+//     {
+//       continue;
+//     }
+
+//     auto descriptor_type = find_descriptor_type(property.type, property.mode == esp::ShaderPropertyMode::Dynamic);
+
+//     if (property.mode == esp::ShaderPropertyMode::UpdateAfterBind)
+//     {
+//       binding_flags.push_back(VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT_EXT);
+//     }
+//     else { binding_flags.push_back(0); }
+
+//     VkDescriptorSetLayoutBinding layout_binding{};
+
+//     layout_binding.binding         = property.binding;
+//     layout_binding.descriptorCount = property.array_size;
+//     layout_binding.descriptorType  = descriptor_type;
+//     layout_binding.stageFlags      = static_cast<VkShaderStageFlags>(property.stages);
+
+//     bindings.push_back(layout_binding);
+//   }
+
+//   VkDescriptorSetLayoutCreateInfo create_info{ VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO };
+//   create_info.flags        = 0;
+//   create_info.bindingCount = static_cast<uint32_t>(bindings.size());
+//   create_info.pBindings    = bindings.data();
+
+//   if (std::find_if(property_set.begin(),
+//                    property_set.end(),
+//                    [](const esp::ShaderProperty& shader_property)
+//                    { return shader_property.mode == esp::ShaderPropertyMode::UpdateAfterBind; }) !=
+//                    property_set.end())
+//   {
+//     if (std::find_if(property_set.begin(),
+//                      property_set.end(),
+//                      [](const esp::ShaderProperty& shader_property)
+//                      { return shader_property.mode == esp::ShaderPropertyMode::Dynamic; }) != property_set.end())
+//     {
+//       throw std::runtime_error("Cannot create descriptor set layout, dynamic resources are not allowed if at least
+//       one "
+//                                "resource is update-after-bind.");
+//     }
+
+//     if (!validate_flags(bindings, binding_flags))
+//     {
+//       throw std::runtime_error("Invalid binding, couldn't create descriptor set layout.");
+//     }
+
+//     VkDescriptorSetLayoutBindingFlagsCreateInfoEXT binding_flags_create_info{
+//       VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_BINDING_FLAGS_CREATE_INFO_EXT
+//     };
+//     binding_flags_create_info.bindingCount  = static_cast<uint32_t>(binding_flags.size());
+//     binding_flags_create_info.pBindingFlags = binding_flags.data();
+
+//     create_info.pNext = &binding_flags_create_info;
+//     create_info.flags |=
+//         std::find(binding_flags.begin(), binding_flags.end(), VK_DESCRIPTOR_BINDING_UPDATE_AFTER_BIND_BIT_EXT) !=
+//             binding_flags.end()
+//         ? VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT_EXT
+//         : 0;
+//   }
+
+//   VkDescriptorSetLayout descriptor_set_layout;
+//   if (vkCreateDescriptorSetLayout(esp::VulkanDevice::get_logical_device(),
+//                                   &create_info,
+//                                   nullptr,
+//                                   &descriptor_set_layout) != VK_SUCCESS)
+//   {
+//     ESP_CORE_ERROR("Failed to create desscriptor set layout.");
+//     throw std::runtime_error("Failed to create desscriptor set layout.");
+//   }
+
+//   return descriptor_set_layout;
+// }

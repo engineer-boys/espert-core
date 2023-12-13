@@ -8,57 +8,37 @@
 
 namespace esp
 {
-  struct EspMetaUniform
-  {
-    EspUniformShaderStage m_stage;
-
-    // Size of basic data type.
-    uint32_t m_size_of_data_chunk;
-
-    // Number of textures or objects for uniform.
-    uint32_t m_number_of_elements;
-
-    uint32_t m_binding;
-
-    EspUniformType m_uniform_type;
-
-    EspMetaUniform(EspUniformShaderStage stage,
-                   uint32_t size_of_data_chunk,
-                   uint32_t count_of_elements,
-                   uint32_t binding,
-                   EspUniformType uniform_type);
-  };
-
   struct EspMetaDescriptorSet
   {
    public:
-    std::vector<EspMetaUniform> m_meta_uniforms;
-
-    uint32_t m_buffer_uniform_counter  = 0;
-    uint32_t m_texture_uniform_counter = 0;
+    std::vector<ShaderProperty> m_shader_properties;
 
     uint32_t m_set_index;
 
    public:
     EspMetaDescriptorSet(uint32_t set_index);
+    EspMetaDescriptorSet(uint32_t set_index, ShaderProperty property);
+    EspMetaDescriptorSet(uint32_t set_index, std::vector<ShaderProperty> properties);
 
-    inline void push_back(EspMetaUniform& uniform_data) { m_meta_uniforms.push_back(uniform_data); }
+    inline void push_back(ShaderProperty& property) { m_shader_properties.push_back(property); }
+    template<ShaderPropertyType type = ShaderPropertyType::All> inline int count()
+    {
+      return std::count_if(m_shader_properties.begin(),
+                           m_shader_properties.end(),
+                           [](const auto& prop) { prop.type == type; });
+    }
+    inline std::vector<ShaderProperty>::iterator begin() { return m_shader_properties.begin(); }
+    inline std::vector<ShaderProperty>::iterator end() { return m_shader_properties.end(); }
+    inline std::vector<ShaderProperty>::const_iterator begin() const { return m_shader_properties.begin(); }
+    inline std::vector<ShaderProperty>::const_iterator end() const { return m_shader_properties.end(); }
   };
 
   struct VulkanUniformMetaData : public EspUniformMetaData
   {
-   private:
-    inline void push_back_to_current_meta_ds(EspMetaUniform uniform_data)
-    {
-      m_meta_descriptor_sets.back().push_back(uniform_data);
-    }
-
    public:
-    uint32_t m_general_buffer_uniform_counter  = 0;
-    uint32_t m_general_texture_uniform_counter = 0;
-
-    uint32_t m_binding_count;
-    std::vector<EspMetaDescriptorSet> m_meta_descriptor_sets;
+    std::unordered_map<ShaderPropertyType, uint32_t> m_shader_property_counter;
+    std::unordered_map<uint32_t, EspMetaDescriptorSet> m_meta_descriptor_sets;
+    std::vector<VkPushConstantRange> m_push_constant_ranges;
 
    public:
     operator bool() const;
@@ -67,13 +47,11 @@ namespace esp
     VulkanUniformMetaData();
     virtual ~VulkanUniformMetaData();
 
-    virtual EspUniformMetaData& establish_descriptor_set() override;
-    virtual EspUniformMetaData& add_buffer_uniform(EspUniformShaderStage stage,
-                                                   uint32_t size_of_data_chunk,
-                                                   uint32_t count_of_data_chunks = 1) override;
+    virtual EspUniformMetaData& add_shader_stage_property(ShaderStage stage, ShaderProperty shader_property) override;
 
-    virtual EspUniformMetaData& add_texture_uniform(EspUniformShaderStage stage,
-                                                    uint32_t count_of_textures = 1) override;
+    virtual EspUniformMetaData& load_shader_stage_data(ShaderStage stage, std::vector<uint32_t> source) override;
+
+    virtual EspUniformMetaData& establish_descriptor_set() override;
   };
 } // namespace esp
 
