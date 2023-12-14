@@ -3,9 +3,6 @@
 
 #include "esppch.hh"
 
-#include "Core/Systems/ResourceSystem.hh"
-#include "Core/Systems/TextureSystem.hh"
-
 namespace esp
 {
   class ApplicationContext
@@ -15,8 +12,6 @@ namespace esp
 
    private:
     std::unique_ptr<Logger> m_logger;
-    std::unique_ptr<ResourceSystem> m_resource_system;
-    std::unique_ptr<TextureSystem> m_texture_system;
 
     ApplicationContext();
 

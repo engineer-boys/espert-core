@@ -1,55 +1,76 @@
-#include <catch2/catch_test_macros.hpp>
+#include "tests/test_app.hh"
 
 #include "Core/Logger.hh"
+#include "Core/RenderAPI/Resources/EspTexture.hh"
 #include "Core/Resources/ResourceTypes.hh"
 #include "Core/Systems/ResourceSystem.hh"
 #include "Core/Systems/TextureSystem.hh"
+#include "Platform/Vulkan/Resources/VulkanTexture.hh"
+#include <catch2/catch_test_macros.hpp>
+#include <thread>
 
 TEST_CASE("Texture system", "[texture_system]")
 {
-  auto logger = esp::Logger::create();
+  auto context                   = esp::ApplicationContext::create();
+  esp::Application* app_instance = esp::create_app_instance();
+  auto test_app                  = dynamic_cast<TestApp*>(app_instance);
 
   {
-    auto texture_system = esp::TextureSystem::create();
+    test_app->set_context(std::move(context));
+    std::thread app_thread(&TestApp::run, test_app);
 
-    REQUIRE(texture_system->get_default_texture() != nullptr);
-    auto default_texture = texture_system->get_default_texture();
-    REQUIRE(default_texture->get_channel_count() == 4);
-    REQUIRE(default_texture->get_width() == 32);
-    REQUIRE(default_texture->get_height() == 32);
-    REQUIRE(default_texture->get_mip_levels() == 1);
+    REQUIRE(esp::TextureSystem::get_default_albedo_texture() != nullptr);
+    auto default_albedo_texture = esp::TextureSystem::get_default_albedo_texture();
+    REQUIRE(default_albedo_texture->get_channel_count() == 4);
+    REQUIRE(default_albedo_texture->get_width() == 32);
+    REQUIRE(default_albedo_texture->get_height() == 32);
+    REQUIRE(default_albedo_texture->get_mip_levels() == 6);
 
-    REQUIRE(texture_system->get_default_diffuse_texture() != nullptr);
-    auto default_diffuse_texture = texture_system->get_default_diffuse_texture();
-    REQUIRE(default_diffuse_texture->get_channel_count() == 4);
-    REQUIRE(default_diffuse_texture->get_width() == 32);
-    REQUIRE(default_diffuse_texture->get_height() == 32);
-    REQUIRE(default_diffuse_texture->get_mip_levels() == 1);
-
-    REQUIRE(texture_system->get_default_specular_texture() != nullptr);
-    auto default_specular_texture = texture_system->get_default_specular_texture();
-    REQUIRE(default_specular_texture->get_channel_count() == 4);
-    REQUIRE(default_specular_texture->get_width() == 32);
-    REQUIRE(default_specular_texture->get_height() == 32);
-    REQUIRE(default_specular_texture->get_mip_levels() == 1);
-
-    REQUIRE(texture_system->get_default_normal_texture() != nullptr);
-    auto default_normal_texture = texture_system->get_default_normal_texture();
+    REQUIRE(esp::TextureSystem::get_default_normal_texture() != nullptr);
+    auto default_normal_texture = esp::TextureSystem::get_default_normal_texture();
     REQUIRE(default_normal_texture->get_channel_count() == 4);
     REQUIRE(default_normal_texture->get_width() == 32);
     REQUIRE(default_normal_texture->get_height() == 32);
-    REQUIRE(default_normal_texture->get_mip_levels() == 1);
+    REQUIRE(default_normal_texture->get_mip_levels() == 6);
+
+    REQUIRE(esp::TextureSystem::get_default_metallic_texture() != nullptr);
+    auto default_metallic_texture = esp::TextureSystem::get_default_metallic_texture();
+    REQUIRE(default_metallic_texture->get_channel_count() == 4);
+    REQUIRE(default_metallic_texture->get_width() == 32);
+    REQUIRE(default_metallic_texture->get_height() == 32);
+    REQUIRE(default_metallic_texture->get_mip_levels() == 6);
+
+    REQUIRE(esp::TextureSystem::get_default_roughness_texture() != nullptr);
+    auto default_roughness_texture = esp::TextureSystem::get_default_roughness_texture();
+    REQUIRE(default_roughness_texture->get_channel_count() == 4);
+    REQUIRE(default_roughness_texture->get_width() == 32);
+    REQUIRE(default_roughness_texture->get_height() == 32);
+    REQUIRE(default_roughness_texture->get_mip_levels() == 6);
+
+    REQUIRE(esp::TextureSystem::get_default_ao_texture() != nullptr);
+    auto default_ao_texture = esp::TextureSystem::get_default_ao_texture();
+    REQUIRE(default_ao_texture->get_channel_count() == 4);
+    REQUIRE(default_ao_texture->get_width() == 32);
+    REQUIRE(default_ao_texture->get_height() == 32);
+    REQUIRE(default_ao_texture->get_mip_levels() == 6);
+
+    test_app->terminate();
+
+    app_thread.join();
   }
+
+  delete test_app;
 }
 
 TEST_CASE("Texture system - load texture", "[texture_system]")
 {
-  fs::path asset_path = fs::current_path() / ".." / "tests" / "assets";
-  auto logger         = esp::Logger::create();
+  auto context                   = esp::ApplicationContext::create();
+  esp::Application* app_instance = esp::create_app_instance();
+  auto test_app                  = dynamic_cast<TestApp*>(app_instance);
 
   {
-    auto resource_system = esp::ResourceSystem::create(asset_path);
-    auto texture_system  = esp::TextureSystem::create();
+    test_app->set_context(std::move(context));
+    std::thread app_thread(&TestApp::run, test_app);
 
     auto texture = esp::TextureSystem::acquire("test.jpg");
     REQUIRE(texture->get_name() == "test.jpg");
@@ -59,5 +80,11 @@ TEST_CASE("Texture system - load texture", "[texture_system]")
     REQUIRE(texture->get_mip_levels() == 10);
 
     esp::TextureSystem::release("test.jpg");
+
+    test_app->terminate();
+
+    app_thread.join();
   }
+
+  delete test_app;
 }

@@ -1,29 +1,7 @@
-#include "Core/Application.hh"
-#include "Core/ApplicationContext.hh"
-#include "Platform/Vulkan/VulkanDevice.hh"
+#include "tests/test_app.hh"
+
 #include <catch2/catch_test_macros.hpp>
 #include <thread>
-
-class TestApp : public esp::Application
-{
- private:
- public:
-  TestApp() {}
-
-  void set_background_color() { m_frame_manager->set_clear_color(glm::vec4{ .1f, .1f, .3f, 1.f }); }
-  void terminate()
-  {
-    esp::WindowClosedEvent e;
-    events_manager(e);
-  }
-};
-
-esp::Application* esp::create_app_instance()
-{
-  const auto& app = new TestApp();
-  app->set_background_color();
-  return app;
-}
 
 TEST_CASE("App - run", "[app]")
 {

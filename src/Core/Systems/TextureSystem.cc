@@ -3,11 +3,12 @@
 
 namespace esp
 {
-  const std::string TextureSystem::s_default_texture_name          = "default";
-  const std::string TextureSystem::s_default_diffuse_texture_name  = "default_DIFF";
-  const std::string TextureSystem::s_default_specular_texture_name = "default_SPEC";
-  const std::string TextureSystem::s_default_normal_texture_name   = "default_NORM";
-  TextureSystem* TextureSystem::s_instance                         = nullptr;
+  const std::string TextureSystem::s_default_albedo_texture_name    = "default_ALBD";
+  const std::string TextureSystem::s_default_normal_texture_name    = "default_NORM";
+  const std::string TextureSystem::s_default_metallic_texture_name  = "default_METAL";
+  const std::string TextureSystem::s_default_roughness_texture_name = "default_ROUGH";
+  const std::string TextureSystem::s_default_ao_texture_name        = "default_AO";
+  TextureSystem* TextureSystem::s_instance                          = nullptr;
 
   TextureSystem::TextureSystem()
   {
@@ -21,8 +22,7 @@ namespace esp
 
   TextureSystem::~TextureSystem()
   {
-    TextureSystem::s_instance = nullptr;
-    ESP_CORE_TRACE("Texture system shutdown.");
+    if (s_instance) { terminate(); }
   }
 
   std::unique_ptr<TextureSystem> TextureSystem::create()
@@ -36,7 +36,15 @@ namespace esp
     return texture_system;
   }
 
-  std::shared_ptr<Texture> TextureSystem::acquire(const std::string& name)
+  void TextureSystem::terminate()
+  {
+    TextureSystem::s_instance = nullptr;
+    TextureMap empty_map      = {};
+    m_texture_map.swap(empty_map);
+    ESP_CORE_TRACE("Texture system shutdown.");
+  }
+
+  std::shared_ptr<EspTexture> TextureSystem::acquire(const std::string& name)
   {
     if (s_instance->m_texture_map.contains(name)) return s_instance->m_texture_map.at(name);
     return load(name);
@@ -49,8 +57,9 @@ namespace esp
       ESP_CORE_ERROR("Cannot release texture {}. Not present in map.", name);
     }
 
-    if (name == s_default_texture_name || name == s_default_diffuse_texture_name ||
-        name == s_default_normal_texture_name || name == s_default_specular_texture_name)
+    if (name == s_default_albedo_texture_name || name == s_default_normal_texture_name ||
+        name == s_default_metallic_texture_name || name == s_default_roughness_texture_name ||
+        name == s_default_ao_texture_name)
     {
       ESP_CORE_WARN("Cannot release default texture.");
       return;
@@ -60,7 +69,7 @@ namespace esp
     ESP_CORE_TRACE("Released texture {}.", name);
   }
 
-  std::shared_ptr<Texture> TextureSystem::load(const std::string& name)
+  std::shared_ptr<EspTexture> TextureSystem::load(const std::string& name, bool mipmapping)
   {
     // TODO: set params.flip_y accordingly to currently used graphics API
     ImageResourceParams params;
@@ -68,104 +77,130 @@ namespace esp
     if (!resource)
     {
       ESP_CORE_ERROR("Could not load texture {}.", name);
-      return get_default_texture();
+      return get_default_albedo_texture();
     }
-    auto image_resource = std::unique_ptr<ImageResource>(dynamic_cast<ImageResource*>(resource.release()));
-    auto texture        = std::make_shared<Texture>(name, std::move(image_resource));
+    auto image_resource = unique_cast<ImageResource>(std::move(resource));
+    auto texture        = EspTexture::create(name, std::move(image_resource), mipmapping);
     s_instance->m_texture_map.insert({ name, texture });
     ESP_CORE_TRACE("Loaded texture {}.", name);
     return texture;
   }
 
-  std::shared_ptr<Texture> TextureSystem::get_default_texture()
+  std::shared_ptr<EspTexture> TextureSystem::get_default_albedo_texture()
   {
-    return s_instance->m_texture_map.at(s_default_texture_name);
+    return s_instance->m_texture_map.at(s_default_albedo_texture_name);
   }
 
-  std::shared_ptr<Texture> TextureSystem::get_default_diffuse_texture()
-  {
-    return s_instance->m_texture_map.at(s_default_diffuse_texture_name);
-  }
-
-  std::shared_ptr<Texture> TextureSystem::get_default_specular_texture()
-  {
-    return s_instance->m_texture_map.at(s_default_specular_texture_name);
-  }
-
-  std::shared_ptr<Texture> TextureSystem::get_default_normal_texture()
+  std::shared_ptr<EspTexture> TextureSystem::get_default_normal_texture()
   {
     return s_instance->m_texture_map.at(s_default_normal_texture_name);
   }
 
+  std::shared_ptr<EspTexture> TextureSystem::get_default_metallic_texture()
+  {
+    return s_instance->m_texture_map.at(s_default_metallic_texture_name);
+  }
+
+  std::shared_ptr<EspTexture> TextureSystem::get_default_roughness_texture()
+  {
+    return s_instance->m_texture_map.at(s_default_roughness_texture_name);
+  }
+
+  std::shared_ptr<EspTexture> TextureSystem::get_default_ao_texture()
+  {
+    return s_instance->m_texture_map.at(s_default_ao_texture_name);
+  }
+
   void TextureSystem::create_default_textures()
   {
-    uint8_t tex_channels    = 4;
-    uint32_t tex_width      = 32;
-    uint32_t tex_height     = 32;
-    uint32_t tex_mip_levels = 1;
-    uint64_t magenta        = 0xf800f8ff;
+    uint8_t tex_channels = 4;
+    uint32_t tex_width   = 32;
+    uint32_t tex_height  = 32;
+    uint32_t magenta     = 0xfff800f8;
+    uint32_t violet      = 0xffff8080;
+    uint32_t grey        = 0xff757575;
+    uint32_t white       = 0xffffffff;
 
     uint8_t* regular_data = (uint8_t*)calloc(tex_width * tex_height * tex_channels, sizeof(uint8_t));
     for (int i = 0; i < tex_height / 2; i++)
     {
       for (int j = 0; j < tex_width / 2; j++)
       {
-        memcpy(regular_data + i * tex_width * tex_channels + tex_width / 2 + j, &magenta, sizeof(uint64_t));
-        memcpy(regular_data + (i + tex_height / 2) * tex_width * tex_channels + j, &magenta, sizeof(uint64_t));
+        memcpy(regular_data + (i + j * tex_width) * tex_channels, &magenta, sizeof(magenta));
+        memcpy(regular_data + ((i + tex_height / 2) + (j + tex_width / 2) * tex_width) * tex_channels,
+               &magenta,
+               sizeof(magenta));
       }
     }
 
-    s_instance->m_texture_map.insert({ s_default_texture_name,
-                                       std::make_shared<Texture>(s_default_texture_name,
-                                                                 regular_data,
-                                                                 tex_channels,
-                                                                 tex_width,
-                                                                 tex_height,
-                                                                 tex_mip_levels) });
-
-    uint8_t* diffuse_data = (uint8_t*)calloc(tex_width * tex_height * tex_channels, sizeof(uint8_t));
-    memset(diffuse_data, 255, tex_width * tex_height * tex_channels);
-
-    s_instance->m_texture_map.insert({ s_default_diffuse_texture_name,
-                                       std::make_shared<Texture>(s_default_diffuse_texture_name,
-                                                                 diffuse_data,
-                                                                 tex_channels,
-                                                                 tex_width,
-                                                                 tex_height,
-                                                                 tex_mip_levels) });
-
-    uint8_t* specular_data = (uint8_t*)calloc(tex_width * tex_height * tex_channels, sizeof(uint8_t));
-
-    s_instance->m_texture_map.insert({ s_default_specular_texture_name,
-                                       std::make_shared<Texture>(s_default_specular_texture_name,
-                                                                 specular_data,
-                                                                 tex_channels,
-                                                                 tex_width,
-                                                                 tex_height,
-                                                                 tex_mip_levels) });
+    s_instance->m_texture_map.insert(
+        { s_default_albedo_texture_name,
+          EspTexture::create(s_default_albedo_texture_name,
+                             std::move(std::make_unique<ImageResource>(fs::path(s_default_albedo_texture_name),
+                                                                       std::unique_ptr<uint8_t[]>(regular_data),
+                                                                       tex_channels,
+                                                                       tex_width,
+                                                                       tex_height))) });
 
     uint8_t* normal_data = (uint8_t*)calloc(tex_width * tex_height * tex_channels, sizeof(uint8_t));
-
-    for (int i = 0; i < tex_height; ++i)
+    for (int i = 0; i < tex_width * tex_height; ++i)
     {
-      for (int j = 0; j < tex_width; ++j)
-      {
-        int index = ((i * 16) + j) * tex_channels;
-
-        normal_data[index + 0] = 128;
-        normal_data[index + 1] = 128;
-        normal_data[index + 2] = 255;
-        normal_data[index + 3] = 255;
-      }
+      memcpy(normal_data + i * tex_channels, &violet, sizeof(violet));
     }
 
-    s_instance->m_texture_map.insert({ s_default_normal_texture_name,
-                                       std::make_shared<Texture>(s_default_normal_texture_name,
-                                                                 normal_data,
-                                                                 tex_channels,
-                                                                 tex_width,
-                                                                 tex_height,
-                                                                 tex_mip_levels) });
+    s_instance->m_texture_map.insert(
+        { s_default_normal_texture_name,
+          EspTexture::create(s_default_normal_texture_name,
+                             std::move(std::make_unique<ImageResource>(fs::path(s_default_normal_texture_name),
+                                                                       std::unique_ptr<uint8_t[]>(normal_data),
+                                                                       tex_channels,
+                                                                       tex_width,
+                                                                       tex_height))) });
+
+    uint8_t* metallic_data = (uint8_t*)calloc(tex_width * tex_height * tex_channels, sizeof(uint8_t));
+    for (int i = 0; i < tex_width * tex_height; ++i)
+    {
+      memcpy(metallic_data + i * tex_channels, &grey, sizeof(grey));
+    }
+
+    s_instance->m_texture_map.insert(
+        { s_default_metallic_texture_name,
+          EspTexture::create(s_default_metallic_texture_name,
+                             std::move(std::make_unique<ImageResource>(fs::path(s_default_metallic_texture_name),
+                                                                       std::unique_ptr<uint8_t[]>(metallic_data),
+                                                                       tex_channels,
+                                                                       tex_width,
+                                                                       tex_height))) });
+
+    uint8_t* roughness_data = (uint8_t*)calloc(tex_width * tex_height * tex_channels, sizeof(uint8_t));
+    for (int i = 0; i < tex_width * tex_height; ++i)
+    {
+      memcpy(roughness_data + i * tex_channels, &grey, sizeof(grey));
+    }
+
+    s_instance->m_texture_map.insert(
+        { s_default_roughness_texture_name,
+          EspTexture::create(s_default_roughness_texture_name,
+                             std::move(std::make_unique<ImageResource>(fs::path(s_default_roughness_texture_name),
+                                                                       std::unique_ptr<uint8_t[]>(roughness_data),
+                                                                       tex_channels,
+                                                                       tex_width,
+                                                                       tex_height))) });
+
+    uint8_t* ao_data = (uint8_t*)calloc(tex_width * tex_height * tex_channels, sizeof(uint8_t));
+    for (int i = 0; i < tex_width * tex_height; ++i)
+    {
+      memcpy(ao_data + i * tex_channels, &white, sizeof(white));
+    }
+
+    s_instance->m_texture_map.insert(
+        { s_default_ao_texture_name,
+          EspTexture::create(s_default_ao_texture_name,
+                             std::move(std::make_unique<ImageResource>(fs::path(s_default_ao_texture_name),
+                                                                       std::unique_ptr<uint8_t[]>(ao_data),
+                                                                       tex_channels,
+                                                                       tex_width,
+                                                                       tex_height))) });
   }
 
 } // namespace esp

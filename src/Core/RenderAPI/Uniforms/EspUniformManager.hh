@@ -23,10 +23,7 @@ namespace esp
                                                      uint32_t size,
                                                      void* data) = 0;
 
-    virtual EspUniformManager& load_texture(uint32_t set,
-                                            uint32_t binding,
-                                            std::shared_ptr<Texture> texture,
-                                            bool mipmapping = false) = 0;
+    virtual EspUniformManager& load_texture(uint32_t set, uint32_t binding, std::shared_ptr<EspTexture> texture) = 0;
 
     virtual EspUniformManager& update_push_uniform(uint32_t index, void* data) = 0;
   };

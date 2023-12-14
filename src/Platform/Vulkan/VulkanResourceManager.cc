@@ -165,11 +165,14 @@ namespace esp
     return image_view;
   }
 
-  void VulkanResourceManager::create_texture_image(const std::shared_ptr<Texture> texture,
+  void VulkanResourceManager::create_texture_image(uint32_t width,
+                                                   uint32_t height,
+                                                   const void* pixels,
+                                                   uint32_t mip_levels,
                                                    VkImage& texture_image,
                                                    VkDeviceMemory& texture_image_memory)
   {
-    VkDeviceSize image_size = texture->get_width() * texture->get_height() * 4;
+    VkDeviceSize image_size = width * height * 4;
 
     VulkanBuffer staging_buffer{ image_size,
                                  1,
@@ -177,11 +180,11 @@ namespace esp
                                  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT };
 
     staging_buffer.map();
-    staging_buffer.write_to_buffer(static_cast<const void*>(texture->get_pixels()));
+    staging_buffer.write_to_buffer(pixels);
 
-    create_image(texture->get_width(),
-                 texture->get_height(),
-                 texture->get_mip_levels(),
+    create_image(width,
+                 height,
+                 mip_levels,
                  VK_SAMPLE_COUNT_1_BIT,
                  VK_FORMAT_R8G8B8A8_SRGB,
                  VK_IMAGE_TILING_OPTIMAL,
@@ -194,15 +197,11 @@ namespace esp
                             VK_FORMAT_R8G8B8A8_SRGB,
                             VK_IMAGE_LAYOUT_UNDEFINED,
                             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                            texture->get_mip_levels());
+                            mip_levels);
 
-    copy_buffer_to_image(staging_buffer.get_buffer(), texture_image, texture->get_width(), texture->get_height(), 1);
+    copy_buffer_to_image(staging_buffer.get_buffer(), texture_image, width, height, 1);
 
-    generate_mipmaps(texture_image,
-                     VK_FORMAT_R8G8B8A8_SRGB,
-                     texture->get_width(),
-                     texture->get_height(),
-                     texture->get_mip_levels());
+    generate_mipmaps(texture_image, VK_FORMAT_R8G8B8A8_SRGB, width, height, mip_levels);
   }
 
   void VulkanResourceManager::transition_image_layout(VkImage image,

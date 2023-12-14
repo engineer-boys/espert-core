@@ -2,6 +2,8 @@
 #define ESPERT_CORE_APPLICATION_HH
 
 #include "ApplicationContext.hh"
+#include "Core/Systems/ResourceSystem.hh"
+#include "Core/Systems/TextureSystem.hh"
 #include "EspWindow.hh"
 #include "Events/WindowEvent.hh"
 #include "Layers/Layer.hh"
@@ -28,6 +30,8 @@ namespace esp
     std::unique_ptr<EspCommandHandler> m_command_handler;
     std::unique_ptr<EspFrameManager> m_frame_manager;
     std::unique_ptr<EspDebugMessenger> m_debug_messenger;
+    std::unique_ptr<ResourceSystem> m_resource_system;
+    std::unique_ptr<TextureSystem> m_texture_system;
 
    private:
     bool m_running;

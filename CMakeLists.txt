@@ -122,6 +122,7 @@ add_dependencies(core_shaders glslang::glslang-standalone)
 if (ESP_BUILD_TESTS)
     file(GLOB_RECURSE TEST_SOURCES ${PROJECT_SOURCE_DIR}/tests/*.cc)
     add_executable(tests ${TEST_SOURCES})
+    target_include_directories(tests PUBLIC ${PROJECT_SOURCE_DIR}/tests)
     target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
     target_link_libraries(tests PUBLIC espert-core)
 

@@ -20,7 +20,14 @@ namespace esp
 
   ResourceSystem::~ResourceSystem()
   {
+    if (s_instance) { terminate(); }
+  }
+
+  void ResourceSystem::terminate()
+  {
     ResourceSystem::s_instance = nullptr;
+    LoaderMap empty_map        = {};
+    m_loader_map.swap(empty_map);
     ESP_CORE_TRACE("Resource system shutdown.");
   }
 
@@ -37,5 +44,11 @@ namespace esp
     ESP_CORE_TRACE("Resource system initialized with base path {}.", asset_base_path.string());
 
     return resource_system;
+  }
+
+  void ResourceSystem::change_asset_base_path(const fs::path& asset_base_path)
+  {
+    m_asset_base_path = asset_base_path;
+    ESP_CORE_INFO("Changed asset base path to {}.", asset_base_path.string());
   }
 } // namespace esp
