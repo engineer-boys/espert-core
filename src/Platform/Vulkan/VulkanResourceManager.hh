@@ -55,7 +55,10 @@ namespace esp
                                          VkImageAspectFlags aspect_flags,
                                          uint32_t mip_levels);
 
-    static void create_texture_image(const std::shared_ptr<Texture> texture,
+    static void create_texture_image(uint32_t width,
+                                     uint32_t height,
+                                     const void* pixels,
+                                     uint32_t mip_levels,
                                      VkImage& texture_image,
                                      VkDeviceMemory& texture_image_memory);
 

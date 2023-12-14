@@ -115,7 +115,7 @@ namespace esp
   EspUniformPackage::EspUniformPackage(
       const EspUniformDataStorage& uniform_data_storage,
       const VkDescriptorPool& descriptor_pool,
-      std::map<uint32_t, std::map<uint32_t, std::vector<std::unique_ptr<VulkanTexture>>>>& textures)
+      std::map<uint32_t, std::map<uint32_t, std::vector<std::shared_ptr<VulkanTexture>>>>& textures)
   {
     VkDescriptorSetAllocateInfo alloc_info{};
     alloc_info.sType              = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
@@ -157,7 +157,7 @@ namespace esp
       EspBufferSet& buffer_set,
       const VkDescriptorSet& descriptor,
       const std::vector<EspMetaUniform>& uniforms,
-      std::map<uint32_t, std::vector<std::unique_ptr<VulkanTexture>>>& vec_textures)
+      std::map<uint32_t, std::vector<std::shared_ptr<VulkanTexture>>>& vec_textures)
   {
     // these objects have to exist until updating ds
     std::vector<VkWriteDescriptorSet> descriptor_writes;

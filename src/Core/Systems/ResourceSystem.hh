@@ -48,6 +48,9 @@ namespace esp
     PREVENT_COPY(ResourceSystem);
 
     static std::unique_ptr<ResourceSystem> create(const fs::path& asset_base_path);
+    void terminate();
+
+    void change_asset_base_path(const fs::path& asset_base_path);
 
     inline static ResourceSystem* get_instance() { return ResourceSystem::s_instance; }
     inline static const fs::path& get_asset_base_path() { return s_instance->m_asset_base_path; }
@@ -76,7 +79,7 @@ namespace esp
       }
 
       auto resource = s_instance->m_loader_map.at(typeid(ResourceType))->load(path, params);
-      ESP_CORE_TRACE("Loaded {} {}.", typeid(ResourceType).name(), resource->get_filename());
+      if (resource) { ESP_CORE_TRACE("Loaded {} {}.", typeid(ResourceType).name(), resource->get_filename()); }
       return resource;
     }
     inline static void unload(std::unique_ptr<Resource> resource)

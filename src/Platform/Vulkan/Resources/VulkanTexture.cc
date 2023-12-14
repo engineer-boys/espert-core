@@ -4,14 +4,30 @@
 
 namespace esp
 {
-  std::unique_ptr<VulkanTexture> VulkanTexture::create(const std::shared_ptr<Texture> texture, bool mipmapping)
+  VulkanTexture::VulkanTexture(const std::string& name,
+                               const uint8_t* pixels,
+                               uint8_t channel_count,
+                               uint32_t width,
+                               uint32_t height) :
+      EspTexture(name, pixels, channel_count, width, height)
   {
-    auto vulkan_texture          = std::unique_ptr<VulkanTexture>(new VulkanTexture());
-    vulkan_texture->m_width      = texture->get_width();
-    vulkan_texture->m_height     = texture->get_height();
-    vulkan_texture->m_mip_levels = texture->get_mip_levels();
+  }
 
-    VulkanResourceManager::create_texture_image(texture,
+  std::shared_ptr<VulkanTexture> VulkanTexture::create(const std::string name,
+                                                       std::unique_ptr<ImageResource> image,
+                                                       bool mipmapping)
+  {
+    auto vulkan_texture =
+        std::shared_ptr<VulkanTexture>(new VulkanTexture(name,
+                                                         static_cast<const uint8_t*>(image->get_data()),
+                                                         image->get_channel_count(),
+                                                         image->get_width(),
+                                                         image->get_height()));
+
+    VulkanResourceManager::create_texture_image(vulkan_texture->get_width(),
+                                                vulkan_texture->get_height(),
+                                                image->release(),
+                                                vulkan_texture->get_mip_levels(),
                                                 vulkan_texture->m_texture_image,
                                                 vulkan_texture->m_texture_image_memory);
 

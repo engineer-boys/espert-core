@@ -4,6 +4,7 @@
 #include "esppch.hh"
 
 // Render API
+#include "Core/RenderAPI/Resources/EspTexture.hh"
 #include "VulkanSampler.hh"
 
 // Core
@@ -11,24 +12,21 @@
 
 namespace esp
 {
-  class VulkanTexture
+  class VulkanTexture : public EspTexture
   {
    private:
     VkImage m_texture_image;
     VkDeviceMemory m_texture_image_memory;
     VkImageView m_texture_image_view;
 
-    uint32_t m_width;
-    uint32_t m_height;
-    uint32_t m_mip_levels;
-
     std::shared_ptr<VulkanSampler> m_sampler;
 
    public:
-    static std::unique_ptr<VulkanTexture> create(const std::shared_ptr<Texture> texture, bool mipmapping = false);
+    static std::shared_ptr<VulkanTexture> create(const std::string name,
+                                                 std::unique_ptr<ImageResource> image,
+                                                 bool mipmapping = false);
 
-    VulkanTexture(const VulkanTexture&)            = delete;
-    VulkanTexture& operator=(const VulkanTexture&) = delete;
+    PREVENT_COPY(VulkanTexture);
 
     ~VulkanTexture();
 
@@ -38,7 +36,11 @@ namespace esp
     inline VkSampler get_sampler() { return m_sampler->get_sampler(); }
 
    private:
-    VulkanTexture() = default;
+    VulkanTexture(const std::string& name,
+                  const uint8_t* pixels,
+                  uint8_t channel_count,
+                  uint32_t width,
+                  uint32_t height);
   };
 } // namespace esp
 

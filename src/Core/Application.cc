@@ -17,12 +17,18 @@ namespace esp
     m_command_handler = EspCommandHandler::create_and_init();
     m_frame_manager   = EspFrameManager::create_and_init(*m_window);
 
+    m_resource_system = ResourceSystem::create(fs::current_path().parent_path() / "resources");
+    m_texture_system  = TextureSystem::create();
+
     m_layer_stack = new LayerStack();
     add_application_layers();
   }
 
   Application::~Application()
   {
+    m_texture_system->terminate();
+    m_resource_system->terminate();
+
     m_frame_manager->terminate();
     m_command_handler->terminate();
     m_debug_messenger->terminate();
