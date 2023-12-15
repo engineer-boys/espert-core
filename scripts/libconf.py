@@ -39,4 +39,5 @@ ESPERT_LIBS_CONF = {
         CmakeParameter("BUILD_WERROR", "ON"),
         CmakeParameter("BUILD_TESTS", "OFF"),
     ],
+    "assimp": []
 }

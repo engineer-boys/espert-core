@@ -27,19 +27,6 @@
 #define ESP_PI             3.14159265f    // = PI
 #define ESP_EPSILON        0.0001f
 
-// std
-#include <functional>
-
-namespace esp
-{
-  // from: https://stackoverflow.com/a/57595105
-  template<typename T, typename... Rest> void hashCombine(std::size_t& seed, const T& v, const Rest&... rest)
-  {
-    seed ^= std::hash<T>{}(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
-    (hashCombine(seed, rest), ...);
-  }
-} // namespace esp
-
 #include <glm/glm.hpp>
 #include <glm/gtc/epsilon.hpp>
 
@@ -51,7 +38,6 @@ namespace esp
     return glm::normalize(v);
   }
 } // namespace esp
-
 #include <bitset>
 
 namespace esp

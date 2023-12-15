@@ -31,3 +31,6 @@
 [submodule "external/vvl"]
 	path = external/vvl
 	url = https://github.com/KhronosGroup/Vulkan-ValidationLayers
+[submodule "external/assimp"]
+	path = external/assimp
+	url = git@github.com:assimp/assimp.git
