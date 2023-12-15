@@ -61,6 +61,9 @@ get_library(NAME tinyobjloader
     CONF_PATH lib/tinyobjloader/cmake
 )
 
+get_library(NAME assimp
+    CONF_PATH lib/cmake/assimp-5.3)
+
 include(${ESPERT_DIR}/cmake/get-vulkan.cmake)
 get_vulkan()
 
@@ -86,6 +89,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     tinyobjloader::tinyobjloader
     EnTT::EnTT
     stb
+    assimp::assimp
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/external/stb)

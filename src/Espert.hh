@@ -23,7 +23,7 @@
 #include "Core/Scene/Action.hh"
 #include "Core/Scene/Components/Components.hh"
 #include "Core/Scene/Entity.hh"
-#include "Core/Scene/Model.hh"
+#include "Core/Scene/Model/Model.hh"
 #include "Core/Scene/Node.hh"
 #include "Core/Scene/Scene.hh"
 
