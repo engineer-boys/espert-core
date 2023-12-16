@@ -3,7 +3,7 @@
 
 #include "esppch.hh"
 
-#include "Core/Scene/Model/Model.hh"
+#include "Core/Renderer/Model/Model.hh"
 
 namespace esp
 {

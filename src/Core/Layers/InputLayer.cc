@@ -1,7 +1,7 @@
 #include "InputLayer.hh"
 
 #include "Core/EspWindow.hh"
-#include "Core/Scene/Scene.hh"
+#include "Core/Renderer/Scene/Scene.hh"
 
 namespace esp
 {

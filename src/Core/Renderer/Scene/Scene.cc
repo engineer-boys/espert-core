@@ -1,5 +1,4 @@
 #include "Scene.hh"
-#include "Components/TagComponent.hh"
 #include "Entity.hh"
 
 namespace esp
