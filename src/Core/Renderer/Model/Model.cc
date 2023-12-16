@@ -1,5 +1,3 @@
-#include <utility>
-
 #include "Core/Systems/ResourceSystem.hh"
 #include "Model.hh"
 

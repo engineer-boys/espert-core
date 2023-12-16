@@ -19,16 +19,14 @@
 #include "Core/RenderAPI/Resources/EspVertexBuffer.hh"
 #include "Core/RenderAPI/Uniforms/EspUniformMetaData.hh"
 
-/* --------- Scene --------------------- */
-#include "Core/Scene/Action.hh"
-#include "Core/Scene/Components/Components.hh"
-#include "Core/Scene/Entity.hh"
-#include "Core/Scene/Model/Model.hh"
-#include "Core/Scene/Node.hh"
-#include "Core/Scene/Scene.hh"
-
 /* --------- Renderer --------------------- */
 #include "Core/Renderer/Camera.hh"
+#include "Core/Renderer/Model/Model.hh"
+#include "Core/Renderer/Scene/Action.hh"
+#include "Core/Renderer/Scene/Components/Components.hh"
+#include "Core/Renderer/Scene/Entity.hh"
+#include "Core/Renderer/Scene/Node.hh"
+#include "Core/Renderer/Scene/Scene.hh"
 
 /* --------- Client Point ------------------- */
 #include "Core/ClientPoint.hh"
