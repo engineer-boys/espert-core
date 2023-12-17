@@ -4,6 +4,7 @@
 #include <fstream>
 
 // Platform
+#include "Platform/Vulkan/Resources/VulkanShaderStage.hh"
 #include "Platform/Vulkan/Uniforms/VulkanUniformMetaData.hh"
 #include "Platform/Vulkan/VulkanDevice.hh"
 #include "Platform/Vulkan/Work/VulkanSwapChain.hh"
@@ -66,7 +67,7 @@ namespace esp
 
           m_shader_info_map[stage]        = {};
           m_shader_info_map[stage].sType  = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-          m_shader_info_map[stage].stage  = VK_SHADER_STAGE_VERTEX_BIT;
+          m_shader_info_map[stage].stage  = esp_shader_stage_to_vk(stage);
           m_shader_info_map[stage].module = m_shader_module_map.at(stage);
           m_shader_info_map[stage].pName  = "main";
         });
@@ -336,8 +337,8 @@ static VkShaderModule create_shader_module(const esp::SpirvData& code, VkDevice 
 {
   VkShaderModuleCreateInfo create_info{};
   create_info.sType    = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-  create_info.codeSize = code.size();
-  create_info.pCode    = reinterpret_cast<const uint32_t*>(code.data());
+  create_info.codeSize = code.size() * sizeof(uint32_t);
+  create_info.pCode    = code.data();
 
   VkShaderModule shader_module;
   if (vkCreateShaderModule(device, &create_info, nullptr, &shader_module) != VK_SUCCESS)
