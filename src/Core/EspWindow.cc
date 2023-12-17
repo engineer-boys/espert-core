@@ -2,46 +2,34 @@
 #include "Events/Events.hh"
 #include "Platform/Vulkan/VulkanContext.hh"
 
+static void glfw_error_callback(int error, const char* description)
+{
+  ESP_CORE_ERROR("GLFW error ({0}) : {1}", errno, description);
+}
+
 namespace esp
 {
-  static void glfw_error_callback(int error, const char* description)
+  EspWindow* EspWindow::s_instance = nullptr;
+
+  std::unique_ptr<EspWindow> EspWindow::create(WindowData* data)
   {
-    ESP_CORE_ERROR("GLFW error ({0}) : {1}", errno, description);
+    ESP_ASSERT(EspWindow::s_instance == nullptr, "The Espert window already exists!");
+    EspWindow::s_instance = new EspWindow(data);
+    EspWindow::s_instance->init();
+
+    return std::unique_ptr<EspWindow>{ EspWindow::s_instance };
   }
 
-  bool EspWindow::s_is_exist = false;
-
-  EspWindow::EspWindow(const WindowData& data)
+  EspWindow::EspWindow(WindowData* data)
   {
-    if (EspWindow::s_is_exist) { throw std::runtime_error("The Espert window already exists!"); }
-    EspWindow::s_is_exist = true;
-
-    EspWindow::init(data);
-    ESP_CORE_INFO("window created: w {}, h {}, t {}", m_data.m_width, m_data.m_height, m_data.m_title);
+    /* --- set fields --- */
+    m_data = std::unique_ptr<WindowData>{ data };
   }
 
-  EspWindow::~EspWindow()
-  {
-    EspWindow::s_is_exist = false;
-    destroy();
-  }
+  EspWindow::~EspWindow() {}
 
-  std::unique_ptr<EspWindow> EspWindow::create(const WindowData& data)
+  void EspWindow::init()
   {
-    std::unique_ptr<EspWindow> window{ new EspWindow(data) };
-    return window;
-  }
-
-  void EspWindow::update()
-  {
-    glfwPollEvents();
-    handle_camera_key_presses();
-  }
-
-  void EspWindow::init(const WindowData& data)
-  {
-    m_data = data;
-
     int success = glfwInit();
     if (success == GLFW_FALSE)
     {
@@ -51,27 +39,44 @@ namespace esp
 
     glfwSetErrorCallback(glfw_error_callback);
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-    m_window = glfwCreateWindow(m_data.m_width, m_data.m_height, m_data.m_title.c_str(), nullptr, nullptr);
+    // TODO: set flag for not resizable
+    // Now resiable is always true
+    if (m_data->m_resizable) { glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); }
+
+    m_window = glfwCreateWindow(m_data->m_width, m_data->m_height, m_data->m_title.c_str(), nullptr, nullptr);
     if (m_window == NULL)
     {
       ESP_CORE_ERROR("GLFW cannot create a window instance");
       throw std::runtime_error("GLFW cannot create a window instance");
     }
-    glfwSetWindowUserPointer(m_window, &m_data);
+    glfwSetWindowUserPointer(m_window, m_data.get());
 
     // TODO: set flag for cursor disabled
-    // glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    //
+    // Now disable cursor is always false
+    if (m_data->m_disable_cursor)
+    {
+      // glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    }
 
     set_callbacks();
+    ESP_CORE_INFO("window created: w {}, h {}, t {}", m_data->m_width, m_data->m_height, m_data->m_title);
   }
 
-  void EspWindow::destroy()
+  void EspWindow::terminate()
   {
+    ESP_ASSERT(EspWindow::s_instance != nullptr, "The Espert window is deleted twice!");
+
     glfwDestroyWindow(m_window);
     glfwTerminate();
+
+    EspWindow::s_instance = nullptr;
+  }
+
+  void EspWindow::update()
+  {
+    glfwPollEvents();
+    // handle_camera_key_presses();
   }
 
   void EspWindow::set_callbacks()
@@ -159,17 +164,17 @@ namespace esp
                              });
   }
 
-  void EspWindow::handle_camera_key_presses()
-  {
-    for (auto& key : m_camera_keys)
-    {
-      if (glfwGetKey(m_window, key) == GLFW_PRESS)
-      {
-        KeyPressedEvent event(key, true);
-        m_data.m_events_manager_fun(event);
-      }
-    }
-  }
+  // void EspWindow::handle_camera_key_presses()
+  // {
+  //   for (auto& key : m_camera_keys)
+  //   {
+  //     if (glfwGetKey(m_window, key) == GLFW_PRESS)
+  //     {
+  //       KeyPressedEvent event(key, true);
+  //       m_data.m_events_manager_fun(event);
+  //     }
+  //   }
+  // }
 
   void EspWindow::create_window_surface()
   {

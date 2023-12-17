@@ -1,41 +1,56 @@
 #include "Application.hh"
-#include "Layers/InputLayer.hh"
 #include <ranges>
 
 namespace esp
 {
-  Application::Application() : m_running(true)
+  Application::Application(const std::string title, unsigned int width, unsigned int height) : m_running(true)
   {
-    m_window = EspWindow::create(EspWindow::WindowData());
+    // create (alloc and init) window
+    m_window = EspWindow::create(new EspWindow::WindowData(title, width, height));
     m_window->set_events_manager_fun(ESP_BIND_EVENT_FOR_FUN(Application::events_manager));
 
+    // create (alloc and init) timer
     m_timer = Timer::create();
 
-    m_debug_messenger = EspDebugMessenger::create();
-    m_render_context  = EspRenderContext::create_and_init(*m_window);
+    // set temporary m_renderer struct
+    m_debug_messenger           = EspDebugMessenger::create();
+    m_renderer.m_render_context = EspRenderContext::build(*m_window);
     m_debug_messenger->init();
-    m_command_handler = EspCommandHandler::create_and_init();
-    m_frame_manager   = EspFrameManager::create_and_init(*m_window);
 
+    m_renderer.m_work_orchestrator = EspWorkOrchestrator::build();
+    m_renderer.m_jobs              = EspJobs::build();
+
+    // create basic systems
     m_resource_system = ResourceSystem::create(fs::current_path().parent_path() / "resources");
     m_texture_system  = TextureSystem::create();
 
+    // create (alloc and init) layer stacks
+
     m_layer_stack = new LayerStack();
-    add_application_layers();
   }
 
   Application::~Application()
   {
+    // all jobs, which are processing by renderer, must be completed
+    // before making free other resources.
+    m_renderer.done_all_jobs();
+
+    // [1] resources from layers should be deleted because they may depend on
+    // other resources allocated by Application.
+    delete m_layer_stack;
+
+    // [2] terminate all systems
     m_texture_system->terminate();
     m_resource_system->terminate();
 
-    m_frame_manager->terminate();
-    m_command_handler->terminate();
+    // [3] m_renderer has to be killed and then debug messenger
+    m_renderer.terminate();
     m_debug_messenger->terminate();
 
-    delete m_layer_stack;
+    // [4] Window instance has to be killed
+    m_window->terminate();
 
-    m_render_context->terminate();
+    // the last one is Application context to be killed (implicitely)
   }
 
   void Application::run()
@@ -46,14 +61,14 @@ namespace esp
       if (m_timer->get_dt() < ESP_MIN_FRAME_RATE) continue;
       m_timer->reset();
 
-      m_frame_manager->begin_frame();
+      m_renderer.m_work_orchestrator->begin_frame();
 
       for (auto layer : *m_layer_stack)
       {
         layer->update(m_timer->get_dt());
       }
 
-      m_frame_manager->end_frame();
+      m_renderer.m_work_orchestrator->end_frame();
 
       m_window->update();
     }
@@ -63,7 +78,8 @@ namespace esp
 
   bool Application::on_window_resized(WindowResizedEvent& e)
   {
-    m_frame_manager->on_window_resized(e);
+    if (m_window->is_resizable()) { m_renderer.m_work_orchestrator->on_window_resized(e); }
+
     return true;
   }
 
@@ -73,12 +89,10 @@ namespace esp
     return true;
   }
 
-  void Application::add_application_layers() { push_layer(new InputLayer()); }
-
   void Application::events_manager(Event& e)
   {
-    Event::try_handler<WindowResizedEvent>(e, ESP_BIND_EVENT_FOR_FUN(Application::on_window_resized));
     Event::try_handler<WindowClosedEvent>(e, ESP_BIND_EVENT_FOR_FUN(Application::on_window_closed));
+    Event::try_handler<WindowResizedEvent>(e, ESP_BIND_EVENT_FOR_FUN(Application::on_window_resized));
 
     for (auto& iter : *m_layer_stack | std::views::reverse)
     {
