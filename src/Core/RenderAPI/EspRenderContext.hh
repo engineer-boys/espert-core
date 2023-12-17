@@ -8,23 +8,20 @@ namespace esp
 {
   class EspRenderContext
   {
-   private:
-    static bool s_is_exist;
-
+    /* -------------------------- METHODS ---------------------------------- */
    public:
-    static std::unique_ptr<EspRenderContext> create_and_init(EspWindow& window);
-
     EspRenderContext()          = default;
     virtual ~EspRenderContext() = default;
 
     EspRenderContext(const EspRenderContext& other)            = delete;
     EspRenderContext& operator=(const EspRenderContext& other) = delete;
 
-   protected:
     virtual void init(EspWindow& window) = 0;
+    virtual void terminate()             = 0;
 
+    /* -------------------------- METHODS STATIC --------------------------- */
    public:
-    virtual void terminate() = 0;
+    static std::unique_ptr<EspRenderContext> build(EspWindow& window);
   };
 
   void render_context_glfw_hints();
