@@ -94,6 +94,9 @@ namespace esp
                                                     uint32_t count_of_textures = 1) override;
 
     virtual EspUniformMetaData& add_push_uniform(EspUniformShaderStage stage, uint32_t offset, uint32_t size) override;
+
+    int count_buffer_uniforms(int start_ds, int end_ds) const;
+    int count_texture_uniforms(int start_ds, int end_ds) const;
   };
 } // namespace esp
 

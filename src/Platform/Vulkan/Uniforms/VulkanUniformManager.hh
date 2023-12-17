@@ -15,7 +15,7 @@ namespace esp
 {
   struct EspUniformPackage
   {
-   public:
+   private:
     struct EspBufferSet
     {
      public:
@@ -32,9 +32,11 @@ namespace esp
       ~EspBufferSet();
     };
 
-   public:
+   private:
     std::map<uint32_t, EspBufferSet*> m_set_to_bufferset;
     std::vector<VkDescriptorSet> m_descriptor_sets;
+
+    int m_first_descriptor_set_idx;
 
    private:
     void update_descriptor_set(EspBufferSet& buffer_set,
@@ -48,7 +50,7 @@ namespace esp
       vkCmdBindDescriptorSets(VulkanFrameManager::get_current_command_buffer(),
                               VK_PIPELINE_BIND_POINT_GRAPHICS,
                               pipeline_layout,
-                              0,
+                              m_first_descriptor_set_idx,
                               static_cast<uint32_t>(m_descriptor_sets.size()),
                               m_descriptor_sets.data(),
                               0,
@@ -63,7 +65,9 @@ namespace esp
 
     EspUniformPackage(const EspUniformDataStorage& uniform_data_storage,
                       const VkDescriptorPool& descriptor_pool,
-                      std::map<uint32_t, std::map<uint32_t, std::vector<std::shared_ptr<VulkanTexture>>>>& textures);
+                      std::map<uint32_t, std::map<uint32_t, std::vector<std::shared_ptr<VulkanTexture>>>>& textures,
+                      int first_descriptor_set,
+                      int last_descriptor_set);
     ~EspUniformPackage();
   };
 
@@ -72,6 +76,7 @@ namespace esp
     friend class VulkanPipeline;
 
    private:
+    // <set, <binding, vector<texture> >>
     std::map<uint32_t, std::map<uint32_t, std::vector<std::shared_ptr<VulkanTexture>>>> m_textures;
     std::vector<EspUniformPackage*> m_packages;
 
@@ -81,11 +86,18 @@ namespace esp
     const VkPipelineLayout& m_out_pipeline_layout;
     const EspUniformDataStorage& m_out_uniform_data_storage;
 
+    int m_first_descriptor_set;
+
+    // -1 - the whole range from m_first_descriptor_set to the end.
+    int m_last_descriptor_set;
+
    private:
     void init_pool();
 
     VulkanUniformManager(const EspUniformDataStorage& uniform_data_storage,
-                         const VkPipelineLayout& out_pipeline_layout);
+                         const VkPipelineLayout& out_pipeline_layout,
+                         int first_descriptor_set,
+                         int last_descriptor_set);
 
    public:
     void build() override;
