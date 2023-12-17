@@ -11,8 +11,9 @@
 
 namespace esp
 {
-  class VulaknPipelineBuilder : public EspPipelineBuilder
+  class VulkanWorkerBuilder : public EspWorkerBuilder
   {
+    /* -------------------------- FIELDS ----------------------------------- */
    private:
     bool m_is_vertex_shader_module = false;
     VkShaderModule m_vertex_shader_module;
@@ -31,9 +32,13 @@ namespace esp
     VkPipelineLayout m_pipeline_layout; /* it will be moved to the graphic pipieline. */
     std::unique_ptr<EspUniformDataStorage> m_uniform_data_storage;
 
+    /* -------------------------- METHODS ---------------------------------- */
    public:
-    VulaknPipelineBuilder();
-    ~VulaknPipelineBuilder();
+    VulkanWorkerBuilder();
+    ~VulkanWorkerBuilder();
+
+    VulkanWorkerBuilder(const VulkanWorkerBuilder&)            = delete;
+    VulkanWorkerBuilder& operator=(const VulkanWorkerBuilder&) = delete;
 
     virtual void set_shaders(std::string path_vertex_shr, std::string path_fragment_shr) override;
     virtual void set_vertex_shader(std::string path_vertex_shr) override;
@@ -42,7 +47,7 @@ namespace esp
     virtual void set_vertex_layouts(std::vector<EspVertexLayout> vertex_layouts) override;
     virtual void set_pipeline_layout(std::unique_ptr<EspUniformMetaData> uniforms_meta_data) override;
 
-    virtual std::unique_ptr<EspPipeline> build_pipeline() override;
+    virtual std::unique_ptr<EspWorker> build_worker() override;
   };
 } // namespace esp
 

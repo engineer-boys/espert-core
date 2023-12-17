@@ -6,7 +6,7 @@
 // Platform
 #include "Platform/Vulkan/Uniforms/VulkanUniformMetaData.hh"
 #include "Platform/Vulkan/VulkanDevice.hh"
-#include "Platform/Vulkan/VulkanFrameManager.hh"
+#include "Platform/Vulkan/Work/VulkanSwapChain.hh"
 #include "VulkanPipeline.hh"
 
 // signatures
@@ -19,12 +19,11 @@ static VkShaderModule create_shader_module(const std::vector<char>& code, VkDevi
 
 namespace esp
 {
-  VulaknPipelineBuilder::VulaknPipelineBuilder() :
-      m_vertex_shader_info{}, m_fragment_shader_info{}, m_vertex_input_info{}
+  VulkanWorkerBuilder::VulkanWorkerBuilder() : m_vertex_shader_info{}, m_fragment_shader_info{}, m_vertex_input_info{}
   {
   }
 
-  VulaknPipelineBuilder::~VulaknPipelineBuilder()
+  VulkanWorkerBuilder::~VulkanWorkerBuilder()
   {
     if (m_is_fragment_shader_module)
     {
@@ -42,13 +41,13 @@ namespace esp
     }
   }
 
-  void VulaknPipelineBuilder::set_shaders(std::string path_vertex_shr, std::string path_fragment_shr)
+  void VulkanWorkerBuilder::set_shaders(std::string path_vertex_shr, std::string path_fragment_shr)
   {
     set_vertex_shader(path_vertex_shr);
     set_fragment_shader(path_fragment_shr);
   }
 
-  void VulaknPipelineBuilder::set_vertex_shader(std::string path_vertex_shr)
+  void VulkanWorkerBuilder::set_vertex_shader(std::string path_vertex_shr)
   {
     auto vertex_shader_code   = read_file(path_vertex_shr);
     m_vertex_shader_module    = create_shader_module(vertex_shader_code, VulkanDevice::get_logical_device());
@@ -60,7 +59,7 @@ namespace esp
     m_vertex_shader_info.pName  = "main";
   }
 
-  void VulaknPipelineBuilder::set_fragment_shader(std::string path_fragment_shr)
+  void VulkanWorkerBuilder::set_fragment_shader(std::string path_fragment_shr)
   {
     auto fragment_shader_code   = read_file(path_fragment_shr);
     m_fragment_shader_module    = create_shader_module(fragment_shader_code, VulkanDevice::get_logical_device());
@@ -72,7 +71,7 @@ namespace esp
     m_fragment_shader_info.pName  = "main";
   }
 
-  void VulaknPipelineBuilder::set_vertex_layouts(std::vector<EspVertexLayout> vertex_layouts)
+  void VulkanWorkerBuilder::set_vertex_layouts(std::vector<EspVertexLayout> vertex_layouts)
   {
     for (auto& vtx_layout : vertex_layouts)
     {
@@ -102,7 +101,7 @@ namespace esp
     m_vertex_input_info.pVertexAttributeDescriptions    = m_attribute_descriptions.data();
   }
 
-  void VulaknPipelineBuilder::set_pipeline_layout(std::unique_ptr<EspUniformMetaData> uniforms_meta_data)
+  void VulkanWorkerBuilder::set_pipeline_layout(std::unique_ptr<EspUniformMetaData> uniforms_meta_data)
   {
     std::unique_ptr<VulkanUniformMetaData> meta_data(static_cast<VulkanUniformMetaData*>(uniforms_meta_data.release()));
 
@@ -126,6 +125,7 @@ namespace esp
         pipeline_layout_info.pPushConstantRanges    = m_uniform_data_storage->get_push_data();
       }
     }
+    else { m_uniform_data_storage = nullptr; }
 
     if (vkCreatePipelineLayout(VulkanDevice::get_logical_device(),
                                &pipeline_layout_info,
@@ -139,7 +139,7 @@ namespace esp
     m_is_pipeline_layout = true;
   }
 
-  std::unique_ptr<EspPipeline> VulaknPipelineBuilder::build_pipeline()
+  std::unique_ptr<EspWorker> VulkanWorkerBuilder::build_worker()
   {
     /*
       DEFAULT INFO ABOUT PIPELINE:
@@ -211,7 +211,7 @@ namespace esp
     {
       multisampling.sType                = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
       multisampling.sampleShadingEnable  = VK_FALSE;
-      multisampling.rasterizationSamples = VulkanContext::get_context_data().m_msaa_samples;
+      multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
       //
       // TODO: let user decide whether he wants higher quality or better performance - put this in some if statement
       // multisampling.sampleShadingEnable  = VK_TRUE; // enable sample shading in the pipeline
@@ -255,6 +255,13 @@ namespace esp
       dynamic_state.pDynamicStates    = dynamic_states.data();
     }
 
+    VkPipelineRenderingCreateInfoKHR pipeline_rendering_create_info{};
+    {
+      pipeline_rendering_create_info.sType                   = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO_KHR;
+      pipeline_rendering_create_info.colorAttachmentCount    = 1;
+      pipeline_rendering_create_info.pColorAttachmentFormats = VulkanSwapChain::get_swap_chain_image_format();
+    }
+
     /* ----- GRAPHICS PIPELINE CREATE INFO ------ */
     /* ------------------------------------------ */
     VkGraphicsPipelineCreateInfo pipeline_info{};
@@ -271,10 +278,12 @@ namespace esp
     pipeline_info.pColorBlendState    = &color_blending;
     pipeline_info.pDynamicState       = &dynamic_state;
     pipeline_info.layout              = m_pipeline_layout;
-    pipeline_info.renderPass          = VulkanFrameManager::get_swap_chain_render_pass();
-    pipeline_info.subpass             = 0;
-    pipeline_info.basePipelineIndex   = -1;
-    pipeline_info.basePipelineHandle  = VK_NULL_HANDLE;
+    // !!! IT IS NOT NEEDED ANYMORE !!!! DUE TO DYNAMIC RENDERING ....
+    // pipeline_info.renderPass          = VulkanFrameManager::get_swap_chain_render_pass();
+    pipeline_info.subpass            = 0;
+    pipeline_info.basePipelineIndex  = -1;
+    pipeline_info.basePipelineHandle = VK_NULL_HANDLE;
+    pipeline_info.pNext              = &pipeline_rendering_create_info;
 
     VkPipeline graphics_pipeline;
 
@@ -296,8 +305,8 @@ namespace esp
     m_is_vertex_shader_module   = false;
     m_is_pipeline_layout        = false;
 
-    return std::unique_ptr<EspPipeline>{
-      new VulkanPipeline(m_pipeline_layout, graphics_pipeline, std::move(m_uniform_data_storage))
+    return std::unique_ptr<EspWorker>{
+      new VulkanWorker(m_pipeline_layout, graphics_pipeline, std::move(m_uniform_data_storage))
     };
   }
 } // namespace esp

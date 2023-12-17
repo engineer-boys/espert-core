@@ -26,6 +26,7 @@ namespace esp
 
    protected:
     EspTexture(const std::string& name, const uint8_t* pixels, uint8_t channel_count, uint32_t width, uint32_t height);
+    EspTexture(uint32_t width, uint32_t height);
 
     std::string m_name;
     uint8_t m_channel_count;
