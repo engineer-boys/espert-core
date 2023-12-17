@@ -33,6 +33,11 @@ namespace esp
     std::unique_ptr<TextureSystem> m_texture_system;
     std::unique_ptr<ShaderSystem> m_shader_system;
     std::unique_ptr<MaterialSystem> m_material_system;
+<<<<<<< HEAD:src/Core/EspApplication.hh
+=======
+
+    static fs::path s_asset_base_path;
+>>>>>>> e6fdd16 (minor fixes):src/Core/Application.hh
 
     LayerStack* m_layer_stack;
 
