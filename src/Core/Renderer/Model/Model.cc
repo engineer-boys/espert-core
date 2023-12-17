@@ -1,5 +1,5 @@
-#include "Core/Systems/ResourceSystem.hh"
 #include "Model.hh"
+#include "Core/Systems/ResourceSystem.hh"
 
 namespace esp
 {
