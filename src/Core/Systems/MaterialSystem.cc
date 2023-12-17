@@ -12,7 +12,7 @@ namespace esp
 
   Material::Material(EspPipeline& pipeline, std::vector<std::shared_ptr<EspTexture>>& textures)
   {
-    m_material_manager = pipeline.create_uniform_manager();
+    m_material_manager = pipeline.create_uniform_manager(1, 1);
 
     std::shared_ptr<EspTexture> albedo_texture, normal_texture, metallic_texture, roughness_texture, ao_texture;
 
@@ -32,7 +32,7 @@ namespace esp
     if (ao_texture == nullptr) { ao_texture = TextureSystem::get_default_ao_texture(); }
 
     // TODO: it's kind of a constraint to hard code set's and binding's value
-    // but imo it's fine to say to user that 'those sets and bindings are meant for textures'.
+    // but imo it's fine to say to user that 'set 1 and bindings 0-4 are meant for textures'.
     // We can work around it obviously so I leave it here to decide:)
     m_material_manager->load_texture(1, 0, albedo_texture);
     m_material_manager->load_texture(1, 1, normal_texture);
