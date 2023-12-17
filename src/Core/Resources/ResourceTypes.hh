@@ -3,6 +3,7 @@
 
 #include "esppch.hh"
 
+#include "Core/RenderAPI/Resources/EspShaderStage.hh"
 #include "Core/Resources/ResourceUtils.hh"
 
 namespace esp
@@ -108,6 +109,45 @@ namespace esp
   {
     bool flip_y               = false;
     uint8_t required_channels = 4;
+  };
+
+  using SpirvData    = std::vector<uint32_t>;
+  using SpirvDataMap = std::unordered_map<EspShaderStage, SpirvData>;
+
+  class SpirvResource : public Resource
+  {
+   public:
+    SpirvResource(const fs::path& path, SpirvDataMap spirv_data_map) : Resource(path)
+    {
+      m_spirv_data_map = std::move(spirv_data_map);
+    }
+
+    PREVENT_COPY(SpirvResource);
+
+    inline const SpirvData& get_data(EspShaderStage stage)
+    {
+      if (!m_spirv_data_map.contains(stage)) { ESP_CORE_ERROR("No spirv data for supplied stage."); }
+
+      return m_spirv_data_map.at(stage);
+    }
+
+    inline void enumerate_data(std::function<void(EspShaderStage stage, const SpirvData& spirv_data)> func)
+    {
+      for (auto it : m_spirv_data_map)
+      {
+        func(it.first, it.second);
+      }
+    }
+
+    inline bool is_stage_avaliable(EspShaderStage stage) { return m_spirv_data_map.contains(stage); }
+
+   private:
+    SpirvDataMap m_spirv_data_map;
+  };
+
+  struct SpirvResourceParams : public ResourceParams
+  {
+    EspShaderStageFlags shader_satge = EspShaderStage::VERTEX | EspShaderStage::FRAGMENT;
   };
 
 } // namespace esp

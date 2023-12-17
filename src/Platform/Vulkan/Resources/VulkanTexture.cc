@@ -10,13 +10,15 @@ namespace esp
                                const uint8_t* pixels,
                                uint8_t channel_count,
                                uint32_t width,
-                               uint32_t height) :
-      EspTexture(name, pixels, channel_count, width, height)
+                               uint32_t height,
+                               EspTextureType type) :
+      EspTexture(name, pixels, channel_count, width, height, type)
   {
   }
 
   std::shared_ptr<VulkanTexture> VulkanTexture::create(const std::string name,
                                                        std::unique_ptr<ImageResource> image,
+                                                       EspTextureType type,
                                                        bool mipmapping)
   {
     auto vulkan_texture =
@@ -24,7 +26,8 @@ namespace esp
                                                          static_cast<const uint8_t*>(image->get_data()),
                                                          image->get_channel_count(),
                                                          image->get_width(),
-                                                         image->get_height()));
+                                                         image->get_height(),
+                                                         type));
 
     VulkanResourceManager::create_texture_image(vulkan_texture->get_width(),
                                                 vulkan_texture->get_height(),

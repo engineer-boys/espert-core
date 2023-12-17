@@ -3,12 +3,7 @@
 
 namespace esp
 {
-  const std::string TextureSystem::s_default_albedo_texture_name    = "default_ALBD";
-  const std::string TextureSystem::s_default_normal_texture_name    = "default_NORM";
-  const std::string TextureSystem::s_default_metallic_texture_name  = "default_METAL";
-  const std::string TextureSystem::s_default_roughness_texture_name = "default_ROUGH";
-  const std::string TextureSystem::s_default_ao_texture_name        = "default_AO";
-  TextureSystem* TextureSystem::s_instance                          = nullptr;
+  TextureSystem* TextureSystem::s_instance = nullptr;
 
   TextureSystem::TextureSystem()
   {
@@ -63,11 +58,9 @@ namespace esp
       ESP_CORE_ERROR("Cannot release texture {}. Not present in map.", name);
     }
 
-    if (name == s_default_albedo_texture_name || name == s_default_normal_texture_name ||
-        name == s_default_metallic_texture_name || name == s_default_roughness_texture_name ||
-        name == s_default_ao_texture_name)
+    if (is_default_texture_name(name))
     {
-      ESP_CORE_WARN("Cannot release default texture.");
+      ESP_CORE_WARN("Cannot release a default texture.");
       return;
     }
 
@@ -83,38 +76,18 @@ namespace esp
     if (!resource)
     {
       ESP_CORE_ERROR("Could not load texture {}.", name);
-      return get_default_albedo_texture();
+      return get_default_texture(params.type);
     }
     auto image_resource = unique_cast<ImageResource>(std::move(resource));
-    auto texture        = EspTexture::create(name, std::move(image_resource), params.mipmapping);
+    auto texture        = EspTexture::create(name, std::move(image_resource), params.type, params.mipmapping);
     s_instance->m_texture_map.insert({ name, texture });
     ESP_CORE_TRACE("Loaded texture {}.", name);
     return texture;
   }
 
-  std::shared_ptr<EspTexture> TextureSystem::get_default_albedo_texture()
+  std::shared_ptr<EspTexture> TextureSystem::get_default_texture(EspTextureType type)
   {
-    return s_instance->m_texture_map.at(s_default_albedo_texture_name);
-  }
-
-  std::shared_ptr<EspTexture> TextureSystem::get_default_normal_texture()
-  {
-    return s_instance->m_texture_map.at(s_default_normal_texture_name);
-  }
-
-  std::shared_ptr<EspTexture> TextureSystem::get_default_metallic_texture()
-  {
-    return s_instance->m_texture_map.at(s_default_metallic_texture_name);
-  }
-
-  std::shared_ptr<EspTexture> TextureSystem::get_default_roughness_texture()
-  {
-    return s_instance->m_texture_map.at(s_default_roughness_texture_name);
-  }
-
-  std::shared_ptr<EspTexture> TextureSystem::get_default_ao_texture()
-  {
-    return s_instance->m_texture_map.at(s_default_ao_texture_name);
+    return s_instance->m_texture_map.at(s_instance->m_default_texture_name_map.at(type));
   }
 
   void TextureSystem::create_default_textures()
@@ -139,10 +112,11 @@ namespace esp
       }
     }
 
+    auto name = s_instance->m_default_texture_name_map.at(EspTextureType::ALBEDO);
     s_instance->m_texture_map.insert(
-        { s_default_albedo_texture_name,
-          EspTexture::create(s_default_albedo_texture_name,
-                             std::move(std::make_unique<ImageResource>(fs::path(s_default_albedo_texture_name),
+        { name,
+          EspTexture::create(name,
+                             std::move(std::make_unique<ImageResource>(fs::path(name),
                                                                        std::unique_ptr<uint8_t[]>(regular_data),
                                                                        tex_channels,
                                                                        tex_width,
@@ -154,10 +128,11 @@ namespace esp
       memcpy(normal_data + i * tex_channels, &violet, sizeof(violet));
     }
 
+    name = s_instance->m_default_texture_name_map.at(EspTextureType::NORMAL);
     s_instance->m_texture_map.insert(
-        { s_default_normal_texture_name,
-          EspTexture::create(s_default_normal_texture_name,
-                             std::move(std::make_unique<ImageResource>(fs::path(s_default_normal_texture_name),
+        { name,
+          EspTexture::create(name,
+                             std::move(std::make_unique<ImageResource>(fs::path(name),
                                                                        std::unique_ptr<uint8_t[]>(normal_data),
                                                                        tex_channels,
                                                                        tex_width,
@@ -169,10 +144,11 @@ namespace esp
       memcpy(metallic_data + i * tex_channels, &grey, sizeof(grey));
     }
 
+    name = s_instance->m_default_texture_name_map.at(EspTextureType::METALLIC);
     s_instance->m_texture_map.insert(
-        { s_default_metallic_texture_name,
-          EspTexture::create(s_default_metallic_texture_name,
-                             std::move(std::make_unique<ImageResource>(fs::path(s_default_metallic_texture_name),
+        { name,
+          EspTexture::create(name,
+                             std::move(std::make_unique<ImageResource>(fs::path(name),
                                                                        std::unique_ptr<uint8_t[]>(metallic_data),
                                                                        tex_channels,
                                                                        tex_width,
@@ -184,10 +160,11 @@ namespace esp
       memcpy(roughness_data + i * tex_channels, &grey, sizeof(grey));
     }
 
+    name = s_instance->m_default_texture_name_map.at(EspTextureType::ROUGHNESS);
     s_instance->m_texture_map.insert(
-        { s_default_roughness_texture_name,
-          EspTexture::create(s_default_roughness_texture_name,
-                             std::move(std::make_unique<ImageResource>(fs::path(s_default_roughness_texture_name),
+        { name,
+          EspTexture::create(name,
+                             std::move(std::make_unique<ImageResource>(fs::path(name),
                                                                        std::unique_ptr<uint8_t[]>(roughness_data),
                                                                        tex_channels,
                                                                        tex_width,
@@ -199,10 +176,11 @@ namespace esp
       memcpy(ao_data + i * tex_channels, &white, sizeof(white));
     }
 
+    name = s_instance->m_default_texture_name_map.at(EspTextureType::AO);
     s_instance->m_texture_map.insert(
-        { s_default_ao_texture_name,
-          EspTexture::create(s_default_ao_texture_name,
-                             std::move(std::make_unique<ImageResource>(fs::path(s_default_ao_texture_name),
+        { name,
+          EspTexture::create(name,
+                             std::move(std::make_unique<ImageResource>(fs::path(name),
                                                                        std::unique_ptr<uint8_t[]>(ao_data),
                                                                        tex_channels,
                                                                        tex_width,
@@ -211,6 +189,16 @@ namespace esp
 
   bool TextureSystem::texture_matching_params(std::shared_ptr<EspTexture> texture, const TextureParams& params)
   {
-    return static_cast<bool>(texture->get_height()) == params.mipmapping;
+    return static_cast<bool>(texture->get_mip_levels()) == params.mipmapping;
   }
+
+  bool TextureSystem::is_default_texture_name(const std::string& name)
+  {
+    return name == s_instance->m_default_texture_name_map.at(EspTextureType::ALBEDO) ||
+        name == s_instance->m_default_texture_name_map.at(EspTextureType::NORMAL) ||
+        name == s_instance->m_default_texture_name_map.at(EspTextureType::METALLIC) ||
+        name == s_instance->m_default_texture_name_map.at(EspTextureType::ROUGHNESS) ||
+        name == s_instance->m_default_texture_name_map.at(EspTextureType::AO);
+  }
+
 } // namespace esp

@@ -30,7 +30,9 @@ namespace esp
    public:
     static std::shared_ptr<VulkanTexture> create(const std::string name,
                                                  std::unique_ptr<ImageResource> image,
-                                                 bool mipmapping = false);
+                                                 EspTextureType type = EspTextureType::ALBEDO,
+                                                 bool mipmapping     = false);
+
     static std::unique_ptr<VulkanTexture> create_from_block(const VulkanBlock* block);
 
     PREVENT_COPY(VulkanTexture);
@@ -47,7 +49,8 @@ namespace esp
                   const uint8_t* pixels,
                   uint8_t channel_count,
                   uint32_t width,
-                  uint32_t height);
+                  uint32_t height,
+                  EspTextureType type = EspTextureType::ALBEDO);
 
     VulkanTexture(uint32_t width, uint32_t height);
   };
