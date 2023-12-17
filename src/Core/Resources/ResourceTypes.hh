@@ -147,7 +147,7 @@ namespace esp
 
   struct SpirvResourceParams : public ResourceParams
   {
-    EspShaderStageFlags shader_satge = EspShaderStage::VERTEX | EspShaderStage::FRAGMENT;
+    EspShaderStageFlags shader_stage = EspShaderStage::VERTEX | EspShaderStage::FRAGMENT;
   };
 
 } // namespace esp
