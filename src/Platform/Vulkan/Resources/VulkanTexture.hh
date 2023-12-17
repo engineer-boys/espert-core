@@ -10,11 +10,17 @@
 // Core
 #include "Core/Resources/Systems/TextureSystem.hh"
 
+// Render API Vulkan
+#include "Platform/Vulkan/PipelineOrdering/Block/VulkanBlock.hh"
+
 namespace esp
 {
   class VulkanTexture : public EspTexture
   {
    private:
+    // true - if VulkanTexture is from EspBlock. Otherwise, it is false.
+    bool m_retrieved_from_block = false;
+
     VkImage m_texture_image;
     VkDeviceMemory m_texture_image_memory;
     VkImageView m_texture_image_view;
@@ -25,6 +31,7 @@ namespace esp
     static std::shared_ptr<VulkanTexture> create(const std::string name,
                                                  std::unique_ptr<ImageResource> image,
                                                  bool mipmapping = false);
+    static std::unique_ptr<VulkanTexture> create_from_block(const VulkanBlock* block);
 
     PREVENT_COPY(VulkanTexture);
 
@@ -41,6 +48,8 @@ namespace esp
                   uint8_t channel_count,
                   uint32_t width,
                   uint32_t height);
+
+    VulkanTexture(uint32_t width, uint32_t height);
   };
 } // namespace esp
 

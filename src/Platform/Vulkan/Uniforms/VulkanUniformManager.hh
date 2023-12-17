@@ -6,10 +6,11 @@
 // Render API
 #include "Core/RenderAPI/Uniforms/EspUniformManager.hh"
 
-// platform
+// Render API Vulkan
 #include "EspUniformDataStorage.hh"
 #include "Platform/Vulkan/Resources/VulkanTexture.hh"
-#include "Platform/Vulkan/VulkanFrameManager.hh"
+#include "Platform/Vulkan/Work/VulkanSwapChain.hh"
+#include "Platform/Vulkan/Work/VulkanWorkOrchestrator.hh"
 
 namespace esp
 {
@@ -47,7 +48,7 @@ namespace esp
    public:
     inline void attach(const VkPipelineLayout& pipeline_layout) const
     {
-      vkCmdBindDescriptorSets(VulkanFrameManager::get_current_command_buffer(),
+      vkCmdBindDescriptorSets(VulkanWorkOrchestrator::get_current_command_buffer(),
                               VK_PIPELINE_BIND_POINT_GRAPHICS,
                               pipeline_layout,
                               m_first_descriptor_set_idx,
@@ -73,7 +74,7 @@ namespace esp
 
   class VulkanUniformManager : public EspUniformManager
   {
-    friend class VulkanPipeline;
+    friend class VulkanWorker;
 
    private:
     // <set, <binding, vector<texture> >>
@@ -104,7 +105,7 @@ namespace esp
 
     inline virtual void attach() const override
     {
-      m_packages[VulkanFrameManager::get_current_frame_index()]->attach(m_out_pipeline_layout);
+      m_packages[VulkanSwapChain::get_current_frame_index()]->attach(m_out_pipeline_layout);
     }
 
     inline virtual EspUniformManager& update_buffer_uniform(uint32_t set,
@@ -113,9 +114,9 @@ namespace esp
                                                             uint32_t size,
                                                             void* data) override
     {
-      m_packages[VulkanFrameManager::get_current_frame_index()]->operator[](set)[binding].write_to_buffer(data,
-                                                                                                          size,
-                                                                                                          offset);
+      m_packages[VulkanSwapChain::get_current_frame_index()]->operator[](set)[binding].write_to_buffer(data,
+                                                                                                       size,
+                                                                                                       offset);
       return *this;
     }
 
@@ -132,12 +133,19 @@ namespace esp
     inline virtual EspUniformManager& update_push_uniform(uint32_t index, void* data) override
     {
       auto& push_range = m_out_uniform_data_storage.m_push_constant_ranges[index];
-      vkCmdPushConstants(VulkanFrameManager::get_current_command_buffer(),
+      vkCmdPushConstants(VulkanWorkOrchestrator::get_current_command_buffer(),
                          m_out_pipeline_layout,
                          push_range.stageFlags,
                          push_range.offset,
                          push_range.size,
                          data);
+
+      return *this;
+    }
+
+    inline virtual EspUniformManager& load_block(uint32_t set, uint32_t binding, EspBlock* block) override
+    {
+      m_textures[set][binding].emplace_back(VulkanTexture::create_from_block(static_cast<VulkanBlock*>(block)));
 
       return *this;
     }

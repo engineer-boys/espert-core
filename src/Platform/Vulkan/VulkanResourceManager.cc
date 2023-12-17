@@ -1,6 +1,6 @@
 #include "VulkanResourceManager.hh"
+#include "Platform/Vulkan/Work/VulkanWorkOrchestrator.hh"
 #include "Resources/VulkanBuffer.hh"
-#include "VulkanCommandHandler.hh"
 #include "VulkanDevice.hh"
 
 namespace esp
@@ -53,7 +53,7 @@ namespace esp
 
   void VulkanResourceManager::copy_buffer(VkBuffer src_buffer, VkBuffer dst_buffer, VkDeviceSize size)
   {
-    VkCommandBuffer command_buffer = VulkanCommandHandler::begin_single_time_commands();
+    VkCommandBuffer command_buffer = VulkanWorkOrchestrator::begin_single_time_commands();
 
     VkBufferCopy copy_region{};
     copy_region.srcOffset = 0; // Optional
@@ -61,7 +61,7 @@ namespace esp
     copy_region.size      = size;
     vkCmdCopyBuffer(command_buffer, src_buffer, dst_buffer, 1, &copy_region);
 
-    VulkanCommandHandler::end_single_time_commands(command_buffer);
+    VulkanWorkOrchestrator::end_single_time_commands(command_buffer);
   }
 
   void VulkanResourceManager::copy_buffer_to_image(VkBuffer buffer,
@@ -70,7 +70,7 @@ namespace esp
                                                    uint32_t height,
                                                    uint32_t layer_count)
   {
-    VkCommandBuffer command_buffer = VulkanCommandHandler::begin_single_time_commands();
+    VkCommandBuffer command_buffer = VulkanWorkOrchestrator::begin_single_time_commands();
 
     VkBufferImageCopy region{};
     region.bufferOffset      = 0;
@@ -87,7 +87,7 @@ namespace esp
 
     vkCmdCopyBufferToImage(command_buffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
-    VulkanCommandHandler::end_single_time_commands(command_buffer);
+    VulkanWorkOrchestrator::end_single_time_commands(command_buffer);
   }
 
   void VulkanResourceManager::create_image(uint32_t width,
@@ -210,7 +210,7 @@ namespace esp
                                                       VkImageLayout new_layout,
                                                       uint32_t mip_levels)
   {
-    VkCommandBuffer command_buffer = VulkanCommandHandler::begin_single_time_commands();
+    VkCommandBuffer command_buffer = VulkanWorkOrchestrator::begin_single_time_commands();
 
     VkImageMemoryBarrier barrier{};
     barrier.sType                           = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -253,7 +253,7 @@ namespace esp
 
     vkCmdPipelineBarrier(command_buffer, source_stage, destination_stage, 0, 0, nullptr, 0, nullptr, 1, &barrier);
 
-    VulkanCommandHandler::end_single_time_commands(command_buffer);
+    VulkanWorkOrchestrator::end_single_time_commands(command_buffer);
   }
 
   void VulkanResourceManager::generate_mipmaps(VkImage image,
@@ -270,7 +270,7 @@ namespace esp
       throw std::runtime_error("Texture image format does not support linear blitting");
     }
 
-    VkCommandBuffer command_buffer = VulkanCommandHandler::begin_single_time_commands();
+    VkCommandBuffer command_buffer = VulkanWorkOrchestrator::begin_single_time_commands();
 
     VkImageMemoryBarrier barrier{};
     barrier.sType                           = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -364,7 +364,7 @@ namespace esp
                          1,
                          &barrier);
 
-    VulkanCommandHandler::end_single_time_commands(command_buffer);
+    VulkanWorkOrchestrator::end_single_time_commands(command_buffer);
   }
 
   VulkanResourceManager::VulkanResourceManager()

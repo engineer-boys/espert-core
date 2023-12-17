@@ -1,5 +1,5 @@
 #include "VulkanVertexBuffer.hh"
-#include "Platform/Vulkan/VulkanFrameManager.hh"
+#include "Platform/Vulkan/Work/VulkanWorkOrchestrator.hh"
 
 namespace esp
 {
@@ -47,7 +47,7 @@ namespace esp
     VkBuffer buffers[]     = { m_vertex_buffer->get_buffer() };
     VkDeviceSize offsets[] = { 0 };
 
-    vkCmdBindVertexBuffers(VulkanFrameManager::get_current_command_buffer(), 0, 1, buffers, offsets);
+    vkCmdBindVertexBuffers(VulkanWorkOrchestrator::get_current_command_buffer(), 0, 1, buffers, offsets);
   }
 
   void VulkanVertexBuffer::attach_instanced(esp::EspVertexBuffer& instance_buffer)
@@ -56,6 +56,6 @@ namespace esp
                                dynamic_cast<VulkanVertexBuffer&>(instance_buffer).m_vertex_buffer->get_buffer() };
     VkDeviceSize offsets[] = { 0, 0 };
 
-    vkCmdBindVertexBuffers(VulkanFrameManager::get_current_command_buffer(), 0, 2, buffers, offsets);
+    vkCmdBindVertexBuffers(VulkanWorkOrchestrator::get_current_command_buffer(), 0, 2, buffers, offsets);
   }
 } // namespace esp

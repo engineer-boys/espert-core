@@ -34,6 +34,12 @@ namespace esp
     check_for_transparency(pixels);
   }
 
+  EspTexture::EspTexture(uint32_t width, uint32_t height) :
+      m_name(""), m_channel_count(0), m_width(width), m_height(height), m_has_transparency(false)
+  {
+    m_mip_levels = 1;
+  }
+
   void EspTexture::calculate_mip_levels() { m_mip_levels = std::floor(std::log2(std::max(m_width, m_height))) + 1; }
 
   void EspTexture::check_for_transparency(const uint8_t* pixels)

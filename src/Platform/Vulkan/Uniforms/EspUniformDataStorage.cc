@@ -2,7 +2,6 @@
 
 // platform
 #include "Platform/Vulkan/VulkanDevice.hh"
-#include "Platform/Vulkan/VulkanSwapChain.hh"
 
 static VkDescriptorSetLayoutBinding create_descriptor_set_layout_binding(esp::EspMetaUniform& data);
 

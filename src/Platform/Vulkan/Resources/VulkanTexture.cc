@@ -4,6 +4,8 @@
 
 namespace esp
 {
+  VulkanTexture::VulkanTexture(uint32_t width, uint32_t height) : EspTexture(width, height) {}
+
   VulkanTexture::VulkanTexture(const std::string& name,
                                const uint8_t* pixels,
                                uint8_t channel_count,
@@ -42,10 +44,26 @@ namespace esp
     return vulkan_texture;
   }
 
+  std::unique_ptr<VulkanTexture> VulkanTexture::create_from_block(const VulkanBlock* block)
+  {
+    auto vulkan_texture = std::unique_ptr<VulkanTexture>(new VulkanTexture(block->get_width(), block->get_height()));
+
+    vulkan_texture->m_texture_image        = block->get_image();
+    vulkan_texture->m_texture_image_memory = block->get_image_memory();
+    vulkan_texture->m_texture_image_view   = block->get_image_view();
+    vulkan_texture->m_retrieved_from_block = true;
+
+    vulkan_texture->m_sampler = VulkanSampler::get_default_sampler();
+    return vulkan_texture;
+  }
+
   VulkanTexture::~VulkanTexture()
   {
-    vkDestroyImageView(VulkanDevice::get_logical_device(), m_texture_image_view, nullptr);
-    vkDestroyImage(VulkanDevice::get_logical_device(), m_texture_image, nullptr);
-    vkFreeMemory(VulkanDevice::get_logical_device(), m_texture_image_memory, nullptr);
+    if (!m_retrieved_from_block)
+    {
+      vkDestroyImageView(VulkanDevice::get_logical_device(), m_texture_image_view, nullptr);
+      vkDestroyImage(VulkanDevice::get_logical_device(), m_texture_image, nullptr);
+      vkFreeMemory(VulkanDevice::get_logical_device(), m_texture_image_memory, nullptr);
+    }
   }
 } // namespace esp

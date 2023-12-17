@@ -3,7 +3,7 @@
 // platform
 #include "Platform/Vulkan/VulkanDevice.hh"
 #include "Platform/Vulkan/VulkanResourceManager.hh"
-#include "Platform/Vulkan/VulkanSwapChain.hh"
+#include "Platform/Vulkan/Work/VulkanSwapChain.hh"
 
 /* --------------------------------------------------------- */
 /* ----------------- VulkanUniformManager ------------------ */
