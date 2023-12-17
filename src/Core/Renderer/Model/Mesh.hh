@@ -54,11 +54,11 @@ namespace esp
     inline uint32_t get_vertex_count() { return m_vertex_buffer->get_vertex_count(); }
     inline uint32_t get_index_count() { return m_index_buffer->get_index_count(); }
 
-    void add_material(EspPipeline& pipeline);
-
    private:
     void draw();
     void draw(EspVertexBuffer& instance_buffer);
+
+    void add_material(EspPipeline& pipeline);
 
     friend class Model;
   };
