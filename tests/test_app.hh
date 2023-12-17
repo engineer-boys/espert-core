@@ -6,9 +6,8 @@
 
 class TestApp : public esp::EspApplication
 {
- private:
  public:
-  TestApp() { m_resource_system->change_asset_base_path(fs::current_path() / ".." / "tests" / "assets"); }
+  TestApp() = default;
 
   void terminate()
   {
@@ -19,6 +18,7 @@ class TestApp : public esp::EspApplication
 
 inline esp::EspApplication* esp::create_app_instance()
 {
+  TestApp::set_asset_base_path(fs::current_path() / ".." / "tests" / "assets");
   const auto& app = new TestApp();
 
   return app;

@@ -3,7 +3,9 @@
 
 #include "esppch.hh"
 
+#include "Core/Resources/Systems/MaterialSystem.hh"
 #include "Core/Resources/Systems/ResourceSystem.hh"
+#include "Core/Resources/Systems/ShaderSystem.hh"
 #include "Core/Resources/Systems/TextureSystem.hh"
 #include "EspApplicationContext.hh"
 #include "EspWindow.hh"
@@ -29,6 +31,10 @@ namespace esp
     std::unique_ptr<EspDebugMessenger> m_debug_messenger;
     std::unique_ptr<ResourceSystem> m_resource_system;
     std::unique_ptr<TextureSystem> m_texture_system;
+    std::unique_ptr<ShaderSystem> m_shader_system;
+    std::unique_ptr<MaterialSystem> m_material_system;
+
+    static fs::path s_asset_base_path;
 
     LayerStack* m_layer_stack;
 

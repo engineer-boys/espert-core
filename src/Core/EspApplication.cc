@@ -3,6 +3,8 @@
 
 namespace esp
 {
+  fs::path EspApplication::s_asset_base_path = fs::current_path().parent_path() / "resources";
+
   EspApplication::EspApplication(const std::string title, unsigned int width, unsigned int height) : m_running(true)
   {
     // create (alloc and init) window
@@ -21,8 +23,10 @@ namespace esp
     m_renderer.m_jobs              = EspJob::build();
 
     // create basic systems
-    m_resource_system = ResourceSystem::create(fs::current_path().parent_path() / "resources");
+    m_resource_system = ResourceSystem::create(s_asset_base_path);
     m_texture_system  = TextureSystem::create();
+    m_shader_system   = ShaderSystem::create();
+    m_material_system = MaterialSystem::create();
 
     // create (alloc and init) layer stacks
     m_layer_stack = new LayerStack();
@@ -39,6 +43,8 @@ namespace esp
     delete m_layer_stack;
 
     // [2] terminate all systems
+    m_material_system->terminate();
+    m_shader_system->terminate();
     m_texture_system->terminate();
     m_resource_system->terminate();
 

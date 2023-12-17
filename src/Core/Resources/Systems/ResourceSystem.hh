@@ -50,8 +50,6 @@ namespace esp
     static std::unique_ptr<ResourceSystem> create(const fs::path& asset_base_path);
     void terminate();
 
-    void change_asset_base_path(const fs::path& asset_base_path);
-
     inline static ResourceSystem* get_instance() { return ResourceSystem::s_instance; }
     inline static const fs::path& get_asset_base_path() { return s_instance->m_asset_base_path; }
 
