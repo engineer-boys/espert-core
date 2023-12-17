@@ -2,16 +2,19 @@
 
 namespace esp
 {
-  bool ApplicationContext::s_is_exist = false;
+  ApplicationContext* ApplicationContext::s_instance = nullptr;
 
   ApplicationContext::ApplicationContext()
   {
-    if (ApplicationContext::s_is_exist) { throw std::runtime_error("The application contex already exists!"); }
-
-    ApplicationContext::s_is_exist = true;
+    ESP_ASSERT(ApplicationContext::s_instance == nullptr, "The application contex already exists!");
+    ApplicationContext::s_instance = this;
   }
 
-  ApplicationContext::~ApplicationContext() { ApplicationContext::s_is_exist = false; }
+  ApplicationContext::~ApplicationContext()
+  {
+    ESP_ASSERT(ApplicationContext::s_instance != nullptr, "The application contex is deleted twice!");
+    ApplicationContext::s_instance = nullptr;
+  }
 
   std::unique_ptr<ApplicationContext> ApplicationContext::create()
   {

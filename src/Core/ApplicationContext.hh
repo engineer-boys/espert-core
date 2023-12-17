@@ -8,7 +8,7 @@ namespace esp
   class ApplicationContext
   {
    private:
-    static bool s_is_exist;
+    static ApplicationContext* s_instance;
 
    private:
     std::unique_ptr<Logger> m_logger;
