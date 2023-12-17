@@ -32,7 +32,8 @@ namespace esp
                         m_graphics_pipeline);
     }
 
-    virtual std::unique_ptr<EspUniformManager> create_uniform_manager() const override;
+    virtual std::unique_ptr<EspUniformManager> create_uniform_manager(int start_managed_ds = -1,
+                                                                      int end_managed_ds   = -1) const override;
   };
 } // namespace esp
 

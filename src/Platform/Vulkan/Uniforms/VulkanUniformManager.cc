@@ -11,9 +11,12 @@
 namespace esp
 {
   VulkanUniformManager::VulkanUniformManager(const EspUniformDataStorage& uniform_data_storage,
-                                             const VkPipelineLayout& out_pipeline_layout) :
+                                             const VkPipelineLayout& out_pipeline_layout,
+                                             int first_descriptor_set,
+                                             int last_descriptor_set) :
       m_out_pipeline_layout{ out_pipeline_layout },
-      m_out_uniform_data_storage(uniform_data_storage)
+      m_out_uniform_data_storage{ uniform_data_storage }, m_first_descriptor_set{ first_descriptor_set },
+      m_last_descriptor_set{ last_descriptor_set }
   {
     init_pool();
   }
@@ -33,22 +36,27 @@ namespace esp
     auto& meta_data = m_out_uniform_data_storage.m_meta_data;
     std::vector<VkDescriptorPoolSize> pool_sizes;
 
-    if (meta_data->m_general_buffer_uniform_counter != 0)
+    int general_buffer_uniform_counter =
+        meta_data->count_buffer_uniforms(m_first_descriptor_set, m_last_descriptor_set);
+
+    if (general_buffer_uniform_counter != 0)
     {
       VkDescriptorPoolSize pool_size{};
       pool_size.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
       pool_size.descriptorCount =
-          static_cast<uint32_t>(meta_data->m_general_buffer_uniform_counter * VulkanSwapChain::MAX_FRAMES_IN_FLIGHT);
+          static_cast<uint32_t>(general_buffer_uniform_counter * VulkanSwapChain::MAX_FRAMES_IN_FLIGHT);
 
       pool_sizes.push_back(pool_size);
     }
 
-    if (meta_data->m_general_texture_uniform_counter != 0)
+    int general_texture_uniform_counter =
+        meta_data->count_texture_uniforms(m_first_descriptor_set, m_last_descriptor_set);
+    if (general_texture_uniform_counter != 0)
     {
       VkDescriptorPoolSize pool_size{};
       pool_size.type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
       pool_size.descriptorCount =
-          static_cast<uint32_t>(meta_data->m_general_texture_uniform_counter * VulkanSwapChain::MAX_FRAMES_IN_FLIGHT);
+          static_cast<uint32_t>(general_texture_uniform_counter * VulkanSwapChain::MAX_FRAMES_IN_FLIGHT);
 
       pool_sizes.push_back(pool_size);
     }
@@ -57,10 +65,9 @@ namespace esp
     pool_info.sType         = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
     pool_info.poolSizeCount = static_cast<uint32_t>(pool_sizes.size());
     pool_info.pPoolSizes    = pool_sizes.data();
-    pool_info.maxSets       = static_cast<uint32_t>((meta_data->m_general_buffer_uniform_counter +
-                                               meta_data->m_general_texture_uniform_counter +
-                                               meta_data->m_general_push_uniform_counter) *
-                                              VulkanSwapChain::MAX_FRAMES_IN_FLIGHT);
+    pool_info.maxSets       = static_cast<uint32_t>(
+        (general_buffer_uniform_counter + general_texture_uniform_counter + meta_data->m_general_push_uniform_counter) *
+        VulkanSwapChain::MAX_FRAMES_IN_FLIGHT);
 
     if (vkCreateDescriptorPool(VulkanDevice::get_logical_device(), &pool_info, nullptr, &m_descriptor_pool) !=
         VK_SUCCESS)
@@ -74,7 +81,11 @@ namespace esp
   {
     for (int frame_idx = 0; frame_idx < VulkanSwapChain::MAX_FRAMES_IN_FLIGHT; ++frame_idx)
     {
-      m_packages.push_back(new EspUniformPackage(m_out_uniform_data_storage, m_descriptor_pool, m_textures));
+      m_packages.push_back(new EspUniformPackage(m_out_uniform_data_storage,
+                                                 m_descriptor_pool,
+                                                 m_textures,
+                                                 m_first_descriptor_set,
+                                                 m_last_descriptor_set));
     }
   }
 } // namespace esp
@@ -115,15 +126,21 @@ namespace esp
   EspUniformPackage::EspUniformPackage(
       const EspUniformDataStorage& uniform_data_storage,
       const VkDescriptorPool& descriptor_pool,
-      std::map<uint32_t, std::map<uint32_t, std::vector<std::shared_ptr<VulkanTexture>>>>& textures)
+      std::map<uint32_t, std::map<uint32_t, std::vector<std::shared_ptr<VulkanTexture>>>>& textures,
+      int first_descriptor_set,
+      int last_descriptor_set)
   {
+    m_first_descriptor_set_idx = first_descriptor_set == -1 ? 0 : first_descriptor_set;
+    auto end_ds      = last_descriptor_set == -1 ? uniform_data_storage.get_layouts_count() : (last_descriptor_set + 1);
+    auto count_of_ds = end_ds - m_first_descriptor_set_idx;
+
     VkDescriptorSetAllocateInfo alloc_info{};
     alloc_info.sType              = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     alloc_info.descriptorPool     = descriptor_pool;
-    alloc_info.descriptorSetCount = uniform_data_storage.get_layouts_count();
-    alloc_info.pSetLayouts        = uniform_data_storage.get_layouts_data();
+    alloc_info.descriptorSetCount = count_of_ds;
+    alloc_info.pSetLayouts        = uniform_data_storage.get_layouts_data() + m_first_descriptor_set_idx;
 
-    m_descriptor_sets.resize(uniform_data_storage.get_layouts_count());
+    m_descriptor_sets.resize(count_of_ds);
     if (vkAllocateDescriptorSets(VulkanDevice::get_logical_device(), &alloc_info, m_descriptor_sets.data()) !=
         VK_SUCCESS)
     {
@@ -131,15 +148,17 @@ namespace esp
       throw std::runtime_error("Failed to allocate descriptor sets!");
     }
 
-    for (const auto& meta_ds : uniform_data_storage.m_meta_data->m_meta_descriptor_sets)
+    for (int meta_ds_idx = m_first_descriptor_set_idx; meta_ds_idx < end_ds; meta_ds_idx++)
     {
+      const auto& meta_ds = uniform_data_storage.m_meta_data->m_meta_descriptor_sets[meta_ds_idx];
+
       if (meta_ds.m_buffer_uniform_counter != 0)
       {
         m_set_to_bufferset[meta_ds.m_set_index] = new EspBufferSet(meta_ds.m_meta_uniforms);
       }
 
       update_descriptor_set(*(m_set_to_bufferset[meta_ds.m_set_index]),
-                            m_descriptor_sets[meta_ds.m_set_index],
+                            m_descriptor_sets[meta_ds.m_set_index - m_first_descriptor_set_idx],
                             meta_ds.m_meta_uniforms,
                             textures[meta_ds.m_set_index]);
     }

@@ -90,4 +90,32 @@ namespace esp
     return m_general_buffer_uniform_counter != 0 || m_general_texture_uniform_counter != 0 ||
         m_general_push_uniform_counter != 0;
   }
+
+  int VulkanUniformMetaData::count_buffer_uniforms(int start_ds, int end_ds) const
+  {
+    int start = start_ds == -1 ? 0 : start_ds;
+    int end   = end_ds == -1 ? m_meta_descriptor_sets.size() : (end_ds + 1);
+
+    int sum = 0;
+    for (int ds_idx = start; ds_idx < end; ds_idx++)
+    {
+      sum += m_meta_descriptor_sets[ds_idx].m_buffer_uniform_counter;
+    }
+
+    return sum;
+  }
+
+  int VulkanUniformMetaData::count_texture_uniforms(int start_ds, int end_ds) const
+  {
+    int start = start_ds == -1 ? 0 : start_ds;
+    int end   = end_ds == -1 ? m_meta_descriptor_sets.size() : (end_ds + 1);
+
+    int sum = 0;
+    for (int ds_idx = start; ds_idx < end; ds_idx++)
+    {
+      sum += m_meta_descriptor_sets[ds_idx].m_texture_uniform_counter;
+    }
+
+    return sum;
+  }
 } // namespace esp
