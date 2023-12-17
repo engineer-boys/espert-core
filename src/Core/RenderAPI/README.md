@@ -122,9 +122,12 @@ class EspPipeline:
     def attach() -> None:
         # Bind this pipeline to using command buffer.
 
-    def create_uniform_manager() -> EspUniformManager:
+    def create_uniform_manager(start_managed_ds: int = -1, end_managed_ds: int = -1) -> EspUniformManager:
         # Create the object of EspUniformManager
         # which can be used to manipulate pipile inner data (uniforms).
+        # 'start_managed_ds' defines the beginning of descriptor sets for pipeline
+        # which are managed by this instance of EspUniformManager. Similarly for 
+        # 'end_managed_ds'.
 ```
 
 ```Python
