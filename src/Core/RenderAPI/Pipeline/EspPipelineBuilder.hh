@@ -32,10 +32,11 @@ namespace esp
                     std::vector<EspVertexAttribute> attr);
   };
 
-  class EspPipelineBuilder
+  class EspWorkerBuilder
   {
+    /* -------------------------- METHODS ---------------------------------- */
    public:
-    virtual ~EspPipelineBuilder() {}
+    virtual ~EspWorkerBuilder() {}
 
     virtual void set_shaders(std::string path_vertex, std::string path_fragment) = 0;
     virtual void set_vertex_shader(std::string path_vertex)                      = 0;
@@ -44,9 +45,11 @@ namespace esp
     virtual void set_vertex_layouts(std::vector<EspVertexLayout> vertex_layouts)             = 0;
     virtual void set_pipeline_layout(std::unique_ptr<EspUniformMetaData> uniforms_meta_data) = 0;
 
-    virtual std::unique_ptr<EspPipeline> build_pipeline() = 0;
+    virtual std::unique_ptr<EspWorker> build_worker() = 0;
 
-    static std::unique_ptr<EspPipelineBuilder> create();
+    /* -------------------------- METHODS STATIC --------------------------- */
+   public:
+    static std::unique_ptr<EspWorkerBuilder> create();
   };
 } // namespace esp
 

@@ -8,10 +8,11 @@
 
 namespace esp
 {
-  class EspPipeline
+  class EspWorker
   {
+    /* -------------------------- METHODS ---------------------------------- */
    public:
-    virtual ~EspPipeline() {}
+    virtual ~EspWorker() {}
 
     virtual void attach() const = 0;
 

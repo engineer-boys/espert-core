@@ -18,14 +18,14 @@ namespace esp
   {
   }
 
-  std::unique_ptr<EspPipelineBuilder> EspPipelineBuilder::create()
+  std::unique_ptr<EspWorkerBuilder> EspWorkerBuilder::create()
   {
     /* ---------------------------------------------------------*/
     /* ------------- PLATFORM DEPENDENT ------------------------*/
     /* ---------------------------------------------------------*/
     // #if defined(OPENGL_PLATFORM)
     // #elif defined(VULKAN_PLATFORM)
-    return std::make_unique<VulaknPipelineBuilder>();
+    return std::make_unique<VulkanWorkerBuilder>();
     // #else
     // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
     // #endif

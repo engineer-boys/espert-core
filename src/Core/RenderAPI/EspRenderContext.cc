@@ -5,9 +5,7 @@
 
 namespace esp
 {
-  bool EspRenderContext::s_is_exist = false;
-
-  std::unique_ptr<EspRenderContext> EspRenderContext::create_and_init(EspWindow& window)
+  std::unique_ptr<EspRenderContext> EspRenderContext::build(EspWindow& window)
   {
     /* ---------------------------------------------------------*/
     /* ------------- PLATFORM DEPENDENT ------------------------*/
@@ -15,13 +13,12 @@ namespace esp
     // #if defined(OPENGL_PLATFORM)
     //     auto context = std::make_unique<OpenGLContext>();
     // #elif defined(VULKAN_PLATFORM)
-    auto context = VulkanContext::create();
+    auto context = VulkanContext::create(window);
     // #else
     // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
     // #endif
     /* ---------------------------------------------------------*/
 
-    context->init(window);
     return context;
   }
 
