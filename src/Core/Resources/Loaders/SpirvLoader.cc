@@ -24,7 +24,7 @@ namespace esp
       auto data =
           load_spirv(spirv_path.replace_extension("").replace_extension(s_spirv_extension_map.at(type) + ".spv"));
 
-      if (data.empty() && spirv_params.shader_satge & type)
+      if (data.empty() && spirv_params.shader_stage & type)
       {
         ESP_CORE_ERROR("Could not load {} shader stage {}.", path.string(), esp_shader_stage_to_string(type));
         return nullptr;
