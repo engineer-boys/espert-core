@@ -10,8 +10,7 @@
 #include "VulkanPipeline.hh"
 
 // signatures
-static std::vector<char> read_file(const std::string& filename);
-static VkShaderModule create_shader_module(const std::vector<char>& code, VkDevice device);
+static VkShaderModule create_shader_module(const esp::SpirvData& code, VkDevice device);
 
 /* --------------------------------------------------------- */
 /* ---------------- CLASS IMPLEMENTATION ------------------- */
@@ -19,21 +18,16 @@ static VkShaderModule create_shader_module(const std::vector<char>& code, VkDevi
 
 namespace esp
 {
-  VulkanWorkerBuilder::VulkanWorkerBuilder() : m_vertex_shader_info{}, m_fragment_shader_info{}, m_vertex_input_info{}
+  VulkanWorkerBuilder::VulkanWorkerBuilder() : m_shader_module_map{}, m_shader_info_map{}, m_vertex_input_info{}
   {
     m_color_attachment_formats.push_back(*(VulkanSwapChain::get_swap_chain_image_format()));
   }
 
   VulkanWorkerBuilder::~VulkanWorkerBuilder()
   {
-    if (m_is_fragment_shader_module)
+    for (auto& it : m_shader_module_map)
     {
-      vkDestroyShaderModule(VulkanDevice::get_logical_device(), m_fragment_shader_module, nullptr);
-    }
-
-    if (m_is_vertex_shader_module)
-    {
-      vkDestroyShaderModule(VulkanDevice::get_logical_device(), m_vertex_shader_module, nullptr);
+      vkDestroyShaderModule(VulkanDevice::get_logical_device(), it.second, nullptr);
     }
 
     if (m_is_pipeline_layout)
@@ -63,34 +57,19 @@ namespace esp
     }
   }
 
-  void VulkanWorkerBuilder::set_shaders(std::string path_vertex_shr, std::string path_fragment_shr)
+  void VulkanWorkerBuilder::set_shaders(std::unique_ptr<SpirvResource> spirv_resource)
   {
-    set_vertex_shader(path_vertex_shr);
-    set_fragment_shader(path_fragment_shr);
-  }
+    spirv_resource->enumerate_data(
+        [this](EspShaderStage stage, const SpirvData& spirv_data)
+        {
+          m_shader_module_map[stage] = create_shader_module(spirv_data, VulkanDevice::get_logical_device());
 
-  void VulkanWorkerBuilder::set_vertex_shader(std::string path_vertex_shr)
-  {
-    auto vertex_shader_code   = read_file(path_vertex_shr);
-    m_vertex_shader_module    = create_shader_module(vertex_shader_code, VulkanDevice::get_logical_device());
-    m_is_vertex_shader_module = true;
-
-    m_vertex_shader_info.sType  = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-    m_vertex_shader_info.stage  = VK_SHADER_STAGE_VERTEX_BIT;
-    m_vertex_shader_info.module = m_vertex_shader_module;
-    m_vertex_shader_info.pName  = "main";
-  }
-
-  void VulkanWorkerBuilder::set_fragment_shader(std::string path_fragment_shr)
-  {
-    auto fragment_shader_code   = read_file(path_fragment_shr);
-    m_fragment_shader_module    = create_shader_module(fragment_shader_code, VulkanDevice::get_logical_device());
-    m_is_fragment_shader_module = true;
-
-    m_fragment_shader_info.sType  = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-    m_fragment_shader_info.stage  = VK_SHADER_STAGE_FRAGMENT_BIT;
-    m_fragment_shader_info.module = m_fragment_shader_module;
-    m_fragment_shader_info.pName  = "main";
+          m_shader_info_map[stage]        = {};
+          m_shader_info_map[stage].sType  = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+          m_shader_info_map[stage].stage  = VK_SHADER_STAGE_VERTEX_BIT;
+          m_shader_info_map[stage].module = m_shader_module_map.at(stage);
+          m_shader_info_map[stage].pName  = "main";
+        });
   }
 
   void VulkanWorkerBuilder::set_vertex_layouts(std::vector<EspVertexLayout> vertex_layouts)
@@ -191,12 +170,15 @@ namespace esp
         - the render pass is taken from VulkanFrameManager
         - there is 0 subpasses.
     */
-    ESP_ASSERT(m_is_fragment_shader_module, "You cannot create pipeline a without a fragment shader.");
-    ESP_ASSERT(m_is_vertex_shader_module, "You cannot create pipeline a without a vertex shader.");
+    ESP_ASSERT(m_shader_module_map.contains(EspShaderStage::FRAGMENT),
+               "You cannot create pipeline a without a fragment shader.");
+    ESP_ASSERT(m_shader_module_map.contains(EspShaderStage::VERTEX),
+               "You cannot create pipeline a without a vertex shader.");
     ESP_ASSERT(m_is_pipeline_layout, "You cannot create a pipeline without a pipeline layout.")
     ESP_ASSERT(m_color_attachment_formats.size() != 0, "You cannot create a pipeline  without color attachments.");
 
-    VkPipelineShaderStageCreateInfo shader_stages[] = { m_vertex_shader_info, m_fragment_shader_info };
+    VkPipelineShaderStageCreateInfo shader_stages[] = { m_shader_info_map.at(EspShaderStage::VERTEX),
+                                                        m_shader_info_map.at(EspShaderStage::FRAGMENT) };
 
     VkPipelineVertexInputStateCreateInfo vertex_input_info{};
     {
@@ -328,12 +310,17 @@ namespace esp
     }
     else { ESP_CORE_INFO("Graphic pipeline created correctly"); }
 
-    vkDestroyShaderModule(VulkanDevice::get_logical_device(), m_fragment_shader_module, nullptr);
-    vkDestroyShaderModule(VulkanDevice::get_logical_device(), m_vertex_shader_module, nullptr);
+    vkDestroyShaderModule(VulkanDevice::get_logical_device(),
+                          m_shader_module_map.at(EspShaderStage::FRAGMENT),
+                          nullptr);
+    vkDestroyShaderModule(VulkanDevice::get_logical_device(), m_shader_module_map.at(EspShaderStage::VERTEX), nullptr);
 
-    m_is_fragment_shader_module = false;
-    m_is_vertex_shader_module   = false;
-    m_is_pipeline_layout        = false;
+    std::unordered_map<EspShaderStage, VkShaderModule> empty_module_map;
+    m_shader_module_map.swap(empty_module_map);
+    std::unordered_map<EspShaderStage, VkPipelineShaderStageCreateInfo> empty_info_map;
+    m_shader_info_map.swap(empty_info_map);
+
+    m_is_pipeline_layout = false;
 
     return std::unique_ptr<EspWorker>{
       new VulkanWorker(m_pipeline_layout, graphics_pipeline, std::move(m_uniform_data_storage))
@@ -345,28 +332,7 @@ namespace esp
 /* ------------------ HELPFUL FUNCTIONS -------------------- */
 /* --------------------------------------------------------- */
 
-static std::vector<char> read_file(const std::string& filename)
-{
-  std::ifstream file(filename, std::ios::ate | std::ios::binary);
-
-  if (!file.is_open())
-  {
-    ESP_CORE_ERROR("The file doesn't exist: {0}", filename);
-    throw std::runtime_error("The file doesn't exist.");
-  }
-
-  size_t file_size = (size_t)file.tellg();
-  std::vector<char> buffer(file_size);
-
-  file.seekg(0);
-  file.read(buffer.data(), file_size);
-
-  file.close();
-
-  return buffer;
-}
-
-static VkShaderModule create_shader_module(const std::vector<char>& code, VkDevice device)
+static VkShaderModule create_shader_module(const esp::SpirvData& code, VkDevice device)
 {
   VkShaderModuleCreateInfo create_info{};
   create_info.sType    = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;

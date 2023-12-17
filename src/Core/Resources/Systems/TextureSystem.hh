@@ -13,7 +13,8 @@ namespace esp
 
   struct TextureParams
   {
-    bool mipmapping = false;
+    bool mipmapping     = false;
+    EspTextureType type = EspTextureType::ALBEDO;
   };
 
   class TextureSystem
@@ -22,11 +23,13 @@ namespace esp
     static TextureSystem* s_instance;
 
    private:
-    static const std::string s_default_albedo_texture_name;
-    static const std::string s_default_normal_texture_name;
-    static const std::string s_default_metallic_texture_name;
-    static const std::string s_default_roughness_texture_name;
-    static const std::string s_default_ao_texture_name;
+    const std::unordered_map<EspTextureType, std::string> m_default_texture_name_map = {
+      { EspTextureType::ALBEDO, "default_ALBD" },
+      { EspTextureType::NORMAL, "default_NORM" },
+      { EspTextureType::METALLIC, "default_METAL" },
+      { EspTextureType::ROUGHNESS, "default_ROUGH" },
+      { EspTextureType::AO, "default_AO" }
+    };
 
     TextureMap m_texture_map;
 
@@ -35,6 +38,7 @@ namespace esp
     static std::shared_ptr<EspTexture> load(const std::string& name, const TextureParams& params = {});
     static void create_default_textures();
     static bool texture_matching_params(std::shared_ptr<EspTexture> texture, const TextureParams& params);
+    static bool is_default_texture_name(const std::string& name);
 
    public:
     ~TextureSystem();
@@ -45,11 +49,7 @@ namespace esp
 
     static std::shared_ptr<EspTexture> acquire(const std::string& name, const TextureParams& params = {});
     static void release(const std::string& name);
-    static std::shared_ptr<EspTexture> get_default_albedo_texture();
-    static std::shared_ptr<EspTexture> get_default_normal_texture();
-    static std::shared_ptr<EspTexture> get_default_metallic_texture();
-    static std::shared_ptr<EspTexture> get_default_roughness_texture();
-    static std::shared_ptr<EspTexture> get_default_ao_texture();
+    static std::shared_ptr<EspTexture> get_default_texture(EspTextureType type = EspTextureType::ALBEDO);
   };
 } // namespace esp
 

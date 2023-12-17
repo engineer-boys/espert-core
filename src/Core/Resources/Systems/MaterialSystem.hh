@@ -1,27 +1,59 @@
-#ifndef ESPERT_CORE_SYSTEMS_MATERIAL_SYSTEM_HH
-#define ESPERT_CORE_SYSTEMS_MATERIAL_SYSTEM_HH
+#ifndef ESPERT_CORE_SYSTEMS_MATERIALSYSTEM_HH
+#define ESPERT_CORE_SYSTEMS_MATERIALSYSTEM_HH
 
 #include "esppch.hh"
 
-// Render API
-#include "Core/RenderAPI/Pipeline/EspPipeline.hh"
+#include "Core/RenderAPI/Resources/EspShader.hh"
 #include "Core/RenderAPI/Resources/EspTexture.hh"
+#include "Core/RenderAPI/Uniforms/EspUniformManager.hh"
+#include "Core/Resources/Systems/ShaderSystem.hh"
 
 namespace esp
 {
+  using MaterialTexutresMap = std::unordered_map<EspTextureType, std::shared_ptr<EspTexture>>;
   class Material
   {
    private:
-    std::unique_ptr<EspUniformManager> m_material_manager;
+    MaterialTexutresMap m_textures_map;
+    std::shared_ptr<EspShader> m_shader;
+    std::unique_ptr<EspUniformManager> m_uniform_manager;
+    std::string m_name;
 
    public:
-    static std::shared_ptr<Material> create(EspWorker& pipeline, std::vector<std::shared_ptr<EspTexture>>& textures);
+    Material(const std::string& name, MaterialTexutresMap textures, std::shared_ptr<EspShader> shader);
+    ~Material() = default;
+    PREVENT_COPY(Material);
+    Material& update_buffer_uniform(uint32_t set, uint32_t binding, uint64_t offset, uint32_t size, void* data);
+    Material& attach();
+  };
 
-    void attach();
+  using MaterialMap = std::unordered_map<std::string, std::shared_ptr<Material>>;
+
+  class MaterialSystem
+  {
+   private:
+    static MaterialSystem* s_instance;
 
    private:
-    Material(EspWorker& pipeline, std::vector<std::shared_ptr<EspTexture>>& textures);
+    MaterialMap m_material_map;
+
+    MaterialSystem();
+    static void fill_default_textures(MaterialTexutresMap& textures);
+
+   public:
+    ~MaterialSystem();
+    PREVENT_COPY(MaterialSystem);
+
+    static std::unique_ptr<MaterialSystem> create();
+    void terminate();
+
+    static std::shared_ptr<Material> acquire(const std::string& name);
+    static std::shared_ptr<Material> create_material(
+        const std::string& name,
+        std::initializer_list<std::shared_ptr<EspTexture>> textures,
+        std::shared_ptr<EspShader> shader = ShaderSystem::get_default_shader());
+    static void release(const std::string& name);
   };
 } // namespace esp
 
-#endif // ESPERT_CORE_SYSTEMS_MATERIAL_SYSTEM_HH
+#endif // ESPERT_CORE_SYSTEMS_MATERIALSYSTEM_HH
