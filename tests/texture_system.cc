@@ -3,8 +3,8 @@
 #include "Core/Logger.hh"
 #include "Core/RenderAPI/Resources/EspTexture.hh"
 #include "Core/Resources/ResourceTypes.hh"
-#include "Core/Systems/ResourceSystem.hh"
-#include "Core/Systems/TextureSystem.hh"
+#include "Core/Resources/Systems/ResourceSystem.hh"
+#include "Core/Resources/Systems/TextureSystem.hh"
 #include "Platform/Vulkan/Resources/VulkanTexture.hh"
 #include <catch2/catch_test_macros.hpp>
 #include <thread>
