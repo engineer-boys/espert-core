@@ -49,9 +49,9 @@ namespace esp
     if (m_has_index_buffer)
     {
       m_index_buffer->attach();
-      EspCommandHandler::draw_indexed(get_index_count());
+      EspJobs::draw_indexed(get_index_count());
     }
-    else { EspCommandHandler::draw(get_vertex_count()); }
+    else { EspJobs::draw(get_vertex_count()); }
   }
 
   void Mesh::draw(esp::EspVertexBuffer& instance_buffer)
@@ -61,12 +61,12 @@ namespace esp
     if (m_has_index_buffer)
     {
       m_index_buffer->attach();
-      EspCommandHandler::draw_indexed(get_index_count(), instance_buffer.get_vertex_count());
+      EspJobs::draw_indexed(get_index_count(), instance_buffer.get_vertex_count());
     }
-    else { EspCommandHandler::draw(get_vertex_count(), instance_buffer.get_vertex_count()); }
+    else { EspJobs::draw(get_vertex_count(), instance_buffer.get_vertex_count()); }
   }
 
-  void Mesh::add_material(esp::EspPipeline& pipeline)
+  void Mesh::add_material(esp::EspWorker& pipeline)
   {
     m_has_material = true;
     m_material     = Material::create(pipeline, m_textures);

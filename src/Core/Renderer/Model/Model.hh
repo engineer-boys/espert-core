@@ -5,7 +5,7 @@
 #include "esppch.hh"
 
 // Render API
-#include "Core/RenderAPI/EspCommandHandler.hh"
+#include "Core/RenderAPI/Work/EspJobs.hh"
 
 // assimp
 #include <assimp/Importer.hpp>
@@ -43,10 +43,10 @@ namespace esp
     std::unique_ptr<EspVertexBuffer> m_instance_buffer;
 
    public:
-    Model(Builder& builder, EspPipeline& pipeline); // TODO: add default pipeline argument when it's ready
-    Model(std::shared_ptr<Mesh> mesh,               //
+    Model(Builder& builder, EspWorker& pipeline); // TODO: add default pipeline argument when it's ready
+    Model(std::shared_ptr<Mesh> mesh,             //
           std::vector<std::shared_ptr<EspTexture>> textures,
-          EspPipeline& pipeline);
+          EspWorker& pipeline);
 
     PREVENT_COPY(Model)
 
@@ -72,7 +72,7 @@ namespace esp
     }
 
    private:
-    void add_materials(EspPipeline& pipeline);
+    void add_materials(EspWorker& pipeline);
   };
 } // namespace esp
 

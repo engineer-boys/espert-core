@@ -96,12 +96,12 @@ namespace esp
     return textures;
   }
 
-  Model::Model(esp::Model::Builder& builder, EspPipeline& pipeline) : m_meshes{ std::move(builder.m_meshes) }
+  Model::Model(esp::Model::Builder& builder, EspWorker& pipeline) : m_meshes{ std::move(builder.m_meshes) }
   {
     add_materials(pipeline);
   }
 
-  Model::Model(std::shared_ptr<Mesh> mesh, std::vector<std::shared_ptr<EspTexture>> textures, EspPipeline& pipeline) :
+  Model::Model(std::shared_ptr<Mesh> mesh, std::vector<std::shared_ptr<EspTexture>> textures, EspWorker& pipeline) :
       m_meshes{ std::move(mesh) }
   {
     m_meshes[0]->m_textures = textures;
@@ -117,7 +117,7 @@ namespace esp
     }
   }
 
-  void Model::add_materials(esp::EspPipeline& pipeline)
+  void Model::add_materials(esp::EspWorker& pipeline)
   {
     for (auto& mesh : m_meshes)
     {
