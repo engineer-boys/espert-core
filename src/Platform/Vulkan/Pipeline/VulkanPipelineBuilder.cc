@@ -49,6 +49,11 @@ namespace esp
     m_depth_test.m_compare_op = compare_op;
   }
 
+  void VulkanWorkerBuilder::enable_multisampling(EspSampleCountFlag sample_count_flag)
+  {
+    m_multisampling.m_sample_count_flag = sample_count_flag;
+  }
+
   void VulkanWorkerBuilder::set_attachment_formats(std::vector<EspBlockFormat> formats)
   {
     m_color_attachment_formats.clear();
@@ -228,7 +233,7 @@ namespace esp
     {
       multisampling.sType                = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
       multisampling.sampleShadingEnable  = VK_FALSE;
-      multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+      multisampling.rasterizationSamples = static_cast<VkSampleCountFlagBits>(m_multisampling.m_sample_count_flag);
       //
       // TODO: let user decide whether he wants higher quality or better performance - put this in some if statement
       // multisampling.sampleShadingEnable  = VK_TRUE; // enable sample shading in the pipeline

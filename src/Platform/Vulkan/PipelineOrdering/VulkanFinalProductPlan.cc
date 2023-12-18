@@ -5,9 +5,47 @@
 
 namespace esp
 {
+  void VulkanFinalProductPlan::VulkanColorBuffer::terminate()
+  {
+    vkDestroyImageView(VulkanDevice::get_logical_device(), m_image_view, nullptr);
+
+    vkDestroyImage(VulkanDevice::get_logical_device(), m_image, nullptr);
+    vkFreeMemory(VulkanDevice::get_logical_device(), m_image_memory, nullptr);
+  }
+} // namespace esp
+
+namespace esp
+{
   VulkanFinalProductPlan::VulkanFinalProductPlan() {}
 
-  VulkanFinalProductPlan::~VulkanFinalProductPlan() {}
+  VulkanFinalProductPlan::~VulkanFinalProductPlan()
+  {
+    if (m_color_buffer.is_enable) { m_color_buffer.terminate(); }
+  }
+
+  void VulkanFinalProductPlan::enable_resolve_block(EspSampleCountFlag sample_count_flag)
+  {
+    auto [width, height]  = VulkanWorkOrchestrator::get_swap_chain_extent();
+    EspBlockFormat format = static_cast<EspBlockFormat>(*(VulkanSwapChain::get_swap_chain_image_format()));
+
+    VulkanResourceManager::create_image(width,
+                                        height,
+                                        1,
+                                        static_cast<VkSampleCountFlagBits>(sample_count_flag),
+                                        static_cast<VkFormat>(format),
+                                        VK_IMAGE_TILING_OPTIMAL,
+                                        VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+                                        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                                        m_color_buffer.m_image,
+                                        m_color_buffer.m_image_memory);
+
+    m_color_buffer.m_image_view = VulkanResourceManager::create_image_view(m_color_buffer.m_image,
+                                                                           static_cast<VkFormat>(format),
+                                                                           VK_IMAGE_ASPECT_COLOR_BIT,
+                                                                           1);
+
+    m_color_buffer.is_enable = true;
+  }
 
   void VulkanFinalProductPlan::add_depth_block(std::shared_ptr<EspDepthBlock> depth_block)
   {
@@ -35,6 +73,26 @@ namespace esp
               .layerCount     = 1,
           });
 
+      // for multisampling for final product plan
+      if (m_color_buffer.is_enable)
+      {
+        VulkanWorkOrchestrator::insert_image_memory_barrier_to_current_cmdbuffer(
+            m_color_buffer.m_image,
+            0,
+            VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
+            VK_IMAGE_LAYOUT_UNDEFINED,
+            VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
+            VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
+            {
+                .aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT,
+                .baseMipLevel   = 0,
+                .levelCount     = 1,
+                .baseArrayLayer = 0,
+                .layerCount     = 1,
+            });
+      }
+
       // depth attachement
       if (m_depth_block && m_depth_block->need_transition())
       {
@@ -53,12 +111,27 @@ namespace esp
     }
 
     VkRenderingAttachmentInfoKHR color_attachment_info = {};
-    color_attachment_info.sType                        = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR;
-    color_attachment_info.imageView                    = VulkanSwapChain::get_current_image_view();
-    color_attachment_info.imageLayout                  = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-    color_attachment_info.loadOp                       = VK_ATTACHMENT_LOAD_OP_CLEAR;
-    color_attachment_info.storeOp                      = VK_ATTACHMENT_STORE_OP_STORE;
-    color_attachment_info.clearValue.color             = { 0.0f, 5.0f, 5.0f, 0.0f };
+    if (m_color_buffer.is_enable)
+    {
+      color_attachment_info.sType              = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR;
+      color_attachment_info.imageView          = m_color_buffer.m_image_view;
+      color_attachment_info.imageLayout        = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+      color_attachment_info.loadOp             = VK_ATTACHMENT_LOAD_OP_CLEAR;
+      color_attachment_info.storeOp            = VK_ATTACHMENT_STORE_OP_STORE;
+      color_attachment_info.resolveImageView   = VulkanSwapChain::get_current_image_view();
+      color_attachment_info.resolveImageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+      color_attachment_info.resolveMode        = VK_RESOLVE_MODE_AVERAGE_BIT;
+      color_attachment_info.clearValue.color   = { m_clear_color.x, m_clear_color.y, m_clear_color.z, 0.0f };
+    }
+    else
+    {
+      color_attachment_info.sType            = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR;
+      color_attachment_info.imageView        = VulkanSwapChain::get_current_image_view();
+      color_attachment_info.imageLayout      = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+      color_attachment_info.loadOp           = VK_ATTACHMENT_LOAD_OP_CLEAR;
+      color_attachment_info.storeOp          = VK_ATTACHMENT_STORE_OP_STORE;
+      color_attachment_info.clearValue.color = { m_clear_color.x, m_clear_color.y, m_clear_color.z, 0.0f };
+    }
 
     auto [width, height]                = VulkanWorkOrchestrator::get_swap_chain_extent();
     VkRenderingInfoKHR rendering_info   = {};
