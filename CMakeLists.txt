@@ -57,10 +57,6 @@ get_library(NAME stb
     CONF_PATH include/cmake/stb
 )
 
-get_library(NAME tinyobjloader
-    CONF_PATH lib/tinyobjloader/cmake
-)
-
 get_library(NAME assimp
     CONF_PATH lib/cmake/assimp-5.3)
 
@@ -86,7 +82,6 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     glfw
     glm::glm
     spdlog::spdlog_header_only
-    tinyobjloader::tinyobjloader
     EnTT::EnTT
     stb
     assimp::assimp

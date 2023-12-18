@@ -2,8 +2,8 @@
 #define ESPERT_CORE_APPLICATION_HH
 
 #include "ApplicationContext.hh"
-#include "Core/Systems/ResourceSystem.hh"
-#include "Core/Systems/TextureSystem.hh"
+#include "Core/Resources/Systems/ResourceSystem.hh"
+#include "Core/Resources/Systems/TextureSystem.hh"
 #include "EspWindow.hh"
 #include "Events/WindowEvent.hh"
 #include "Layers/Layer.hh"

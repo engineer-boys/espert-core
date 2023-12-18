@@ -22,11 +22,11 @@
 /* --------- Renderer --------------------- */
 #include "Core/Renderer/Camera.hh"
 #include "Core/Renderer/Model/Model.hh"
-#include "Core/Renderer/Scene/Action.hh"
-#include "Core/Renderer/Scene/Components/Components.hh"
-#include "Core/Renderer/Scene/Entity.hh"
-#include "Core/Renderer/Scene/Node.hh"
-#include "Core/Renderer/Scene/Scene.hh"
+#include "Core/Renderer/SceneSystem/Action.hh"
+#include "Core/Renderer/SceneSystem/Components/Components.hh"
+#include "Core/Renderer/SceneSystem/Entity.hh"
+#include "Core/Renderer/SceneSystem/Node.hh"
+#include "Core/Renderer/SceneSystem/Scene.hh"
 
 /* --------- Client Point ------------------- */
 #include "Core/ClientPoint.hh"

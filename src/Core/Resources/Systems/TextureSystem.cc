@@ -1,5 +1,5 @@
-#include "Core/Systems/TextureSystem.hh"
-#include "Core/Systems/ResourceSystem.hh"
+#include "TextureSystem.hh"
+#include "ResourceSystem.hh"
 
 namespace esp
 {

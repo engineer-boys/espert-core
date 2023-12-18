@@ -1,7 +1,7 @@
 #ifndef SCENE_SCENE_ACTIONS_HH
 #define SCENE_SCENE_ACTIONS_HH
 
-#include "Core/Renderer/Scene/Components/Components.hh"
+#include "Core/Renderer/SceneSystem/Components/Components.hh"
 
 #include "esppch.hh"
 
