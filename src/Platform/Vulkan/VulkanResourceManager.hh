@@ -55,9 +55,21 @@ namespace esp
                                          VkImageAspectFlags aspect_flags,
                                          uint32_t mip_levels);
 
+    static VkImageView create_cubemap_image_view(VkImage image,
+                                                 VkFormat format,
+                                                 VkImageAspectFlags aspect_flags,
+                                                 uint32_t mip_levels);
+
     static void create_texture_image(uint32_t width,
                                      uint32_t height,
                                      const void* pixels,
+                                     uint32_t mip_levels,
+                                     VkImage& texture_image,
+                                     VkDeviceMemory& texture_image_memory);
+
+    static void create_cubemap_image(uint32_t width,
+                                     uint32_t height,
+                                     const void* pixels[6],
                                      uint32_t mip_levels,
                                      VkImage& texture_image,
                                      VkDeviceMemory& texture_image_memory);
