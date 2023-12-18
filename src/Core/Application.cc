@@ -44,8 +44,8 @@ namespace esp
     m_resource_system->terminate();
 
     // [3] m_renderer has to be killed and then debug messenger
-    m_renderer.terminate();
     m_debug_messenger->terminate();
+    m_renderer.terminate();
 
     // [4] Window instance has to be killed
     m_window->terminate();
