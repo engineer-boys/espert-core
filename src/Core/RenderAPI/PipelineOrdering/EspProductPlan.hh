@@ -5,6 +5,7 @@
 
 #include "Core/RenderAPI/PipelineOrdering/Block/EspBlock.hh"
 #include "Core/RenderAPI/PipelineOrdering/Block/EspDepthBlock.hh"
+#include "Core/RenderAPI/PipelineOrdering/Block/Types/EspSampleCountFlag.hh"
 
 namespace esp
 {
@@ -24,7 +25,8 @@ namespace esp
     /* -------------------------- METHODS STATIC --------------------------- */
    public:
     static std::unique_ptr<EspProductPlan> build();
-    static std::unique_ptr<EspProductPlan> build_final();
+    static std::unique_ptr<EspProductPlan> build_final(
+        EspSampleCountFlag sample_count_flag = EspSampleCountFlag::ESP_SAMPLE_COUNT_1_BIT);
   };
 } // namespace esp
 

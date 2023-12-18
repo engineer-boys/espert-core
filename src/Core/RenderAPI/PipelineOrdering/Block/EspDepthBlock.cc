@@ -5,12 +5,16 @@
 
 namespace esp
 {
-  EspDepthBlock::EspDepthBlock(EspDepthBlockFormat format, uint32_t width, uint32_t height) :
-      m_format{ format }, m_width{ width }, m_height{ height }
+  EspDepthBlock::EspDepthBlock(EspDepthBlockFormat format,
+                               EspSampleCountFlag sample_count_flag,
+                               uint32_t width,
+                               uint32_t height) :
+      m_format{ format },
+      m_sample_count_flag{ sample_count_flag }, m_width{ width }, m_height{ height }
   {
   }
 
-  std::unique_ptr<EspDepthBlock> EspDepthBlock::build(EspDepthBlockFormat format)
+  std::unique_ptr<EspDepthBlock> EspDepthBlock::build(EspDepthBlockFormat format, EspSampleCountFlag sample_count_flag)
   {
     //     /* ---------------------------------------------------------*/
     //     /* ------------- PLATFORM DEPENDENT ------------------------*/
@@ -18,7 +22,7 @@ namespace esp
     //     // #if defined(OPENGL_PLATFORM)
     //     // #elif defined(VULKAN_PLATFORM)
     auto [width, height] = EspWorkOrchestrator::get_swap_chain_extent();
-    return std::make_unique<VulkanDepthBlock>(format, width, height);
+    return std::make_unique<VulkanDepthBlock>(format, sample_count_flag, width, height);
     //     // #else
     //     // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
     //     // #endif
