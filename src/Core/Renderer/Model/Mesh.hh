@@ -4,11 +4,11 @@
 #include "esppch.hh"
 
 // Render API
-#include "Core/RenderAPI/EspCommandHandler.hh"
 #include "Core/RenderAPI/Pipeline/EspPipelineBuilder.hh"
 #include "Core/RenderAPI/Resources/EspIndexBuffer.hh"
 #include "Core/RenderAPI/Resources/EspTexture.hh"
 #include "Core/RenderAPI/Resources/EspVertexBuffer.hh"
+#include "Core/RenderAPI/Work/EspJobs.hh"
 
 #include "Core/Resources/Systems/MaterialSystem.hh"
 
@@ -58,7 +58,7 @@ namespace esp
     void draw();
     void draw(EspVertexBuffer& instance_buffer);
 
-    void add_material(EspPipeline& pipeline);
+    void add_material(EspWorker& pipeline);
 
     friend class Model;
   };
