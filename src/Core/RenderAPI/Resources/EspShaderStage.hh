@@ -14,7 +14,8 @@ namespace esp
     TESSELATION_EVALUATION = 0x04,
     GEOMETRY               = 0x08,
     FRAGMENT               = 0x10,
-    COMPUTE                = 0x20
+    COMPUTE                = 0x20,
+    ENUM_END               = 0x40
   };
 
   inline EspShaderStageFlags operator|(const EspShaderStage a, const EspShaderStage b)
@@ -34,7 +35,7 @@ namespace esp
 
   inline EspShaderStage operator++(EspShaderStage& a)
   {
-    if (a == EspShaderStage::COMPUTE) return a;
+    if (a == EspShaderStage::ENUM_END) return a;
     auto copy = a;
     a         = static_cast<EspShaderStage>(static_cast<uint8_t>(a) << 1);
     return copy;
@@ -42,7 +43,7 @@ namespace esp
 
   inline EspShaderStage operator++(EspShaderStage& a, int dummy)
   {
-    if (a == EspShaderStage::COMPUTE) return a;
+    if (a == EspShaderStage::ENUM_END) return a;
     a = static_cast<EspShaderStage>(static_cast<uint8_t>(a) << 1);
     return a;
   }

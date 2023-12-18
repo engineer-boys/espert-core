@@ -27,6 +27,8 @@ namespace esp
     return m_pipeline->create_uniform_manager();
   }
 
+  void EspShader::attach() { m_pipeline->attach(); }
+
   void EspShader::set_vertex_layouts(std::vector<EspVertexLayout> vertex_layouts)
   {
     m_pipeline_builder->set_vertex_layouts(std::move(vertex_layouts));
@@ -37,5 +39,5 @@ namespace esp
     m_pipeline_builder->set_pipeline_layout(std::move(uniforms_meta_data));
   }
 
-  void EspShader::build_pipeline() { m_pipeline_builder->build_pipeline(); }
+  void EspShader::build_pipeline() { m_pipeline = m_pipeline_builder->build_pipeline(); }
 } // namespace esp

@@ -30,7 +30,7 @@ namespace esp
       return VK_SHADER_STAGE_COMPUTE_BIT;
 
     default:
-      break;
+      return VK_SHADER_STAGE_FLAG_BITS_MAX_ENUM;
     }
   }
 } // namespace esp
