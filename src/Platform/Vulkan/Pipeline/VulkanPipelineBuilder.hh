@@ -41,6 +41,11 @@ namespace esp
       EspDepthBlockFormat m_format;
     } m_depth_test;
 
+    struct
+    {
+      EspSampleCountFlag m_sample_count_flag = EspSampleCountFlag::ESP_SAMPLE_COUNT_1_BIT;
+    } m_multisampling;
+
     /* -------------------------- METHODS ---------------------------------- */
    public:
     VulkanWorkerBuilder();
@@ -50,6 +55,7 @@ namespace esp
     VulkanWorkerBuilder& operator=(const VulkanWorkerBuilder&) = delete;
 
     virtual void enable_depth_test(EspDepthBlockFormat format, EspCompareOp compare_op) override;
+    virtual void enable_multisampling(EspSampleCountFlag sample_count_flag) override;
 
     virtual void set_attachment_formats(std::vector<EspBlockFormat> formats) override;
 

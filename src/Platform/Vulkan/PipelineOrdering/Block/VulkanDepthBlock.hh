@@ -21,7 +21,7 @@ namespace esp
 
     /* -------------------------- METHODS ---------------------------------- */
    public:
-    VulkanDepthBlock(EspDepthBlockFormat format, uint32_t width, uint32_t height);
+    VulkanDepthBlock(EspDepthBlockFormat format, EspSampleCountFlag sample_count_flag, uint32_t width, uint32_t height);
     virtual ~VulkanDepthBlock();
 
     VulkanDepthBlock(const VulkanDepthBlock&)            = delete;

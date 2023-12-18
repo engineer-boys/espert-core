@@ -28,22 +28,26 @@ namespace esp
     {
       // color attachement
       std::vector<VkImageMemoryBarrier> image_memory_barriers = {};
-      image_memory_barriers.resize(m_blocks.size());
 
       for (int i = 0; i < m_blocks.size(); i++)
       {
-        image_memory_barriers[i].sType            = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-        image_memory_barriers[i].dstAccessMask    = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-        image_memory_barriers[i].oldLayout        = VK_IMAGE_LAYOUT_UNDEFINED;
-        image_memory_barriers[i].newLayout        = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-        image_memory_barriers[i].image            = m_blocks[i]->get_image();
-        image_memory_barriers[i].subresourceRange = {
-          .aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT,
-          .baseMipLevel   = 0,
-          .levelCount     = 1,
-          .baseArrayLayer = 0,
-          .layerCount     = 1,
+        VkImageMemoryBarrier image_memory_barrier = {};
+        image_memory_barrier.sType                = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+        image_memory_barrier.dstAccessMask        = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        image_memory_barrier.oldLayout            = VK_IMAGE_LAYOUT_UNDEFINED;
+        image_memory_barrier.newLayout            = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        image_memory_barrier.image                = m_blocks[i]->get_image();
+        image_memory_barrier.subresourceRange     = {
+              .aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT,
+              .baseMipLevel   = 0,
+              .levelCount     = 1,
+              .baseArrayLayer = 0,
+              .layerCount     = 1,
         };
+        image_memory_barriers.push_back(image_memory_barrier);
+
+        if (m_blocks[i]->is_resolvable()) { image_memory_barrier.image = m_blocks[i]->get_resolve_image(); }
+        image_memory_barriers.push_back(image_memory_barrier);
       }
 
       vkCmdPipelineBarrier(VulkanWorkOrchestrator::get_current_command_buffer(),
@@ -84,6 +88,13 @@ namespace esp
       color_attachment_infos[i].imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
       color_attachment_infos[i].loadOp      = VK_ATTACHMENT_LOAD_OP_CLEAR;
       color_attachment_infos[i].storeOp     = VK_ATTACHMENT_STORE_OP_STORE;
+
+      if (m_blocks[i]->is_resolvable())
+      {
+        color_attachment_infos[i].resolveImageView   = m_blocks[i]->get_resolve_image_view();
+        color_attachment_infos[i].resolveImageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        color_attachment_infos[i].resolveMode        = VK_RESOLVE_MODE_AVERAGE_BIT;
+      }
 
       auto color                                 = m_blocks[i]->get_clear_color();
       color_attachment_infos[i].clearValue.color = { color.x, color.y, color.z, 1.0f };
@@ -133,7 +144,6 @@ namespace esp
       image_memory_barriers[i].srcAccessMask    = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
       image_memory_barriers[i].oldLayout        = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
       image_memory_barriers[i].newLayout        = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL; // this may be wrong
-      image_memory_barriers[i].image            = m_blocks[i]->get_image();
       image_memory_barriers[i].subresourceRange = {
         .aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT,
         .baseMipLevel   = 0,
@@ -141,6 +151,9 @@ namespace esp
         .baseArrayLayer = 0,
         .layerCount     = 1,
       };
+
+      image_memory_barriers[i].image =
+          m_blocks[i]->is_resolvable() ? m_blocks[i]->get_resolve_image() : m_blocks[i]->get_image();
     }
 
     vkCmdPipelineBarrier(VulkanWorkOrchestrator::get_current_command_buffer(),
