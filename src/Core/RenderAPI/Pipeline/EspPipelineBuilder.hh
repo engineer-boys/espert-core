@@ -6,6 +6,7 @@
 // Render API
 #include "Core/RenderAPI/Pipeline/Types/EspCompareOp.hh"
 #include "Core/RenderAPI/PipelineOrdering/Block/Types/EspDepthBlockFormat.hh"
+#include "Core/RenderAPI/PipelineOrdering/Block/Types/EspSampleCountFlag.hh"
 #include "Core/RenderAPI/Uniforms/EspUniformMetaData.hh"
 #include "EspAttrFormat.hh"
 #include "EspPipeline.hh"
@@ -41,6 +42,7 @@ namespace esp
     virtual ~EspWorkerBuilder() {}
 
     virtual void enable_depth_test(EspDepthBlockFormat format, EspCompareOp compare_op) = 0;
+    virtual void enable_multisampling(EspSampleCountFlag sample_count_flag)             = 0;
 
     virtual void set_attachment_formats(std::vector<EspBlockFormat> formats) = 0;
 
