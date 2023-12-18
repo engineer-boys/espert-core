@@ -47,7 +47,9 @@ namespace esp
   std::shared_ptr<EspTexture> TextureSystem::acquire(const std::string& name)
   {
     if (s_instance->m_texture_map.contains(name)) return s_instance->m_texture_map.at(name);
-    return load(name);
+    TextureParams params = {};
+    ESP_CORE_WARN("Loading {} texture with default params.", name);
+    return load(name, params);
   }
 
   void TextureSystem::release(const std::string& name)
@@ -69,18 +71,18 @@ namespace esp
     ESP_CORE_TRACE("Released texture {}.", name);
   }
 
-  std::shared_ptr<EspTexture> TextureSystem::load(const std::string& name, bool mipmapping)
+  std::shared_ptr<EspTexture> TextureSystem::load(const std::string& name, const TextureParams& params)
   {
     // TODO: set params.flip_y accordingly to currently used graphics API
-    ImageResourceParams params;
-    auto resource = ResourceSystem::load<ImageResource>(name, params);
+    ImageResourceParams img_params;
+    auto resource = ResourceSystem::load<ImageResource>(name, img_params);
     if (!resource)
     {
       ESP_CORE_ERROR("Could not load texture {}.", name);
       return get_default_albedo_texture();
     }
     auto image_resource = unique_cast<ImageResource>(std::move(resource));
-    auto texture        = EspTexture::create(name, std::move(image_resource), mipmapping);
+    auto texture        = EspTexture::create(name, std::move(image_resource), params.mipmapping);
     s_instance->m_texture_map.insert({ name, texture });
     ESP_CORE_TRACE("Loaded texture {}.", name);
     return texture;

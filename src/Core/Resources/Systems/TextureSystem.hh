@@ -11,6 +11,11 @@ namespace esp
 {
   using TextureMap = std::unordered_map<std::string, std::shared_ptr<EspTexture>>;
 
+  struct TextureParams
+  {
+    bool mipmapping = false;
+  };
+
   class TextureSystem
   {
    private:
@@ -27,7 +32,6 @@ namespace esp
 
     TextureSystem();
 
-    static std::shared_ptr<EspTexture> load(const std::string& name, bool mipmapping = false);
     static void create_default_textures();
 
    public:
@@ -38,6 +42,7 @@ namespace esp
     void terminate();
 
     static std::shared_ptr<EspTexture> acquire(const std::string& name);
+    static std::shared_ptr<EspTexture> load(const std::string& name, const TextureParams& params);
     static void release(const std::string& name);
     static std::shared_ptr<EspTexture> get_default_albedo_texture();
     static std::shared_ptr<EspTexture> get_default_normal_texture();
