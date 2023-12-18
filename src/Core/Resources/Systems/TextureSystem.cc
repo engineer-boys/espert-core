@@ -44,11 +44,15 @@ namespace esp
     ESP_CORE_TRACE("Texture system shutdown.");
   }
 
-  std::shared_ptr<EspTexture> TextureSystem::acquire(const std::string& name)
+  std::shared_ptr<EspTexture> TextureSystem::acquire(const std::string& name, const TextureParams& params)
   {
-    if (s_instance->m_texture_map.contains(name)) return s_instance->m_texture_map.at(name);
-    TextureParams params = {};
-    ESP_CORE_WARN("Loading {} texture with default params.", name);
+    if (s_instance->m_texture_map.contains(name))
+    {
+      auto texture = s_instance->m_texture_map.at(name);
+      if (!texture_matching_params(texture, params)) { ESP_CORE_WARN("Returning texture with mismatched params."); }
+
+      return texture;
+    }
     return load(name, params);
   }
 
@@ -205,4 +209,8 @@ namespace esp
                                                                        tex_height))) });
   }
 
+  bool TextureSystem::texture_matching_params(std::shared_ptr<EspTexture> texture, const TextureParams& params)
+  {
+    return static_cast<bool>(texture->get_height()) == params.mipmapping;
+  }
 } // namespace esp

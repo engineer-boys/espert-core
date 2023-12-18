@@ -8,7 +8,7 @@
 
 #include "Core/Logger.hh"
 #include "Core/Resources/ResourceTypes.hh"
-#include "Core/Systems/ResourceSystem.hh"
+#include "Core/Resources/Systems/ResourceSystem.hh"
 
 TEST_CASE("Resource system", "[resource_system]")
 {
