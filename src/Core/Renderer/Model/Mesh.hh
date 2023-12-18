@@ -10,7 +10,7 @@
 #include "Core/RenderAPI/Resources/EspTexture.hh"
 #include "Core/RenderAPI/Resources/EspVertexBuffer.hh"
 
-#include "Core/Systems/MaterialSystem.hh"
+#include "Core/Resources/Systems/MaterialSystem.hh"
 
 namespace esp
 {

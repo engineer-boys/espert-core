@@ -1,4 +1,4 @@
-#include "Core/Systems/ResourceSystem.hh"
+#include "ResourceSystem.hh"
 
 #include "Core/Resources/Loaders/BinaryLoader.hh"
 #include "Core/Resources/Loaders/ImageLoader.hh"

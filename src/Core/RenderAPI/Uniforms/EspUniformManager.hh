@@ -3,7 +3,7 @@
 
 #include "esppch.hh"
 
-#include "Core/Systems/TextureSystem.hh"
+#include "Core/Resources/Systems/TextureSystem.hh"
 #include "EspUniformMetaData.hh"
 
 namespace esp
