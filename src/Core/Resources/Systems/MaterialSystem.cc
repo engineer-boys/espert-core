@@ -40,7 +40,7 @@ namespace esp
 
   void MaterialSystem::fill_default_textures(MaterialTexutresMap& textures)
   {
-    for (auto type = EspTextureType::ALBEDO; type != EspTextureType::AO; type++)
+    for (auto type = EspTextureType::ALBEDO; type < EspTextureType::ENUM_END; ++type)
     {
       if (!textures.contains(type)) { textures.insert({ type, TextureSystem::get_default_texture(type) }); }
     }

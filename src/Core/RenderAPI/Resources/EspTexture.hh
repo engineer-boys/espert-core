@@ -14,7 +14,8 @@ namespace esp
     NORMAL    = 0x02,
     METALLIC  = 0x04,
     ROUGHNESS = 0x08,
-    AO        = 0x10
+    AO        = 0x10,
+    ENUM_END  = 0x20
   };
 
   inline EspTextureTypeFlags operator|(const EspTextureType a, const EspTextureType b)
@@ -34,7 +35,7 @@ namespace esp
 
   inline EspTextureType operator++(EspTextureType& a)
   {
-    if (a == EspTextureType::AO) return a;
+    if (a == EspTextureType::ENUM_END) return a;
     auto copy = a;
     a         = static_cast<EspTextureType>(static_cast<uint8_t>(a) << 1);
     return copy;
@@ -42,7 +43,7 @@ namespace esp
 
   inline EspTextureType operator++(EspTextureType& a, int dummy)
   {
-    if (a == EspTextureType::AO) return a;
+    if (a == EspTextureType::ENUM_END) return a;
     a = static_cast<EspTextureType>(static_cast<uint8_t>(a) << 1);
     return a;
   }

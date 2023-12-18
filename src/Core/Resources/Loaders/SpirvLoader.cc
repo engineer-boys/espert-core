@@ -19,7 +19,7 @@ namespace esp
     auto spirv_params           = static_cast<const SpirvResourceParams&>(params);
     SpirvDataMap spirv_data_map = {};
 
-    for (auto type = EspShaderStage::VERTEX; type != EspShaderStage::COMPUTE; ++type)
+    for (auto type = EspShaderStage::VERTEX; type < EspShaderStage::ENUM_END; ++type)
     {
       auto data =
           load_spirv(spirv_path.replace_extension("").replace_extension(s_spirv_extension_map.at(type) + ".spv"));
@@ -42,7 +42,11 @@ namespace esp
     if (!fs::is_regular_file(fs::status(full_path))) { return SpirvData(); }
 
     uint64_t file_size = fs::file_size(full_path);
-    if (file_size == 0) { ESP_CORE_WARN("Size of spirv file {} is 0.", full_path.string()); }
+    if (file_size == 0)
+    {
+      ESP_CORE_ERROR("Size of spirv file {} is 0.", full_path.string());
+      return SpirvData();
+    }
 
     std::ifstream file(full_path, std::ios::binary);
     // TODO: use custom allocator
