@@ -4,6 +4,8 @@
 #include "esppch.hh"
 
 // Render API
+#include "Core/RenderAPI/Pipeline/Types/EspCompareOp.hh"
+#include "Core/RenderAPI/PipelineOrdering/Block/Types/EspDepthBlockFormat.hh"
 #include "Core/RenderAPI/Uniforms/EspUniformMetaData.hh"
 #include "EspAttrFormat.hh"
 #include "EspPipeline.hh"
@@ -37,6 +39,10 @@ namespace esp
     /* -------------------------- METHODS ---------------------------------- */
    public:
     virtual ~EspWorkerBuilder() {}
+
+    virtual void enable_depth_test(EspDepthBlockFormat format, EspCompareOp compare_op) = 0;
+
+    virtual void set_attachment_formats(std::vector<EspBlockFormat> formats) = 0;
 
     virtual void set_shaders(std::string path_vertex, std::string path_fragment) = 0;
     virtual void set_vertex_shader(std::string path_vertex)                      = 0;

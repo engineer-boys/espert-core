@@ -4,6 +4,7 @@
 #include "esppch.hh"
 
 #include "Core/RenderAPI/PipelineOrdering/Block/EspBlock.hh"
+#include "Core/RenderAPI/PipelineOrdering/Block/EspDepthBlock.hh"
 
 namespace esp
 {
@@ -13,7 +14,8 @@ namespace esp
    public:
     virtual ~EspProductPlan() {}
 
-    virtual void add_building_block(std::shared_ptr<EspBlock> block) = 0;
+    virtual void add_block(std::shared_ptr<EspBlock> block)                  = 0;
+    virtual void add_depth_block(std::shared_ptr<EspDepthBlock> depth_block) = 0;
 
     virtual void begin_plan() = 0;
 
