@@ -3,14 +3,14 @@
 namespace esp
 {
 
-  std::shared_ptr<Material> Material::create(EspPipeline& pipeline, std::vector<std::shared_ptr<EspTexture>>& textures)
+  std::shared_ptr<Material> Material::create(EspWorker& pipeline, std::vector<std::shared_ptr<EspTexture>>& textures)
   {
     return std::shared_ptr<Material>(new Material(pipeline, textures));
   }
 
   void Material::attach() { m_material_manager->attach(); }
 
-  Material::Material(EspPipeline& pipeline, std::vector<std::shared_ptr<EspTexture>>& textures)
+  Material::Material(EspWorker& pipeline, std::vector<std::shared_ptr<EspTexture>>& textures)
   {
     m_material_manager = pipeline.create_uniform_manager(1, 1);
 

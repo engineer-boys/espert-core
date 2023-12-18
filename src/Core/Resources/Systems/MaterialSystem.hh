@@ -15,12 +15,12 @@ namespace esp
     std::unique_ptr<EspUniformManager> m_material_manager;
 
    public:
-    static std::shared_ptr<Material> create(EspPipeline& pipeline, std::vector<std::shared_ptr<EspTexture>>& textures);
+    static std::shared_ptr<Material> create(EspWorker& pipeline, std::vector<std::shared_ptr<EspTexture>>& textures);
 
     void attach();
 
    private:
-    Material(EspPipeline& pipeline, std::vector<std::shared_ptr<EspTexture>>& textures);
+    Material(EspWorker& pipeline, std::vector<std::shared_ptr<EspTexture>>& textures);
   };
 } // namespace esp
 
