@@ -32,6 +32,15 @@ namespace esp
     VkPipelineLayout m_pipeline_layout; /* it will be moved to the graphic pipieline. */
     std::unique_ptr<EspUniformDataStorage> m_uniform_data_storage;
 
+    std::vector<VkFormat> m_color_attachment_formats;
+
+    struct
+    {
+      bool m_enable = false;
+      EspCompareOp m_compare_op;
+      EspDepthBlockFormat m_format;
+    } m_depth_test;
+
     /* -------------------------- METHODS ---------------------------------- */
    public:
     VulkanWorkerBuilder();
@@ -39,6 +48,10 @@ namespace esp
 
     VulkanWorkerBuilder(const VulkanWorkerBuilder&)            = delete;
     VulkanWorkerBuilder& operator=(const VulkanWorkerBuilder&) = delete;
+
+    virtual void enable_depth_test(EspDepthBlockFormat format, EspCompareOp compare_op) override;
+
+    virtual void set_attachment_formats(std::vector<EspBlockFormat> formats) override;
 
     virtual void set_shaders(std::string path_vertex_shr, std::string path_fragment_shr) override;
     virtual void set_vertex_shader(std::string path_vertex_shr) override;

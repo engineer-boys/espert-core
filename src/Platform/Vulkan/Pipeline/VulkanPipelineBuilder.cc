@@ -21,6 +21,7 @@ namespace esp
 {
   VulkanWorkerBuilder::VulkanWorkerBuilder() : m_vertex_shader_info{}, m_fragment_shader_info{}, m_vertex_input_info{}
   {
+    m_color_attachment_formats.push_back(*(VulkanSwapChain::get_swap_chain_image_format()));
   }
 
   VulkanWorkerBuilder::~VulkanWorkerBuilder()
@@ -38,6 +39,22 @@ namespace esp
     if (m_is_pipeline_layout)
     {
       vkDestroyPipelineLayout(VulkanDevice::get_logical_device(), m_pipeline_layout, nullptr);
+    }
+  }
+
+  void VulkanWorkerBuilder::enable_depth_test(EspDepthBlockFormat format, EspCompareOp compare_op)
+  {
+    m_depth_test.m_enable     = true;
+    m_depth_test.m_format     = format;
+    m_depth_test.m_compare_op = compare_op;
+  }
+
+  void VulkanWorkerBuilder::set_attachment_formats(std::vector<EspBlockFormat> formats)
+  {
+    m_color_attachment_formats.clear();
+    for (auto format : formats)
+    {
+      m_color_attachment_formats.push_back(static_cast<VkFormat>(format));
     }
   }
 
@@ -168,11 +185,11 @@ namespace esp
       (9) Render pass and subpass:
         - the render pass is taken from VulkanFrameManager
         - there is 0 subpasses.
-
     */
     ESP_ASSERT(m_is_fragment_shader_module, "You cannot create pipeline a without a fragment shader.");
     ESP_ASSERT(m_is_vertex_shader_module, "You cannot create pipeline a without a vertex shader.");
     ESP_ASSERT(m_is_pipeline_layout, "You cannot create a pipeline without a pipeline layout.")
+    ESP_ASSERT(m_color_attachment_formats.size() != 0, "You cannot create a pipeline  without color attachments.");
 
     VkPipelineShaderStageCreateInfo shader_stages[] = { m_vertex_shader_info, m_fragment_shader_info };
 
@@ -220,13 +237,17 @@ namespace esp
     }
 
     VkPipelineDepthStencilStateCreateInfo depth_stencil{};
+    VkPipelineDepthStencilStateCreateInfo* p_depth_stencil = nullptr;
+    if (m_depth_test.m_enable)
     {
       depth_stencil.sType                 = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
       depth_stencil.depthTestEnable       = VK_TRUE;
       depth_stencil.depthWriteEnable      = VK_TRUE;
-      depth_stencil.depthCompareOp        = VK_COMPARE_OP_LESS;
+      depth_stencil.depthCompareOp        = static_cast<VkCompareOp>(m_depth_test.m_compare_op);
       depth_stencil.depthBoundsTestEnable = VK_FALSE;
       depth_stencil.stencilTestEnable     = VK_FALSE;
+
+      p_depth_stencil = &depth_stencil;
     }
 
     VkPipelineColorBlendStateCreateInfo color_blending{};
@@ -258,8 +279,12 @@ namespace esp
     VkPipelineRenderingCreateInfoKHR pipeline_rendering_create_info{};
     {
       pipeline_rendering_create_info.sType                   = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO_KHR;
-      pipeline_rendering_create_info.colorAttachmentCount    = 1;
-      pipeline_rendering_create_info.pColorAttachmentFormats = VulkanSwapChain::get_swap_chain_image_format();
+      pipeline_rendering_create_info.colorAttachmentCount    = static_cast<uint32_t>(m_color_attachment_formats.size());
+      pipeline_rendering_create_info.pColorAttachmentFormats = m_color_attachment_formats.data();
+      if (m_depth_test.m_enable)
+      {
+        pipeline_rendering_create_info.depthAttachmentFormat = static_cast<VkFormat>(m_depth_test.m_format);
+      }
     }
 
     /* ----- GRAPHICS PIPELINE CREATE INFO ------ */
@@ -274,7 +299,7 @@ namespace esp
     pipeline_info.pViewportState      = &viewport_state;
     pipeline_info.pRasterizationState = &rasterizer;
     pipeline_info.pMultisampleState   = &multisampling;
-    pipeline_info.pDepthStencilState  = &depth_stencil;
+    pipeline_info.pDepthStencilState  = p_depth_stencil;
     pipeline_info.pColorBlendState    = &color_blending;
     pipeline_info.pDynamicState       = &dynamic_state;
     pipeline_info.layout              = m_pipeline_layout;

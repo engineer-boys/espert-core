@@ -23,6 +23,9 @@ namespace esp
     };
 
     std::vector<VulkanBlockBuffer> m_buffers;
+    // TODO: i am not sure if it should be const. Maybe m_buffers.size() should be
+    // equal to number of images in swap chain. CHECK IT!
+    const uint32_t m_image_index = 0;
 
     /* -------------------------- METHODS ---------------------------------- */
    public:
@@ -32,9 +35,9 @@ namespace esp
     VulkanBlock(const VulkanBlock&)            = delete;
     VulkanBlock& operator=(const VulkanBlock&) = delete;
 
-    inline VkImage get_image() const { return m_buffers[0].m_image; }
-    inline VkImageView get_image_view() const { return m_buffers[0].m_image_view; }
-    inline VkDeviceMemory get_image_memory() const { return m_buffers[0].m_image_memory; }
+    inline VkImage get_image() const { return m_buffers[m_image_index].m_image; }
+    inline VkImageView get_image_view() const { return m_buffers[m_image_index].m_image_view; }
+    inline VkDeviceMemory get_image_memory() const { return m_buffers[m_image_index].m_image_memory; }
   };
 } // namespace esp
 

@@ -1,11 +1,37 @@
 #include "VulkanDepthBlock.hh"
 
+#include "Platform/Vulkan/VulkanDevice.hh"
+#include "Platform/Vulkan/VulkanResourceManager.hh"
+
 namespace esp
 {
-  VulkanDepthBlock::VulkanDepthBlock(uint32_t width, uint32_t height, glm::vec3 clear_color) :
-      EspDepthBlock(width, height, clear_color)
+  VulkanDepthBlock::VulkanDepthBlock(EspDepthBlockFormat format, uint32_t width, uint32_t height) :
+      EspDepthBlock(format, width, height)
   {
+    VulkanResourceManager::create_image(m_width,
+                                        m_height,
+                                        1,
+                                        VK_SAMPLE_COUNT_1_BIT,
+                                        static_cast<VkFormat>(m_format),
+                                        VK_IMAGE_TILING_OPTIMAL,
+                                        VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+                                        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                                        m_image,
+                                        m_image_memory);
+
+    m_image_view = VulkanResourceManager::create_image_view(m_image,
+                                                            static_cast<VkFormat>(m_format),
+                                                            VK_IMAGE_ASPECT_DEPTH_BIT,
+                                                            1);
+
+    m_need_layout_transition = true;
   }
 
-  VulkanDepthBlock::~VulkanDepthBlock() {}
+  VulkanDepthBlock::~VulkanDepthBlock()
+  {
+    vkDestroyImageView(VulkanDevice::get_logical_device(), m_image_view, nullptr);
+
+    vkDestroyImage(VulkanDevice::get_logical_device(), m_image, nullptr);
+    vkFreeMemory(VulkanDevice::get_logical_device(), m_image_memory, nullptr);
+  }
 } // namespace esp

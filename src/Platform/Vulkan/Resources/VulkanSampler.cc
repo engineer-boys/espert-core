@@ -27,7 +27,7 @@ namespace esp
     sampler_info.compareOp               = VK_COMPARE_OP_ALWAYS;
     sampler_info.mipmapMode              = VK_SAMPLER_MIPMAP_MODE_LINEAR;
     sampler_info.mipLodBias              = 0.0f;
-    sampler_info.minLod                  = 0.0f;
+    sampler_info.minLod                  = 0;
     sampler_info.maxLod                  = static_cast<float>(mip_levels);
 
     if (vkCreateSampler(VulkanDevice::get_logical_device(), &sampler_info, nullptr, &m_sampler) != VK_SUCCESS)

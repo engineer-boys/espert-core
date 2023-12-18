@@ -72,6 +72,58 @@ namespace esp
     {
       return s_instance->m_command_buffers[s_instance->m_swap_chain->m_current_frame];
     }
+
+    inline static void insert_image_memory_barrier(VkCommandBuffer cmdbuffer,
+                                                   VkImage image,
+                                                   VkAccessFlags srcAccessMask,
+                                                   VkAccessFlags dstAccessMask,
+                                                   VkImageLayout oldImageLayout,
+                                                   VkImageLayout newImageLayout,
+                                                   VkPipelineStageFlags srcStageMask,
+                                                   VkPipelineStageFlags dstStageMask,
+                                                   VkImageSubresourceRange subresourceRange)
+    {
+      VkImageMemoryBarrier image_memory_barrier_info = {};
+      image_memory_barrier_info.sType                = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+      image_memory_barrier_info.srcAccessMask        = srcAccessMask;
+      image_memory_barrier_info.dstAccessMask        = dstAccessMask;
+      image_memory_barrier_info.oldLayout            = oldImageLayout;
+      image_memory_barrier_info.newLayout            = newImageLayout;
+      image_memory_barrier_info.image                = image;
+      image_memory_barrier_info.subresourceRange     = subresourceRange;
+
+      vkCmdPipelineBarrier(cmdbuffer,
+                           srcStageMask,
+                           dstStageMask,
+                           0,
+                           0,
+                           nullptr,
+                           0,
+                           nullptr,
+                           1,
+                           &image_memory_barrier_info);
+    }
+
+    inline static void insert_image_memory_barrier_to_current_cmdbuffer(VkImage image,
+                                                                        VkAccessFlags srcAccessMask,
+                                                                        VkAccessFlags dstAccessMask,
+                                                                        VkImageLayout oldImageLayout,
+                                                                        VkImageLayout newImageLayout,
+                                                                        VkPipelineStageFlags srcStageMask,
+                                                                        VkPipelineStageFlags dstStageMask,
+                                                                        VkImageSubresourceRange subresourceRange)
+    {
+      insert_image_memory_barrier(get_current_command_buffer(),
+                                  image,
+                                  srcAccessMask,
+                                  dstAccessMask,
+                                  oldImageLayout,
+                                  newImageLayout,
+                                  srcStageMask,
+                                  dstStageMask,
+                                  subresourceRange);
+    }
+
     inline static void begin_rendering(const VkRenderingInfo* info)
     {
       s_instance->vkCmdbeginRenderingKHR(s_instance->m_command_buffers[s_instance->m_swap_chain->m_current_frame],
