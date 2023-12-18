@@ -165,6 +165,32 @@ namespace esp
     return image_view;
   }
 
+  VkImageView VulkanResourceManager::create_cubemap_image_view(VkImage image,
+                                                               VkFormat format,
+                                                               VkImageAspectFlags aspect_flags,
+                                                               uint32_t mip_levels)
+  {
+    VkImageViewCreateInfo view_info{};
+    view_info.sType                           = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+    view_info.image                           = image;
+    view_info.viewType                        = VK_IMAGE_VIEW_TYPE_CUBE;
+    view_info.format                          = format;
+    view_info.subresourceRange.aspectMask     = aspect_flags;
+    view_info.subresourceRange.baseMipLevel   = 0;
+    view_info.subresourceRange.levelCount     = mip_levels;
+    view_info.subresourceRange.baseArrayLayer = 0;
+    view_info.subresourceRange.layerCount     = 6;
+
+    VkImageView image_view;
+    if (vkCreateImageView(VulkanDevice::get_logical_device(), &view_info, nullptr, &image_view) != VK_SUCCESS)
+    {
+      ESP_CORE_ERROR("Failed to create image view");
+      throw std::runtime_error("Failed to create image view");
+    }
+
+    return image_view;
+  }
+
   void VulkanResourceManager::create_texture_image(uint32_t width,
                                                    uint32_t height,
                                                    const void* pixels,
@@ -202,6 +228,50 @@ namespace esp
     copy_buffer_to_image(staging_buffer.get_buffer(), texture_image, width, height, 1);
 
     generate_mipmaps(texture_image, VK_FORMAT_R8G8B8A8_SRGB, width, height, mip_levels);
+  }
+
+  void VulkanResourceManager::create_cubemap_image(uint32_t width,
+                                                   uint32_t height,
+                                                   const void* pixels[6],
+                                                   uint32_t mip_levels,
+                                                   VkImage& cubemap_image,
+                                                   VkDeviceMemory& cubemap_image_memory)
+  {
+    VkDeviceSize layer_size = width * height * 4;
+    VkDeviceSize image_size = layer_size * 6;
+
+    VulkanBuffer staging_buffer{ image_size,
+                                 1,
+                                 VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+                                 VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT };
+
+    staging_buffer.map();
+
+    for (int i = 0; i < 6; ++i)
+    {
+      staging_buffer.write_to_buffer(pixels[i], layer_size, i * layer_size);
+    }
+
+    create_image(width,
+                 height,
+                 mip_levels,
+                 VK_SAMPLE_COUNT_1_BIT,
+                 VK_FORMAT_R8G8B8A8_SRGB,
+                 VK_IMAGE_TILING_OPTIMAL,
+                 VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+                 VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                 cubemap_image,
+                 cubemap_image_memory);
+
+    transition_image_layout(cubemap_image,
+                            VK_FORMAT_R8G8B8A8_SRGB,
+                            VK_IMAGE_LAYOUT_UNDEFINED,
+                            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                            mip_levels);
+
+    copy_buffer_to_image(staging_buffer.get_buffer(), cubemap_image, width, height, 6);
+
+    generate_mipmaps(cubemap_image, VK_FORMAT_R8G8B8A8_SRGB, width, height, mip_levels);
   }
 
   void VulkanResourceManager::transition_image_layout(VkImage image,

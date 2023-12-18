@@ -3,6 +3,7 @@
 
 #include "esppch.hh"
 
+#include "Core/RenderAPI/Resources/EspCubemapFace.hh"
 #include "Core/RenderAPI/Resources/EspShaderStage.hh"
 #include "Core/Resources/ResourceUtils.hh"
 
@@ -148,6 +149,27 @@ namespace esp
   struct SpirvResourceParams : public ResourceParams
   {
     EspShaderStageFlags shader_stage = EspShaderStage::VERTEX | EspShaderStage::FRAGMENT;
+  };
+
+  using FaceResourceMap = std::unordered_map<EspCubemapFace, std::unique_ptr<ImageResource>>;
+
+  class CubemapResource : public Resource
+  {
+   public:
+    CubemapResource(const fs::path& path, FaceResourceMap face_resource_map) :
+        Resource(path), m_face_resource_map(std::move(face_resource_map))
+    {
+    }
+
+    inline const ImageResource& get_face(EspCubemapFace face) { return *(m_face_resource_map.at(face)); }
+    PREVENT_COPY(CubemapResource);
+
+   private:
+    FaceResourceMap m_face_resource_map;
+  };
+
+  struct CubemapResourceParams : public ImageResourceParams
+  {
   };
 
 } // namespace esp
