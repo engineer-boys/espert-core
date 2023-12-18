@@ -3,6 +3,8 @@
 
 #include "esppch.hh"
 
+#include "Core/RenderAPI/PipelineOrdering/Block/Types/EspDepthBlockFormat.hh"
+
 // std
 #include <vector>
 
@@ -12,23 +14,24 @@ namespace esp
   {
     /* -------------------------- FIELDS ----------------------------------- */
    protected:
+    EspDepthBlockFormat m_format;
+
     uint32_t m_width;
     uint32_t m_height;
 
-    glm::vec3 m_clear_color;
-
     /* -------------------------- METHODS ---------------------------------- */
    public:
-    EspDepthBlock(uint32_t width, uint32_t height, glm::vec3 clear_color);
+    EspDepthBlock(EspDepthBlockFormat format, uint32_t width, uint32_t height);
     virtual ~EspDepthBlock() {}
+
+    virtual void clear() = 0;
 
     virtual uint32_t get_width() const { return m_width; }
     virtual uint32_t get_height() const { return m_height; }
-    virtual glm::vec3 get_clear_color() const { return m_clear_color; }
 
     /* -------------------------- METHODS STATIC --------------------------- */
    public:
-    static std::unique_ptr<EspDepthBlock> build(uint32_t width, uint32_t height, glm::vec3 clear_color);
+    static std::unique_ptr<EspDepthBlock> build(EspDepthBlockFormat format);
   };
 
 } // namespace esp
