@@ -42,7 +42,7 @@ namespace esp
 
     // TODO: set flag for not resizable
     // Now resiable is always true
-    if (m_data->m_resizable) { glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); }
+    if (m_data->m_resizable) { glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); }
 
     m_window = glfwCreateWindow(m_data->m_width, m_data->m_height, m_data->m_title.c_str(), nullptr, nullptr);
     if (m_window == NULL)
