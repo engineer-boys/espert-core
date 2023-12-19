@@ -1,24 +1,24 @@
-#include "VulkanProductPlan.hh"
+#include "VulkanRenderPlan.hh"
 
 #include "Platform/Vulkan/Work/VulkanWorkOrchestrator.hh"
 
 namespace esp
 {
-  VulkanProductPlan::VulkanProductPlan() {}
+  VulkanRenderPlan::VulkanRenderPlan() {}
 
-  VulkanProductPlan::~VulkanProductPlan() {}
+  VulkanRenderPlan::~VulkanRenderPlan() {}
 
-  void VulkanProductPlan::add_block(std::shared_ptr<EspBlock> block)
+  void VulkanRenderPlan::add_block(std::shared_ptr<EspBlock> block)
   {
     m_blocks.push_back(std::static_pointer_cast<VulkanBlock>(block));
   }
 
-  void VulkanProductPlan::add_depth_block(std::shared_ptr<EspDepthBlock> depth_block)
+  void VulkanRenderPlan::add_depth_block(std::shared_ptr<EspDepthBlock> depth_block)
   {
     m_depth_block = std::static_pointer_cast<VulkanDepthBlock>(depth_block);
   }
 
-  void VulkanProductPlan::begin_plan()
+  void VulkanRenderPlan::begin_plan()
   {
     // TODO: these structures shouldn't be here. There should be created and init in constructor.
     // TODO: add recreate_because_resize_windows() fuction to recreate these structures (this should be done after
@@ -127,7 +127,7 @@ namespace esp
     // start recording commands (vkCmd).....
   }
 
-  void VulkanProductPlan::end_plan()
+  void VulkanRenderPlan::end_plan()
   {
     // end recording commands (vkCmd).....
 

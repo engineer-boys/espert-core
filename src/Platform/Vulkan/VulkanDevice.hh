@@ -50,7 +50,7 @@ namespace esp
 
     VkSampleCountFlagBits get_max_usable_sample_count();
 
-    /* -------------------------- METHODS STATIC --------------------------- */
+    /* -------------------------- STATIC METHODS --------------------------- */
    public:
     static std::unique_ptr<VulkanDevice> create(VulkanContextData* context_data);
 

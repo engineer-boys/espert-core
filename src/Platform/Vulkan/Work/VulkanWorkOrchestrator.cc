@@ -60,19 +60,8 @@ namespace esp
                     std::numeric_limits<uint64_t>::max());
     vkResetFences(VulkanDevice::get_logical_device(), 1, &m_in_flight_fences[current_frame]);
 
-    auto result = m_swap_chain->acquire_next_image(m_image_available_semaphores);
-    {
-      if (result == VK_ERROR_OUT_OF_DATE_KHR)
-      {
-        m_swap_chain->resize();
-        return;
-      }
-      else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR)
-      {
-        throw std::runtime_error("Failed to acquire swap chain image!");
-      }
-    }
-
+    ESP_ASSERT(m_swap_chain->acquire_next_image(m_image_available_semaphores) == VK_SUCCESS,
+               "Failed to acquire swap chain image!");
     vkResetCommandBuffer(m_command_buffers[current_frame], /*VkCommandBufferResetFlagBits*/ 0);
 
     VkCommandBufferBeginInfo beginInfo{};
@@ -80,98 +69,11 @@ namespace esp
 
     ESP_ASSERT(vkBeginCommandBuffer(m_command_buffers[current_frame], &beginInfo) == VK_SUCCESS,
                "Failed to begin recording command buffer!");
-
-    // // transition color and depth images for drawing
-    // {
-    //   // color attachement
-    //   const VkImageMemoryBarrier image_memory_barrier{ .sType            = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-    //                                                    .dstAccessMask    = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-    //                                                    .oldLayout        = VK_IMAGE_LAYOUT_UNDEFINED,
-    //                                                    .newLayout        = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-    //                                                    .image            = m_swap_chain->get_current_image(),
-    //                                                    .subresourceRange = {
-    //                                                        .aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT,
-    //                                                        .baseMipLevel   = 0,
-    //                                                        .levelCount     = 1,
-    //                                                        .baseArrayLayer = 0,
-    //                                                        .layerCount     = 1,
-    //                                                    } };
-
-    //   vkCmdPipelineBarrier(m_command_buffers[current_frame],
-    //                        VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,             // srcStageMask
-    //                        VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, // dstStageMask
-    //                        0,
-    //                        0,
-    //                        nullptr,
-    //                        0,
-    //                        nullptr,
-    //                        1,                    // imageMemoryBarrierCount
-    //                        &image_memory_barrier // pImageMemoryBarriers
-    //   );
-
-    //   // depth attachement
-    //   // ...
-    // }
-
-    // VkRenderingAttachmentInfoKHR color_attachment_info = {};
-    // color_attachment_info.sType                        = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_INFO_KHR;
-    // color_attachment_info.imageView                    = m_swap_chain->get_current_image_view();
-    // color_attachment_info.imageLayout                  = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-    // color_attachment_info.loadOp                       = VK_ATTACHMENT_LOAD_OP_CLEAR;
-    // color_attachment_info.storeOp                      = VK_ATTACHMENT_STORE_OP_STORE;
-    // color_attachment_info.clearValue.color             = { 0.0f, 5.0f, 5.0f, 0.0f };
-
-    // VkRenderingInfoKHR rendering_info   = {};
-    // rendering_info.sType                = VK_STRUCTURE_TYPE_RENDERING_INFO_KHR;
-    // rendering_info.renderArea           = { 0,
-    //                                         0,
-    //                                         m_swap_chain->m_swap_chain_extent.width,
-    //                                         m_swap_chain->m_swap_chain_extent.height };
-    // rendering_info.layerCount           = 1;
-    // rendering_info.colorAttachmentCount = 1;
-    // rendering_info.pColorAttachments    = &color_attachment_info;
-    // // rendering_info.pDepthAttachment     = &depthStencilAttachment;
-    // // rendering_info.pStencilAttachment   = &depthStencilAttachment;
-
-    // this->vkCmdbeginRenderingKHR(m_command_buffers[current_frame], &rendering_info);
-
-    // // start recording commands (vkCmd).....
   }
 
   void VulkanWorkOrchestrator::end_frame()
   {
-    // // end recording commands (vkCmd).....
-
     auto current_frame = m_swap_chain->m_current_frame;
-    // this->vkCmdEndRenderingKHR(m_command_buffers[current_frame]);
-
-    // // transition color image to presentation
-
-    // const VkImageMemoryBarrier image_memory_barrier{ .sType            = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
-    //                                                  .srcAccessMask    = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT,
-    //                                                  .oldLayout        = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,
-    //                                                  .newLayout        = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-    //                                                  .image            = m_swap_chain->get_current_image(),
-    //                                                  .subresourceRange = {
-    //                                                      .aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT,
-    //                                                      .baseMipLevel   = 0,
-    //                                                      .levelCount     = 1,
-    //                                                      .baseArrayLayer = 0,
-    //                                                      .layerCount     = 1,
-    //                                                  } };
-
-    // vkCmdPipelineBarrier(m_command_buffers[current_frame],
-    //                      VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, // srcStageMask
-    //                      VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,          // dstStageMask
-    //                      0,
-    //                      0,
-    //                      nullptr,
-    //                      0,
-    //                      nullptr,
-    //                      1,                    // imageMemoryBarrierCount
-    //                      &image_memory_barrier // pImageMemoryBarriers
-    // );
-
     ESP_ASSERT(vkEndCommandBuffer(m_command_buffers[current_frame]) == VK_SUCCESS, "Failed to record command buffer!");
 
     VkSubmitInfo submitInfo{};
@@ -207,20 +109,10 @@ namespace esp
 
     presentInfo.pImageIndices = &m_swap_chain->m_image_index;
 
-    auto result = vkQueuePresentKHR(data_context.m_present_queue, &presentInfo);
-    {
-      if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || m_swap_chain_resize)
-      {
-        m_swap_chain_resize = false;
-        m_swap_chain->resize();
-      }
-      else if (result != VK_SUCCESS) { throw std::runtime_error("Failed to present swap chain image!"); }
-    }
-
+    ESP_ASSERT(vkQueuePresentKHR(data_context.m_present_queue, &presentInfo) == VK_SUCCESS,
+               "Failed to present swap chain image!");
     m_swap_chain->go_to_next_frame();
   }
-
-  void VulkanWorkOrchestrator::on_window_resized(WindowResizedEvent& e) { m_swap_chain_resize = true; }
 
   void VulkanWorkOrchestrator::create_command_pool()
   {
