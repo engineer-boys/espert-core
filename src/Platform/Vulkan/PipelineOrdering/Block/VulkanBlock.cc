@@ -2,7 +2,7 @@
 #include "Platform/Vulkan/VulkanDevice.hh"
 #include "Platform/Vulkan/VulkanResourceManager.hh"
 
-/* VulkanProductPlan is implemented under constraint this define is equal to 1 */
+/* VulkanRenderPlan is implemented under constraint this define is equal to 1 */
 #define NUMBER_OF_BLOCK_BUFFER_IN_BLOCK 1
 
 namespace esp

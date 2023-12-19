@@ -5,23 +5,23 @@
 #include "volk.h"
 
 // Render API
-#include "Core/RenderAPI/Work/EspJobs.hh"
+#include "Core/RenderAPI/Work/EspJob.hh"
 
 namespace esp
 {
-  class VulkanJobs : public EspJobs
+  class VulkanJob : public EspJob
   {
     /* -------------------------- FIELDS ----------------------------------- */
    private:
-    static VulkanJobs* s_instance;
+    static VulkanJob* s_instance;
 
     /* -------------------------- METHODS ---------------------------------- */
    public:
-    VulkanJobs();
-    virtual ~VulkanJobs();
+    VulkanJob();
+    virtual ~VulkanJob();
 
-    VulkanJobs(const VulkanJobs& other)            = delete;
-    VulkanJobs& operator=(const VulkanJobs& other) = delete;
+    VulkanJob(const VulkanJob& other)            = delete;
+    VulkanJob& operator=(const VulkanJob& other) = delete;
 
     virtual void init() override;
     virtual void terminate() override;
@@ -29,7 +29,7 @@ namespace esp
 
     /* -------------------------- PUBLIC METHODS --------------------------- */
    public:
-    static std::unique_ptr<VulkanJobs> create();
+    static std::unique_ptr<VulkanJob> create();
 
     static void draw(uint32_t vertex_count);
     static void draw(uint32_t vertex_count, uint32_t instance_count);

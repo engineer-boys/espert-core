@@ -9,14 +9,14 @@
 #include "Platform/Vulkan/PipelineOrdering/Block/VulkanDepthBlock.hh"
 
 // Render API
-#include "Core/RenderAPI/PipelineOrdering/EspProductPlan.hh"
+#include "Core/RenderAPI/PipelineOrdering/EspRenderPlan.hh"
 
 // std
 #include <vector>
 
 namespace esp
 {
-  class VulkanFinalProductPlan : public EspProductPlan
+  class VulkanFinalRenderPlan : public EspRenderPlan
   {
     /* -------------------------- FIELDS ----------------------------------- */
    private:
@@ -37,11 +37,11 @@ namespace esp
 
     /* -------------------------- METHODS ---------------------------------- */
    public:
-    VulkanFinalProductPlan();
-    virtual ~VulkanFinalProductPlan();
+    VulkanFinalRenderPlan();
+    virtual ~VulkanFinalRenderPlan();
 
-    VulkanFinalProductPlan(const VulkanFinalProductPlan& other)            = delete;
-    VulkanFinalProductPlan& operator=(const VulkanFinalProductPlan& other) = delete;
+    VulkanFinalRenderPlan(const VulkanFinalRenderPlan& other)            = delete;
+    VulkanFinalRenderPlan& operator=(const VulkanFinalRenderPlan& other) = delete;
 
     void enable_resolve_block(EspSampleCountFlag sample_count_flag);
 

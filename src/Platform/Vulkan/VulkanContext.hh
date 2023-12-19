@@ -45,7 +45,7 @@ namespace esp
     void init(EspWindow& window) override;
     void terminate() override;
 
-    /* -------------------------- METHODS STATIC --------------------------- */
+    /* -------------------------- STATIC METHODS --------------------------- */
    public:
     static std::unique_ptr<VulkanContext> create(EspWindow& window);
 

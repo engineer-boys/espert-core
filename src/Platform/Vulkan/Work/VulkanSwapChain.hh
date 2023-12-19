@@ -61,7 +61,6 @@ namespace esp
 
     void init();
     void terminate();
-    void resize();
 
     inline VkResult acquire_next_image(std::vector<VkSemaphore>& image_available_semaphores)
     {
@@ -76,7 +75,7 @@ namespace esp
 
     inline void go_to_next_frame() { m_current_frame = (m_current_frame + 1) % MAX_FRAMES_IN_FLIGHT; }
 
-    /* -------------------------- METHODS STATIC --------------------------- */
+    /* -------------------------- STATIC METHODS --------------------------- */
    public:
     inline static VkImage get_current_image()
     {

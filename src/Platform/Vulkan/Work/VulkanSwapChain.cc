@@ -58,8 +58,6 @@ namespace esp
     VulkanSwapChain::s_instance = nullptr;
   }
 
-  void VulkanSwapChain::resize() {}
-
   void VulkanSwapChain::create_swap_chain(VkSwapchainKHR old_swap_chain)
   {
     auto& context_data = VulkanContext::get_context_data();
@@ -202,7 +200,7 @@ static VkPresentModeKHR choose_swap_chain_present_mode(const std::vector<VkPrese
   }*/
 
   // log_chosen_swap_chain_present_mode("V-Sync");
-  return VK_PRESENT_MODE_FIFO_KHR;
+  return VK_PRESENT_MODE_IMMEDIATE_KHR;
 }
 
 static VkExtent2D choose_swap_chain_extent(const VkSurfaceCapabilitiesKHR& capabilities)

@@ -6,7 +6,7 @@
 
 // Render API
 #include "Core/RenderAPI/Work/EspWorkOrchestrator.hh"
-#include "VulkanJobs.hh"
+#include "VulkanJob.hh"
 #include "VulkanSwapChain.hh"
 
 namespace esp
@@ -25,7 +25,6 @@ namespace esp
     std::vector<VkFence> m_in_flight_fences;
 
     std::unique_ptr<VulkanSwapChain> m_swap_chain;
-    bool m_swap_chain_resize = false;
 
     PFN_vkCmdBeginRenderingKHR vkCmdbeginRenderingKHR;
     PFN_vkCmdEndRenderingKHR vkCmdEndRenderingKHR;
@@ -50,9 +49,7 @@ namespace esp
     virtual void begin_frame() override;
     virtual void end_frame() override;
 
-    virtual void on_window_resized(WindowResizedEvent& e) override;
-
-    /* -------------------------- METHODS STATIC --------------------------- */
+    /* -------------------------- STATIC METHODS --------------------------- */
    public:
     static std::unique_ptr<VulkanWorkOrchestrator> create();
 

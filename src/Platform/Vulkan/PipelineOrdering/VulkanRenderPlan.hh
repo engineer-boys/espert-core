@@ -5,7 +5,7 @@
 #include "esppch.hh"
 
 // Render API
-#include "Core/RenderAPI/PipelineOrdering/EspProductPlan.hh"
+#include "Core/RenderAPI/PipelineOrdering/EspRenderPlan.hh"
 #include "Platform/Vulkan/PipelineOrdering/Block/VulkanDepthBlock.hh"
 
 // Render API Vulkan
@@ -16,7 +16,7 @@
 
 namespace esp
 {
-  class VulkanProductPlan : public EspProductPlan
+  class VulkanRenderPlan : public EspRenderPlan
   {
     /* -------------------------- FIELDS ----------------------------------- */
    private:
@@ -25,11 +25,11 @@ namespace esp
 
     /* -------------------------- METHODS ---------------------------------- */
    public:
-    VulkanProductPlan();
-    virtual ~VulkanProductPlan();
+    VulkanRenderPlan();
+    virtual ~VulkanRenderPlan();
 
-    VulkanProductPlan(const VulkanProductPlan& other)            = delete;
-    VulkanProductPlan& operator=(const VulkanProductPlan& other) = delete;
+    VulkanRenderPlan(const VulkanRenderPlan& other)            = delete;
+    VulkanRenderPlan& operator=(const VulkanRenderPlan& other) = delete;
 
     virtual void add_block(std::shared_ptr<EspBlock> block) override;
     virtual void add_depth_block(std::shared_ptr<EspDepthBlock> depth_block) override;

@@ -1,11 +1,11 @@
-#include "VulkanFinalProductPlan.hh"
+#include "VulkanFinalRenderPlan.hh"
 
 #include "Platform/Vulkan/Work/VulkanSwapChain.hh"
 #include "Platform/Vulkan/Work/VulkanWorkOrchestrator.hh"
 
 namespace esp
 {
-  void VulkanFinalProductPlan::VulkanColorBuffer::terminate()
+  void VulkanFinalRenderPlan::VulkanColorBuffer::terminate()
   {
     vkDestroyImageView(VulkanDevice::get_logical_device(), m_image_view, nullptr);
 
@@ -16,14 +16,14 @@ namespace esp
 
 namespace esp
 {
-  VulkanFinalProductPlan::VulkanFinalProductPlan() {}
+  VulkanFinalRenderPlan::VulkanFinalRenderPlan() {}
 
-  VulkanFinalProductPlan::~VulkanFinalProductPlan()
+  VulkanFinalRenderPlan::~VulkanFinalRenderPlan()
   {
     if (m_color_buffer.is_enable) { m_color_buffer.terminate(); }
   }
 
-  void VulkanFinalProductPlan::enable_resolve_block(EspSampleCountFlag sample_count_flag)
+  void VulkanFinalRenderPlan::enable_resolve_block(EspSampleCountFlag sample_count_flag)
   {
     auto [width, height]  = VulkanWorkOrchestrator::get_swap_chain_extent();
     EspBlockFormat format = static_cast<EspBlockFormat>(*(VulkanSwapChain::get_swap_chain_image_format()));
@@ -47,12 +47,12 @@ namespace esp
     m_color_buffer.is_enable = true;
   }
 
-  void VulkanFinalProductPlan::add_depth_block(std::shared_ptr<EspDepthBlock> depth_block)
+  void VulkanFinalRenderPlan::add_depth_block(std::shared_ptr<EspDepthBlock> depth_block)
   {
     m_depth_block = std::static_pointer_cast<VulkanDepthBlock>(depth_block);
   }
 
-  void VulkanFinalProductPlan::begin_plan()
+  void VulkanFinalRenderPlan::begin_plan()
   {
     // transition color and depth images for drawing
     {
@@ -160,7 +160,7 @@ namespace esp
     // start recording commands (vkCmd).....
   }
 
-  void VulkanFinalProductPlan::end_plan()
+  void VulkanFinalRenderPlan::end_plan()
   {
     // end recording commands (vkCmd).....
 
