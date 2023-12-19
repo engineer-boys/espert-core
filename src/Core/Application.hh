@@ -12,7 +12,7 @@
 #include "Layers/LayerStack.hh"
 #include "RenderAPI/EspDebugMessenger.hh"
 #include "RenderAPI/EspRenderContext.hh"
-#include "RenderAPI/Work/EspJobs.hh"
+#include "RenderAPI/Work/EspJob.hh"
 #include "RenderAPI/Work/EspWorkOrchestrator.hh"
 #include "Timer.hh"
 
@@ -36,7 +36,7 @@ namespace esp
     struct
     {
       std::unique_ptr<EspRenderContext> m_render_context;
-      std::unique_ptr<EspJobs> m_jobs;
+      std::unique_ptr<EspJob> m_jobs;
       std::unique_ptr<EspWorkOrchestrator> m_work_orchestrator;
 
       void terminate()
@@ -53,7 +53,6 @@ namespace esp
 
     /* -------------------------- METHODS ---------------------------------- */
    private:
-    bool on_window_resized(WindowResizedEvent& e);
     bool on_window_closed(WindowClosedEvent& e);
 
     void add_application_layers();

@@ -5,15 +5,15 @@
 
 namespace esp
 {
-  class EspJobs
+  class EspJob
   {
     /* -------------------------- METHODS ---------------------------------- */
    public:
-    EspJobs()          = default;
-    virtual ~EspJobs() = default;
+    EspJob()          = default;
+    virtual ~EspJob() = default;
 
-    EspJobs(const EspJobs& other)            = delete;
-    EspJobs& operator=(const EspJobs& other) = delete;
+    EspJob(const EspJob& other)            = delete;
+    EspJob& operator=(const EspJob& other) = delete;
 
     virtual void init()          = 0;
     virtual void terminate()     = 0;
@@ -24,9 +24,9 @@ namespace esp
     static void draw_indexed(uint32_t index_count);
     static void draw_indexed(uint32_t index_count, uint32_t instance_count);
 
-    /* -------------------------- METHODS STATIC --------------------------- */
+    /* -------------------------- STATIC METHODS --------------------------- */
    public:
-    static std::unique_ptr<EspJobs> build();
+    static std::unique_ptr<EspJob> build();
   };
 } // namespace esp
 

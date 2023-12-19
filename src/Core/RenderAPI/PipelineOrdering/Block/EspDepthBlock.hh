@@ -32,7 +32,7 @@ namespace esp
     virtual inline uint32_t get_height() const { return m_height; }
     virtual inline EspSampleCountFlag get_sample_count_flag() { return m_sample_count_flag; }
 
-    /* -------------------------- METHODS STATIC --------------------------- */
+    /* -------------------------- STATIC METHODS --------------------------- */
    public:
     static std::unique_ptr<EspDepthBlock> build(EspDepthBlockFormat format, EspSampleCountFlag sample_count_flag);
   };

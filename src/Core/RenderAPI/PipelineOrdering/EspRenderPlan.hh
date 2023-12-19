@@ -9,11 +9,11 @@
 
 namespace esp
 {
-  class EspProductPlan
+  class EspRenderPlan
   {
     /* -------------------------- METHODS ---------------------------------- */
    public:
-    virtual ~EspProductPlan() {}
+    virtual ~EspRenderPlan() {}
 
     virtual void add_block(std::shared_ptr<EspBlock> block)                  = 0;
     virtual void add_depth_block(std::shared_ptr<EspDepthBlock> depth_block) = 0;
@@ -22,10 +22,10 @@ namespace esp
 
     virtual void end_plan() = 0;
 
-    /* -------------------------- METHODS STATIC --------------------------- */
+    /* -------------------------- STATIC METHODS --------------------------- */
    public:
-    static std::unique_ptr<EspProductPlan> build();
-    static std::unique_ptr<EspProductPlan> build_final(
+    static std::unique_ptr<EspRenderPlan> build();
+    static std::unique_ptr<EspRenderPlan> build_final(
         EspSampleCountFlag sample_count_flag = EspSampleCountFlag::ESP_SAMPLE_COUNT_1_BIT);
   };
 } // namespace esp

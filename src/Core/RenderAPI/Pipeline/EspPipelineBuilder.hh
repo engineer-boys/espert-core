@@ -55,7 +55,7 @@ namespace esp
 
     virtual std::unique_ptr<EspWorker> build_worker() = 0;
 
-    /* -------------------------- METHODS STATIC --------------------------- */
+    /* -------------------------- STATIC METHODS --------------------------- */
    public:
     static std::unique_ptr<EspWorkerBuilder> create();
   };

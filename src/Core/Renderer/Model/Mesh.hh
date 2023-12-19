@@ -8,7 +8,7 @@
 #include "Core/RenderAPI/Resources/EspIndexBuffer.hh"
 #include "Core/RenderAPI/Resources/EspTexture.hh"
 #include "Core/RenderAPI/Resources/EspVertexBuffer.hh"
-#include "Core/RenderAPI/Work/EspJobs.hh"
+#include "Core/RenderAPI/Work/EspJob.hh"
 
 #include "Core/Resources/Systems/MaterialSystem.hh"
 
