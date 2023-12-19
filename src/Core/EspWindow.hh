@@ -23,7 +23,6 @@ namespace esp
       unsigned int m_height;
       EventManagerFun m_events_manager_fun;
 
-      const bool m_resizable      = true;
       const bool m_disable_cursor = false;
 
       WindowData(const std::string title, unsigned int width, unsigned int height) :
@@ -58,14 +57,13 @@ namespace esp
 
     inline unsigned int get_width() { return m_data->m_width; }
     inline unsigned int get_height() { return m_data->m_height; }
-    inline bool is_resizable() { return m_data->m_resizable; }
 
     inline void set_events_manager_fun(const WindowData::EventManagerFun& callback)
     {
       m_data->m_events_manager_fun = callback;
     }
 
-    /* -------------------------- METHODS STATIC --------------------------- */
+    /* -------------------------- STATIC METHODS --------------------------- */
    public:
     static std::unique_ptr<EspWindow> create(WindowData* data);
 

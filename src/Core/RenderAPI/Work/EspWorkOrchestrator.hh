@@ -24,12 +24,10 @@ namespace esp
     virtual void begin_frame() = 0;
     virtual void end_frame()   = 0;
 
-    virtual void on_window_resized(WindowResizedEvent& e) = 0;
-
     static std::pair<uint32_t, uint32_t> get_swap_chain_extent();
     static float get_swap_chain_extent_aspect_ratio();
 
-    /* -------------------------- METHODS STATIC --------------------------- */
+    /* -------------------------- STATIC METHODS --------------------------- */
    public:
     static std::unique_ptr<EspWorkOrchestrator> build();
   };

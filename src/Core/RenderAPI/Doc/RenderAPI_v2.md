@@ -68,17 +68,17 @@ class EspProductPlanBuilder:
     def set_building_blocks(blocks: list[EspBlock]) -> None:
         # Set attachements for the render pass.
 
-    def build_product_plan() -> EspProductPlan:
-        # Create EspProductPlan based on specified data.
+    def build_product_plan() -> EspRenderPlan:
+        # Create EspRenderPlan based on specified data.
         # The rendering process is off-screen.
 
-    def build_final_product_plan() -> (EspProductPlan, list[EspBlock]):
-        # Create EspProductPlan and products (list[EspBlock]). 
+    def build_final_product_plan() -> (EspRenderPlan, list[EspBlock]):
+        # Create EspRenderPlan and products (list[EspBlock]). 
         # The rendering process is on-screen.
 ```
 
 ```Python
-class EspProductPlan:
+class EspRenderPlan:
   def __init__():
       # The constructor is the private method.
   

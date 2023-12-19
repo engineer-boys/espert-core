@@ -18,14 +18,13 @@ namespace esp
     m_debug_messenger->init();
 
     m_renderer.m_work_orchestrator = EspWorkOrchestrator::build();
-    m_renderer.m_jobs              = EspJobs::build();
+    m_renderer.m_jobs              = EspJob::build();
 
     // create basic systems
     m_resource_system = ResourceSystem::create(fs::current_path().parent_path() / "resources");
     m_texture_system  = TextureSystem::create();
 
     // create (alloc and init) layer stacks
-
     m_layer_stack = new LayerStack();
   }
 
@@ -76,13 +75,6 @@ namespace esp
 
   void Application::set_context(std::unique_ptr<ApplicationContext> context) { this->m_context = std::move(context); }
 
-  bool Application::on_window_resized(WindowResizedEvent& e)
-  {
-    if (m_window->is_resizable()) { m_renderer.m_work_orchestrator->on_window_resized(e); }
-
-    return true;
-  }
-
   bool Application::on_window_closed(WindowClosedEvent& e)
   {
     m_running = false;
@@ -92,7 +84,6 @@ namespace esp
   void Application::events_manager(Event& e)
   {
     Event::try_handler<WindowClosedEvent>(e, ESP_BIND_EVENT_FOR_FUN(Application::on_window_closed));
-    Event::try_handler<WindowResizedEvent>(e, ESP_BIND_EVENT_FOR_FUN(Application::on_window_resized));
 
     for (auto& iter : *m_layer_stack | std::views::reverse)
     {

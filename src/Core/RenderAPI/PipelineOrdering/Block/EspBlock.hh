@@ -37,7 +37,7 @@ namespace esp
     virtual inline glm::vec3 get_clear_color() const { return m_clear_color; }
     virtual inline EspSampleCountFlag get_sample_count_flag() { return m_sample_count_flag; }
 
-    /* -------------------------- METHODS STATIC --------------------------- */
+    /* -------------------------- STATIC METHODS --------------------------- */
    public:
     static std::shared_ptr<EspBlock> build(EspBlockFormat format,
                                            EspSampleCountFlag sample_count_flag,

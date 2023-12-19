@@ -19,7 +19,7 @@ namespace esp
     virtual void init(EspWindow& window) = 0;
     virtual void terminate()             = 0;
 
-    /* -------------------------- METHODS STATIC --------------------------- */
+    /* -------------------------- STATIC METHODS --------------------------- */
    public:
     static std::unique_ptr<EspRenderContext> build(EspWindow& window);
   };

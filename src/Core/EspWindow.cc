@@ -40,9 +40,9 @@ namespace esp
     glfwSetErrorCallback(glfw_error_callback);
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-    // TODO: set flag for not resizable
-    // Now resiable is always true
-    if (m_data->m_resizable) { glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); }
+    // This is false because resizing all buffers from
+    // all render passing may be inefficient.
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
     m_window = glfwCreateWindow(m_data->m_width, m_data->m_height, m_data->m_title.c_str(), nullptr, nullptr);
     if (m_window == NULL)
