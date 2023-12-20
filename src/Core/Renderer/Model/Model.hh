@@ -7,11 +7,6 @@
 // Render API
 #include "Core/RenderAPI/Work/EspJob.hh"
 
-// assimp
-#include <assimp/Importer.hpp>
-#include <assimp/postprocess.h>
-#include <assimp/scene.h>
-
 namespace esp
 {
   class Model
@@ -27,13 +22,15 @@ namespace esp
     {
       std::vector<std::shared_ptr<Mesh>> m_meshes;
       std::string m_dir;
+      std::shared_ptr<EspShader> m_shader = ShaderSystem::get_default_shader();
 
       Builder& load_model(const std::string& filepath, unsigned int p_flags = EspProcessDefault);
+      Builder& set_shader(std::shared_ptr<EspShader> shader);
 
      private:
       void process_node(aiNode* node, const aiScene* scene);
       void process_mesh(aiMesh* mesh, const aiScene* scene);
-      std::vector<std::shared_ptr<EspTexture>> load_material_textures(aiMaterial* mat, aiTextureType type);
+      std::shared_ptr<EspTexture> load_material_texture(aiMaterial* mat, aiTextureType type);
     };
 
    private:
@@ -43,10 +40,8 @@ namespace esp
     std::unique_ptr<EspVertexBuffer> m_instance_buffer;
 
    public:
-    Model(Builder& builder, EspWorker& pipeline); // TODO: add default pipeline argument when it's ready
-    Model(std::shared_ptr<Mesh> mesh,             //
-          std::vector<std::shared_ptr<EspTexture>> textures,
-          EspWorker& pipeline);
+    Model(Builder& builder);
+    Model(std::shared_ptr<Mesh> mesh);
 
     PREVENT_COPY(Model)
 

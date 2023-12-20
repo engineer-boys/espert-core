@@ -27,6 +27,7 @@
 #define ESP_PI             3.14159265f    // = PI
 #define ESP_EPSILON        0.0001f
 
+#include <functional>
 #include <glm/glm.hpp>
 #include <glm/gtc/epsilon.hpp>
 
@@ -36,6 +37,12 @@ namespace esp
   {
     if (glm::abs(glm::length(v) - 1.0f) < ESP_EPSILON || glm::abs(glm::length(v)) < ESP_EPSILON) return v;
     return glm::normalize(v);
+  }
+
+  template<class T> inline void hash_combine(std::size_t& seed, const T& v)
+  {
+    std::hash<T> hasher;
+    seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
   }
 } // namespace esp
 #include <bitset>

@@ -20,6 +20,7 @@ namespace esp
     std::string m_name;
 
    public:
+    Material(MaterialTexutresMap textures, std::shared_ptr<EspShader> shader);
     Material(const std::string& name, MaterialTexutresMap textures, std::shared_ptr<EspShader> shader);
     ~Material() = default;
     PREVENT_COPY(Material);
@@ -27,7 +28,8 @@ namespace esp
     Material& attach();
   };
 
-  using MaterialMap = std::unordered_map<std::string, std::shared_ptr<Material>>;
+  using MaterialByTextureMap = std::unordered_map<std::vector<std::shared_ptr<EspTexture>>, std::shared_ptr<Material>>;
+  using MaterialByNameMap    = std::unordered_map<std::string, std::shared_ptr<Material>>;
 
   class MaterialSystem
   {
@@ -35,10 +37,18 @@ namespace esp
     static MaterialSystem* s_instance;
 
    private:
-    MaterialMap m_material_map;
+    MaterialByTextureMap m_material_by_texture_map;
+    MaterialByNameMap m_material_by_name_map;
 
     MaterialSystem();
     static void fill_default_textures(MaterialTexutresMap& textures);
+    static std::shared_ptr<Material> create_material(
+        const std::string& name,
+        std::vector<std::shared_ptr<EspTexture>> textures,
+        std::shared_ptr<EspShader> shader = ShaderSystem::get_default_shader());
+    static std::shared_ptr<Material> create_material(
+        std::vector<std::shared_ptr<EspTexture>> textures,
+        std::shared_ptr<EspShader> shader = ShaderSystem::get_default_shader());
 
    public:
     ~MaterialSystem();
@@ -48,11 +58,14 @@ namespace esp
     void terminate();
 
     static std::shared_ptr<Material> acquire(const std::string& name);
-    static std::shared_ptr<Material> create_material(
-        const std::string& name,
-        std::initializer_list<std::shared_ptr<EspTexture>> textures,
-        std::shared_ptr<EspShader> shader = ShaderSystem::get_default_shader());
+    static std::shared_ptr<Material> acquire(std::vector<std::shared_ptr<EspTexture>> textures,
+                                             std::shared_ptr<EspShader> shader = ShaderSystem::get_default_shader());
+    static std::shared_ptr<Material> acquire(const std::string& name,
+                                             std::vector<std::shared_ptr<EspTexture>> textures,
+                                             std::shared_ptr<EspShader> shader = ShaderSystem::get_default_shader());
     static void release(const std::string& name);
+    static void release(std::vector<std::shared_ptr<EspTexture>> textures);
+    static void release(const std::string& name, std::vector<std::shared_ptr<EspTexture>> textures);
   };
 } // namespace esp
 
