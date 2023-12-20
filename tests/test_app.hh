@@ -1,10 +1,10 @@
 #ifndef ESPERT_TESTS_TEST_APP_HH
 #define ESPERT_TESTS_TEST_APP_HH
 
-#include "Core/Application.hh"
-#include "Core/ApplicationContext.hh"
+#include "Core/EspApplication.hh"
+#include "Core/EspApplicationContext.hh"
 
-class TestApp : public esp::Application
+class TestApp : public esp::EspApplication
 {
  private:
  public:
@@ -17,7 +17,7 @@ class TestApp : public esp::Application
   }
 };
 
-inline esp::Application* esp::create_app_instance()
+inline esp::EspApplication* esp::create_app_instance()
 {
   const auto& app = new TestApp();
 
