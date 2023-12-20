@@ -9,7 +9,7 @@ namespace esp
     auto window = EspWindow::get_instance()->get_window();
     auto state  = glfwGetKey(window, keycode);
 
-    return state == GLFW_PRESS && state != GLFW_REPEAT;
+    return state == GLFW_PRESS;
   }
 
   bool EspInput::is_mouse_button_pressed(int button)
