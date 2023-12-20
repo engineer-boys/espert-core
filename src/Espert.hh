@@ -33,9 +33,6 @@
 #include "Core/Renderer/SceneSystem/Node.hh"
 #include "Core/Renderer/SceneSystem/Scene.hh"
 
-/* --------- Client Point ------------------- */
-#include "Core/ClientPoint.hh"
-
 /* ------------------------------------------ */
 
 #endif // ESPERT_ESPERT_HH
