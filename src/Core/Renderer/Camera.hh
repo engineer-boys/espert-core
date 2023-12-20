@@ -19,7 +19,7 @@ namespace esp
     };
 
    private:
-    static constexpr glm::vec3 S_UP{ 0.f, -1.f, 0.f };
+    static constexpr glm::vec3 S_UP{ 0.f, 1.f, 0.f };
     static constexpr glm::vec3 S_FRONT{ 0.f, 0.f, 1.f };
     static constexpr float S_PITCH_TRESHOLD{ glm::radians(89.f) };
 
@@ -48,7 +48,6 @@ namespace esp
     Camera(const Camera&)            = delete;
     Camera& operator=(const Camera&) = delete;
 
-    void set_orthographic(float left, float right, float top, float bottom, float near, float far);
     void set_perspective(float fov, float aspect_ratio, float near, float far);
     void set_perspective(float aspect_ratio);
 
@@ -63,11 +62,11 @@ namespace esp
     inline void set_sensitivity(float sensitivity) { m_sensitivity = sensitivity; }
     inline void set_position(glm::vec3 position) { m_position = position; }
 
-    inline float get_fov() { return m_fov; }
-    inline float get_near() { return m_near; }
-    inline float get_far() { return m_far; }
-    inline float get_move_speed() { return m_move_speed; }
-    inline float get_sensitivity() { return m_sensitivity; }
+    inline float get_fov() const { return m_fov; }
+    inline float get_near() const { return m_near; }
+    inline float get_far() const { return m_far; }
+    inline float get_move_speed() const { return m_move_speed; }
+    inline float get_sensitivity() const { return m_sensitivity; }
 
     inline const glm::mat4& get_view() { return m_view = glm::lookAt(m_position, m_position + m_front, m_camera_up); }
     inline const glm::mat4& get_projection() { return m_projection_mat; }
