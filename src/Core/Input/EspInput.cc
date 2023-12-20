@@ -1,6 +1,6 @@
 #include "EspInput.hh"
 
-#include "EspWindow.hh"
+#include "../EspWindow.hh"
 
 namespace esp
 {
@@ -9,7 +9,7 @@ namespace esp
     auto window = EspWindow::get_instance()->get_window();
     auto state  = glfwGetKey(window, keycode);
 
-    return state == GLFW_PRESS || state == GLFW_REPEAT;
+    return state == GLFW_PRESS && state != GLFW_REPEAT;
   }
 
   bool EspInput::is_mouse_button_pressed(int button)
