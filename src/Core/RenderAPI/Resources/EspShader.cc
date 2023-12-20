@@ -24,7 +24,11 @@ namespace esp
 
   std::unique_ptr<EspUniformManager> EspShader::create_uniform_manager(int start_managed_ds, int end_managed_ds) const
   {
+<<<<<<< HEAD
     return m_worker->create_uniform_manager(start_managed_ds, end_managed_ds);
+=======
+    return m_worker->create_uniform_manager();
+>>>>>>> f468358 (porting: port engine to use new version of material system)
   }
 
   void EspShader::enable_depth_test(EspDepthBlockFormat format, EspCompareOp compare_op)
