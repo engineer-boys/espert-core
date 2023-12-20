@@ -10,7 +10,6 @@ class TestApp : public esp::Application
  public:
   TestApp() { m_resource_system->change_asset_base_path(fs::current_path() / ".." / "tests" / "assets"); }
 
-  void set_background_color() { m_frame_manager->set_clear_color(glm::vec4{ .1f, .1f, .3f, 1.f }); }
   void terminate()
   {
     esp::WindowClosedEvent e;
@@ -21,7 +20,7 @@ class TestApp : public esp::Application
 inline esp::Application* esp::create_app_instance()
 {
   const auto& app = new TestApp();
-  app->set_background_color();
+
   return app;
 }
 

@@ -21,7 +21,7 @@ namespace esp
   class Application
   {
     /* -------------------------- FIELDS ----------------------------------- */
-   private:
+   protected:
     std::unique_ptr<ApplicationContext> m_context;
     std::unique_ptr<EspWindow> m_window;
     std::unique_ptr<Timer> m_timer;
