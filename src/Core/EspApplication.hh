@@ -3,9 +3,9 @@
 
 #include "esppch.hh"
 
-#include "ApplicationContext.hh"
 #include "Core/Resources/Systems/ResourceSystem.hh"
 #include "Core/Resources/Systems/TextureSystem.hh"
+#include "EspApplicationContext.hh"
 #include "EspWindow.hh"
 #include "Events/WindowEvent.hh"
 #include "Layers/Layer.hh"
@@ -14,15 +14,15 @@
 #include "RenderAPI/EspRenderContext.hh"
 #include "RenderAPI/Work/EspJob.hh"
 #include "RenderAPI/Work/EspWorkOrchestrator.hh"
-#include "Timer.hh"
+#include "Utils/Timer.hh"
 
 namespace esp
 {
-  class Application
+  class EspApplication
   {
     /* -------------------------- FIELDS ----------------------------------- */
    protected:
-    std::unique_ptr<ApplicationContext> m_context;
+    std::unique_ptr<EspApplicationContext> m_context;
     std::unique_ptr<EspWindow> m_window;
     std::unique_ptr<Timer> m_timer;
 
@@ -61,19 +61,19 @@ namespace esp
     inline EspWindow& get_window() { return *m_window; }
 
    public:
-    Application(const std::string title = "Espert window", unsigned int width = 1280, unsigned int height = 720);
-    virtual ~Application();
+    EspApplication(const std::string title = "Espert window", unsigned int width = 1280, unsigned int height = 720);
+    virtual ~EspApplication();
 
     void push_layer(Layer* layer);
     void push_overlayer(Layer* layer);
 
     void run();
-    void set_context(std::unique_ptr<ApplicationContext> context);
+    void set_context(std::unique_ptr<EspApplicationContext> context);
     void events_manager(Event& e);
   };
 
   /* This function is defined by CLIENT */
-  Application* create_app_instance();
+  EspApplication* create_app_instance();
 
 } // namespace esp
 

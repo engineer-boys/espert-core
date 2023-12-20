@@ -1,15 +1,15 @@
 #ifndef ESPERT_CORE_CLIENTPOINT_HH
 #define ESPERT_CORE_CLIENTPOINT_HH
 
-#include "Application.hh"
-#include "ApplicationContext.hh"
+#include "EspApplication.hh"
+#include "EspApplicationContext.hh"
 
-extern esp::Application* esp::create_app_instance();
+extern esp::EspApplication* esp::create_app_instance();
 
 int main(int argc, char** argv)
 {
-  auto context                   = esp::ApplicationContext::create();
-  esp::Application* app_instance = esp::create_app_instance();
+  auto context                      = esp::EspApplicationContext::create();
+  esp::EspApplication* app_instance = esp::create_app_instance();
 
   /* running */
   {

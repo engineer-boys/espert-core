@@ -58,6 +58,8 @@ namespace esp
     inline unsigned int get_width() { return m_data->m_width; }
     inline unsigned int get_height() { return m_data->m_height; }
 
+    inline GLFWwindow* get_window() const { return m_window; }
+
     inline void set_events_manager_fun(const WindowData::EventManagerFun& callback)
     {
       m_data->m_events_manager_fun = callback;
@@ -71,6 +73,8 @@ namespace esp
     {
       glfwGetFramebufferSize(s_instance->m_window, &width, &height);
     }
+
+    static inline const EspWindow* get_instance() { return s_instance; }
   };
 } // namespace esp
 
