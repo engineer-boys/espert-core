@@ -6,9 +6,9 @@
 
 #include <fstream>
 
-#include "Core/Logger.hh"
 #include "Core/Resources/ResourceTypes.hh"
 #include "Core/Resources/Systems/ResourceSystem.hh"
+#include "Core/Utils/Logger.hh"
 
 TEST_CASE("Resource system", "[resource_system]")
 {
