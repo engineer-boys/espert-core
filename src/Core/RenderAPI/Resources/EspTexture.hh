@@ -63,6 +63,30 @@ namespace esp
     return a;
   }
 
+  inline aiTextureType esp_texture_type_to_assimp(EspTextureType type)
+  {
+    switch (type)
+    {
+    case EspTextureType::ALBEDO:
+      return aiTextureType_DIFFUSE;
+
+    case EspTextureType::NORMAL:
+      return aiTextureType_NORMALS;
+
+    case EspTextureType::METALLIC:
+      return aiTextureType_METALNESS;
+
+    case EspTextureType::ROUGHNESS:
+      return aiTextureType_DIFFUSE_ROUGHNESS;
+
+    case EspTextureType::AO:
+      return aiTextureType_AMBIENT_OCCLUSION;
+
+    default:
+      return aiTextureType_NONE;
+    }
+  }
+
   class EspTexture
   {
    public:
@@ -81,6 +105,12 @@ namespace esp
     inline const uint32_t get_mip_levels() const { return m_mip_levels; }
     inline const bool has_transparency() const { return m_has_transparency; }
     inline const EspTextureType get_type() const { return m_type; }
+    inline bool operator==(const EspTexture& other)
+    {
+      return m_name == other.get_name() && m_channel_count == other.get_channel_count() &&
+          m_width == other.get_width() && m_height == other.get_height() && m_mip_levels == other.get_mip_levels() &&
+          m_has_transparency == other.has_transparency() && m_type == other.get_type();
+    }
 
    protected:
     EspTexture(const std::string& name,
@@ -104,5 +134,44 @@ namespace esp
     void check_for_transparency(const uint8_t* pixels);
   };
 } // namespace esp
+
+template<> struct std::hash<esp::EspTexture>
+{
+  std::size_t operator()(const esp::EspTexture& k) const
+  {
+    std::size_t seed = 0;
+    esp::hash_combine(seed, k.get_name());
+    esp::hash_combine(seed, k.get_channel_count());
+    esp::hash_combine(seed, k.get_height());
+    esp::hash_combine(seed, k.get_width());
+    esp::hash_combine(seed, k.get_mip_levels());
+    esp::hash_combine(seed, k.has_transparency());
+    esp::hash_combine(seed, k.get_type());
+    return seed;
+  }
+};
+
+template<> struct std::hash<std::shared_ptr<esp::EspTexture>>
+{
+  std::size_t operator()(const std::shared_ptr<esp::EspTexture>& k) const
+  {
+    std::size_t seed = 0;
+    esp::hash_combine(seed, *k);
+    return seed;
+  }
+};
+
+template<> struct std::hash<std::vector<std::shared_ptr<esp::EspTexture>>>
+{
+  std::size_t operator()(const std::vector<std::shared_ptr<esp::EspTexture>>& k) const
+  {
+    std::size_t seed = 0;
+    for (const auto& t : k)
+    {
+      esp::hash_combine(seed, t);
+    }
+    return seed;
+  }
+};
 
 #endif // RENDER_API_ESP_TEXTURE_HH

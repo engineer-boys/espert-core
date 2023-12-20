@@ -34,8 +34,6 @@ namespace esp
     std::unique_ptr<ShaderSystem> m_shader_system;
     std::unique_ptr<MaterialSystem> m_material_system;
 
-    static fs::path s_asset_base_path;
-
     LayerStack* m_layer_stack;
 
    protected:
@@ -56,6 +54,7 @@ namespace esp
     } m_renderer;
 
     bool m_running;
+    static fs::path s_asset_base_path;
 
     /* -------------------------- METHODS ---------------------------------- */
    private:

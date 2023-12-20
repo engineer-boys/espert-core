@@ -29,9 +29,7 @@ namespace esp
     if (m_has_index_buffer) { m_index_buffer = EspIndexBuffer::create(indices.data(), index_count); }
   }
 
-  Mesh::Mesh(std::vector<Vertex> vertices,
-             std::vector<uint32_t> indices,
-             std::vector<std::shared_ptr<EspTexture>> textures)
+  Mesh::Mesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices, std::shared_ptr<Material> material)
   {
     m_vertex_buffer = EspVertexBuffer::create(vertices.data(), sizeof(Vertex), vertices.size());
 
@@ -39,13 +37,13 @@ namespace esp
     m_has_index_buffer = index_count > 0;
     if (m_has_index_buffer) { m_index_buffer = EspIndexBuffer::create(indices.data(), index_count); }
 
-    m_textures = std::move(textures);
+    m_material = std::move(material);
   }
 
   void Mesh::draw()
   {
     m_vertex_buffer->attach();
-    if (m_has_material) { m_material->attach(); }
+    m_material->attach(); // TODO: NOT OPTIMAL, add sorting by material
     if (m_has_index_buffer)
     {
       m_index_buffer->attach();
@@ -57,19 +55,12 @@ namespace esp
   void Mesh::draw(esp::EspVertexBuffer& instance_buffer)
   {
     m_vertex_buffer->attach_instanced(instance_buffer);
-    if (m_has_material) { m_material->attach(); }
+    m_material->attach(); // TODO: NOT OPTIMAL, add sorting by material
     if (m_has_index_buffer)
     {
       m_index_buffer->attach();
       EspJob::draw_indexed(get_index_count(), instance_buffer.get_vertex_count());
     }
     else { EspJob::draw(get_vertex_count(), instance_buffer.get_vertex_count()); }
-  }
-
-  void Mesh::add_material(esp::EspWorker& pipeline)
-  {
-    m_has_material = true;
-    m_material     = Material::create(pipeline, m_textures);
-    m_textures.clear();
   }
 } // namespace esp

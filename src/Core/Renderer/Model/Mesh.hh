@@ -35,16 +35,12 @@ namespace esp
     bool m_has_index_buffer{ false };
     std::unique_ptr<EspIndexBuffer> m_index_buffer;
 
-    std::vector<std::shared_ptr<EspTexture>> m_textures; // TODO: Replace it with material class
-    bool m_has_material{ false };
     std::shared_ptr<Material> m_material;
 
    public:
     Mesh(std::vector<Vertex> vertices);
     Mesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices);
-    Mesh(std::vector<Vertex> vertices,
-         std::vector<uint32_t> indices,
-         std::vector<std::shared_ptr<EspTexture>> textures);
+    Mesh(std::vector<Vertex> vertices, std::vector<uint32_t> indices, std::shared_ptr<Material> material);
 
     Mesh(Mesh&& other) noexcept = default;
     PREVENT_COPY(Mesh)
@@ -57,8 +53,6 @@ namespace esp
    private:
     void draw();
     void draw(EspVertexBuffer& instance_buffer);
-
-    void add_material(EspWorker& pipeline);
 
     friend class Model;
   };

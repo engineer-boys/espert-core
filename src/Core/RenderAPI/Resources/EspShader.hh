@@ -13,8 +13,8 @@ namespace esp
    protected:
     EspShader(const std::string& name);
 
-    std::unique_ptr<EspPipeline> m_pipeline;
-    std::unique_ptr<EspPipelineBuilder> m_pipeline_builder;
+    std::unique_ptr<EspWorkerBuilder> m_worker_builder;
+    std::unique_ptr<EspWorker> m_worker;
     std::string m_name;
 
    public:
@@ -24,6 +24,9 @@ namespace esp
     static std::shared_ptr<EspShader> create(const std::string& name, std::unique_ptr<SpirvResource> spirv_resource);
     void attach();
     std::unique_ptr<EspUniformManager> create_uniform_manager() const;
+    void enable_depth_test(EspDepthBlockFormat format, EspCompareOp compare_op);
+    void enable_multisampling(EspSampleCountFlag sample_count_flag);
+    void set_attachment_formats(std::vector<EspBlockFormat> formats);
     void set_vertex_layouts(std::vector<EspVertexLayout> vertex_layouts);
     void set_pipeline_layout(std::unique_ptr<EspUniformMetaData> uniforms_meta_data);
     void build_pipeline();

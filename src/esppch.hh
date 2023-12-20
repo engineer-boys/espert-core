@@ -19,6 +19,11 @@
 #include <unordered_set>
 #include <vector>
 
+// assimp
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
+
 // glm
 #include "glm/gtx/hash.hpp"
 #include <glm/glm.hpp>

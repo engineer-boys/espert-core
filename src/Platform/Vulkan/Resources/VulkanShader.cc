@@ -5,7 +5,7 @@ namespace esp
 {
   VulkanShader::VulkanShader(const std::string& name, std::unique_ptr<SpirvResource> spirv_resource) : EspShader(name)
   {
-    m_pipeline_builder->set_shaders(std::move(spirv_resource));
+    m_worker_builder->set_shaders(std::move(spirv_resource));
   }
 
   std::shared_ptr<VulkanShader> VulkanShader::create(const std::string name,

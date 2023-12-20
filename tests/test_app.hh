@@ -20,7 +20,6 @@ inline esp::EspApplication* esp::create_app_instance()
 {
   TestApp::set_asset_base_path(fs::current_path() / ".." / "tests" / "assets");
   const auto& app = new TestApp();
-
   return app;
 }
 

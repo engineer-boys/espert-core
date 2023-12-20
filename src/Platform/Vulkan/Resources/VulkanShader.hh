@@ -7,7 +7,7 @@
 #include "Core/RenderAPI/Resources/EspShader.hh"
 
 // Core
-#include "Core/Systems/ShaderSystem.hh"
+#include "Core/Resources/Systems/ShaderSystem.hh"
 
 namespace esp
 {

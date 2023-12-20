@@ -35,11 +35,17 @@ namespace esp
     }
   }
 
+  Model::Builder& Model::Builder::set_shader(std::shared_ptr<EspShader> shader)
+  {
+    m_shader = shader;
+    return *this;
+  }
+
   void Model::Builder::process_mesh(aiMesh* mesh, const aiScene* scene)
   {
     std::vector<Mesh::Vertex> vertices;
     std::vector<uint32_t> indices;
-    std::vector<std::shared_ptr<EspTexture>> textures;
+    std::shared_ptr<Material> material;
 
     // process vertices
     for (uint32_t i = 0; i < mesh->mNumVertices; i++)
@@ -70,43 +76,37 @@ namespace esp
     // process material
     if (mesh->mMaterialIndex >= 0)
     {
-      aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+      aiMaterial* ai_material = scene->mMaterials[mesh->mMaterialIndex];
+      std::vector<std::shared_ptr<EspTexture>> textures;
 
-      auto diffuse_maps = load_material_textures(material, aiTextureType_DIFFUSE);
-      textures.insert(textures.end(), diffuse_maps.begin(), diffuse_maps.end());
-      auto specular_maps = load_material_textures(material, aiTextureType_SPECULAR);
-      textures.insert(textures.end(), specular_maps.begin(), specular_maps.end());
+      for (auto type = EspTextureType::ALBEDO; type < EspTextureType::ENUM_END; ++type)
+      {
+        auto texture = load_material_texture(ai_material, esp_texture_type_to_assimp(type));
+        if (texture) textures.push_back(texture);
+      }
+
+      material = MaterialSystem::acquire(textures, m_shader);
     }
 
-    m_meshes.push_back(std::make_shared<Mesh>(vertices, indices, textures));
+    m_meshes.push_back(std::make_shared<Mesh>(vertices, indices, material));
   }
 
-  std::vector<std::shared_ptr<EspTexture>> Model::Builder::load_material_textures(aiMaterial* mat, aiTextureType type)
+  std::shared_ptr<EspTexture> Model::Builder::load_material_texture(aiMaterial* mat, aiTextureType type)
   {
-    std::vector<std::shared_ptr<EspTexture>> textures;
-
     for (uint32_t i = 0; i < mat->GetTextureCount(type); i++)
     {
       aiString str;
       mat->GetTexture(type, i, &str);
 
-      textures.push_back(TextureSystem::acquire(fs::path(m_dir) / str.C_Str()));
+      return TextureSystem::acquire(fs::path(m_dir) / str.C_Str());
     }
 
-    return textures;
+    return nullptr;
   }
 
-  Model::Model(esp::Model::Builder& builder, EspWorker& pipeline) : m_meshes{ std::move(builder.m_meshes) }
-  {
-    add_materials(pipeline);
-  }
+  Model::Model(esp::Model::Builder& builder) : m_meshes{ std::move(builder.m_meshes) } {}
 
-  Model::Model(std::shared_ptr<Mesh> mesh, std::vector<std::shared_ptr<EspTexture>> textures, EspWorker& pipeline) :
-      m_meshes{ std::move(mesh) }
-  {
-    m_meshes[0]->m_textures = textures;
-    if (!textures.empty()) { add_materials(pipeline); }
-  }
+  Model::Model(std::shared_ptr<Mesh> mesh) : m_meshes{ std::move(mesh) } {}
 
   void Model::draw()
   {
@@ -114,14 +114,6 @@ namespace esp
     {
       if (m_has_instance_buffer) { mesh->draw(*m_instance_buffer); }
       else { mesh->draw(); }
-    }
-  }
-
-  void Model::add_materials(esp::EspWorker& pipeline)
-  {
-    for (auto& mesh : m_meshes)
-    {
-      mesh->add_material(pipeline);
     }
   }
 } // namespace esp
