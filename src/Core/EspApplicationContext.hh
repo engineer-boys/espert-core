@@ -5,20 +5,20 @@
 
 namespace esp
 {
-  class ApplicationContext
+  class EspApplicationContext
   {
    private:
-    static ApplicationContext* s_instance;
+    static EspApplicationContext* s_instance;
 
    private:
     std::unique_ptr<Logger> m_logger;
 
-    ApplicationContext();
+    EspApplicationContext();
 
    public:
-    ~ApplicationContext();
+    ~EspApplicationContext();
 
-    static std::unique_ptr<ApplicationContext> create();
+    static std::unique_ptr<EspApplicationContext> create();
   };
 } // namespace esp
 

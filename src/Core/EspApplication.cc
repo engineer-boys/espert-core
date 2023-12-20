@@ -1,13 +1,13 @@
-#include "Application.hh"
+#include "EspApplication.hh"
 #include <ranges>
 
 namespace esp
 {
-  Application::Application(const std::string title, unsigned int width, unsigned int height) : m_running(true)
+  EspApplication::EspApplication(const std::string title, unsigned int width, unsigned int height) : m_running(true)
   {
     // create (alloc and init) window
     m_window = EspWindow::create(new EspWindow::WindowData(title, width, height));
-    m_window->set_events_manager_fun(ESP_BIND_EVENT_FOR_FUN(Application::events_manager));
+    m_window->set_events_manager_fun(ESP_BIND_EVENT_FOR_FUN(EspApplication::events_manager));
 
     // create (alloc and init) timer
     m_timer = Timer::create();
@@ -28,7 +28,7 @@ namespace esp
     m_layer_stack = new LayerStack();
   }
 
-  Application::~Application()
+  EspApplication::~EspApplication()
   {
     // all jobs, which are processing by renderer, must be completed
     // before making free other resources.
@@ -52,7 +52,7 @@ namespace esp
     // the last one is Application context to be killed (implicitely)
   }
 
-  void Application::run()
+  void EspApplication::run()
   {
     while (m_running)
     {
@@ -73,17 +73,20 @@ namespace esp
     }
   }
 
-  void Application::set_context(std::unique_ptr<ApplicationContext> context) { this->m_context = std::move(context); }
+  void EspApplication::set_context(std::unique_ptr<EspApplicationContext> context)
+  {
+    this->m_context = std::move(context);
+  }
 
-  bool Application::on_window_closed(WindowClosedEvent& e)
+  bool EspApplication::on_window_closed(WindowClosedEvent& e)
   {
     m_running = false;
     return true;
   }
 
-  void Application::events_manager(Event& e)
+  void EspApplication::events_manager(Event& e)
   {
-    Event::try_handler<WindowClosedEvent>(e, ESP_BIND_EVENT_FOR_FUN(Application::on_window_closed));
+    Event::try_handler<WindowClosedEvent>(e, ESP_BIND_EVENT_FOR_FUN(EspApplication::on_window_closed));
 
     for (auto& iter : *m_layer_stack | std::views::reverse)
     {
@@ -92,7 +95,7 @@ namespace esp
     }
   }
 
-  void Application::push_layer(Layer* layer) { m_layer_stack->push_layer(layer); }
+  void EspApplication::push_layer(Layer* layer) { m_layer_stack->push_layer(layer); }
 
-  void Application::push_overlayer(Layer* layer) { m_layer_stack->push_overlayer(layer); }
+  void EspApplication::push_overlayer(Layer* layer) { m_layer_stack->push_overlayer(layer); }
 } // namespace esp

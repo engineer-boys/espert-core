@@ -3,13 +3,18 @@
 
 /* In this header file are all needed headers */
 /* ------------------------------------------ */
-#include "Core/Utils.hh"
+#include "Core/Utils/Utils.hh"
 
-#include "Core/Application.hh"
-#include "Core/Logger.hh"
+#include "Core/EspApplication.hh"
+#include "Core/Utils/Logger.hh"
 
 #include "Core/Events/Events.hh"
 #include "Core/Layers/Layer.hh"
+
+/* --------- Input --------------------- */
+#include "Core/Input/EspInput.hh"
+#include "Core/Input/EspKeyCodes.hh"
+#include "Core/Input/EspMouseButtonCode.hh"
 
 /* --------- Render API --------------------- */
 #include "Core/RenderAPI/Pipeline/EspPipeline.hh"

@@ -32,8 +32,8 @@
 #include "entt/entt.hpp"
 
 // espert
-#include "Core/Logger.hh"
-#include "Core/Utils.hh"
+#include "Core/Utils/Logger.hh"
+#include "Core/Utils/Utils.hh"
 
 // namespaces
 namespace fs = std::filesystem;
