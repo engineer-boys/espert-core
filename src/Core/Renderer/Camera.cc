@@ -2,11 +2,6 @@
 
 namespace esp
 {
-  void Camera::set_orthographic(float left, float right, float top, float bottom, float near, float far)
-  {
-    m_projection_mat = glm::orthoLH(left, right, bottom, top, near, far);
-  }
-
   void Camera::set_perspective(float fov, float aspect_ratio, float near, float far)
   {
     ESP_ASSERT(glm::abs(aspect_ratio - std::numeric_limits<float>::epsilon()) > 0.0f, "")
@@ -45,7 +40,7 @@ namespace esp
   {
     m_front = esp::normalize(target - m_position);
 
-    m_pitch = std::clamp(ESP_PI / 2 - glm::acos(glm::dot(m_front, -S_UP)), -S_PITCH_TRESHOLD, S_PITCH_TRESHOLD);
+    m_pitch = std::clamp(ESP_PI / 2 - glm::acos(glm::dot(m_front, S_UP)), -S_PITCH_TRESHOLD, S_PITCH_TRESHOLD);
 
     glm::vec3 front_xz = esp::normalize(glm::vec3{ m_front.x, 0.f, m_front.z });
     m_jaw              = m_front.x > 0 ? ESP_PI / 2 - glm::acos(glm::dot(front_xz, S_FRONT))
@@ -63,13 +58,12 @@ namespace esp
       return;
     }
 
-    glm::vec2 offset = mouse_pos - m_last_move;
-    m_last_move      = mouse_pos;
+    float offset_x = (mouse_pos.x - m_last_move.x) * m_sensitivity * dt;
+    float offset_y = (m_last_move.y - mouse_pos.y) * m_sensitivity * dt;
+    m_last_move    = mouse_pos;
 
-    offset *= m_sensitivity * dt;
-
-    m_jaw -= glm::radians(offset.x);
-    m_pitch = std::clamp(m_pitch + glm::radians(offset.y), -S_PITCH_TRESHOLD, S_PITCH_TRESHOLD);
+    m_jaw += glm::radians(offset_x);
+    m_pitch = std::clamp(m_pitch + glm::radians(offset_y), -S_PITCH_TRESHOLD, S_PITCH_TRESHOLD);
 
     glm::vec3 direction;
     direction.x = cos(m_jaw) * cos(m_pitch);
