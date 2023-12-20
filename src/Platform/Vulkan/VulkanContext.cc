@@ -37,7 +37,6 @@ namespace esp
   {
 #ifdef __APPLE__
     m_context_data.m_instance_extensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
-    m_context_data.m_device_extensions.push_back(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME);
 #endif /* __APPLE__ */
   }
 
