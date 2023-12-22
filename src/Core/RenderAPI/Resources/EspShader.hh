@@ -23,7 +23,7 @@ namespace esp
 
     static std::shared_ptr<EspShader> create(const std::string& name, std::unique_ptr<SpirvResource> spirv_resource);
     void attach();
-    std::unique_ptr<EspUniformManager> create_uniform_manager() const;
+    std::unique_ptr<EspUniformManager> create_uniform_manager(int start_managed_ds = -1, int end_managed_ds = -1) const;
     void enable_depth_test(EspDepthBlockFormat format, EspCompareOp compare_op);
     void enable_multisampling(EspSampleCountFlag sample_count_flag);
     void set_attachment_formats(std::vector<EspBlockFormat> formats);

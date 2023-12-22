@@ -10,6 +10,13 @@
 
 namespace esp
 {
+  struct MaterialTextureLayout
+  {
+    uint32_t set;
+    uint32_t binding;
+    EspTextureType type;
+  };
+
   using MaterialTexutresMap = std::unordered_map<EspTextureType, std::shared_ptr<EspTexture>>;
   class Material
   {
@@ -20,8 +27,13 @@ namespace esp
     std::string m_name;
 
    public:
-    Material(MaterialTexutresMap textures, std::shared_ptr<EspShader> shader);
-    Material(const std::string& name, MaterialTexutresMap textures, std::shared_ptr<EspShader> shader);
+    Material(MaterialTexutresMap textures,
+             std::shared_ptr<EspShader> shader,
+             std::vector<MaterialTextureLayout> layouts);
+    Material(const std::string& name,
+             MaterialTexutresMap textures,
+             std::shared_ptr<EspShader> shader,
+             std::vector<MaterialTextureLayout> layouts);
     ~Material() = default;
     PREVENT_COPY(Material);
     Material& update_buffer_uniform(uint32_t set, uint32_t binding, uint64_t offset, uint32_t size, void* data);
@@ -42,13 +54,13 @@ namespace esp
 
     MaterialSystem();
     static void fill_default_textures(MaterialTexutresMap& textures);
-    static std::shared_ptr<Material> create_material(
-        const std::string& name,
-        std::vector<std::shared_ptr<EspTexture>> textures,
-        std::shared_ptr<EspShader> shader = ShaderSystem::get_default_shader());
-    static std::shared_ptr<Material> create_material(
-        std::vector<std::shared_ptr<EspTexture>> textures,
-        std::shared_ptr<EspShader> shader = ShaderSystem::get_default_shader());
+    static std::shared_ptr<Material> create_material(const std::string& name,
+                                                     std::vector<std::shared_ptr<EspTexture>> textures,
+                                                     std::shared_ptr<EspShader> shader,
+                                                     std::vector<MaterialTextureLayout> layouts);
+    static std::shared_ptr<Material> create_material(std::vector<std::shared_ptr<EspTexture>> textures,
+                                                     std::shared_ptr<EspShader> shader,
+                                                     std::vector<MaterialTextureLayout> layouts);
 
    public:
     ~MaterialSystem();
@@ -59,10 +71,22 @@ namespace esp
 
     static std::shared_ptr<Material> acquire(const std::string& name);
     static std::shared_ptr<Material> acquire(std::vector<std::shared_ptr<EspTexture>> textures,
-                                             std::shared_ptr<EspShader> shader = ShaderSystem::get_default_shader());
+                                             std::shared_ptr<EspShader> shader = ShaderSystem::get_default_shader(),
+                                             std::vector<MaterialTextureLayout> layouts = {
+                                                 { 1, 0, EspTextureType::ALBEDO },
+                                                 { 1, 1, EspTextureType::NORMAL },
+                                                 { 1, 2, EspTextureType::METALLIC },
+                                                 { 1, 3, EspTextureType::ROUGHNESS },
+                                                 { 1, 4, EspTextureType::AO } });
     static std::shared_ptr<Material> acquire(const std::string& name,
                                              std::vector<std::shared_ptr<EspTexture>> textures,
-                                             std::shared_ptr<EspShader> shader = ShaderSystem::get_default_shader());
+                                             std::shared_ptr<EspShader> shader = ShaderSystem::get_default_shader(),
+                                             std::vector<MaterialTextureLayout> layouts = {
+                                                 { 1, 0, EspTextureType::ALBEDO },
+                                                 { 1, 1, EspTextureType::NORMAL },
+                                                 { 1, 2, EspTextureType::METALLIC },
+                                                 { 1, 3, EspTextureType::ROUGHNESS },
+                                                 { 1, 4, EspTextureType::AO } });
     static void release(const std::string& name);
     static void release(std::vector<std::shared_ptr<EspTexture>> textures);
     static void release(const std::string& name, std::vector<std::shared_ptr<EspTexture>> textures);

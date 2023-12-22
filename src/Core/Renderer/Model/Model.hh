@@ -9,27 +9,33 @@
 
 namespace esp
 {
+  enum EspPostProcessSteps
+  {
+    EspProcessDefault = 0x0,
+    EspProcessFlipUVs = 0x800000
+  };
+
+  struct ModelParams
+  {
+    unsigned int p_flags = EspProcessDefault;
+    bool load_material   = true;
+  };
+
   class Model
   {
    public:
-    enum EspPostProcessSteps
-    {
-      EspProcessDefault = 0x0,
-      EspProcessFlipUVs = 0x800000
-    };
-
     struct Builder
     {
       std::vector<std::shared_ptr<Mesh>> m_meshes;
       std::string m_dir;
       std::shared_ptr<EspShader> m_shader = ShaderSystem::get_default_shader();
 
-      Builder& load_model(const std::string& filepath, unsigned int p_flags = EspProcessDefault);
+      Builder& load_model(const std::string& filepath, const ModelParams& params = {});
       Builder& set_shader(std::shared_ptr<EspShader> shader);
 
      private:
-      void process_node(aiNode* node, const aiScene* scene);
-      void process_mesh(aiMesh* mesh, const aiScene* scene);
+      void process_node(aiNode* node, const aiScene* scene, const ModelParams& params);
+      void process_mesh(aiMesh* mesh, const aiScene* scene, const ModelParams& params);
       std::shared_ptr<EspTexture> load_material_texture(aiMaterial* mat, aiTextureType type);
     };
 
@@ -48,6 +54,7 @@ namespace esp
     ~Model() = default;
 
     void draw(); // TODO: this will be called only through renderer - make it private
+    void update_buffer_uniform(uint32_t set, uint32_t binding, uint64_t offset, uint32_t size, void* data);
 
     inline const std::vector<std::shared_ptr<Mesh>>& get_meshes() { return m_meshes; }
     inline const uint32_t get_meshes_count() const { return m_meshes.size(); }
@@ -65,9 +72,6 @@ namespace esp
 
       m_instance_buffer->update(instances.data(), sizeof(T), instances.size(), offset);
     }
-
-   private:
-    void add_materials(EspWorker& pipeline);
   };
 } // namespace esp
 

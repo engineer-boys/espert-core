@@ -22,9 +22,9 @@ namespace esp
     return shader;
   }
 
-  std::unique_ptr<EspUniformManager> EspShader::create_uniform_manager() const
+  std::unique_ptr<EspUniformManager> EspShader::create_uniform_manager(int start_managed_ds, int end_managed_ds) const
   {
-    return m_worker->create_uniform_manager();
+    return m_worker->create_uniform_manager(start_managed_ds, end_managed_ds);
   }
 
   void EspShader::enable_depth_test(EspDepthBlockFormat format, EspCompareOp compare_op)
