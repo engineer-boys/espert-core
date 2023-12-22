@@ -3,10 +3,11 @@
 
 namespace esp
 {
-  Model::Builder& Model::Builder::load_model(const std::string& filepath, unsigned int p_flags)
+  Model::Builder& Model::Builder::load_model(const std::string& filepath, const ModelParams& params)
   {
     Assimp::Importer importer;
-    auto scene = importer.ReadFile(ResourceSystem::get_asset_base_path() / filepath, aiProcess_Triangulate | p_flags);
+    auto scene =
+        importer.ReadFile(ResourceSystem::get_asset_base_path() / filepath, aiProcess_Triangulate | params.p_flags);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {
@@ -16,22 +17,22 @@ namespace esp
 
     m_dir = filepath.substr(0, filepath.find_last_of('/'));
 
-    process_node(scene->mRootNode, scene);
+    process_node(scene->mRootNode, scene, params);
 
     return *this;
   }
 
-  void Model::Builder::process_node(aiNode* node, const aiScene* scene)
+  void Model::Builder::process_node(aiNode* node, const aiScene* scene, const ModelParams& params)
   {
     for (uint32_t i = 0; i < node->mNumMeshes; i++)
     {
       aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-      process_mesh(mesh, scene);
+      process_mesh(mesh, scene, params);
     }
 
     for (uint32_t i = 0; i < node->mNumChildren; i++)
     {
-      process_node(node->mChildren[i], scene);
+      process_node(node->mChildren[i], scene, params);
     }
   }
 
@@ -41,7 +42,7 @@ namespace esp
     return *this;
   }
 
-  void Model::Builder::process_mesh(aiMesh* mesh, const aiScene* scene)
+  void Model::Builder::process_mesh(aiMesh* mesh, const aiScene* scene, const ModelParams& params)
   {
     std::vector<Mesh::Vertex> vertices;
     std::vector<uint32_t> indices;
@@ -74,7 +75,7 @@ namespace esp
     }
 
     // process material
-    if (mesh->mMaterialIndex >= 0)
+    if (params.load_material && mesh->mMaterialIndex >= 0)
     {
       aiMaterial* ai_material = scene->mMaterials[mesh->mMaterialIndex];
       std::vector<std::shared_ptr<EspTexture>> textures;
@@ -114,6 +115,14 @@ namespace esp
     {
       if (m_has_instance_buffer) { mesh->draw(*m_instance_buffer); }
       else { mesh->draw(); }
+    }
+  }
+
+  void Model::update_buffer_uniform(uint32_t set, uint32_t binding, uint64_t offset, uint32_t size, void* data)
+  {
+    for (auto& mesh : m_meshes)
+    {
+      mesh->update_buffer_uniform(set, binding, offset, size, data);
     }
   }
 } // namespace esp

@@ -2,20 +2,25 @@
 
 namespace esp
 {
-  Material::Material(MaterialTexutresMap textures, std::shared_ptr<EspShader> shader) :
-      m_name(""), m_textures_map(std::move(textures)), m_shader(shader)
+  Material::Material(MaterialTexutresMap textures,
+                     std::shared_ptr<EspShader> shader,
+                     std::vector<MaterialTextureLayout> layouts) :
+      m_name(""),
+      m_textures_map(std::move(textures)), m_shader(shader)
   {
     m_uniform_manager = m_shader->create_uniform_manager();
-    m_uniform_manager->load_texture(0, 1, m_textures_map.at(EspTextureType::ALBEDO));
-    m_uniform_manager->load_texture(0, 2, m_textures_map.at(EspTextureType::NORMAL));
-    m_uniform_manager->load_texture(0, 3, m_textures_map.at(EspTextureType::METALLIC));
-    m_uniform_manager->load_texture(0, 4, m_textures_map.at(EspTextureType::ROUGHNESS));
-    m_uniform_manager->load_texture(0, 5, m_textures_map.at(EspTextureType::AO));
+    for (const auto& layout : layouts)
+    {
+      m_uniform_manager->load_texture(layout.set, layout.binding, m_textures_map.at(layout.type));
+    }
     m_uniform_manager->build();
   }
 
-  Material::Material(const std::string& name, MaterialTexutresMap textures, std::shared_ptr<EspShader> shader) :
-      Material(textures, shader)
+  Material::Material(const std::string& name,
+                     MaterialTexutresMap textures,
+                     std::shared_ptr<EspShader> shader,
+                     std::vector<MaterialTextureLayout> layouts) :
+      Material(textures, shader, layouts)
   {
     m_name = name;
   }
@@ -84,26 +89,29 @@ namespace esp
   }
 
   std::shared_ptr<Material> MaterialSystem::acquire(std::vector<std::shared_ptr<EspTexture>> textures,
-                                                    std::shared_ptr<EspShader> shader)
+                                                    std::shared_ptr<EspShader> shader,
+                                                    std::vector<MaterialTextureLayout> layouts)
   {
     if (s_instance->m_material_by_texture_map.contains(textures))
       return s_instance->m_material_by_texture_map.at(textures);
-    return create_material(std::move(textures), shader);
+    return create_material(std::move(textures), shader, std::move(layouts));
   }
 
   std::shared_ptr<Material> MaterialSystem::acquire(const std::string& name,
                                                     std::vector<std::shared_ptr<EspTexture>> textures,
-                                                    std::shared_ptr<EspShader> shader)
+                                                    std::shared_ptr<EspShader> shader,
+                                                    std::vector<MaterialTextureLayout> layouts)
   {
     if (s_instance->m_material_by_name_map.contains(name)) return s_instance->m_material_by_name_map.at(name);
     if (s_instance->m_material_by_texture_map.contains(textures))
       return s_instance->m_material_by_texture_map.at(textures);
-    return create_material(name, std::move(textures), shader);
+    return create_material(name, std::move(textures), shader, std::move(layouts));
   }
 
   std::shared_ptr<Material> MaterialSystem::create_material(const std::string& name,
                                                             std::vector<std::shared_ptr<EspTexture>> textures,
-                                                            std::shared_ptr<EspShader> shader)
+                                                            std::shared_ptr<EspShader> shader,
+                                                            std::vector<MaterialTextureLayout> layouts)
   {
     MaterialTexutresMap textures_map = {};
     for (auto& texture : textures)
@@ -117,7 +125,8 @@ namespace esp
     }
     fill_default_textures(textures_map);
 
-    auto material = std::shared_ptr<Material>(new Material(name, std::move(textures_map), std::move(shader)));
+    auto material =
+        std::shared_ptr<Material>(new Material(name, std::move(textures_map), std::move(shader), std::move(layouts)));
     s_instance->m_material_by_name_map.insert({ name, material });
     s_instance->m_material_by_texture_map.insert({ textures, material });
 
@@ -125,7 +134,8 @@ namespace esp
   }
 
   std::shared_ptr<Material> MaterialSystem::create_material(std::vector<std::shared_ptr<EspTexture>> textures,
-                                                            std::shared_ptr<EspShader> shader)
+                                                            std::shared_ptr<EspShader> shader,
+                                                            std::vector<MaterialTextureLayout> layouts)
   {
     MaterialTexutresMap textures_map = {};
     for (auto& texture : textures)
@@ -139,7 +149,8 @@ namespace esp
     }
     fill_default_textures(textures_map);
 
-    auto material = std::shared_ptr<Material>(new Material(std::move(textures_map), std::move(shader)));
+    auto material =
+        std::shared_ptr<Material>(new Material(std::move(textures_map), std::move(shader), std::move(layouts)));
     s_instance->m_material_by_texture_map.insert({ textures, material });
 
     return material;

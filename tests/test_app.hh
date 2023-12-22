@@ -9,6 +9,8 @@ class TestApp : public esp::EspApplication
  public:
   TestApp() = default;
 
+  inline static void set_asset_base_path(const fs::path& path) { esp::Application::s_asset_base_path = path; }
+
   void terminate()
   {
     esp::WindowClosedEvent e;

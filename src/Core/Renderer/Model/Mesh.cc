@@ -40,10 +40,12 @@ namespace esp
     m_material = std::move(material);
   }
 
+  void Mesh::set_material(std::shared_ptr<Material> material) { m_material = material; }
+
   void Mesh::draw()
   {
     m_vertex_buffer->attach();
-    m_material->attach(); // TODO: NOT OPTIMAL, add sorting by material
+    if (m_material) m_material->attach(); // TODO: NOT OPTIMAL, add sorting by material
     if (m_has_index_buffer)
     {
       m_index_buffer->attach();
@@ -55,12 +57,18 @@ namespace esp
   void Mesh::draw(esp::EspVertexBuffer& instance_buffer)
   {
     m_vertex_buffer->attach_instanced(instance_buffer);
-    m_material->attach(); // TODO: NOT OPTIMAL, add sorting by material
+    if (m_material) m_material->attach(); // TODO: NOT OPTIMAL, add sorting by material
     if (m_has_index_buffer)
     {
       m_index_buffer->attach();
       EspJob::draw_indexed(get_index_count(), instance_buffer.get_vertex_count());
     }
     else { EspJob::draw(get_vertex_count(), instance_buffer.get_vertex_count()); }
+  }
+
+  void Mesh::update_buffer_uniform(uint32_t set, uint32_t binding, uint64_t offset, uint32_t size, void* data)
+  {
+    if (m_material) { m_material->update_buffer_uniform(set, binding, offset, size, data); }
+    else { ESP_CORE_ERROR("No material to update buffer uniform on."); }
   }
 } // namespace esp
