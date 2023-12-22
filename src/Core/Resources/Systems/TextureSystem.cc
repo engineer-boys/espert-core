@@ -189,7 +189,7 @@ namespace esp
 
   bool TextureSystem::texture_matching_params(std::shared_ptr<EspTexture> texture, const TextureParams& params)
   {
-    return static_cast<bool>(texture->get_mip_levels()) == params.mipmapping;
+    return texture->get_type() == params.type;
   }
 
   bool TextureSystem::is_default_texture_name(const std::string& name)
