@@ -16,7 +16,7 @@ namespace esp
 
    private:
     ShaderMap m_shader_map;
-    std::string m_default_shader_name = "default";
+    std::string m_default_shader_name = "Shaders/default";
 
     ShaderSystem();
 
