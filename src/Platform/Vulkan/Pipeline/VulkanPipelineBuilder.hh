@@ -12,12 +12,20 @@
 
 namespace esp
 {
+  struct PipelineStageData
+  {
+    VkShaderModule shader_module                                     = {};
+    VkPipelineShaderStageCreateInfo shader_stage_create_info         = {};
+    std::vector<VkSpecializationMapEntry> specialization_map_entries = {};
+    void* specialization_data                                        = nullptr;
+    VkSpecializationInfo specialization_info                         = {};
+  };
+
   class VulkanWorkerBuilder : public EspWorkerBuilder
   {
     /* -------------------------- FIELDS ----------------------------------- */
    private:
-    std::unordered_map<EspShaderStage, VkShaderModule> m_shader_module_map;
-    std::unordered_map<EspShaderStage, VkPipelineShaderStageCreateInfo> m_shader_info_map;
+    std::unordered_map<EspShaderStage, PipelineStageData> m_pipeline_stage_data_map;
 
     VkPipelineVertexInputStateCreateInfo m_vertex_input_info;
     /* These must exist until the pipeline is built. */
@@ -56,6 +64,8 @@ namespace esp
     virtual void set_attachment_formats(std::vector<EspBlockFormat> formats) override;
 
     virtual void set_shaders(std::unique_ptr<SpirvResource> spirv_resource) override;
+
+    virtual void set_specialization(const SpecializationConstantMap& spec_const_map) override;
 
     virtual void set_vertex_layouts(std::vector<EspVertexLayout> vertex_layouts) override;
     virtual void set_worker_layout(std::unique_ptr<EspUniformMetaData> uniforms_meta_data) override;
