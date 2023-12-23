@@ -55,7 +55,7 @@ namespace esp
    private:
     void draw();
     void draw(EspVertexBuffer& instance_buffer);
-    void update_buffer_uniform(uint32_t set, uint32_t binding, uint64_t offset, uint32_t size, void* data);
+    void update_material(uint32_t set, uint32_t binding, uint64_t offset, uint32_t size, void* data);
 
     friend class Model;
   };
