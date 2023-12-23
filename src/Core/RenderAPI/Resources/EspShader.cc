@@ -46,9 +46,9 @@ namespace esp
     m_worker_builder->set_vertex_layouts(std::move(vertex_layouts));
   }
 
-  void EspShader::set_pipeline_layout(std::unique_ptr<EspUniformMetaData> uniforms_meta_data)
+  void EspShader::set_worker_layout(std::unique_ptr<EspUniformMetaData> uniforms_meta_data)
   {
-    m_worker_builder->set_pipeline_layout(std::move(uniforms_meta_data));
+    m_worker_builder->set_worker_layout(std::move(uniforms_meta_data));
   }
 
   void EspShader::build_pipeline() { m_worker = m_worker_builder->build_worker(); }

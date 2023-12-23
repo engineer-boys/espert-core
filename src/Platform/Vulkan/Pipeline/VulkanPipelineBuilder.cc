@@ -103,7 +103,7 @@ namespace esp
     m_vertex_input_info.pVertexAttributeDescriptions    = m_attribute_descriptions.data();
   }
 
-  void VulkanWorkerBuilder::set_pipeline_layout(std::unique_ptr<EspUniformMetaData> uniforms_meta_data)
+  void VulkanWorkerBuilder::set_worker_layout(std::unique_ptr<EspUniformMetaData> uniforms_meta_data)
   {
     std::unique_ptr<VulkanUniformMetaData> meta_data(static_cast<VulkanUniformMetaData*>(uniforms_meta_data.release()));
 
