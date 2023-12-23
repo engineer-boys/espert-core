@@ -66,9 +66,9 @@ namespace esp
     else { EspJob::draw(get_vertex_count(), instance_buffer.get_vertex_count()); }
   }
 
-  void Mesh::update_buffer_uniform(uint32_t set, uint32_t binding, uint64_t offset, uint32_t size, void* data)
+  void Mesh::update_material(uint32_t set, uint32_t binding, uint64_t offset, uint32_t size, void* data)
   {
     if (m_material) { m_material->update_buffer_uniform(set, binding, offset, size, data); }
-    else { ESP_CORE_ERROR("No material to update buffer uniform on."); }
+    else { ESP_CORE_ERROR("No material to update."); }
   }
 } // namespace esp

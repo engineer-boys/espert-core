@@ -118,11 +118,11 @@ namespace esp
     }
   }
 
-  void Model::update_buffer_uniform(uint32_t set, uint32_t binding, uint64_t offset, uint32_t size, void* data)
+  void Model::update_material(uint32_t set, uint32_t binding, uint64_t offset, uint32_t size, void* data)
   {
     for (auto& mesh : m_meshes)
     {
-      mesh->update_buffer_uniform(set, binding, offset, size, data);
+      mesh->update_material(set, binding, offset, size, data);
     }
   }
 } // namespace esp
