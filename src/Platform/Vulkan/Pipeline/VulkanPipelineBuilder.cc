@@ -19,16 +19,16 @@ static VkShaderModule create_shader_module(const esp::SpirvData& code, VkDevice 
 
 namespace esp
 {
-  VulkanWorkerBuilder::VulkanWorkerBuilder() : m_shader_module_map{}, m_shader_info_map{}, m_vertex_input_info{}
+  VulkanWorkerBuilder::VulkanWorkerBuilder() : m_pipeline_stage_data_map{}, m_vertex_input_info{}
   {
     m_color_attachment_formats.push_back(*(VulkanSwapChain::get_swap_chain_image_format()));
   }
 
   VulkanWorkerBuilder::~VulkanWorkerBuilder()
   {
-    for (auto& it : m_shader_module_map)
+    for (auto& it : m_pipeline_stage_data_map)
     {
-      vkDestroyShaderModule(VulkanDevice::get_logical_device(), it.second, nullptr);
+      vkDestroyShaderModule(VulkanDevice::get_logical_device(), it.second.shader_module, nullptr);
     }
 
     if (m_is_pipeline_layout)
@@ -63,15 +63,78 @@ namespace esp
     spirv_resource->enumerate_data(
         [this](EspShaderStage stage, const SpirvData& spirv_data)
         {
-          m_shader_module_map[stage] = create_shader_module(spirv_data, VulkanDevice::get_logical_device());
+          m_pipeline_stage_data_map[stage].shader_module =
+              create_shader_module(spirv_data, VulkanDevice::get_logical_device());
 
-          m_shader_info_map[stage]        = {};
-          m_shader_info_map[stage].sType  = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-          m_shader_info_map[stage].stage  = esp_shader_stage_to_vk(stage);
-          m_shader_info_map[stage].module = m_shader_module_map.at(stage);
-          m_shader_info_map[stage].pName  = "main";
+          m_pipeline_stage_data_map[stage].shader_stage_create_info = {};
+          m_pipeline_stage_data_map[stage].shader_stage_create_info.sType =
+              VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+          m_pipeline_stage_data_map[stage].shader_stage_create_info.stage = esp_shader_stage_to_vk(stage);
+          m_pipeline_stage_data_map[stage].shader_stage_create_info.module =
+              m_pipeline_stage_data_map.at(stage).shader_module;
+          m_pipeline_stage_data_map[stage].shader_stage_create_info.pName = "main";
         });
   }
+
+  void VulkanWorkerBuilder::set_specialization(const SpecializationConstantMap& spec_const_map)
+  {
+    for (auto [stage, specialization_constants] : spec_const_map)
+    {
+      size_t size = 0;
+      m_pipeline_stage_data_map[stage].specialization_map_entries =
+          std::vector<VkSpecializationMapEntry>(specialization_constants.size());
+      auto it = m_pipeline_stage_data_map.at(stage).specialization_map_entries.begin();
+      for (const auto& spec_const : specialization_constants)
+      {
+        std::visit(overloaded{ [&size, &it, &spec_const](const bool& a)
+                               {
+                                 it->constantID = spec_const.constant_id;
+                                 it->size       = sizeof(VkBool32);
+                                 it->offset     = size;
+                                 size += sizeof(VkBool32);
+                               },
+                               [&size, &it, &spec_const](const auto& a)
+                               {
+                                 it->constantID = spec_const.constant_id;
+                                 it->size       = sizeof(a);
+                                 it->offset     = size;
+                                 size += sizeof(a);
+                               } },
+                   spec_const.value);
+        it++;
+      }
+      m_pipeline_stage_data_map[stage].specialization_data = (void*)malloc(size);
+      void* p_data                                         = m_pipeline_stage_data_map.at(stage).specialization_data;
+      for (const auto& spec_const : specialization_constants)
+      {
+        std::visit(overloaded{ [&p_data](const bool& a)
+                               {
+                                 VkBool32 vka = a;
+                                 memcpy(p_data, &vka, sizeof(vka));
+                                 p_data = reinterpret_cast<void*>(reinterpret_cast<VkBool32*>(p_data) + 1);
+                               },
+                               [&p_data](const auto& a)
+                               {
+                                 memcpy(p_data, &a, sizeof(a));
+                                 auto ptr_a = &a;
+                                 p_data     = const_cast<void*>(
+                                     reinterpret_cast<const void*>(reinterpret_cast<typeof(ptr_a)>(p_data) + 1));
+                               } },
+                   spec_const.value);
+      }
+
+      m_pipeline_stage_data_map[stage].specialization_info.dataSize = size;
+      m_pipeline_stage_data_map[stage].specialization_info.mapEntryCount =
+          static_cast<uint32_t>(m_pipeline_stage_data_map.at(stage).specialization_map_entries.size());
+      m_pipeline_stage_data_map[stage].specialization_info.pMapEntries =
+          m_pipeline_stage_data_map.at(stage).specialization_map_entries.data();
+      m_pipeline_stage_data_map[stage].specialization_info.pData =
+          m_pipeline_stage_data_map.at(stage).specialization_data;
+
+      m_pipeline_stage_data_map[stage].shader_stage_create_info.pSpecializationInfo =
+          &(m_pipeline_stage_data_map.at(stage).specialization_info);
+    }
+  };
 
   void VulkanWorkerBuilder::set_vertex_layouts(std::vector<EspVertexLayout> vertex_layouts)
   {
@@ -171,15 +234,17 @@ namespace esp
         - the render pass is taken from VulkanFrameManager
         - there is 0 subpasses.
     */
-    ESP_ASSERT(m_shader_module_map.contains(EspShaderStage::FRAGMENT),
+    ESP_ASSERT(m_pipeline_stage_data_map.contains(EspShaderStage::FRAGMENT),
                "You cannot create pipeline a without a fragment shader.");
-    ESP_ASSERT(m_shader_module_map.contains(EspShaderStage::VERTEX),
+    ESP_ASSERT(m_pipeline_stage_data_map.contains(EspShaderStage::VERTEX),
                "You cannot create pipeline a without a vertex shader.");
     ESP_ASSERT(m_is_pipeline_layout, "You cannot create a pipeline without a pipeline layout.")
     ESP_ASSERT(m_color_attachment_formats.size() != 0, "You cannot create a pipeline  without color attachments.");
 
-    VkPipelineShaderStageCreateInfo shader_stages[] = { m_shader_info_map.at(EspShaderStage::VERTEX),
-                                                        m_shader_info_map.at(EspShaderStage::FRAGMENT) };
+    VkPipelineShaderStageCreateInfo shader_stages[] = {
+      m_pipeline_stage_data_map.at(EspShaderStage::VERTEX).shader_stage_create_info,
+      m_pipeline_stage_data_map.at(EspShaderStage::FRAGMENT).shader_stage_create_info
+    };
 
     VkPipelineVertexInputStateCreateInfo vertex_input_info{};
     {
@@ -311,15 +376,13 @@ namespace esp
     }
     else { ESP_CORE_INFO("Graphic pipeline created correctly"); }
 
-    vkDestroyShaderModule(VulkanDevice::get_logical_device(),
-                          m_shader_module_map.at(EspShaderStage::FRAGMENT),
-                          nullptr);
-    vkDestroyShaderModule(VulkanDevice::get_logical_device(), m_shader_module_map.at(EspShaderStage::VERTEX), nullptr);
+    for (auto& it : m_pipeline_stage_data_map)
+    {
+      vkDestroyShaderModule(VulkanDevice::get_logical_device(), it.second.shader_module, nullptr);
+    }
 
-    std::unordered_map<EspShaderStage, VkShaderModule> empty_module_map;
-    m_shader_module_map.swap(empty_module_map);
-    std::unordered_map<EspShaderStage, VkPipelineShaderStageCreateInfo> empty_info_map;
-    m_shader_info_map.swap(empty_info_map);
+    std::unordered_map<EspShaderStage, PipelineStageData> empty_pipeline_stage_data_map;
+    m_pipeline_stage_data_map.swap(empty_pipeline_stage_data_map);
 
     m_is_pipeline_layout = false;
 

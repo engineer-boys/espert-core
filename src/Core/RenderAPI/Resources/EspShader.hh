@@ -28,6 +28,7 @@ namespace esp
     void enable_multisampling(EspSampleCountFlag sample_count_flag);
     void set_attachment_formats(std::vector<EspBlockFormat> formats);
     void set_vertex_layouts(std::vector<EspVertexLayout> vertex_layouts);
+    void set_specialization(const SpecializationConstantMap& spec_const_map);
     void set_worker_layout(std::unique_ptr<EspUniformMetaData> uniforms_meta_data);
     void build_worker();
   };
