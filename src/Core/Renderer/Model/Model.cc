@@ -117,12 +117,4 @@ namespace esp
       else { mesh->draw(); }
     }
   }
-
-  void Model::update_material(uint32_t set, uint32_t binding, uint64_t offset, uint32_t size, void* data)
-  {
-    for (auto& mesh : m_meshes)
-    {
-      mesh->update_material(set, binding, offset, size, data);
-    }
-  }
 } // namespace esp

@@ -54,7 +54,6 @@ namespace esp
     ~Model() = default;
 
     void draw(); // TODO: this will be called only through renderer - make it private
-    void update_material(uint32_t set, uint32_t binding, uint64_t offset, uint32_t size, void* data);
 
     inline const std::vector<std::shared_ptr<Mesh>>& get_meshes() { return m_meshes; }
     inline const uint32_t get_meshes_count() const { return m_meshes.size(); }
