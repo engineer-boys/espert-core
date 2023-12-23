@@ -106,7 +106,7 @@ class EspPipelineBuilder:
         # needed uniforms, textures and it provides private API
         # for EspPipelineBuilder to get this data.
     
-    def build_pipeline() -> EspPipeline:
+    def build_worker() -> EspPipeline:
         # Build EspPipeline object based on
         # given data from above functions.
 ```
@@ -311,7 +311,7 @@ def main() -> None:
         ]
     )
     builder.set_worker_layout(pp_layout_metadata)
-    pp_graphic = builder.build_pipeline()
+    pp_graphic = builder.build_worker()
     uniform_manager = pp_graphic.create_uniform_manager()
 
     # Load texture

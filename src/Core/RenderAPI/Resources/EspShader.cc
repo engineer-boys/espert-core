@@ -51,5 +51,5 @@ namespace esp
     m_worker_builder->set_worker_layout(std::move(uniforms_meta_data));
   }
 
-  void EspShader::build_pipeline() { m_worker = m_worker_builder->build_worker(); }
+  void EspShader::build_worker() { m_worker = m_worker_builder->build_worker(); }
 } // namespace esp
