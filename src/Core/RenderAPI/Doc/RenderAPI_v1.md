@@ -99,7 +99,7 @@ class EspPipelineBuilder:
         # Set structure info about vertices in vertex buffers
         # which can be attach. This will be called vertex layout.
 
-    def set_pipeline_layout(uniforms_meta_data: EspUniformMetaData) -> None:
+    def set_worker_layout(uniforms_meta_data: EspUniformMetaData) -> None:
         # Set layout for this pipeline. The layout describes
         # what data can be eaten by pipeline. The parameter is
         # PipelineLayoutManufacture which contains info about
@@ -310,7 +310,7 @@ def main() -> None:
             }
         ]
     )
-    builder.set_pipeline_layout(pp_layout_metadata)
+    builder.set_worker_layout(pp_layout_metadata)
     pp_graphic = builder.build_pipeline()
     uniform_manager = pp_graphic.create_uniform_manager()
 

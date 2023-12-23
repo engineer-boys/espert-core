@@ -51,8 +51,8 @@ namespace esp
 
     virtual void set_shaders(std::unique_ptr<SpirvResource> spirv_resource) = 0;
 
-    virtual void set_vertex_layouts(std::vector<EspVertexLayout> vertex_layouts)             = 0;
-    virtual void set_pipeline_layout(std::unique_ptr<EspUniformMetaData> uniforms_meta_data) = 0;
+    virtual void set_vertex_layouts(std::vector<EspVertexLayout> vertex_layouts)           = 0;
+    virtual void set_worker_layout(std::unique_ptr<EspUniformMetaData> uniforms_meta_data) = 0;
 
     virtual std::unique_ptr<EspWorker> build_worker() = 0;
 
