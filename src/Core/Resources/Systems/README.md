@@ -186,7 +186,7 @@ def main() -> None:
 
 # Shader system
 
-The shader system is responsible for loading and handling shaders. It conserves time and memory by caching shaders and returning their references. It uses resoruce system to load spir-v shader soruces and then generates EspPipeline with it. It loads a default shader with name 'default' which os used in case a specific shader couldn't be loaded. For now it extends functionality of EspPipeline which will be changed with automatic pipeline generation. Shader system class is a singleton and should be initialized at app start and terminated at app's exit.
+The shader system is responsible for loading and handling shaders. It conserves time and memory by caching shaders and returning their references. It uses resoruce system to load spir-v shader soruces and then generates EspWorker with it. It loads a default shader with name 'default' which os used in case a specific shader couldn't be loaded. For now it extends functionality of EspWorker which will be changed with automatic pipeline generation. Shader system class is a singleton and should be initialized at app start and terminated at app's exit.
 
 ```
 class ShaderSystem:
