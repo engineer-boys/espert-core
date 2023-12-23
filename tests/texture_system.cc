@@ -11,9 +11,9 @@
 
 TEST_CASE("Texture system", "[texture_system]")
 {
-  auto context                   = esp::ApplicationContext::create();
-  esp::Application* app_instance = esp::create_app_instance();
-  auto test_app                  = dynamic_cast<TestApp*>(app_instance);
+  auto context                      = esp::EspApplicationContext::create();
+  esp::EspApplication* app_instance = esp::create_app_instance();
+  auto test_app                     = dynamic_cast<TestApp*>(app_instance);
 
   {
     test_app->set_context(std::move(context));
@@ -64,9 +64,9 @@ TEST_CASE("Texture system", "[texture_system]")
 
 TEST_CASE("Texture system - load texture", "[texture_system]")
 {
-  auto context                   = esp::ApplicationContext::create();
-  esp::Application* app_instance = esp::create_app_instance();
-  auto test_app                  = dynamic_cast<TestApp*>(app_instance);
+  auto context                      = esp::EspApplicationContext::create();
+  esp::EspApplication* app_instance = esp::create_app_instance();
+  auto test_app                     = dynamic_cast<TestApp*>(app_instance);
 
   {
     test_app->set_context(std::move(context));
