@@ -33,6 +33,12 @@ def update_wsi_params(args: Namespace) -> None:
     )
     if args.wsi == WSI.WAYLAND:
         ESPERT_LIBS_CONF["glfw"].append(CmakeParameter("GLFW_USE_WAYLAND", "ON"))
+    for wsi in list(WSI):
+        if wsi == WSI.D2D: continue
+        if wsi == args.wsi:
+            ESPERT_LIBS_CONF["vvl"].append(CmakeParameter(f"BUILD_WSI_{wsi.value.upper()}_SUPPORT", "ON"))
+        else:
+            ESPERT_LIBS_CONF["vvl"].append(CmakeParameter(f"BUILD_WSI_{wsi.value.upper()}_SUPPORT", "OFF"))
 
 
 def configure_library(args: Namespace) -> None:
