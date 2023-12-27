@@ -3,7 +3,6 @@
 
 #include "esppch.hh"
 
-#include "Core/RenderAPI/Resources/EspCubemap.hh"
 #include "Core/RenderAPI/Resources/EspTexture.hh"
 #include "Core/Resources/ResourceTypes.hh"
 #include "Core/Resources/ResourceUtils.hh"
@@ -11,7 +10,7 @@
 namespace esp
 {
   using TextureMap = std::unordered_map<std::string, std::shared_ptr<EspTexture>>;
-  using CubemapMap = std::unordered_map<std::string, std::shared_ptr<EspCubemap>>;
+  using CubemapMap = std::unordered_map<std::string, std::shared_ptr<EspTexture>>;
 
   struct TextureParams
   {
@@ -39,7 +38,7 @@ namespace esp
     TextureSystem();
 
     static std::shared_ptr<EspTexture> load(const std::string& name, const TextureParams& params);
-    static std::shared_ptr<EspCubemap> load_cube(const std::string& name, const TextureParams& params);
+    static std::shared_ptr<EspTexture> load_cubemap(const std::string& name, const TextureParams& params);
     static void create_default_textures();
     static bool texture_matching_params(std::shared_ptr<EspTexture> texture, const TextureParams& params);
     static bool is_default_texture_name(const std::string& name);
@@ -51,8 +50,8 @@ namespace esp
     static std::unique_ptr<TextureSystem> create();
     void terminate();
 
-    static std::shared_ptr<EspTexture> acquire(const std::string& name, const TextureParams& params);
-    static std::shared_ptr<EspCubemap> acquire_cube(const std::string& name, const TextureParams& params);
+    static std::shared_ptr<EspTexture> acquire(const std::string& name, const TextureParams& params = {});
+    static std::shared_ptr<EspTexture> acquire_cubemap(const std::string& name, const TextureParams& params = {});
     static void release(const std::string& name);
     static std::shared_ptr<EspTexture> get_default_texture(EspTextureType type = EspTextureType::ALBEDO);
   };

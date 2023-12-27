@@ -8,15 +8,12 @@
 
 // Render API Vulkan
 #include "EspUniformDataStorage.hh"
-#include "Platform/Vulkan/Resources/VulkanCubemap.hh"
 #include "Platform/Vulkan/Resources/VulkanTexture.hh"
 #include "Platform/Vulkan/Work/VulkanSwapChain.hh"
 #include "Platform/Vulkan/Work/VulkanWorkOrchestrator.hh"
 
 namespace esp
 {
-  using VulkanCombinedTexture = std::variant<std::shared_ptr<VulkanTexture>, std::shared_ptr<VulkanCubemap>>;
-
   struct EspUniformPackage
   {
    private:
@@ -46,7 +43,7 @@ namespace esp
     void update_descriptor_set(EspBufferSet& buffer_set,
                                const VkDescriptorSet& descriptor,
                                const std::vector<EspMetaUniform>& uniforms,
-                               std::map<uint32_t, std::vector<VulkanCombinedTexture>>& vec_textures);
+                               std::map<uint32_t, std::vector<std::shared_ptr<VulkanTexture>>>& vec_textures);
 
    public:
     inline void attach(const VkPipelineLayout& pipeline_layout) const
@@ -69,7 +66,7 @@ namespace esp
 
     EspUniformPackage(const EspUniformDataStorage& uniform_data_storage,
                       const VkDescriptorPool& descriptor_pool,
-                      std::map<uint32_t, std::map<uint32_t, std::vector<VulkanCombinedTexture>>>& textures,
+                      std::map<uint32_t, std::map<uint32_t, std::vector<std::shared_ptr<VulkanTexture>>>>& textures,
                       int first_descriptor_set,
                       int last_descriptor_set);
     ~EspUniformPackage();
@@ -81,7 +78,7 @@ namespace esp
 
    private:
     // <set, <binding, vector<texture> >>
-    std::map<uint32_t, std::map<uint32_t, std::vector<VulkanCombinedTexture>>> m_textures;
+    std::map<uint32_t, std::map<uint32_t, std::vector<std::shared_ptr<VulkanTexture>>>> m_textures;
     std::vector<EspUniformPackage*> m_packages;
 
     VkDescriptorPool m_descriptor_pool;
@@ -129,16 +126,6 @@ namespace esp
     {
       auto vulkan_texture = std::static_pointer_cast<VulkanTexture>(texture);
       m_textures[set][binding].emplace_back(vulkan_texture);
-
-      return *this;
-    }
-
-    inline virtual EspUniformManager& load_texture(uint32_t set,
-                                                   uint32_t binding,
-                                                   std::shared_ptr<EspCubemap> cubemap) override
-    {
-      auto vulkan_cubemap = std::static_pointer_cast<VulkanCubemap>(cubemap);
-      m_textures[set][binding].emplace_back(vulkan_cubemap);
 
       return *this;
     }
