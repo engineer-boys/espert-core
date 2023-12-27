@@ -23,6 +23,24 @@ namespace esp
     return texture;
   }
 
+  std::shared_ptr<EspTexture> EspTexture::create_cubemap(const std::string& name,
+                                                         std::unique_ptr<CubemapResource> cubemap_resource)
+  {
+    /* ---------------------------------------------------------*/
+    /* ------------- PLATFORM DEPENDENT ------------------------*/
+    /* ---------------------------------------------------------*/
+    // #if defined(OPENGL_PLATFORM)
+    //     auto context = std::make_unique<OpenGLContext>();
+    // #elif defined(VULKAN_PLATFORM)
+    auto cubemap = VulkanTexture::create_cubemap(name, std::move(cubemap_resource));
+    // #else
+    // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
+    // #endif
+    /* ---------------------------------------------------------*/
+
+    return cubemap;
+  }
+
   EspTexture::EspTexture(const std::string& name,
                          const uint8_t* pixels,
                          uint8_t channel_count,
@@ -34,6 +52,12 @@ namespace esp
   {
     calculate_mip_levels();
     check_for_transparency(pixels);
+  }
+
+  EspTexture::EspTexture(const std::string& name, uint8_t channel_count, uint32_t width, uint32_t height) :
+      m_name(name), m_channel_count(channel_count), m_width(width), m_height(height), m_mip_levels(1),
+      m_has_transparency(false), m_type(EspTextureType::ALBEDO)
+  {
   }
 
   EspTexture::EspTexture(uint32_t width, uint32_t height) :

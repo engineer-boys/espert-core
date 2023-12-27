@@ -97,6 +97,9 @@ namespace esp
                                               EspTextureType type = EspTextureType::ALBEDO,
                                               bool mipmapping     = false);
 
+    static std::shared_ptr<EspTexture> create_cubemap(const std::string& name,
+                                                      std::unique_ptr<CubemapResource> cubemap_resource);
+
     inline const std::string& get_name() const { return m_name; }
     inline const uint64_t get_size() const { return m_channel_count * m_width * m_height; }
     inline const uint8_t get_channel_count() const { return m_channel_count; }
@@ -120,6 +123,7 @@ namespace esp
                uint32_t height,
                EspTextureType type = EspTextureType::ALBEDO);
     EspTexture(uint32_t width, uint32_t height);
+    EspTexture(const std::string& name, uint8_t channel_count, uint32_t width, uint32_t height);
 
     std::string m_name;
     uint8_t m_channel_count;

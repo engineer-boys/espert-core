@@ -33,6 +33,9 @@ namespace esp
                                                  EspTextureType type = EspTextureType::ALBEDO,
                                                  bool mipmapping     = false);
 
+    static std::shared_ptr<VulkanTexture> create_cubemap(const std::string name,
+                                                         std::unique_ptr<CubemapResource> cubemap_resource);
+
     static std::unique_ptr<VulkanTexture> create_from_block(const VulkanBlock* block);
 
     PREVENT_COPY(VulkanTexture);
@@ -51,6 +54,8 @@ namespace esp
                   uint32_t width,
                   uint32_t height,
                   EspTextureType type = EspTextureType::ALBEDO);
+
+    VulkanTexture(const std::string& name, uint8_t channel_count, uint32_t width, uint32_t height);
 
     VulkanTexture(uint32_t width, uint32_t height);
   };

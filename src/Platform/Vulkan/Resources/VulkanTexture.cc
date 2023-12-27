@@ -16,6 +16,11 @@ namespace esp
   {
   }
 
+  VulkanTexture::VulkanTexture(const std::string& name, uint8_t channel_count, uint32_t width, uint32_t height) :
+      EspTexture(name, channel_count, width, height)
+  {
+  }
+
   std::shared_ptr<VulkanTexture> VulkanTexture::create(const std::string name,
                                                        std::unique_ptr<ImageResource> image,
                                                        EspTextureType type,
@@ -43,6 +48,40 @@ namespace esp
 
     vulkan_texture->m_sampler =
         !mipmapping ? VulkanSampler::get_default_sampler() : VulkanSampler::create(vulkan_texture->m_mip_levels);
+
+    return vulkan_texture;
+  }
+
+  std::shared_ptr<VulkanTexture> VulkanTexture::create_cubemap(const std::string name,
+                                                               std::unique_ptr<CubemapResource> cubemap_resource)
+  {
+    auto vulkan_texture = std::shared_ptr<VulkanTexture>(
+        new VulkanTexture(name,
+                          cubemap_resource->get_face(EspCubemapFace::TOP).get_channel_count(),
+                          cubemap_resource->get_face(EspCubemapFace::TOP).get_width(),
+                          cubemap_resource->get_face(EspCubemapFace::TOP).get_height()));
+
+    std::array<const void*, 6> data;
+    int i = 0;
+    for (auto face = EspCubemapFace::TOP; face < EspCubemapFace::ENUM_END; ++face)
+    {
+      data[i++] = cubemap_resource->get_face(EspCubemapFace::TOP).get_data();
+    }
+
+    VulkanResourceManager::create_cubemap_image(vulkan_texture->get_width(),
+                                                vulkan_texture->get_height(),
+                                                data.data(),
+                                                vulkan_texture->get_mip_levels(),
+                                                vulkan_texture->m_texture_image,
+                                                vulkan_texture->m_texture_image_memory);
+
+    vulkan_texture->m_texture_image_view =
+        VulkanResourceManager::create_cubemap_image_view(vulkan_texture->m_texture_image,
+                                                         VK_FORMAT_R8G8B8A8_SRGB,
+                                                         VK_IMAGE_ASPECT_COLOR_BIT,
+                                                         vulkan_texture->m_mip_levels);
+
+    vulkan_texture->m_sampler = VulkanSampler::create(vulkan_texture->m_mip_levels);
 
     return vulkan_texture;
   }
