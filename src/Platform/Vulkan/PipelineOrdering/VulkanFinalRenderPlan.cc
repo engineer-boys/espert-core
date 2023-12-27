@@ -35,9 +35,9 @@ namespace esp
                                         static_cast<VkFormat>(format),
                                         VK_IMAGE_TILING_OPTIMAL,
                                         VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
-                                        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
                                         1,
                                         {},
+                                        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
                                         m_color_buffer.m_image,
                                         m_color_buffer.m_image_memory);
 
