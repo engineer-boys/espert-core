@@ -68,6 +68,7 @@ namespace esp
                                      uint32_t height,
                                      const void* pixels,
                                      uint32_t mip_levels,
+                                     VkFormat format,
                                      VkImage& texture_image,
                                      VkDeviceMemory& texture_image_memory);
 

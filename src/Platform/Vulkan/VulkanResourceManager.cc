@@ -208,6 +208,7 @@ namespace esp
                                                    uint32_t height,
                                                    const void* pixels,
                                                    uint32_t mip_levels,
+                                                   VkFormat format,
                                                    VkImage& texture_image,
                                                    VkDeviceMemory& texture_image_memory)
   {
@@ -225,7 +226,7 @@ namespace esp
                  height,
                  mip_levels,
                  VK_SAMPLE_COUNT_1_BIT,
-                 VK_FORMAT_R8G8B8A8_SRGB,
+                 format,
                  VK_IMAGE_TILING_OPTIMAL,
                  VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
                  1,
@@ -242,7 +243,7 @@ namespace esp
     subresource_range.layerCount     = 1;
 
     transition_image_layout(texture_image,
-                            VK_FORMAT_R8G8B8A8_SRGB,
+                            format,
                             VK_IMAGE_LAYOUT_UNDEFINED,
                             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                             mip_levels,
@@ -250,7 +251,7 @@ namespace esp
 
     copy_buffer_to_image(staging_buffer.get_buffer(), texture_image, width, height, 1);
 
-    generate_mipmaps(texture_image, VK_FORMAT_R8G8B8A8_SRGB, width, height, mip_levels);
+    generate_mipmaps(texture_image, format, width, height, mip_levels);
   }
 
   void VulkanResourceManager::create_cubemap_image(uint32_t width,

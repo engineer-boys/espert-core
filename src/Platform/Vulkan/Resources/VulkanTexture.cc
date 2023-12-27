@@ -24,8 +24,11 @@ namespace esp
   std::shared_ptr<VulkanTexture> VulkanTexture::create(const std::string name,
                                                        std::unique_ptr<ImageResource> image,
                                                        EspTextureType type,
-                                                       bool mipmapping)
+                                                       bool mipmapping,
+                                                       EspTextureFormat format)
   {
+    VkFormat vulkan_format = static_cast<VkFormat>(format);
+
     auto vulkan_texture =
         std::shared_ptr<VulkanTexture>(new VulkanTexture(name,
                                                          static_cast<const uint8_t*>(image->get_data()),
@@ -38,11 +41,12 @@ namespace esp
                                                 vulkan_texture->get_height(),
                                                 image->release(),
                                                 vulkan_texture->get_mip_levels(),
+                                                vulkan_format,
                                                 vulkan_texture->m_texture_image,
                                                 vulkan_texture->m_texture_image_memory);
 
     vulkan_texture->m_texture_image_view = VulkanResourceManager::create_image_view(vulkan_texture->m_texture_image,
-                                                                                    VK_FORMAT_R8G8B8A8_SRGB,
+                                                                                    vulkan_format,
                                                                                     VK_IMAGE_ASPECT_COLOR_BIT,
                                                                                     vulkan_texture->m_mip_levels);
 
