@@ -19,14 +19,14 @@ namespace esp
 
      public:
       std::string m_title;
-      unsigned int m_width;
-      unsigned int m_height;
+      const unsigned int m_width;
+      const unsigned int m_height;
       EventManagerFun m_events_manager_fun;
 
       const bool m_disable_cursor = false;
 
-      WindowData(const std::string title, unsigned int width, unsigned int height) :
-          m_title(title), m_width(width), m_height(height)
+      WindowData(const std::string title, unsigned int width, unsigned int height, bool disable_cursor) :
+          m_title(title), m_width(width), m_height(height), m_disable_cursor(disable_cursor)
       {
       }
     };
