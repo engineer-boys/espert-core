@@ -8,7 +8,7 @@
 #include "Platform/Vulkan/Resources/VulkanSampler.hh"
 
 // Core
-#include "Core/Systems/TextureSystem.hh"
+#include "Core/Resources/Systems/TextureSystem.hh"
 
 namespace esp
 {

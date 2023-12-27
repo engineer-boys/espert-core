@@ -51,10 +51,10 @@ namespace esp
     return load(name, params);
   }
 
-  std::shared_ptr<EspCubemap> TextureSystem::acquire_cube(const std::string& name)
+  std::shared_ptr<EspCubemap> TextureSystem::acquire_cube(const std::string& name, const TextureParams& params)
   {
     if (s_instance->m_cubemap_map.contains(name)) return s_instance->m_cubemap_map.at(name);
-    return load_cube(name);
+    return load_cube(name, params);
   }
 
   void TextureSystem::release(const std::string& name)
@@ -91,11 +91,11 @@ namespace esp
     return texture;
   }
 
-  std::shared_ptr<EspCubemap> TextureSystem::load_cube(const std::string& name)
+  std::shared_ptr<EspCubemap> TextureSystem::load_cube(const std::string& name, const TextureParams& params)
   {
     // TODO: set params.flip_y accordingly to currently used graphics API
-    CubemapResourceParams params;
-    auto resource = ResourceSystem::load<CubemapResource>(name, params);
+    CubemapResourceParams cube_params;
+    auto resource = ResourceSystem::load<CubemapResource>(name, cube_params);
     if (!resource)
     {
       ESP_CORE_ERROR("Could not load cubemap {}.", name);
