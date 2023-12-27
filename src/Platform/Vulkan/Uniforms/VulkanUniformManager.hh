@@ -120,6 +120,19 @@ namespace esp
       return *this;
     }
 
+    inline virtual EspUniformManager& set_buffer_uniform(uint32_t set,
+                                                         uint32_t binding,
+                                                         uint64_t offset,
+                                                         uint32_t size,
+                                                         void* data)
+    {
+      for (int frame_idx = 0; frame_idx < VulkanSwapChain::MAX_FRAMES_IN_FLIGHT; frame_idx++)
+      {
+        m_packages[frame_idx]->operator[](set)[binding].write_to_buffer(data, size, offset);
+      }
+      return *this;
+    }
+
     inline virtual EspUniformManager& load_texture(uint32_t set,
                                                    uint32_t binding,
                                                    std::shared_ptr<EspTexture> texture) override
