@@ -98,8 +98,9 @@ namespace esp
     {
       aiString str;
       mat->GetTexture(type, i, &str);
+      TextureParams params;
 
-      return TextureSystem::acquire(fs::path(m_dir) / str.C_Str());
+      return TextureSystem::acquire(fs::path(m_dir) / str.C_Str(), params);
     }
 
     return nullptr;

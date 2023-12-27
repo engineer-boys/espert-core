@@ -37,7 +37,9 @@ namespace esp
                                      VkImage image,
                                      uint32_t width,
                                      uint32_t height,
-                                     uint32_t layer_count);
+                                     uint32_t layer_count,
+                                     uint32_t region_count = 1,
+                                     uint32_t layer_size   = 0);
 
     static void create_image(uint32_t width,
                              uint32_t height,
@@ -46,6 +48,8 @@ namespace esp
                              VkFormat format,
                              VkImageTiling tiling,
                              VkImageUsageFlags usage,
+                             uint32_t layers,
+                             VkImageCreateFlags flags,
                              VkMemoryPropertyFlags properties,
                              VkImage& image,
                              VkDeviceMemory& image_memory);

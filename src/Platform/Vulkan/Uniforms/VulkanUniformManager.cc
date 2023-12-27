@@ -126,7 +126,7 @@ namespace esp
   EspUniformPackage::EspUniformPackage(
       const EspUniformDataStorage& uniform_data_storage,
       const VkDescriptorPool& descriptor_pool,
-      std::map<uint32_t, std::map<uint32_t, std::vector<std::shared_ptr<VulkanTexture>>>>& textures,
+      std::map<uint32_t, std::map<uint32_t, std::vector<VulkanCombinedTexture>>>& textures,
       int first_descriptor_set,
       int last_descriptor_set)
   {
@@ -172,11 +172,10 @@ namespace esp
     }
   }
 
-  void EspUniformPackage::update_descriptor_set(
-      EspBufferSet& buffer_set,
-      const VkDescriptorSet& descriptor,
-      const std::vector<EspMetaUniform>& uniforms,
-      std::map<uint32_t, std::vector<std::shared_ptr<VulkanTexture>>>& vec_textures)
+  void EspUniformPackage::update_descriptor_set(EspBufferSet& buffer_set,
+                                                const VkDescriptorSet& descriptor,
+                                                const std::vector<EspMetaUniform>& uniforms,
+                                                std::map<uint32_t, std::vector<VulkanCombinedTexture>>& vec_textures)
   {
     // these objects have to exist until updating ds
     std::vector<VkWriteDescriptorSet> descriptor_writes;
@@ -216,13 +215,16 @@ namespace esp
 
         for (int elem_idx = 0; elem_idx < uniform.m_number_of_elements; elem_idx++)
         {
-          VulkanTexture& texture = *(vec_textures[uniform.m_binding][elem_idx]);
-
-          VkDescriptorImageInfo image_info{};
-          image_info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-          image_info.imageView   = texture.get_texture_image_view();
-          image_info.sampler     = texture.get_sampler();
-          image_infos.push_back(image_info);
+          std::visit(
+              [&image_infos](const auto& tex)
+              {
+                VkDescriptorImageInfo image_info{};
+                image_info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                image_info.imageView   = tex->get_texture_image_view();
+                image_info.sampler     = tex->get_sampler();
+                image_infos.push_back(image_info);
+              },
+              vec_textures[uniform.m_binding][elem_idx]);
         }
         all_image_infos.push_back(image_infos);
 

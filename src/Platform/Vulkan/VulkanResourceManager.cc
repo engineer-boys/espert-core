@@ -68,24 +68,38 @@ namespace esp
                                                    VkImage image,
                                                    uint32_t width,
                                                    uint32_t height,
-                                                   uint32_t layer_count)
+                                                   uint32_t layer_count,
+                                                   uint32_t region_count,
+                                                   uint32_t layer_size)
   {
     VkCommandBuffer command_buffer = VulkanWorkOrchestrator::begin_single_time_commands();
 
-    VkBufferImageCopy region{};
-    region.bufferOffset      = 0;
-    region.bufferRowLength   = 0;
-    region.bufferImageHeight = 0;
+    std::vector<VkBufferImageCopy> buffer_copy_regions;
 
-    region.imageSubresource.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
-    region.imageSubresource.mipLevel       = 0;
-    region.imageSubresource.baseArrayLayer = 0;
-    region.imageSubresource.layerCount     = layer_count;
+    for (int i = 0; i < region_count; ++i)
+    {
+      VkBufferImageCopy region{};
+      region.bufferOffset      = i * layer_size;
+      region.bufferRowLength   = 0;
+      region.bufferImageHeight = 0;
 
-    region.imageOffset = { 0, 0, 0 };
-    region.imageExtent = { width, height, 1 };
+      region.imageSubresource.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
+      region.imageSubresource.mipLevel       = 0;
+      region.imageSubresource.baseArrayLayer = i;
+      region.imageSubresource.layerCount     = layer_count;
 
-    vkCmdCopyBufferToImage(command_buffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+      region.imageOffset = { 0, 0, 0 };
+      region.imageExtent = { width, height, 1 };
+
+      buffer_copy_regions.push_back(region);
+    }
+
+    vkCmdCopyBufferToImage(command_buffer,
+                           buffer,
+                           image,
+                           VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                           buffer_copy_regions.size(),
+                           buffer_copy_regions.data());
 
     VulkanWorkOrchestrator::end_single_time_commands(command_buffer);
   }
@@ -97,6 +111,8 @@ namespace esp
                                            VkFormat format,
                                            VkImageTiling tiling,
                                            VkImageUsageFlags usage,
+                                           uint32_t layers,
+                                           VkImageCreateFlags flags,
                                            VkMemoryPropertyFlags properties,
                                            VkImage& image,
                                            VkDeviceMemory& image_memory)
@@ -108,13 +124,14 @@ namespace esp
     image_info.extent.height = height;
     image_info.extent.depth  = 1;
     image_info.mipLevels     = mip_levels;
-    image_info.arrayLayers   = 1;
+    image_info.arrayLayers   = layers;
     image_info.format        = format;
     image_info.tiling        = tiling;
     image_info.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     image_info.usage         = usage;
     image_info.samples       = num_samples;
     image_info.sharingMode   = VK_SHARING_MODE_EXCLUSIVE;
+    image_info.flags         = flags;
 
     if (vkCreateImage(VulkanDevice::get_logical_device(), &image_info, nullptr, &image) != VK_SUCCESS)
     {
@@ -171,15 +188,11 @@ namespace esp
                                                                uint32_t mip_levels)
   {
     VkImageViewCreateInfo view_info{};
-    view_info.sType                           = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
-    view_info.image                           = image;
-    view_info.viewType                        = VK_IMAGE_VIEW_TYPE_CUBE;
-    view_info.format                          = format;
-    view_info.subresourceRange.aspectMask     = aspect_flags;
-    view_info.subresourceRange.baseMipLevel   = 0;
-    view_info.subresourceRange.levelCount     = mip_levels;
-    view_info.subresourceRange.baseArrayLayer = 0;
-    view_info.subresourceRange.layerCount     = 6;
+    view_info.sType            = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+    view_info.image            = image;
+    view_info.viewType         = VK_IMAGE_VIEW_TYPE_CUBE;
+    view_info.format           = format;
+    view_info.subresourceRange = { aspect_flags, 0, mip_levels, 0, 6 };
 
     VkImageView image_view;
     if (vkCreateImageView(VulkanDevice::get_logical_device(), &view_info, nullptr, &image_view) != VK_SUCCESS)
@@ -216,6 +229,8 @@ namespace esp
                  VK_IMAGE_TILING_OPTIMAL,
                  VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
                  VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                 1,
+                 {},
                  texture_image,
                  texture_image_memory);
 
@@ -260,6 +275,8 @@ namespace esp
                  VK_IMAGE_TILING_OPTIMAL,
                  VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
                  VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                 6,
+                 VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT,
                  cubemap_image,
                  cubemap_image_memory);
 
@@ -269,9 +286,15 @@ namespace esp
                             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                             mip_levels);
 
-    copy_buffer_to_image(staging_buffer.get_buffer(), cubemap_image, width, height, 6);
+    copy_buffer_to_image(staging_buffer.get_buffer(), cubemap_image, width, height, 1, 6, layer_size);
 
     generate_mipmaps(cubemap_image, VK_FORMAT_R8G8B8A8_SRGB, width, height, mip_levels);
+
+    transition_image_layout(cubemap_image,
+                            VK_FORMAT_R8G8B8A8_SRGB,
+                            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                            VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
+                            mip_levels);
   }
 
   void VulkanResourceManager::transition_image_layout(VkImage image,

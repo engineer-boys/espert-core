@@ -72,7 +72,7 @@ TEST_CASE("Texture system - load texture", "[texture_system]")
     test_app->set_context(std::move(context));
     std::thread app_thread(&TestApp::run, test_app);
 
-    auto texture = esp::TextureSystem::acquire("test.jpg");
+    auto texture = esp::TextureSystem::acquire("test.jpg", {});
     REQUIRE(texture->get_name() == "test.jpg");
     REQUIRE(texture->get_channel_count() == 3);
     REQUIRE(texture->get_width() == 700);
