@@ -68,6 +68,8 @@ namespace esp
     inline float get_move_speed() const { return m_move_speed; }
     inline float get_sensitivity() const { return m_sensitivity; }
 
+    inline glm::vec3 get_positiion() const { return m_position; }
+
     inline const glm::mat4& get_view() { return m_view = glm::lookAt(m_position, m_position + m_front, m_camera_up); }
     inline const glm::mat4& get_projection() { return m_projection_mat; }
 

@@ -50,12 +50,12 @@ namespace esp
     inline uint32_t get_vertex_count() { return m_vertex_buffer->get_vertex_count(); }
     inline uint32_t get_index_count() { return m_index_buffer->get_index_count(); }
 
-    void set_material(std::shared_ptr<Material> material);
-
-   private:
     void draw();
     void draw(EspVertexBuffer& instance_buffer);
 
+    void set_material(std::shared_ptr<Material> material);
+
+   private:
     friend class Model;
   };
 } // namespace esp
