@@ -5,10 +5,15 @@ namespace esp
 {
   fs::path EspApplication::s_asset_base_path = fs::current_path().parent_path() / "resources";
 
-  EspApplication::EspApplication(const std::string title, unsigned int width, unsigned int height) : m_running(true)
+  EspApplication::EspApplication(const std::string title,
+                                 unsigned int width,
+                                 unsigned int height,
+                                 bool disable_cursor) :
+      m_running(true)
+
   {
     // create (alloc and init) window
-    m_window = EspWindow::create(new EspWindow::WindowData(title, width, height));
+    m_window = EspWindow::create(new EspWindow::WindowData(title, width, height, disable_cursor));
     m_window->set_events_manager_fun(ESP_BIND_EVENT_FOR_FUN(EspApplication::events_manager));
 
     // create (alloc and init) timer
@@ -65,6 +70,9 @@ namespace esp
       m_timer->tick();
       if (m_timer->get_dt() < ESP_MIN_FRAME_RATE) continue;
       m_timer->reset();
+
+      this->update(m_timer->get_dt());
+      if (!m_running) break;
 
       m_renderer.m_work_orchestrator->begin_frame();
 
