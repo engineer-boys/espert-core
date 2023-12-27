@@ -4,6 +4,7 @@
 #include "esppch.hh"
 
 #include "Core/Resources/ResourceTypes.hh"
+#include "Format/EspTextureFormat.hh"
 
 namespace esp
 {
@@ -95,7 +96,9 @@ namespace esp
     static std::shared_ptr<EspTexture> create(const std::string& name,
                                               std::unique_ptr<ImageResource> image,
                                               EspTextureType type = EspTextureType::ALBEDO,
-                                              bool mipmapping     = false);
+                                              bool mipmapping     = false, 
+                                              EspTextureFormat format = EspTextureFormat::ESP_FORMAT_B8G8R8A8_SRGB);
+
 
     static std::shared_ptr<EspTexture> create_cubemap(const std::string& name,
                                                       std::unique_ptr<CubemapResource> cubemap_resource);

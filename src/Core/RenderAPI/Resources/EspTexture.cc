@@ -6,7 +6,8 @@ namespace esp
   std::shared_ptr<EspTexture> EspTexture::create(const std::string& name,
                                                  std::unique_ptr<ImageResource> image,
                                                  EspTextureType type,
-                                                 bool mipmapping)
+                                                 bool mipmapping
+                                                 EspTextureFormat format)
   {
     /* ---------------------------------------------------------*/
     /* ------------- PLATFORM DEPENDENT ------------------------*/
@@ -14,7 +15,7 @@ namespace esp
     // #if defined(OPENGL_PLATFORM)
     //     auto context = std::make_unique<OpenGLContext>();
     // #elif defined(VULKAN_PLATFORM)
-    auto texture = VulkanTexture::create(name, std::move(image), type, mipmapping);
+    auto texture = VulkanTexture::create(name, std::move(image), type, mipmapping, format);
     // #else
     // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
     // #endif
