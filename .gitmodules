@@ -31,3 +31,6 @@
 [submodule "external/assimp"]
 	path = external/assimp
 	url = git@github.com:assimp/assimp.git
+[submodule "external/spirv-reflect"]
+	path = external/spirv-reflect
+	url = https://github.com/KhronosGroup/SPIRV-Reflect.git
