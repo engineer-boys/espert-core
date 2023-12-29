@@ -38,6 +38,9 @@
 // entt
 #include "entt/entt.hpp"
 
+// spirv-reflect
+#include "spirv_reflect.h"
+
 // espert
 #include "Core/Utils/Logger.hh"
 #include "Core/Utils/Utils.hh"

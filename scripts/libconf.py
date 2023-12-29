@@ -3,6 +3,7 @@ from common import CmakeParameter
 
 
 ESPERT_LIBS_CONF = {
+    "assimp": [],
     "catch2": [],
     "entt": [],
     "glfw": [
@@ -30,6 +31,12 @@ ESPERT_LIBS_CONF = {
         CmakeParameter("SPDLOG_ENABLE_PCH", "ON"),
         CmakeParameter("SPDLOG_BUILD_EXAMPLE", "OFF"),
     ],
+    "spirv-reflect": [
+        CmakeParameter("SPIRV_REFLECT_EXECUTABLE", "OFF"),
+        CmakeParameter("SPIRV_REFLECT_STATIC_LIB", "ON"),
+        CmakeParameter("SPIRV_REFLECT_BUILD_TESTS", "OFF"),
+        CmakeParameter("SPIRV_REFLECT_EXAMPLES", "OFF")
+    ],
     "stb": [],
     "tinyobjloader": [],
     "volk": [],
@@ -38,6 +45,5 @@ ESPERT_LIBS_CONF = {
         CmakeParameter("UPDATE_DEPS", "ON"),
         CmakeParameter("BUILD_WERROR", "ON"),
         CmakeParameter("BUILD_TESTS", "OFF"),
-    ],
-    "assimp": []
+    ]
 }
