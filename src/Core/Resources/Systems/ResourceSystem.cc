@@ -1,6 +1,7 @@
 #include "ResourceSystem.hh"
 
 #include "Core/Resources/Loaders/BinaryLoader.hh"
+#include "Core/Resources/Loaders/CubemapLoader.hh"
 #include "Core/Resources/Loaders/ImageLoader.hh"
 #include "Core/Resources/Loaders/SpirvLoader.hh"
 #include "Core/Resources/Loaders/TextLoader.hh"
@@ -40,6 +41,7 @@ namespace esp
 
     resource_system->register_loader<BinaryResource>(std::move(std::unique_ptr<Loader>(new BinaryLoader())));
     resource_system->register_loader<TextResource>(std::move(std::unique_ptr<Loader>(new TextLoader())));
+    resource_system->register_loader<CubemapResource>(std::move(std::unique_ptr<Loader>(new CubemapLoader())));
     resource_system->register_loader<ImageResource>(std::move(std::unique_ptr<Loader>(new ImageLoader())));
     resource_system->register_loader<SpirvResource>(std::move(std::unique_ptr<Loader>(new SpirvLoader())));
 

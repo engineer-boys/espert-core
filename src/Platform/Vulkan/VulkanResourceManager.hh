@@ -82,7 +82,8 @@ namespace esp
                                         VkFormat format,
                                         VkImageLayout old_layout,
                                         VkImageLayout new_layout,
-                                        uint32_t mip_levels);
+                                        uint32_t mip_levels,
+                                        VkImageSubresourceRange subresource_range);
 
     static void generate_mipmaps(VkImage image,
                                  VkFormat format,

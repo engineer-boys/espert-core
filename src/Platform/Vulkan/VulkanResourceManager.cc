@@ -86,7 +86,7 @@ namespace esp
       region.imageSubresource.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
       region.imageSubresource.mipLevel       = 0;
       region.imageSubresource.baseArrayLayer = i;
-      region.imageSubresource.layerCount     = layer_count;
+      region.imageSubresource.layerCount     = 1;
 
       region.imageOffset = { 0, 0, 0 };
       region.imageExtent = { width, height, 1 };
@@ -234,11 +234,19 @@ namespace esp
                  texture_image,
                  texture_image_memory);
 
+    VkImageSubresourceRange subresource_range;
+    subresource_range.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
+    subresource_range.baseMipLevel   = 0;
+    subresource_range.levelCount     = mip_levels;
+    subresource_range.baseArrayLayer = 0;
+    subresource_range.layerCount     = 1;
+
     transition_image_layout(texture_image,
                             VK_FORMAT_R8G8B8A8_SRGB,
                             VK_IMAGE_LAYOUT_UNDEFINED,
                             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                            mip_levels);
+                            mip_levels,
+                            subresource_range);
 
     copy_buffer_to_image(staging_buffer.get_buffer(), texture_image, width, height, 1);
 
@@ -252,6 +260,7 @@ namespace esp
                                                    VkImage& cubemap_image,
                                                    VkDeviceMemory& cubemap_image_memory)
   {
+    // NOW: mip_levels has to be always 1
     VkDeviceSize layer_size = width * height * 4;
     VkDeviceSize image_size = layer_size * 6;
 
@@ -280,43 +289,47 @@ namespace esp
                  cubemap_image,
                  cubemap_image_memory);
 
+    VkImageSubresourceRange subresource_range;
+    subresource_range.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
+    subresource_range.baseMipLevel   = 0;
+    subresource_range.levelCount     = mip_levels;
+    subresource_range.baseArrayLayer = 0;
+    subresource_range.layerCount     = 6;
+
     transition_image_layout(cubemap_image,
                             VK_FORMAT_R8G8B8A8_SRGB,
                             VK_IMAGE_LAYOUT_UNDEFINED,
                             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-                            mip_levels);
+                            mip_levels,
+                            subresource_range);
 
     copy_buffer_to_image(staging_buffer.get_buffer(), cubemap_image, width, height, 1, 6, layer_size);
-
-    generate_mipmaps(cubemap_image, VK_FORMAT_R8G8B8A8_SRGB, width, height, mip_levels);
 
     transition_image_layout(cubemap_image,
                             VK_FORMAT_R8G8B8A8_SRGB,
                             VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
                             VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,
-                            mip_levels);
+                            mip_levels,
+                            subresource_range);
   }
 
   void VulkanResourceManager::transition_image_layout(VkImage image,
                                                       VkFormat format,
                                                       VkImageLayout old_layout,
                                                       VkImageLayout new_layout,
-                                                      uint32_t mip_levels)
+                                                      uint32_t mip_levels,
+                                                      VkImageSubresourceRange subresource_range)
   {
     VkCommandBuffer command_buffer = VulkanWorkOrchestrator::begin_single_time_commands();
 
     VkImageMemoryBarrier barrier{};
-    barrier.sType                           = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-    barrier.oldLayout                       = old_layout;
-    barrier.newLayout                       = new_layout;
-    barrier.srcQueueFamilyIndex             = VK_QUEUE_FAMILY_IGNORED;
-    barrier.dstQueueFamilyIndex             = VK_QUEUE_FAMILY_IGNORED;
-    barrier.image                           = image;
-    barrier.subresourceRange.aspectMask     = VK_IMAGE_ASPECT_COLOR_BIT;
-    barrier.subresourceRange.baseMipLevel   = 0;
-    barrier.subresourceRange.levelCount     = mip_levels;
-    barrier.subresourceRange.baseArrayLayer = 0;
-    barrier.subresourceRange.layerCount     = 1;
+    barrier.sType               = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+    barrier.oldLayout           = old_layout;
+    barrier.newLayout           = new_layout;
+    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.image               = image;
+    barrier.subresourceRange    = subresource_range;
 
     VkPipelineStageFlags source_stage;
     VkPipelineStageFlags destination_stage;
