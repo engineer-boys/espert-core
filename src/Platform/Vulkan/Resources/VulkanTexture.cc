@@ -57,21 +57,21 @@ namespace esp
   {
     auto vulkan_texture = std::shared_ptr<VulkanTexture>(
         new VulkanTexture(name,
-                          cubemap_resource->get_face(EspCubemapFace::TOP).get_channel_count(),
-                          cubemap_resource->get_face(EspCubemapFace::TOP).get_width(),
-                          cubemap_resource->get_face(EspCubemapFace::TOP).get_height()));
+                          cubemap_resource->get_face(EspCubemapFace::RIGHT).get_channel_count(),
+                          cubemap_resource->get_face(EspCubemapFace::RIGHT).get_width(),
+                          cubemap_resource->get_face(EspCubemapFace::RIGHT).get_height()));
 
     std::array<const void*, 6> data;
     int i = 0;
-    for (auto face = EspCubemapFace::TOP; face < EspCubemapFace::ENUM_END; ++face)
+    for (auto face = EspCubemapFace::RIGHT; face < EspCubemapFace::ENUM_END; ++face)
     {
-      data[i++] = cubemap_resource->get_face(EspCubemapFace::TOP).get_data();
+      data[i++] = cubemap_resource->get_face(face).get_data();
     }
 
     VulkanResourceManager::create_cubemap_image(vulkan_texture->get_width(),
                                                 vulkan_texture->get_height(),
                                                 data.data(),
-                                                vulkan_texture->get_mip_levels(),
+                                                vulkan_texture->get_mip_levels(), // 1
                                                 vulkan_texture->m_texture_image,
                                                 vulkan_texture->m_texture_image_memory);
 

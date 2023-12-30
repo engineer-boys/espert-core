@@ -10,10 +10,11 @@ namespace esp
     fs::path base_path = ResourceSystem::get_asset_base_path() / path;
 
     FaceResourceMap face_resource_map = {};
-    for (auto face = EspCubemapFace::TOP; face < EspCubemapFace::ENUM_END; ++face)
+    for (auto face = EspCubemapFace::RIGHT; face < EspCubemapFace::ENUM_END; ++face)
     {
-      fs::path face_path = fs::path(base_path.stem().string() + "_" + esp_cubemap_face_to_str(face))
-                               .replace_extension(base_path.extension());
+      fs::path face_path =
+          fs::path((base_path.parent_path() / base_path.stem()).string() + "_" + esp_cubemap_face_to_str(face))
+              .replace_extension(base_path.extension());
       auto resource = ResourceSystem::load<ImageResource>(face_path, params);
       if (resource == nullptr)
       {

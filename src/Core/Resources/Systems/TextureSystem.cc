@@ -33,9 +33,11 @@ namespace esp
 
   void TextureSystem::terminate()
   {
-    TextureSystem::s_instance = nullptr;
-    TextureMap empty_map      = {};
-    m_texture_map.swap(empty_map);
+    TextureSystem::s_instance    = nullptr;
+    TextureMap empty_texture_map = {};
+    m_texture_map.swap(empty_texture_map);
+    CubemapMap empty_cubemap_map = {};
+    m_cubemap_map.swap(empty_cubemap_map);
     ESP_CORE_TRACE("Texture system shutdown.");
   }
 
