@@ -17,8 +17,13 @@ namespace esp
 
   struct ModelParams
   {
-    unsigned int p_flags = EspProcessDefault;
-    bool load_material   = true;
+    unsigned int p_flags                       = EspProcessDefault;
+    bool load_material                         = true;
+    std::vector<MaterialTextureLayout> layouts = { { 1, 0, EspTextureType::ALBEDO },
+                                                   { 1, 1, EspTextureType::NORMAL },
+                                                   { 1, 2, EspTextureType::METALLIC },
+                                                   { 1, 3, EspTextureType::ROUGHNESS },
+                                                   { 1, 4, EspTextureType::AO } };
   };
 
   class Model

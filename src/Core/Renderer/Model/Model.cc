@@ -80,13 +80,13 @@ namespace esp
       aiMaterial* ai_material = scene->mMaterials[mesh->mMaterialIndex];
       std::vector<std::shared_ptr<EspTexture>> textures;
 
-      for (auto type = EspTextureType::ALBEDO; type < EspTextureType::ENUM_END; ++type)
+      for (const auto& layout : params.layouts)
       {
-        auto texture = load_material_texture(ai_material, esp_texture_type_to_assimp(type));
+        auto texture = load_material_texture(ai_material, esp_texture_type_to_assimp(layout.type));
         if (texture) textures.push_back(texture);
       }
 
-      material = MaterialSystem::acquire(textures, m_shader);
+      material = MaterialSystem::acquire(textures, m_shader, params.layouts);
     }
 
     m_meshes.push_back(std::make_shared<Mesh>(vertices, indices, material));
