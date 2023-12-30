@@ -6,7 +6,7 @@ namespace esp
                      std::shared_ptr<EspShader> shader,
                      std::vector<MaterialTextureLayout> layouts) :
       m_name(""),
-      m_textures_map(std::move(textures)), m_shader(shader)
+      m_textures_map(std::move(textures)), m_shader(shader), m_uniform_manager(nullptr)
   {
     int start_ds = -1, end_ds = -1;
     if (layouts.size() > 0) { start_ds = end_ds = layouts.begin()->set; }
@@ -15,12 +15,15 @@ namespace esp
       if (layout.set > end_ds) end_ds = layout.set;
       if (layout.set < start_ds) start_ds = layout.set;
     }
-    m_uniform_manager = m_shader->create_uniform_manager(start_ds, end_ds);
-    for (const auto& layout : layouts)
+    if (!layouts.empty())
     {
-      m_uniform_manager->load_texture(layout.set, layout.binding, m_textures_map.at(layout.type));
+      m_uniform_manager = m_shader->create_uniform_manager(start_ds, end_ds);
+      for (const auto& layout : layouts)
+      {
+        m_uniform_manager->load_texture(layout.set, layout.binding, m_textures_map.at(layout.type));
+      }
+      m_uniform_manager->build();
     }
-    m_uniform_manager->build();
   }
 
   Material::Material(const std::string& name,
@@ -34,13 +37,13 @@ namespace esp
 
   Material& Material::update_buffer_uniform(uint32_t set, uint32_t binding, uint64_t offset, uint32_t size, void* data)
   {
-    m_uniform_manager->update_buffer_uniform(set, binding, offset, size, data);
+    if (m_uniform_manager) m_uniform_manager->update_buffer_uniform(set, binding, offset, size, data);
     return *this;
   }
 
   Material& Material::attach()
   {
-    m_uniform_manager->attach();
+    if (m_uniform_manager) m_uniform_manager->attach();
     return *this;
   }
 
