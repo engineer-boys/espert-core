@@ -15,7 +15,8 @@ namespace esp
     GEOMETRY               = 0x08,
     FRAGMENT               = 0x10,
     COMPUTE                = 0x20,
-    ENUM_END               = 0x40
+    ENUM_END               = 0x40,
+    ALL                    = 0x3f
   };
 
   inline EspShaderStageFlags operator|(const EspShaderStage a, const EspShaderStage b)
@@ -28,9 +29,19 @@ namespace esp
     return a | static_cast<EspShaderStageFlags>(b);
   }
 
+  inline EspShaderStageFlags operator|=(EspShaderStageFlags& a, const EspShaderStage b)
+  {
+    return a = a | static_cast<EspShaderStageFlags>(b);
+  }
+
   inline EspShaderStageFlags operator&(const EspShaderStageFlags a, const EspShaderStage b)
   {
     return a & static_cast<EspShaderStageFlags>(b);
+  }
+
+  inline EspShaderStageFlags operator&=(EspShaderStageFlags& a, const EspShaderStage b)
+  {
+    return a = a & static_cast<EspShaderStageFlags>(b);
   }
 
   inline EspShaderStage operator++(EspShaderStage& a)

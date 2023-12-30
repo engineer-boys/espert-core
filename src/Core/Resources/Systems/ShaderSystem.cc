@@ -22,7 +22,7 @@ namespace esp
   {
     auto shader_system = std::unique_ptr<ShaderSystem>(new ShaderSystem());
 
-    load(s_instance->m_default_shader_name, SpecializationConstantMap());
+    load(s_instance->m_default_shader_name, {});
 
     ESP_CORE_TRACE("Shader system initialized.");
 
@@ -37,17 +37,16 @@ namespace esp
     ESP_CORE_TRACE("Shader system shutdown.");
   }
 
-  std::shared_ptr<EspShader> ShaderSystem::acquire(const std::string& name,
-                                                   const SpecializationConstantMap& spec_const_map)
+  std::shared_ptr<EspShader> ShaderSystem::acquire(const std::string& name, const EspShaderConfig& config)
   {
-    auto key = std::make_pair(name, spec_const_map);
+    auto key = std::make_pair(name, config);
     if (s_instance->m_shader_map.contains(key)) { return s_instance->m_shader_map.at(key); }
-    return load(name, spec_const_map);
+    return load(name, config);
   }
 
-  void ShaderSystem::release(const std::string& name, const SpecializationConstantMap& spec_const_map)
+  void ShaderSystem::release(const std::string& name, const EspShaderConfig& config)
   {
-    auto key = std::make_pair(name, spec_const_map);
+    auto key = std::make_pair(name, config);
     if (!s_instance->m_shader_map.contains(key))
     {
       ESP_CORE_ERROR("Cannot release shader {}. Not present in map.", name);
@@ -63,8 +62,7 @@ namespace esp
     ESP_CORE_TRACE("Released shader {}.", name);
   }
 
-  std::shared_ptr<EspShader> ShaderSystem::load(const std::string& name,
-                                                const SpecializationConstantMap& spec_const_map)
+  std::shared_ptr<EspShader> ShaderSystem::load(const std::string& name, const EspShaderConfig& config)
   {
     SpirvResourceParams params;
     auto resource = ResourceSystem::load<SpirvResource>(name, params);
@@ -74,16 +72,14 @@ namespace esp
       return get_default_shader();
     }
     auto spirv_resource = unique_cast<SpirvResource>(std::move(resource));
-    auto shader         = EspShader::create(name, std::move(spirv_resource));
-    shader->set_specialization(spec_const_map);
-    auto key = std::make_pair(name, spec_const_map);
-    s_instance->m_shader_map.insert({ key, shader });
+    auto shader         = EspShader::create(name, std::move(spirv_resource), config);
+    s_instance->m_shader_map.insert({ std::make_pair(name, config), shader });
     ESP_CORE_TRACE("Loaded shader {}.", name);
     return shader;
   }
 
   std::shared_ptr<EspShader> ShaderSystem::get_default_shader()
   {
-    return s_instance->m_shader_map.at(std::make_pair(s_instance->m_default_shader_name, SpecializationConstantMap()));
+    return s_instance->m_shader_map.at(std::make_pair(s_instance->m_default_shader_name, EspShaderConfig()));
   }
 } // namespace esp
