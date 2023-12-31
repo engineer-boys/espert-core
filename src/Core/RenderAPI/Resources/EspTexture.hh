@@ -3,8 +3,8 @@
 
 #include "esppch.hh"
 
+#include "Core/RenderAPI/Resources/Format/EspTextureFormat.hh"
 #include "Core/Resources/ResourceTypes.hh"
-#include "Format/EspTextureFormat.hh"
 
 namespace esp
 {
@@ -95,13 +95,13 @@ namespace esp
 
     static std::shared_ptr<EspTexture> create(const std::string& name,
                                               std::unique_ptr<ImageResource> image,
-                                              EspTextureType type = EspTextureType::ALBEDO,
-                                              bool mipmapping     = false, 
-                                              EspTextureFormat format = EspTextureFormat::ESP_FORMAT_B8G8R8A8_SRGB);
-
+                                              EspTextureType type     = EspTextureType::ALBEDO,
+                                              bool mipmapping         = false,
+                                              EspTextureFormat format = EspTextureFormat::ESP_FORMAT_R8G8B8A8_SRGB);
 
     static std::shared_ptr<EspTexture> create_cubemap(const std::string& name,
-                                                      std::unique_ptr<CubemapResource> cubemap_resource);
+                                                      std::unique_ptr<CubemapResource> cubemap_resource,
+                                                      EspTextureFormat format);
 
     inline const std::string& get_name() const { return m_name; }
     inline const uint64_t get_size() const { return m_channel_count * m_width * m_height; }
