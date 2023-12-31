@@ -46,6 +46,11 @@ namespace esp
     m_worker_builder->set_vertex_layouts(std::move(vertex_layouts));
   }
 
+  void EspShader::set_specialization(const SpecializationConstantMap& spec_const_map)
+  {
+    m_worker_builder->set_specialization(spec_const_map);
+  }
+
   void EspShader::set_worker_layout(std::unique_ptr<EspUniformMetaData> uniforms_meta_data)
   {
     m_worker_builder->set_worker_layout(std::move(uniforms_meta_data));

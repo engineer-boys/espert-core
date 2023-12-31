@@ -10,6 +10,7 @@
 #include <stdexcept>
 #include <typeinfo>
 #include <utility>
+#include <variant>
 
 // data types
 #include <cstdint>
