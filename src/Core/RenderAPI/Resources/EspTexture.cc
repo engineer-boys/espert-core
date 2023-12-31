@@ -6,7 +6,7 @@ namespace esp
   std::shared_ptr<EspTexture> EspTexture::create(const std::string& name,
                                                  std::unique_ptr<ImageResource> image,
                                                  EspTextureType type,
-                                                 bool mipmapping
+                                                 bool mipmapping,
                                                  EspTextureFormat format)
   {
     /* ---------------------------------------------------------*/
@@ -25,7 +25,8 @@ namespace esp
   }
 
   std::shared_ptr<EspTexture> EspTexture::create_cubemap(const std::string& name,
-                                                         std::unique_ptr<CubemapResource> cubemap_resource)
+                                                         std::unique_ptr<CubemapResource> cubemap_resource,
+                                                         EspTextureFormat format)
   {
     /* ---------------------------------------------------------*/
     /* ------------- PLATFORM DEPENDENT ------------------------*/
@@ -33,7 +34,7 @@ namespace esp
     // #if defined(OPENGL_PLATFORM)
     //     auto context = std::make_unique<OpenGLContext>();
     // #elif defined(VULKAN_PLATFORM)
-    auto cubemap = VulkanTexture::create_cubemap(name, std::move(cubemap_resource));
+    auto cubemap = VulkanTexture::create_cubemap(name, std::move(cubemap_resource), format);
     // #else
     // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
     // #endif

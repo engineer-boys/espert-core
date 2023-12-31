@@ -37,7 +37,10 @@ namespace esp
     m_worker_builder->enable_multisampling(sample_count_flag);
   }
 
-  void EspShader::set_attachment_formats(std::vector<EspBlockFormat> formats) {}
+  void EspShader::set_attachment_formats(std::vector<EspBlockFormat> formats)
+  {
+    m_worker_builder->set_attachment_formats(formats);
+  }
 
   void EspShader::attach() { m_worker->attach(); }
 

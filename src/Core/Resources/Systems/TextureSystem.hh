@@ -15,6 +15,7 @@ namespace esp
   struct TextureParams
   {
     bool mipmapping     = false;
+    bool is_srgb        = true;
     EspTextureType type = EspTextureType::ALBEDO;
   };
 

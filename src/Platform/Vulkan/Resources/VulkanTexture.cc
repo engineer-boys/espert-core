@@ -57,8 +57,11 @@ namespace esp
   }
 
   std::shared_ptr<VulkanTexture> VulkanTexture::create_cubemap(const std::string name,
-                                                               std::unique_ptr<CubemapResource> cubemap_resource)
+                                                               std::unique_ptr<CubemapResource> cubemap_resource,
+                                                               EspTextureFormat format)
   {
+    VkFormat vulkan_format = static_cast<VkFormat>(format);
+
     auto vulkan_texture = std::shared_ptr<VulkanTexture>(
         new VulkanTexture(name,
                           cubemap_resource->get_face(EspCubemapFace::RIGHT).get_channel_count(),
@@ -76,12 +79,13 @@ namespace esp
                                                 vulkan_texture->get_height(),
                                                 data.data(),
                                                 vulkan_texture->get_mip_levels(), // 1
+                                                vulkan_format,
                                                 vulkan_texture->m_texture_image,
                                                 vulkan_texture->m_texture_image_memory);
 
     vulkan_texture->m_texture_image_view =
         VulkanResourceManager::create_cubemap_image_view(vulkan_texture->m_texture_image,
-                                                         VK_FORMAT_R8G8B8A8_SRGB,
+                                                         vulkan_format,
                                                          VK_IMAGE_ASPECT_COLOR_BIT,
                                                          vulkan_texture->m_mip_levels);
 

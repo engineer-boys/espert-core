@@ -30,12 +30,13 @@ namespace esp
    public:
     static std::shared_ptr<VulkanTexture> create(const std::string name,
                                                  std::unique_ptr<ImageResource> image,
-                                                 EspTextureType type = EspTextureType::ALBEDO,
-                                                 bool mipmapping     = false,
-                                                 EspTextureFormat format = EspTextureFormat::ESP_FORMAT_B8G8R8A8_SRGB);
+                                                 EspTextureType type     = EspTextureType::ALBEDO,
+                                                 bool mipmapping         = false,
+                                                 EspTextureFormat format = EspTextureFormat::ESP_FORMAT_R8G8B8A8_SRGB);
 
     static std::shared_ptr<VulkanTexture> create_cubemap(const std::string name,
-                                                         std::unique_ptr<CubemapResource> cubemap_resource);
+                                                         std::unique_ptr<CubemapResource> cubemap_resource,
+                                                         EspTextureFormat format);
 
     static std::unique_ptr<VulkanTexture> create_from_block(const VulkanBlock* block);
 
