@@ -4,14 +4,15 @@ The espert engine relies on multiple other projects. Their respective repositori
 
 ## Used libraries
 
+- [Assimp](https://github.com/assimp/assimp.git)
 - [Catch2](https://github.com/catchorg/Catch2.git)
 - [entt](https://github.com/skypjack/entt)
 - [glfw](https://github.com/glfw/glfw)
 - [glm](https://github.com/g-truc/glm)
 - [glslang](https://github.com/KhronosGroup/glslang/)
 - [spdlog](gttps://github.com/gabime/spdlog)
+- [SPIRV-Reflect](https://github.com/KhronosGroup/SPIRV-Reflect.git)
 - [stb](https://github.com/nothings/stb)
-- [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader)
 - [volk](https://github.com/zeux/volk)
 - [Vulkan-Headers](https://github.com/KhronosGroup/Vulkan-Headers)
 - [Vulka-ValidationLayers](https://github.com/KhronosGroup/Vulkan-ValidationLayers)
