@@ -31,6 +31,10 @@ if (ESP_BUILD_TESTS)
     )
 endif()
 
+get_library(NAME assimp
+    CONF_PATH lib/cmake/assimp-5.3
+)
+
 get_library(NAME entt
     CONF_PATH lib/EnTT/cmake
     CONF_NAMES EnTT
@@ -53,12 +57,13 @@ get_library(NAME spdlog
     CONF_PATH lib/cmake/spdlog
 )
 
+get_library(NAME spirv-reflect
+    CONF_PATH lib/cmake/spirv-reflect
+)
+
 get_library(NAME stb
     CONF_PATH include/cmake/stb
 )
-
-get_library(NAME assimp
-    CONF_PATH lib/cmake/assimp-5.3)
 
 include(${ESPERT_DIR}/cmake/get-vulkan.cmake)
 get_vulkan()
@@ -85,6 +90,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     EnTT::EnTT
     stb
     assimp::assimp
+    spirv-reflect
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/external/stb)

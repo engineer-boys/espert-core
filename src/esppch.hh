@@ -10,6 +10,7 @@
 #include <stdexcept>
 #include <typeinfo>
 #include <utility>
+#include <variant>
 
 // data types
 #include <cstdint>
@@ -36,6 +37,9 @@
 
 // entt
 #include "entt/entt.hpp"
+
+// spirv-reflect
+#include "spirv_reflect.h"
 
 // espert
 #include "Core/Utils/Logger.hh"

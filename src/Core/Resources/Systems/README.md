@@ -186,7 +186,7 @@ def main() -> None:
 
 # Shader system
 
-The shader system is responsible for loading and handling shaders. It conserves time and memory by caching shaders and returning their references. It uses resoruce system to load spir-v shader soruces and then generates EspWorker with it. It loads a default shader with name 'default' which os used in case a specific shader couldn't be loaded. For now it extends functionality of EspWorker which will be changed with automatic pipeline generation. Shader system class is a singleton and should be initialized at app start and terminated at app's exit.
+The shader system is responsible for loading and handling shaders. It conserves time and memory by caching shaders and returning their references. It uses resoruce system to load spir-v shader soruces and then generates EspWorker with it. It loads a default shader with name 'default' which is used in case a specific shader couldn't be loaded. It uses shader reflections to automatically generate necessary objects (like vulkan's pipeline). Other options that cannot be derived from shader source can be set with shader config. Shader system class is a singleton and should be initialized at app start and terminated at app's exit.
 
 ```
 class ShaderSystem:
@@ -198,7 +198,7 @@ class ShaderSystem:
         # termiantes the system
 
     @staticmethod
-    def acquire(name: string) -> EspShader:
+    def acquire(name: string, config: EspShaderConfig = {}) -> EspShader:
         # returns shader reference and loads it if necessary
         # name of shader has to be the same as the relative path 
         # to its spirv file without any extenions
@@ -233,37 +233,46 @@ class EspShader:
 
     def create_uniform_manager(start_managed_ds: int = -1, end_managed_ds: int = -1) -> EspUniformManager:
         # runs responsive method of EspWorker
-
-    def enable_depth_test(format: EspDepthBlockFormat, comapre_op: EspCompareOp) -> None:
-        # runs responsive method of EspWorker
-
-    def enable_multisampling(sample_count_flag: EspSampleCountFlag) -> None:
-        # runs responsive method of EspWorker
-
-    def set_attachment_formats(formats: list) -> None:
-        # runs responsive method of EspWorker
-
-    def set_vertex_layouts(vertex_layouts: list) -> None:
-        # runs responsive method of EspWorker
-        
-    def set_worker_layout(uniforms_meta_data) -> None:
-        # runs responsive method of EspWorker
-
-    def build_worker() -> None:
-        # runs responsive method of EspWorker
 ```
+
+The `EspShaderConfig` structure is passed along shader's name to `ShaderSystem::acquire` method in order to set some additional options that could not be derived from spir-v file alone. The config has the following structure:
+```
+@dataclass
+class EspShaderConfig:
+    depthtest_config: EspShaderDepthtestConfig
+    multisampling_config: EspShaderMultisamplingConfig
+    color_attachement_formats: list
+    vertex_input_config: list
+    spec_const_map: EspSpecializationConstantMap
+```
+The `vertex_input_config` field is used to specify the input of a shader. If one wished to use more than one binding or instancing for vertex input this config should be specified. Otherwise it can be omitted and adequate layout will be deduced from the spir-v file. This config takes form of a list of the following structures:
+```
+@dataclass
+class EspShaderVertexInputConfig:
+    binding: int
+    location: int
+    input_rate: EspVertexInputRate
+```
+The `spec_const_map` field is used to set values of specialization constants for specific shader stages. It takes form of a dictionary where EspShaderStage is key and list of EspSpecializationConstants is the value.
+```
+@dataclass
+class EspSpecializationConstant
+    constant_id: int
+    value: bool | int | float
+```
+This configuration option doesn't need to be specified. In that case the default values of specialization constants will be used. 
+
 
 ## Usage
 ```
 def main() -> None:
-    uniform_metadata = ...
-
-    shader = ShaderSystem::acquire("Shaders/ObjExample/VikingRoomObjModelExample/shader");
-    shader->enable_multisampling(EspSampleCountFlag::ESP_SAMPLE_COUNT_4_BIT);
-    shader->enable_depth_test(EspDepthBlockFormat::ESP_FORMAT_D32_SFLOAT, EspCompareOp::ESP_COMPARE_OP_LESS);
-    shader->set_vertex_layouts({ Mesh::Vertex::get_vertex_layout() });
-    shader->set_worker_layout(std::move(uniform_meta_data));
-    shader->build_worker();
+    shader = ShaderSystem::acquire(
+        "Shaders/ObjExample/VikingRoomObjModelExample/shader",
+        { .depthtest_config     = { .enable     = true,
+                                    .format     = EspDepthBlockFormat::ESP_FORMAT_D32_SFLOAT,
+                                    .compare_op = EspCompareOp::ESP_COMPARE_OP_LESS },
+          .multisampling_config = { .enable            = true,
+                                    .sample_count_flag = EspSampleCountFlag::ESP_SAMPLE_COUNT_4_BIT } })
 
     ...
 
@@ -347,14 +356,14 @@ class Material:
 ```
 def main() -> None:
     mesh = ...
-    uniform_metadata = ...
 
-    shader = ShaderSystem::acquire("Shaders/ObjExample/VikingRoomObjModelExample/shader");
-    shader->enable_multisampling(EspSampleCountFlag::ESP_SAMPLE_COUNT_4_BIT);
-    shader->enable_depth_test(EspDepthBlockFormat::ESP_FORMAT_D32_SFLOAT, EspCompareOp::ESP_COMPARE_OP_LESS);
-    shader->set_vertex_layouts({ Mesh::Vertex::get_vertex_layout() });
-    shader->set_worker_layout(std::move(uniform_meta_data));
-    shader->build_worker();
+    shader = ShaderSystem::acquire(
+        "Shaders/ObjExample/VikingRoomObjModelExample/shader",
+        { .depthtest_config     = { .enable     = true,
+                                    .format     = EspDepthBlockFormat::ESP_FORMAT_D32_SFLOAT,
+                                    .compare_op = EspCompareOp::ESP_COMPARE_OP_LESS },
+          .multisampling_config = { .enable            = true,
+                                    .sample_count_flag = EspSampleCountFlag::ESP_SAMPLE_COUNT_4_BIT } })
 
     material = MaterialSystem::acquire({ TextureSystem::acquire("Models/viking_room/albedo.png") }, shader);
     mesh->set_material(material);

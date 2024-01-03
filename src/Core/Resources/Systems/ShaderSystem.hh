@@ -7,7 +7,7 @@
 
 namespace esp
 {
-  using ShaderMap = std::unordered_map<std::string, std::shared_ptr<EspShader>>;
+  using ShaderMap = std::unordered_map<std::pair<std::string, EspShaderConfig>, std::shared_ptr<EspShader>>;
 
   class ShaderSystem
   {
@@ -20,7 +20,7 @@ namespace esp
 
     ShaderSystem();
 
-    static std::shared_ptr<EspShader> load(const std::string& name);
+    static std::shared_ptr<EspShader> load(const std::string& name, const EspShaderConfig& config);
 
    public:
     ~ShaderSystem();
@@ -29,8 +29,8 @@ namespace esp
     static std::unique_ptr<ShaderSystem> create();
     void terminate();
 
-    static std::shared_ptr<EspShader> acquire(const std::string& name);
-    static void release(const std::string& name);
+    static std::shared_ptr<EspShader> acquire(const std::string& name, const EspShaderConfig& config = {});
+    static void release(const std::string& name, const EspShaderConfig& config = {});
     static std::shared_ptr<EspShader> get_default_shader();
   };
 } // namespace esp

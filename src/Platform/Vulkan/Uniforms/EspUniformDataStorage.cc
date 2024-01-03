@@ -48,8 +48,8 @@ namespace esp
     for (auto& push : m_meta_data->m_meta_pushes)
     {
       auto stage = VK_SHADER_STAGE_VERTEX_BIT;
-      if (push.m_stage == esp::EspUniformShaderStage::ESP_FRAG_STAGE) { stage = VK_SHADER_STAGE_FRAGMENT_BIT; }
-      else if (push.m_stage == esp::EspUniformShaderStage::ESP_ALL_STAGES) { stage = VK_SHADER_STAGE_ALL_GRAPHICS; }
+      if (push.m_stage == esp::EspShaderStage::FRAGMENT) { stage = VK_SHADER_STAGE_FRAGMENT_BIT; }
+      else if (push.m_stage == esp::EspShaderStage::ALL) { stage = VK_SHADER_STAGE_ALL_GRAPHICS; }
 
       VkPushConstantRange push_constant_range{};
       push_constant_range.stageFlags = stage;
@@ -76,8 +76,8 @@ namespace esp
 static VkDescriptorSetLayoutBinding create_descriptor_set_layout_binding(esp::EspMetaUniform& data)
 {
   auto stage = VK_SHADER_STAGE_VERTEX_BIT;
-  if (data.m_stage == esp::EspUniformShaderStage::ESP_FRAG_STAGE) { stage = VK_SHADER_STAGE_FRAGMENT_BIT; }
-  else if (data.m_stage == esp::EspUniformShaderStage::ESP_ALL_STAGES) { stage = VK_SHADER_STAGE_ALL_GRAPHICS; }
+  if (data.m_stage == esp::EspShaderStage::FRAGMENT) { stage = VK_SHADER_STAGE_FRAGMENT_BIT; }
+  else if (data.m_stage == esp::EspShaderStage::ALL) { stage = VK_SHADER_STAGE_ALL_GRAPHICS; }
 
   switch (data.m_uniform_type)
   {

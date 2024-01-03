@@ -2,12 +2,12 @@
 
 namespace esp
 {
-  EspMetaPush::EspMetaPush(esp::EspUniformShaderStage stage, uint32_t offset, uint32_t size) :
+  EspMetaPush::EspMetaPush(esp::EspShaderStage stage, uint32_t offset, uint32_t size) :
       m_stage{ stage }, m_offset{ offset }, m_size{ size }
   {
   }
 
-  EspMetaUniform::EspMetaUniform(EspUniformShaderStage stage,
+  EspMetaUniform::EspMetaUniform(EspShaderStage stage,
                                  uint32_t size_of_data_chunk,
                                  uint32_t count_of_elements,
                                  uint32_t binding,
@@ -32,7 +32,7 @@ namespace esp
     return *this;
   }
 
-  EspUniformMetaData& VulkanUniformMetaData::add_buffer_uniform(EspUniformShaderStage stage,
+  EspUniformMetaData& VulkanUniformMetaData::add_buffer_uniform(EspShaderStage stage,
                                                                 uint32_t size_of_data_chunk,
                                                                 uint32_t count_of_data_chunks)
   {
@@ -50,8 +50,7 @@ namespace esp
     return *this;
   }
 
-  EspUniformMetaData& VulkanUniformMetaData::add_texture_uniform(EspUniformShaderStage stage,
-                                                                 uint32_t count_of_textures)
+  EspUniformMetaData& VulkanUniformMetaData::add_texture_uniform(EspShaderStage stage, uint32_t count_of_textures)
   {
     ESP_ASSERT(m_current_ds_counter != -1, "You forgot to create descriptor set!!!");
 
@@ -65,17 +64,13 @@ namespace esp
     return *this;
   }
 
-  EspUniformMetaData& VulkanUniformMetaData::add_push_uniform(EspUniformShaderStage stage,
-                                                              uint32_t offset,
-                                                              uint32_t size)
+  EspUniformMetaData& VulkanUniformMetaData::add_push_uniform(EspShaderStage stage, uint32_t offset, uint32_t size)
   {
-    auto stage_mask = (uint32_t)stage + 1;
-
-    ESP_ASSERT(!(m_push_shader_stage_mask & stage_mask), "Single shader stage can't have more than 1 push uniform")
+    ESP_ASSERT(!(m_push_shader_stage_mask & stage), "Single shader stage can't have more than 1 push uniform")
     ESP_ASSERT(offset + size <= EspMetaPush::MAX_PUSH_SIZE, "Offset + size can't be larger than MAX_PUSH_SIZE")
     ESP_ASSERT(!m_occupied_push_memory.any(offset, size), "Some of push memory is already in use")
 
-    m_push_shader_stage_mask |= stage_mask;
+    m_push_shader_stage_mask |= stage;
 
     m_occupied_push_memory.set(offset, size);
 

@@ -12,16 +12,16 @@ namespace esp
   {
     static constexpr uint32_t MAX_PUSH_SIZE = 128;
 
-    EspUniformShaderStage m_stage;
+    EspShaderStage m_stage;
     uint32_t m_offset;
     uint32_t m_size;
 
-    EspMetaPush(EspUniformShaderStage stage, uint32_t offset, uint32_t size);
+    EspMetaPush(EspShaderStage stage, uint32_t offset, uint32_t size);
   };
 
   struct EspMetaUniform
   {
-    EspUniformShaderStage m_stage;
+    EspShaderStage m_stage;
 
     // Size of basic data type.
     uint32_t m_size_of_data_chunk;
@@ -33,7 +33,7 @@ namespace esp
 
     EspUniformType m_uniform_type;
 
-    EspMetaUniform(EspUniformShaderStage stage,
+    EspMetaUniform(EspShaderStage stage,
                    uint32_t size_of_data_chunk,
                    uint32_t count_of_elements,
                    uint32_t binding,
@@ -75,7 +75,7 @@ namespace esp
     std::vector<EspMetaPush> m_meta_pushes;
 
    private:
-    uint32_t m_push_shader_stage_mask = 0b00;
+    EspShaderStageFlags m_push_shader_stage_mask = 0;
     EspBitset<EspMetaPush::MAX_PUSH_SIZE> m_occupied_push_memory{};
 
    public:
@@ -86,14 +86,13 @@ namespace esp
     virtual ~VulkanUniformMetaData();
 
     virtual EspUniformMetaData& establish_descriptor_set() override;
-    virtual EspUniformMetaData& add_buffer_uniform(EspUniformShaderStage stage,
+    virtual EspUniformMetaData& add_buffer_uniform(EspShaderStage stage,
                                                    uint32_t size_of_data_chunk,
                                                    uint32_t count_of_data_chunks = 1) override;
 
-    virtual EspUniformMetaData& add_texture_uniform(EspUniformShaderStage stage,
-                                                    uint32_t count_of_textures = 1) override;
+    virtual EspUniformMetaData& add_texture_uniform(EspShaderStage stage, uint32_t count_of_textures = 1) override;
 
-    virtual EspUniformMetaData& add_push_uniform(EspUniformShaderStage stage, uint32_t offset, uint32_t size) override;
+    virtual EspUniformMetaData& add_push_uniform(EspShaderStage stage, uint32_t offset, uint32_t size) override;
 
     int count_buffer_uniforms(int start_ds, int end_ds) const;
     int count_texture_uniforms(int start_ds, int end_ds) const;

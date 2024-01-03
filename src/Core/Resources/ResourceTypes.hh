@@ -125,14 +125,14 @@ namespace esp
 
     PREVENT_COPY(SpirvResource);
 
-    inline const SpirvData& get_data(EspShaderStage stage)
+    inline const SpirvData& get_data(EspShaderStage stage) const
     {
       if (!m_spirv_data_map.contains(stage)) { ESP_CORE_ERROR("No spirv data for supplied stage."); }
 
       return m_spirv_data_map.at(stage);
     }
 
-    inline void enumerate_data(std::function<void(EspShaderStage stage, const SpirvData& spirv_data)> func)
+    inline void enumerate_data(std::function<void(EspShaderStage stage, const SpirvData& spirv_data)> func) const
     {
       for (auto it : m_spirv_data_map)
       {
@@ -140,7 +140,7 @@ namespace esp
       }
     }
 
-    inline bool is_stage_avaliable(EspShaderStage stage) { return m_spirv_data_map.contains(stage); }
+    inline bool is_stage_avaliable(EspShaderStage stage) const { return m_spirv_data_map.contains(stage); }
 
    private:
     SpirvDataMap m_spirv_data_map;

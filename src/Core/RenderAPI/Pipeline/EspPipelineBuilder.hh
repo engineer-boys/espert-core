@@ -7,6 +7,7 @@
 #include "Core/RenderAPI/Pipeline/Types/EspCompareOp.hh"
 #include "Core/RenderAPI/PipelineOrdering/Block/Types/EspDepthBlockFormat.hh"
 #include "Core/RenderAPI/PipelineOrdering/Block/Types/EspSampleCountFlag.hh"
+#include "Core/RenderAPI/Resources/EspSpecializationConstant.hh"
 #include "Core/RenderAPI/Uniforms/EspUniformMetaData.hh"
 #include "EspAttrFormat.hh"
 #include "EspPipeline.hh"
@@ -50,6 +51,8 @@ namespace esp
     virtual void set_attachment_formats(std::vector<EspBlockFormat> formats) = 0;
 
     virtual void set_shaders(std::unique_ptr<SpirvResource> spirv_resource) = 0;
+
+    virtual void set_specialization(const EspSpecializationConstantMap& spec_const_map) = 0;
 
     virtual void set_vertex_layouts(std::vector<EspVertexLayout> vertex_layouts)           = 0;
     virtual void set_worker_layout(std::unique_ptr<EspUniformMetaData> uniforms_meta_data) = 0;
