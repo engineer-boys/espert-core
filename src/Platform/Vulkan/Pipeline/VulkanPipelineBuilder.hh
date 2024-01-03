@@ -65,7 +65,7 @@ namespace esp
 
     virtual void set_shaders(std::unique_ptr<SpirvResource> spirv_resource) override;
 
-    virtual void set_specialization(const SpecializationConstantMap& spec_const_map) override;
+    virtual void set_specialization(const EspSpecializationConstantMap& spec_const_map) override;
 
     virtual void set_vertex_layouts(std::vector<EspVertexLayout> vertex_layouts) override;
     virtual void set_worker_layout(std::unique_ptr<EspUniformMetaData> uniforms_meta_data) override;

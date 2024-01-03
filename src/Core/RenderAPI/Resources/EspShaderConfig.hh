@@ -54,7 +54,7 @@ namespace esp
     EspShaderMultisamplingConfig multisampling_config;
     std::vector<EspBlockFormat> color_attachement_formats;
     std::vector<EspShaderVertexInputConfig> vertex_input_config;
-    SpecializationConstantMap spec_const_map;
+    EspSpecializationConstantMap spec_const_map;
   };
 
   inline bool operator==(const EspShaderConfig& a, const EspShaderConfig& b)

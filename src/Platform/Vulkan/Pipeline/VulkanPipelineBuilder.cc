@@ -76,7 +76,7 @@ namespace esp
         });
   }
 
-  void VulkanWorkerBuilder::set_specialization(const SpecializationConstantMap& spec_const_map)
+  void VulkanWorkerBuilder::set_specialization(const EspSpecializationConstantMap& spec_const_map)
   {
     for (auto [stage, specialization_constants] : spec_const_map)
     {
