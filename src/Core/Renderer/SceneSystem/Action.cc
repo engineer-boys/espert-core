@@ -80,7 +80,10 @@ namespace esp::action
     auto& transform = get_transform(node);
     auto parent     = node->get_parent();
 
-    if (type == ActionType::ESP_ABSOLUTE || !parent) { transform.m_rotation = glm::angleAxis(angle, esp::normalize(axis)); }
+    if (type == ActionType::ESP_ABSOLUTE || !parent)
+    {
+      transform.m_rotation = glm::angleAxis(angle, esp::normalize(axis));
+    }
     else { transform.m_rotation = glm::angleAxis(angle, esp::normalize(axis)) * get_transform(parent).m_rotation; }
 
     transform.rotate();

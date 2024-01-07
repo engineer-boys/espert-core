@@ -122,13 +122,13 @@ namespace esp
     dynamic_rendering_feature.sType            = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_FEATURES_KHR;
     dynamic_rendering_feature.dynamicRendering = VK_TRUE;
 
-    VkPhysicalDeviceFeatures2 physicalDeviceFeatures2{};
-    physicalDeviceFeatures2.sType    = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-    physicalDeviceFeatures2.features = device_features;
-    physicalDeviceFeatures2.pNext    = &dynamic_rendering_feature;
+    VkPhysicalDeviceFeatures2 physical_device_features2{};
+    physical_device_features2.sType    = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
+    physical_device_features2.features = device_features;
+    physical_device_features2.pNext    = &dynamic_rendering_feature;
 
     create_info.pEnabledFeatures = nullptr;
-    create_info.pNext            = &physicalDeviceFeatures2;
+    create_info.pNext            = &physical_device_features2;
 
     if (vkCreateDevice(m_physical_device, &create_info, nullptr, &m_device) != VK_SUCCESS)
     {

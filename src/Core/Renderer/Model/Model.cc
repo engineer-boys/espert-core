@@ -6,8 +6,8 @@ namespace esp
   Model::Builder& Model::Builder::load_model(const std::string& filepath, const ModelParams& params)
   {
     Assimp::Importer importer;
-    auto scene =
-        importer.ReadFile((ResourceSystem::get_asset_base_path() / filepath).string().c_str(), aiProcess_Triangulate | params.p_flags);
+    auto scene = importer.ReadFile((ResourceSystem::get_asset_base_path() / filepath).string().c_str(),
+                                   aiProcess_Triangulate | params.p_flags);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {

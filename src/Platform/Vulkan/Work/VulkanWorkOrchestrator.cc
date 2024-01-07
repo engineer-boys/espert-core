@@ -64,10 +64,10 @@ namespace esp
                "Failed to acquire swap chain image!");
     vkResetCommandBuffer(m_command_buffers[current_frame], /*VkCommandBufferResetFlagBits*/ 0);
 
-    VkCommandBufferBeginInfo beginInfo{};
-    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+    VkCommandBufferBeginInfo begin_info{};
+    begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-    ESP_ASSERT(vkBeginCommandBuffer(m_command_buffers[current_frame], &beginInfo) == VK_SUCCESS,
+    ESP_ASSERT(vkBeginCommandBuffer(m_command_buffers[current_frame], &begin_info) == VK_SUCCESS,
                "Failed to begin recording command buffer!");
   }
 
@@ -76,40 +76,40 @@ namespace esp
     auto current_frame = m_swap_chain->m_current_frame;
     ESP_ASSERT(vkEndCommandBuffer(m_command_buffers[current_frame]) == VK_SUCCESS, "Failed to record command buffer!");
 
-    VkSubmitInfo submitInfo{};
-    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    VkSubmitInfo submit_info{};
+    submit_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-    VkSemaphore waitSemaphores[]      = { m_image_available_semaphores[current_frame] };
-    VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-    submitInfo.waitSemaphoreCount     = 1;
-    submitInfo.pWaitSemaphores        = waitSemaphores;
-    submitInfo.pWaitDstStageMask      = waitStages;
+    VkSemaphore wait_semaphores[]      = { m_image_available_semaphores[current_frame] };
+    VkPipelineStageFlags wait_stages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+    submit_info.waitSemaphoreCount     = 1;
+    submit_info.pWaitSemaphores        = wait_semaphores;
+    submit_info.pWaitDstStageMask      = wait_stages;
 
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers    = &m_command_buffers[current_frame];
+    submit_info.commandBufferCount = 1;
+    submit_info.pCommandBuffers    = &m_command_buffers[current_frame];
 
-    VkSemaphore signalSemaphores[]  = { m_render_finished_semaphores[current_frame] };
-    submitInfo.signalSemaphoreCount = 1;
-    submitInfo.pSignalSemaphores    = signalSemaphores;
+    VkSemaphore signal_semaphores[]  = { m_render_finished_semaphores[current_frame] };
+    submit_info.signalSemaphoreCount = 1;
+    submit_info.pSignalSemaphores    = signal_semaphores;
 
     auto data_context = VulkanContext::get_context_data();
-    ESP_ASSERT(vkQueueSubmit(data_context.m_graphics_queue, 1, &submitInfo, m_in_flight_fences[current_frame]) ==
+    ESP_ASSERT(vkQueueSubmit(data_context.m_graphics_queue, 1, &submit_info, m_in_flight_fences[current_frame]) ==
                    VK_SUCCESS,
                "Failed to submit draw command buffer!")
 
-    VkPresentInfoKHR presentInfo{};
-    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+    VkPresentInfoKHR present_info{};
+    present_info.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 
-    presentInfo.waitSemaphoreCount = 1;
-    presentInfo.pWaitSemaphores    = signalSemaphores;
+    present_info.waitSemaphoreCount = 1;
+    present_info.pWaitSemaphores    = signal_semaphores;
 
-    VkSwapchainKHR swapChains[] = { m_swap_chain->m_swap_chain };
-    presentInfo.swapchainCount  = 1;
-    presentInfo.pSwapchains     = swapChains;
+    VkSwapchainKHR swap_chains[] = { m_swap_chain->m_swap_chain };
+    present_info.swapchainCount  = 1;
+    present_info.pSwapchains     = swap_chains;
 
-    presentInfo.pImageIndices = &m_swap_chain->m_image_index;
+    present_info.pImageIndices = &m_swap_chain->m_image_index;
 
-    ESP_ASSERT(vkQueuePresentKHR(data_context.m_present_queue, &presentInfo) == VK_SUCCESS,
+    ESP_ASSERT(vkQueuePresentKHR(data_context.m_present_queue, &present_info) == VK_SUCCESS,
                "Failed to present swap chain image!");
     m_swap_chain->go_to_next_frame();
   }
@@ -133,13 +133,13 @@ namespace esp
   {
     m_command_buffers.resize(VulkanSwapChain::MAX_FRAMES_IN_FLIGHT);
 
-    VkCommandBufferAllocateInfo allocInfo{};
-    allocInfo.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    allocInfo.commandPool        = m_command_pool;
-    allocInfo.level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandBufferCount = (uint32_t)m_command_buffers.size();
+    VkCommandBufferAllocateInfo alloc_info{};
+    alloc_info.sType              = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+    alloc_info.commandPool        = m_command_pool;
+    alloc_info.level              = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+    alloc_info.commandBufferCount = (uint32_t)m_command_buffers.size();
 
-    ESP_ASSERT(vkAllocateCommandBuffers(VulkanDevice::get_logical_device(), &allocInfo, m_command_buffers.data()) ==
+    ESP_ASSERT(vkAllocateCommandBuffers(VulkanDevice::get_logical_device(), &alloc_info, m_command_buffers.data()) ==
                    VK_SUCCESS,
                "Failed to allocate command buffers!");
   }
@@ -180,10 +180,10 @@ namespace esp
   void VulkanWorkOrchestrator::load_extension_functions()
   {
     // I used "this" syntax in below fields to emphasise that function pointers are loaded here.
-    this->vkCmdbeginRenderingKHR = reinterpret_cast<PFN_vkCmdBeginRenderingKHR>(
+    this->m_vkCmdbeginRenderingKHR = reinterpret_cast<PFN_vkCmdBeginRenderingKHR>(
         vkGetDeviceProcAddr(VulkanDevice::get_logical_device(), "vkCmdBeginRenderingKHR"));
 
-    this->vkCmdEndRenderingKHR = reinterpret_cast<PFN_vkCmdEndRenderingKHR>(
+    this->m_vkCmdEndRenderingKHR = reinterpret_cast<PFN_vkCmdEndRenderingKHR>(
         vkGetDeviceProcAddr(VulkanDevice::get_logical_device(), "vkCmdEndRenderingKHR"));
   }
 
