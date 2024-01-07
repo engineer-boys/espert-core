@@ -24,8 +24,8 @@ namespace esp
   {
     enum ActionType
     {
-      ABSOLUTE,
-      RELATIVE
+      ESP_ABSOLUTE,
+      ESP_RELATIVE
     };
 
     // TODO: try to add default action types

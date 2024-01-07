@@ -13,6 +13,10 @@ add_library(${PROJECT_NAME} STATIC
     ${SOURCES}
 )
 
+if(WIN32)
+    add_compile_definitions(_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS)
+endif()
+
 target_include_directories(${PROJECT_NAME} PUBLIC 
     ${PROJECT_SOURCE_DIR}/src
 )
@@ -63,7 +67,7 @@ get_library(NAME assimp
 include(${ESPERT_DIR}/cmake/get-vulkan.cmake)
 get_vulkan()
 
-if(ESP_BUILD_VVL AND NOT WIN32 AND NOT EXISTS ${ESPERT_DIR}/libs/vvl/${CMAKE_BUILD_TYPE})
+if(ESP_BUILD_VVL AND NOT EXISTS ${ESPERT_DIR}/libs/vvl/${CMAKE_BUILD_TYPE})
     include(cmake/install-library.cmake)
     install_library(NAME vvl
         PREFIX ${ESPERT_DIR}/libs/vvl/${CMAKE_BUILD_TYPE}
@@ -121,6 +125,9 @@ add_dependencies(core_shaders glslang::glslang-standalone)
 if (ESP_BUILD_TESTS)
     file(GLOB_RECURSE TEST_SOURCES ${PROJECT_SOURCE_DIR}/tests/*.cc)
     add_executable(tests ${TEST_SOURCES})
+    if(WIN32)
+        set_target_properties(tests PROPERTIES LINK_FLAGS "/ignore:4099")
+    endif()
     target_include_directories(tests PUBLIC ${PROJECT_SOURCE_DIR}/tests)
     target_link_libraries(tests PRIVATE Catch2::Catch2WithMain)
     target_link_libraries(tests PUBLIC espert-core)
