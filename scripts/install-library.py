@@ -4,6 +4,7 @@ from common import (
     LIB_DIR,
     EXTERNAL_DIR,
     WSI,
+    Compiler,
     EnumAction,
     BuildType,
     run_command,
@@ -15,6 +16,7 @@ from common import (
     get_lib_names,
     get_wsi_type,
     is_platform_linux,
+    is_platform_windows,
 )
 from libconf import ESPERT_LIBS_CONF
 import os
@@ -52,6 +54,13 @@ def configure_library(args: Namespace) -> None:
 
     CMD.add_parameter(CmakeParameter("CMAKE_BUILD_TYPE", args.build_type.value))
 
+    if args.compiler == Compiler.GCC:
+        CMD.add_parameter(CmakeParameter("CMAKE_C_COMPILER", "gcc"))
+        CMD.add_parameter(CmakeParameter("CMAKE_CXX_COMPILER", "g++"))
+    elif args.compiler == Compiler.CLANG:
+        CMD.add_parameter(CmakeParameter("CMAKE_C_COMPILER", "clang-17"))
+        CMD.add_parameter(CmakeParameter("CMAKE_CXX_COMPILER", "clang++-17"))
+
     for param in ESPERT_LIBS_CONF[args.name]:
         CMD.add_parameter(param)
 
@@ -64,7 +73,7 @@ def build_library(args: Namespace) -> None:
 
 
 def install_library(args: Namespace) -> None:
-    CMD = CmakeInstallCommand(install_dir="build", prefix=args.prefix)
+    CMD = CmakeInstallCommand(install_dir="build", prefix=args.prefix, config=args.build_type.value)
 
     run_command(str(CMD), LIB_DIR / args.name)
 
@@ -121,6 +130,22 @@ def get_parsed_args() -> Namespace:
         required=False,
         type=Path,
         help="Install prefix for library.",
+    )
+
+    compiler_selection_group = parser.add_mutually_exclusive_group()
+    compiler_selection_group.add_argument(
+        "--gcc",
+        action="store_const",
+        dest="compiler",
+        const=Compiler.GCC,
+        help="Pick gcc and g++ as project compilers. (default)",
+    )
+    compiler_selection_group.add_argument(
+        "--clang",
+        action="store_const",
+        dest="compiler",
+        const=Compiler.CLANG,
+        help="Pick clang and clang++ as project compilers.",
     )
 
     return parser.parse_args()

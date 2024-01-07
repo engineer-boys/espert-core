@@ -5,11 +5,14 @@
 In order to build espert several development tools are needed. Make sure they are installed and reachable from console.
 
 Required packages:
-- gcc and g++ or clang-17 and clang++-17
-- make
 - cmake
 - git
 - python3
+Required packages for windows:
+- MSVC 2022
+Required packages for linux/MacOs:
+- gcc and g++ or clang-17 and clang++-17
+- make
 
 All code dependecies are managed within project. To download all external modules run inside git repository:
 ```
@@ -20,7 +23,7 @@ To configure project run:
 ```
 python3 scripts/espert-core.py configure
 ```
-The default compilers are gcc/g++.
+The default compilers are gcc/g++ for linux/MacOs and MSVC for windows.
 
 To build project run:
 ```

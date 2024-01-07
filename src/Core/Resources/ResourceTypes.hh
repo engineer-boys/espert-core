@@ -19,7 +19,7 @@ namespace esp
     PREVENT_COPY(Resource);
 
     inline const fs::path& get_path() const { return m_path; }
-    inline const std::string get_filename() const { return m_path.filename(); }
+    inline const std::string get_filename() const { return m_path.filename().string(); }
 
    private:
     fs::path m_path;

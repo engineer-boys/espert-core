@@ -2,11 +2,11 @@
 
 namespace esp
 {
-  void Camera::set_perspective(float fov, float aspect_ratio, float near, float far)
+  void Camera::set_perspective(float fov, float aspect_ratio, float near_plane, float far_plane)
   {
     ESP_ASSERT(glm::abs(aspect_ratio - std::numeric_limits<float>::epsilon()) > 0.0f, "")
 
-    m_projection_mat = glm::perspective(fov, aspect_ratio, near, far);
+    m_projection_mat = glm::perspective(fov, aspect_ratio, near_plane, far_plane);
   }
 
   void Camera::set_perspective(float aspect_ratio) { set_perspective(m_fov, aspect_ratio, m_near, m_far); }
