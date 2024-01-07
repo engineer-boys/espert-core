@@ -51,11 +51,13 @@ def copy_validation_layers(args: Namespace) -> None:
         LIB_DIR
         / "vvl"
         / args.build_type.value
-        / ("bin" if is_platform_windows() else ("share" / "vulkan" / "explicit_layer.d"))
+        / (
+            "bin"
+            if is_platform_windows()
+            else (Path("share") / "vulkan" / "explicit_layer.d")
+        )
         / "VkLayer_khronos_validation.json",
-        args.build_dir
-        / "validation_layers"
-        / "VkLayer_khronos_validation.json",
+        args.build_dir / "validation_layers" / "VkLayer_khronos_validation.json",
     )
 
 
