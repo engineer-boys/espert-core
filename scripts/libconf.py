@@ -3,6 +3,10 @@ from common import CmakeParameter
 
 
 ESPERT_LIBS_CONF = {
+    "assimp": [
+        CmakeParameter("BUILD_SHARED_LIBS", "OFF"),
+        CmakeParameter("ASSIMP_INSTALL_PDB", "OFF"),
+    ],
     "catch2": [],
     "entt": [],
     "glfw": [
@@ -38,6 +42,5 @@ ESPERT_LIBS_CONF = {
         CmakeParameter("UPDATE_DEPS", "ON"),
         CmakeParameter("BUILD_WERROR", "ON"),
         CmakeParameter("BUILD_TESTS", "OFF"),
-    ],
-    "assimp": []
+    ]
 }

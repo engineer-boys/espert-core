@@ -34,7 +34,8 @@ TEST_CASE("Resource system - binary loader", "[resource_system]")
     auto resource        = esp::ResourceSystem::load<esp::BinaryResource>("bin/test.bin", params);
     auto binary_resource = esp::unique_cast<esp::BinaryResource, esp::Resource>(std::move(resource));
 
-    REQUIRE(strcmp(static_cast<const char*>(binary_resource->get_data()), "test") == 0);
+    REQUIRE(binary_resource->get_size() == 4);
+    REQUIRE(strncmp(static_cast<const char*>(binary_resource->get_data()), "test", 4) == 0);
 
     esp::ResourceSystem::unload(std::move(binary_resource));
   }
@@ -53,7 +54,8 @@ TEST_CASE("Resource system - text loader", "[resource_system]")
     auto resource      = esp::ResourceSystem::load<esp::TextResource>("test.txt", params);
     auto text_resource = esp::unique_cast<esp::TextResource, esp::Resource>(std::move(resource));
 
-    REQUIRE(strcmp(static_cast<const char*>(text_resource->get_data()), "test") == 0);
+    REQUIRE(text_resource->get_size() == 4);
+    REQUIRE(strncmp(static_cast<const char*>(text_resource->get_data()), "test", 4) == 0);
     REQUIRE(text_resource->get_num_of_lines() == 1);
 
     esp::ResourceSystem::unload(std::move(text_resource));

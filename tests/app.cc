@@ -13,8 +13,16 @@ TEST_CASE("App - run", "[app]")
     test_app->set_context(std::move(context));
     std::thread app_thread(&TestApp::run, test_app);
 
-    // ignore warning: validation layers decrease performance
-    REQUIRE(esp::EspDebugMessenger::get_warning_count() <= 1);
+    // ignore windows warning: invalid validation layer name for layers:
+    // GalaxyOverlayVkLayer
+    // GalaxyOverlayVkLayer_VERBOSE
+    // GalaxyOverlayVkLayer_DEBUG
+    if (WIN32) {
+      REQUIRE(esp::EspDebugMessenger::get_warning_count() <= 3);
+    }
+    else {
+      REQUIRE(esp::EspDebugMessenger::get_warning_count() == 0);
+    }
     REQUIRE(esp::EspDebugMessenger::get_error_count() == 0);
 
     test_app->terminate();

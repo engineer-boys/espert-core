@@ -26,7 +26,7 @@ namespace esp
     stbi_set_flip_vertically_on_load_thread(image_params.flip_y);
 
     // TODO: use custom allocator
-    stbi_uc* data = stbi_load(full_path.c_str(), &width, &height, &channel_count, image_params.required_channels);
+    stbi_uc* data = stbi_load(full_path.string().c_str(), &width, &height, &channel_count, image_params.required_channels);
 
     if (data == nullptr)
     {
