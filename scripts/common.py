@@ -28,6 +28,11 @@ class BuildType(Enum):
     RELEASE = "Release"
 
 
+class Compiler(Enum):
+    GCC = "gcc"
+    CLANG = "clang"
+
+
 def get_cpu_count() -> int:
     return multiprocessing.cpu_count()
 
@@ -83,8 +88,6 @@ class CmakeConfigureCommand(CmakeCommand):
         super().__init__()
         self._command += f" -B {build_dir}"
         self._command += f" -S {source_dir}"
-        if is_platform_windows():
-            self._command += " -G \"MinGW Makefiles\""
         if prefix is not None:
             self._command += f" -DCMAKE_INSTALL_PREFIX={prefix}"
 
@@ -98,16 +101,18 @@ class CmakeBuildCommand(CmakeCommand):
 
 
 class CmakeInstallCommand(CmakeCommand):
-    def __init__(self, install_dir: str = "build", prefix: str = None) -> None:
+    def __init__(self, install_dir: str = "build", prefix: str = None, config: str = None) -> None:
         super().__init__()
         self._command += f" --install {install_dir}"
         if prefix is not None:
             self._command += f" --prefix {prefix}"
+        if config is not None:
+            self._command += f" --config {config}"
 
 
-def run_command(command: str, cwd: str) -> None:
+def run_command(command: str, cwd: str, env: dict = None) -> None:
     print(command)
-    proc = subprocess.Popen(command, cwd=cwd, shell=True)
+    proc = subprocess.Popen(command, cwd=cwd, shell=True, env=env)
     proc.wait()
     if proc.returncode != 0:
         sys.exit(proc.returncode)

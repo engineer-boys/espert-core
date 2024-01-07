@@ -7,7 +7,7 @@ namespace esp
   {
     Assimp::Importer importer;
     auto scene =
-        importer.ReadFile(ResourceSystem::get_asset_base_path() / filepath, aiProcess_Triangulate | params.p_flags);
+        importer.ReadFile((ResourceSystem::get_asset_base_path() / filepath).string().c_str(), aiProcess_Triangulate | params.p_flags);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {
@@ -104,8 +104,9 @@ namespace esp
       aiString str;
       mat->GetTexture(type, i, &str);
       TextureParams params;
+      auto file_path = (fs::path(m_dir) / fs::path(str.C_Str())).string();
 
-      return TextureSystem::acquire(fs::path(m_dir) / str.C_Str(), params);
+      return TextureSystem::acquire(file_path, params);
     }
 
     return nullptr;

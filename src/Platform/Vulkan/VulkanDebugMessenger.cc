@@ -75,8 +75,7 @@ namespace esp
     }
     if (message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT)
     {
-      ESP_CORE_WARN(p_callback_data->pMessage);
-      m_warning_count++;
+      if (!(message_type & VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT)) m_warning_count++;
     }
     if (message_severity & VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT)
     {

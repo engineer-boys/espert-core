@@ -13,6 +13,7 @@ elif is_platform_linux():
     DYNLIB_EXTENSION = ".so"
 else:
     DYNLIB_EXTENSION = ".dylib"
+LIB_PREFIX = "" if is_platform_windows() else "lib"
 
 
 def create_dir_if_doesnt_exist(path: str) -> None:
@@ -34,31 +35,26 @@ def copy_validation_layers(args: Namespace) -> None:
     if not os.path.exists(LIB_DIR / "vvl" / args.build_type.value):
         return
 
-    create_dir_if_doesnt_exist(args.build_dir / "validation_layers" / "lib")
-    create_dir_if_doesnt_exist(args.build_dir / "validation_layers" / "layers")
+    create_dir_if_doesnt_exist(args.build_dir / "validation_layers")
 
     copyfile(
         LIB_DIR
         / "vvl"
         / args.build_type.value
-        / "lib"
-        / f"libVkLayer_khronos_validation{DYNLIB_EXTENSION}",
+        / ("bin" if is_platform_windows() else "lib")
+        / f"{LIB_PREFIX}VkLayer_khronos_validation{DYNLIB_EXTENSION}",
         args.build_dir
         / "validation_layers"
-        / "lib"
-        / f"libVkLayer_khronos_validation{DYNLIB_EXTENSION}",
+        / f"{LIB_PREFIX}VkLayer_khronos_validation{DYNLIB_EXTENSION}",
     )
     copyfile(
         LIB_DIR
         / "vvl"
         / args.build_type.value
-        / "share"
-        / "vulkan"
-        / "explicit_layer.d"
+        / ("bin" if is_platform_windows() else ("share" / "vulkan" / "explicit_layer.d"))
         / "VkLayer_khronos_validation.json",
         args.build_dir
         / "validation_layers"
-        / "layers"
         / "VkLayer_khronos_validation.json",
     )
 
@@ -96,5 +92,4 @@ if __name__ == "__main__":
 
     copy_clslang_bin(args)
 
-    if not is_platform_windows():
-        copy_validation_layers(args)
+    copy_validation_layers(args)

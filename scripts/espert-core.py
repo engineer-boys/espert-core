@@ -26,6 +26,7 @@ from common import (
     CmakeConfigureCommand,
     CmakeBuildCommand,
     CmakeParameter,
+    Compiler,
 )
 from enum import Enum
 import os
@@ -33,13 +34,7 @@ from shutil import rmtree
 import sys
 
 CTEST_FILE = "CTestTestfile.cmake"
-LD_LIBRARY_PATH = BUILD_DIR / "validation_layers" / "lib"
-VK_LAYER_PATH = BUILD_DIR / "validation_layers" / "layers"
-
-
-class Compiler(Enum):
-    GCC = "gcc"
-    CLANG = "clang"
+VK_LAYER_PATH = BUILD_DIR / "validation_layers"
 
 
 def get_configure_command(args: Namespace) -> str:
@@ -106,12 +101,13 @@ def run_tests(args: Namespace) -> None:
         args.build_tests = True
         run_build(args)
 
-    CMD = ""
-    if args.build_type == BuildType.DEBUG and args.vvl and not is_platform_windows():
-        CMD += f"LD_LIBRARY_PATH={LD_LIBRARY_PATH} VK_LAYER_PATH={VK_LAYER_PATH} "
+    my_env = os.environ.copy()
+    if args.build_type == BuildType.DEBUG and args.vvl:
+        my_env["LD_LIBRARY_PATH"] = str(VK_LAYER_PATH)
+        my_env["VK_LAYER_PATH"] = str(VK_LAYER_PATH)
 
-    CMD += "ctest"
-    run_command(CMD, BUILD_DIR)
+    CMD = "ctest"
+    run_command(CMD, BUILD_DIR, my_env)
 
 
 def get_parser() -> ArgumentParser:
