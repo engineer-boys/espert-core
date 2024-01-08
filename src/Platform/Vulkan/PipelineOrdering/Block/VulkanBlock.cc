@@ -1,4 +1,5 @@
 #include "VulkanBlock.hh"
+#include "Platform/Vulkan/Resources/VulkanTexture.hh"
 #include "Platform/Vulkan/VulkanDevice.hh"
 #include "Platform/Vulkan/VulkanResourceManager.hh"
 
@@ -29,34 +30,31 @@ namespace esp
     {
       // Normal image: multisampled or non-multisampled
       {
-        VulkanBlockBuffer buffer = {};
-
         VulkanResourceManager::create_image(m_width,
                                             m_height,
                                             1,
                                             static_cast<VkSampleCountFlagBits>(m_sample_count_flag),
                                             static_cast<VkFormat>(m_format),
                                             VK_IMAGE_TILING_OPTIMAL,
-                                            VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
+                                            VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT |
+                                                VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
                                             1,
                                             {},
                                             VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                                            buffer.m_image,
-                                            buffer.m_image_memory);
+                                            m_buffer.m_image,
+                                            m_buffer.m_image_memory);
 
-        buffer.m_image_view = VulkanResourceManager::create_image_view(buffer.m_image,
-                                                                       static_cast<VkFormat>(m_format),
-                                                                       VK_IMAGE_ASPECT_COLOR_BIT,
-                                                                       1);
-
-        m_buffers.push_back(buffer);
+        m_buffer.m_image_view = VulkanResourceManager::create_image_view(m_buffer.m_image,
+                                                                         static_cast<VkFormat>(m_format),
+                                                                         VK_IMAGE_ASPECT_COLOR_BIT,
+                                                                         1);
+        m_buffer_exist        = true;
       }
 
       // If image is multisamples (sample_count_flag is not  ESP_SAMPLE_COUNT_1_BIT) then
       // the block will need resolve buffer.
       if (is_resolvable())
       {
-        VulkanBlockBuffer resolve_buffer = {};
         VulkanResourceManager::create_image(m_width,
                                             m_height,
                                             1,
@@ -67,31 +65,37 @@ namespace esp
                                             1,
                                             {},
                                             VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                                            resolve_buffer.m_image,
-                                            resolve_buffer.m_image_memory);
+                                            m_resolve_buffer.m_image,
+                                            m_resolve_buffer.m_image_memory);
 
-        resolve_buffer.m_image_view = VulkanResourceManager::create_image_view(resolve_buffer.m_image,
-                                                                               static_cast<VkFormat>(m_format),
-                                                                               VK_IMAGE_ASPECT_COLOR_BIT,
-                                                                               1);
-
-        m_resolve_buffers.push_back(resolve_buffer);
+        m_resolve_buffer.m_image_view = VulkanResourceManager::create_image_view(m_resolve_buffer.m_image,
+                                                                                 static_cast<VkFormat>(m_format),
+                                                                                 VK_IMAGE_ASPECT_COLOR_BIT,
+                                                                                 1);
+        m_resolve_buffer_exist        = true;
       }
     }
   }
 
+  std::shared_ptr<EspTexture> VulkanBlock::use_as_texture() const
+  {
+    return std::shared_ptr<EspTexture>{ VulkanTexture::create_from_block(this).release() };
+  }
+
   VulkanBlock::~VulkanBlock()
   {
-    for (auto buffer : m_buffers)
-    {
-      buffer.terminate();
-    }
-    m_buffers.clear();
+    if (m_buffer_exist) { m_buffer.terminate(); }
 
-    for (auto resolve_buffer : m_resolve_buffers)
-    {
-      resolve_buffer.terminate();
-    }
-    m_resolve_buffers.clear();
+    if (m_resolve_buffer_exist) { m_resolve_buffer.terminate(); }
+  }
+
+  std::shared_ptr<EspTexture> VulkanBlock::extract_texture()
+  {
+    auto texture = std::shared_ptr<EspTexture>{ VulkanTexture::create_from_block(this, false).release() };
+
+    if (is_resolvable()) { m_resolve_buffer_exist = false; }
+    else { m_buffer_exist = false; }
+
+    return texture;
   }
 } // namespace esp

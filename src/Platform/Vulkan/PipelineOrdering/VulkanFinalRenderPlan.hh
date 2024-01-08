@@ -32,12 +32,15 @@ namespace esp
 
     } m_color_buffer;
 
-    const glm::vec3 m_clear_color                   = { 0.0f, 5.0f, 5.0f };
+    uint32_t m_height;
+    uint32_t m_width;
+
+    const glm::vec3 m_clear_color;
     std::shared_ptr<VulkanDepthBlock> m_depth_block = nullptr;
 
     /* -------------------------- METHODS ---------------------------------- */
    public:
-    VulkanFinalRenderPlan();
+    VulkanFinalRenderPlan(glm::vec3 clear_color);
     virtual ~VulkanFinalRenderPlan();
 
     VulkanFinalRenderPlan(const VulkanFinalRenderPlan& other)            = delete;
@@ -47,6 +50,9 @@ namespace esp
 
     virtual void add_block(std::shared_ptr<EspBlock> block) override {}
     virtual void add_depth_block(std::shared_ptr<EspDepthBlock> depth_block) override;
+
+    virtual void set_command_buffer(EspCommandBufferId* id) override {}
+    virtual void build() override;
 
     virtual void begin_plan() override;
     virtual void end_plan() override;

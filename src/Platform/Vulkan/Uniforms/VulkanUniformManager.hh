@@ -8,6 +8,7 @@
 
 // Render API Vulkan
 #include "EspUniformDataStorage.hh"
+#include "Platform/Vulkan/PipelineOrdering/VulkanCommandBuffer.hh"
 #include "Platform/Vulkan/Resources/VulkanTexture.hh"
 #include "Platform/Vulkan/Work/VulkanSwapChain.hh"
 #include "Platform/Vulkan/Work/VulkanWorkOrchestrator.hh"
@@ -49,6 +50,18 @@ namespace esp
     inline void attach(const VkPipelineLayout& pipeline_layout) const
     {
       vkCmdBindDescriptorSets(VulkanWorkOrchestrator::get_current_command_buffer(),
+                              VK_PIPELINE_BIND_POINT_GRAPHICS,
+                              pipeline_layout,
+                              m_first_descriptor_set_idx,
+                              static_cast<uint32_t>(m_descriptor_sets.size()),
+                              m_descriptor_sets.data(),
+                              0,
+                              nullptr);
+    }
+
+    inline void attach(EspCommandBufferId* id, const VkPipelineLayout& pipeline_layout) const
+    {
+      vkCmdBindDescriptorSets(static_cast<VulkanCommandBufferId*>(id)->m_command_buffer,
                               VK_PIPELINE_BIND_POINT_GRAPHICS,
                               pipeline_layout,
                               m_first_descriptor_set_idx,
@@ -108,6 +121,11 @@ namespace esp
       m_packages[VulkanSwapChain::get_current_frame_index()]->attach(m_out_pipeline_layout);
     }
 
+    inline virtual void attach(EspCommandBufferId* id) const override
+    {
+      m_packages[VulkanSwapChain::get_current_frame_index()]->attach(id, m_out_pipeline_layout);
+    }
+
     inline virtual EspUniformManager& update_buffer_uniform(uint32_t set,
                                                             uint32_t binding,
                                                             uint64_t offset,
@@ -147,6 +165,19 @@ namespace esp
     {
       auto& push_range = m_out_uniform_data_storage.m_push_constant_ranges[index];
       vkCmdPushConstants(VulkanWorkOrchestrator::get_current_command_buffer(),
+                         m_out_pipeline_layout,
+                         push_range.stageFlags,
+                         push_range.offset,
+                         push_range.size,
+                         data);
+
+      return *this;
+    }
+
+    virtual EspUniformManager& update_push_uniform(EspCommandBufferId* id, uint32_t index, void* data)
+    {
+      auto& push_range = m_out_uniform_data_storage.m_push_constant_ranges[index];
+      vkCmdPushConstants(static_cast<VulkanCommandBufferId*>(id)->m_command_buffer,
                          m_out_pipeline_layout,
                          push_range.stageFlags,
                          push_range.offset,

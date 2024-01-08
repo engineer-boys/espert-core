@@ -48,11 +48,32 @@ namespace esp
     vkCmdSetViewport(VulkanWorkOrchestrator::get_current_command_buffer(), 0, 1, &viewport);
   }
 
+  void VulkanWorker::set_viewport(EspCommandBufferId* id, EspViewport viewport)
+  {
+    VkViewport vk_viewport{};
+    vk_viewport.width    = static_cast<float>(viewport.m_width);
+    vk_viewport.height   = -static_cast<float>(viewport.m_height);
+    vk_viewport.x        = 0.0f;
+    vk_viewport.y        = static_cast<float>(viewport.m_height);
+    vk_viewport.minDepth = viewport.m_min_depth;
+    vk_viewport.maxDepth = viewport.m_max_depth;
+
+    vkCmdSetViewport(static_cast<VulkanCommandBufferId*>(id)->m_command_buffer, 0, 1, &vk_viewport);
+  }
+
   void VulkanWorker::set_scissors() const
   {
     auto [widht, height] = VulkanWorkOrchestrator::get_swap_chain_extent();
 
     VkRect2D scissor{ { 0, 0 }, { widht, height } };
     vkCmdSetScissor(VulkanWorkOrchestrator::get_current_command_buffer(), 0, 1, &scissor);
+  }
+
+  void VulkanWorker::set_scissors(EspCommandBufferId* id, EspScissorRect scissor_rect)
+  {
+    VkRect2D scissor{ { scissor_rect.m_offset_x, scissor_rect.m_offset_y },
+                      { scissor_rect.m_width, scissor_rect.m_height } };
+
+    vkCmdSetScissor(static_cast<VulkanCommandBufferId*>(id)->m_command_buffer, 0, 1, &scissor);
   }
 } // namespace esp

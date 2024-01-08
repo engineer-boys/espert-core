@@ -38,7 +38,10 @@ namespace esp
                                                          std::unique_ptr<CubemapResource> cubemap_resource,
                                                          EspTextureFormat format);
 
-    static std::unique_ptr<VulkanTexture> create_from_block(const VulkanBlock* block);
+    static std::shared_ptr<EspTexture> create_raw_texture(EspRawTextureParams params);
+
+    static std::unique_ptr<VulkanTexture> create_from_block(const VulkanBlock* block,
+                                                            bool set_as_retrived_from_block = true);
 
     PREVENT_COPY(VulkanTexture);
 
@@ -59,7 +62,7 @@ namespace esp
 
     VulkanTexture(const std::string& name, uint8_t channel_count, uint32_t width, uint32_t height);
 
-    VulkanTexture(uint32_t width, uint32_t height);
+    VulkanTexture(uint32_t width, uint32_t height, uint32_t mip_levels = 1);
   };
 } // namespace esp
 

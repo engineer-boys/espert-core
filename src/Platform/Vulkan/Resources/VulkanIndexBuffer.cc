@@ -1,4 +1,5 @@
 #include "VulkanIndexBuffer.hh"
+#include "Platform/Vulkan/PipelineOrdering/VulkanCommandBuffer.hh"
 #include "Platform/Vulkan/Work/VulkanWorkOrchestrator.hh"
 
 namespace esp
@@ -19,6 +20,14 @@ namespace esp
   void VulkanIndexBuffer::attach()
   {
     vkCmdBindIndexBuffer(VulkanWorkOrchestrator::get_current_command_buffer(),
+                         m_index_buffer->get_buffer(),
+                         0,
+                         VK_INDEX_TYPE_UINT32);
+  }
+
+  void VulkanIndexBuffer::attach(EspCommandBufferId* id)
+  {
+    vkCmdBindIndexBuffer(static_cast<VulkanCommandBufferId*>(id)->m_command_buffer,
                          m_index_buffer->get_buffer(),
                          0,
                          VK_INDEX_TYPE_UINT32);

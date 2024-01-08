@@ -26,6 +26,9 @@ namespace esp
     void attach() override;
     void attach_instanced(EspVertexBuffer& instance_buffer) override;
 
+    virtual void attach(EspCommandBufferId* id) override;
+    virtual void attach_instanced(EspCommandBufferId* id, EspVertexBuffer& instance_buffer) override;
+
    private:
     VulkanVertexBuffer() = default;
   };
