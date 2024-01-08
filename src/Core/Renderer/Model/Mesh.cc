@@ -12,7 +12,8 @@ namespace esp
                       ATTR(0, ESP_FORMAT_R32G32B32_SFLOAT, offsetof(Mesh::Vertex, m_position)),
                       ATTR(1, ESP_FORMAT_R32G32B32_SFLOAT, offsetof(Mesh::Vertex, m_color)),
                       ATTR(2, ESP_FORMAT_R32G32B32_SFLOAT, offsetof(Mesh::Vertex, m_normal)),
-                      ATTR(3, ESP_FORMAT_R32G32_SFLOAT, offsetof(Mesh::Vertex, m_tex_coord)));
+                      ATTR(3, ESP_FORMAT_R32G32_SFLOAT, offsetof(Mesh::Vertex, m_tex_coord)),
+                      ATTR(4, ESP_FORMAT_R32G32B32_SFLOAT, offsetof(Mesh::Vertex, m_tangent)));
   }
 
   Mesh::Mesh(std::vector<Vertex> vertices)
