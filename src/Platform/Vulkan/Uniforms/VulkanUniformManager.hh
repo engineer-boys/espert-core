@@ -142,7 +142,7 @@ namespace esp
                                                          uint32_t binding,
                                                          uint64_t offset,
                                                          uint32_t size,
-                                                         void* data)
+                                                         void* data) override
     {
       for (int frame_idx = 0; frame_idx < VulkanSwapChain::MAX_FRAMES_IN_FLIGHT; frame_idx++)
       {
@@ -174,7 +174,7 @@ namespace esp
       return *this;
     }
 
-    virtual EspUniformManager& update_push_uniform(EspCommandBufferId* id, uint32_t index, void* data)
+    virtual EspUniformManager& update_push_uniform(EspCommandBufferId* id, uint32_t index, void* data) override
     {
       auto& push_range = m_out_uniform_data_storage.m_push_constant_ranges[index];
       vkCmdPushConstants(static_cast<VulkanCommandBufferId*>(id)->m_command_buffer,
