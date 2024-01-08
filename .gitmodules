@@ -31,3 +31,6 @@
 [submodule "external/assimp"]
 	path = external/assimp
 	url = git@github.com:assimp/assimp.git
+[submodule "external/doxygen"]
+	path = external/doxygen
+	url = https://github.com/doxygen/doxygen.git
