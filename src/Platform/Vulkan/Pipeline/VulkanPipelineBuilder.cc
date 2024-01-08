@@ -19,9 +19,12 @@ static VkShaderModule create_shader_module(const esp::SpirvData& code, VkDevice 
 
 namespace esp
 {
-  VulkanWorkerBuilder::VulkanWorkerBuilder() : m_shader_module_map{}, m_shader_info_map{}, m_vertex_input_info{}
+  VulkanWorkerBuilder::VulkanWorkerBuilder() : m_shader_module_map{}, m_shader_info_map{}
   {
     m_color_attachment_formats.push_back(*(VulkanSwapChain::get_swap_chain_image_format()));
+
+    m_vertex_input_info       = {};
+    m_vertex_input_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
   }
 
   VulkanWorkerBuilder::~VulkanWorkerBuilder()
@@ -96,7 +99,6 @@ namespace esp
       }
     }
 
-    m_vertex_input_info.sType                           = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
     m_vertex_input_info.vertexBindingDescriptionCount   = static_cast<uint32_t>(m_binding_descriptions.size());
     m_vertex_input_info.vertexAttributeDescriptionCount = static_cast<uint32_t>(m_attribute_descriptions.size());
     m_vertex_input_info.pVertexBindingDescriptions      = m_binding_descriptions.data();
@@ -180,11 +182,6 @@ namespace esp
 
     VkPipelineShaderStageCreateInfo shader_stages[] = { m_shader_info_map.at(EspShaderStage::VERTEX),
                                                         m_shader_info_map.at(EspShaderStage::FRAGMENT) };
-
-    VkPipelineVertexInputStateCreateInfo vertex_input_info{};
-    {
-      vertex_input_info.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-    }
 
     VkPipelineInputAssemblyStateCreateInfo input_assembly{};
     {

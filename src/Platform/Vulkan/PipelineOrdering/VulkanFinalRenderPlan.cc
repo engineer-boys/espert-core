@@ -16,7 +16,7 @@ namespace esp
 
 namespace esp
 {
-  VulkanFinalRenderPlan::VulkanFinalRenderPlan() {}
+  VulkanFinalRenderPlan::VulkanFinalRenderPlan(glm::vec3 clear_color) : m_clear_color{ clear_color } {}
 
   VulkanFinalRenderPlan::~VulkanFinalRenderPlan()
   {
@@ -52,6 +52,13 @@ namespace esp
   void VulkanFinalRenderPlan::add_depth_block(std::shared_ptr<EspDepthBlock> depth_block)
   {
     m_depth_block = std::static_pointer_cast<VulkanDepthBlock>(depth_block);
+  }
+
+  void VulkanFinalRenderPlan::build()
+  {
+    auto [width, height] = VulkanWorkOrchestrator::get_swap_chain_extent();
+    m_width              = width;
+    m_height             = height;
   }
 
   void VulkanFinalRenderPlan::begin_plan()
@@ -135,10 +142,9 @@ namespace esp
       color_attachment_info.clearValue.color = { m_clear_color.x, m_clear_color.y, m_clear_color.z, 0.0f };
     }
 
-    auto [width, height]                = VulkanWorkOrchestrator::get_swap_chain_extent();
     VkRenderingInfoKHR rendering_info   = {};
     rendering_info.sType                = VK_STRUCTURE_TYPE_RENDERING_INFO_KHR;
-    rendering_info.renderArea           = { 0, 0, width, height };
+    rendering_info.renderArea           = { 0, 0, m_width, m_height };
     rendering_info.layerCount           = 1;
     rendering_info.colorAttachmentCount = 1;
     rendering_info.pColorAttachments    = &color_attachment_info;

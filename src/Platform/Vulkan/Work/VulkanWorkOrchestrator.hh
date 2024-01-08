@@ -53,6 +53,7 @@ namespace esp
    public:
     static std::unique_ptr<VulkanWorkOrchestrator> create();
 
+    inline static uint32_t get_number_of_command_buffers() { return s_instance->m_command_buffers.size(); }
     static VkCommandBuffer begin_single_time_commands();
     static void end_single_time_commands(VkCommandBuffer command_buffer);
     inline static std::pair<uint32_t, uint32_t> get_swap_chain_extent()
@@ -68,6 +69,10 @@ namespace esp
     inline static VkCommandBuffer get_current_command_buffer()
     {
       return s_instance->m_command_buffers[s_instance->m_swap_chain->m_current_frame];
+    }
+    inline static VkCommandBuffer get_command_buffer(uint32_t command_buffer_idx)
+    {
+      return s_instance->m_command_buffers[command_buffer_idx];
     }
 
     inline static void insert_image_memory_barrier(VkCommandBuffer cmdbuffer,
@@ -130,6 +135,16 @@ namespace esp
     inline static void end_rendering()
     {
       s_instance->vkCmdEndRenderingKHR(s_instance->m_command_buffers[s_instance->m_swap_chain->m_current_frame]);
+    }
+
+    inline static void begin_rendering(VkCommandBuffer command_buffer, const VkRenderingInfo* info)
+    {
+      s_instance->vkCmdbeginRenderingKHR(command_buffer, info);
+    }
+
+    inline static void end_rendering(VkCommandBuffer command_buffer)
+    {
+      s_instance->vkCmdEndRenderingKHR(command_buffer);
     }
   };
 } // namespace esp
