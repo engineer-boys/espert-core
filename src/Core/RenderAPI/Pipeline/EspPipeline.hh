@@ -33,8 +33,8 @@ namespace esp
 
     virtual void attach() const = 0;
 
-    virtual void only_attach(EspCommandBufferId* id) const                             = 0;
-    virtual void set_viewport(EspCommandBufferId* id, EspViewport viewport)            = 0;
+    virtual void only_attach(EspCommandBufferId* id) const                         = 0;
+    virtual void set_viewport(EspCommandBufferId* id, EspViewport viewport)        = 0;
     virtual void set_scissors(EspCommandBufferId* id, EspScissorRect scissor_rect) = 0;
 
     virtual std::unique_ptr<EspUniformManager> create_uniform_manager(int start_managed_ds = -1,

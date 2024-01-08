@@ -23,7 +23,7 @@ namespace esp
 
     inline uint32_t get_index_count() { return m_index_count; }
 
-    virtual void attach() = 0;
+    virtual void attach()                       = 0;
     virtual void attach(EspCommandBufferId* id) = 0;
   };
 } // namespace esp
