@@ -45,7 +45,8 @@ namespace esp
                            std::shared_ptr<EspTexture> src_texture,
                            EspImageLayout src_layout,
                            std::shared_ptr<EspTexture> dst_texture,
-                           EspImageLayout dst_layout,EspImageCopy region);
+                           EspImageLayout dst_layout,
+                           EspImageCopy region);
 
     static void transform_image_layout(EspCommandBufferId* id,
                                        std::shared_ptr<EspTexture> texture,

@@ -7,7 +7,7 @@ namespace esp
 {
   class EspCommandBufferId
   {
-    };
+  };
 
   class EspCommandBuffer
   {
