@@ -55,6 +55,9 @@ def get_configure_command(args: Namespace) -> str:
     if args.build_tests:
         CMD.add_parameter(CmakeParameter("ESP_BUILD_TESTS", "ON"))
 
+    if args.build_docs:
+        CMD.add_parameter(CmakeParameter("ESP_BUILD_DOCS", "ON"))
+
     if args.vvl:
         CMD.add_parameter(CmakeParameter("ESP_BUILD_VVL", "ON"))
 
@@ -183,6 +186,14 @@ def get_parser() -> ArgumentParser:
         default=False,
         action="store_true",
         help="Build tests for project.",
+    )
+    main_parser.add_argument(
+        "-x",
+        "--build-docs",
+        required=False,
+        default=False,
+        action="store_true",
+        help="Build docs for project.",
     )
     main_parser.add_argument(
         "-j",

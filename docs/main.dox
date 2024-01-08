@@ -1,0 +1,22 @@
+/*!
+
+@mainpage notitle
+
+@section main_intro Introduction
+
+Espert is a free, Open Source, multi-platform graphics engine based on OpenGL and
+Vulkan.  It provides a simple, platform-independent API
+for creating games, simulations, animations etc.
+
+There are guides for each section of the API:
+
+ - @ref systems_guide - guide on espert systems
+
+Once you have written a program, see @ref build_guide.
+
+If you are interested in espert's dependencies or need to add a new one see @ref libraries_guide.
+
+This documentation was generated with Doxygen. The sources for it are available
+in both the [GitHub repository](https://github.com/engineer-boys/espert-core).
+
+*/
