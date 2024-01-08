@@ -5,6 +5,7 @@ The espert engine relies on multiple other projects. Their respective repositori
 ## Used libraries
 
 - [Catch2](https://github.com/catchorg/Catch2.git)
+- [Doxygen](https://github.com/doxygen/doxygen.git)
 - [entt](https://github.com/skypjack/entt)
 - [glfw](https://github.com/glfw/glfw)
 - [glm](https://github.com/g-truc/glm)

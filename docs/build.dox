@@ -1,0 +1,47 @@
+/*!
+@page build_guide Build guide
+
+@tableofcontents
+
+In order to build espert several development tools are needed. Make sure they are installed and reachable from console.
+
+Required packages:
+- gcc and g++ or clang-17 and clang++-17
+- make
+- cmake
+- git
+- python3
+
+All code dependecies are managed within project. To download all external modules run inside git repository:
+@code
+git submodule update --init --recursive
+@endcode
+
+To configure project run:
+@code
+python3 scripts/espert-core.py configure
+@endcode
+
+To build project run:
+@code
+python3 scripts/espert-core.py build
+@endcode
+Running configure before build is not necessary as the script will take care of it. \
+By default the project doesn't build Vulkan validation layers. If you want to run espert in debug mode and haven't
+installed Vulkan SDK add --vvl flag to build validation layers. Keep in mind that this process does take a WHILE.
+Please wait patiently and do not abort the build. Once you have build vvl one you won't have to do it again.
+
+To run tests run:
+@code
+python3 scripts/espert-core.py test
+@endcode
+If no tests were run it means you have configured project without tests.
+To reconfigure project with tests and run them use:
+@code
+python3 scripts/espert-core.py -c test
+@endcode
+To learn more about building options run:
+@code
+python3 scripts/espert-core.py --help
+@endcode
+*/

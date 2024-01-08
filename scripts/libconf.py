@@ -4,6 +4,7 @@ from common import CmakeParameter
 
 ESPERT_LIBS_CONF = {
     "catch2": [],
+    "doxygen": [],
     "entt": [],
     "glfw": [
         CmakeParameter("GLFW_BUILD_DOCS", "OFF"),
@@ -39,5 +40,5 @@ ESPERT_LIBS_CONF = {
         CmakeParameter("BUILD_WERROR", "ON"),
         CmakeParameter("BUILD_TESTS", "OFF"),
     ],
-    "assimp": []
+    "assimp": [],
 }
