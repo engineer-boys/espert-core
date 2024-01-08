@@ -66,3 +66,9 @@ To learn more about code formatting options run
 ```
 python3 scripts/code-format.py --help
 ```
+
+## Documentation
+
+Documentation is generated with Doxygen.
+In order to generate documentation add -x or --build-docs flag.
+After build is completed open `build/docs/html/index.html` file to access documentation.

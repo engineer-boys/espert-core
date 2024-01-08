@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(ESPERT_DIR ${PROJECT_SOURCE_DIR})
 
 option(ESP_BUILD_TESTS "Build the Espert-core test programs" OFF)
+option(ESP_BUILD_DOCS "Build the Espert-core doxygen documentation" OFF)
 
 file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.cc)
 
@@ -33,6 +34,21 @@ if (ESP_BUILD_TESTS)
         CONF_PATH lib/cmake/Catch2
         CONF_NAMES Catch2
     )
+endif()
+
+if (ESP_BUILD_DOCS)
+    if (WIN32)
+        message(WARNING "Skippping building docs on Windows due to problems with building and locating Doxygen.")
+    else()
+        set(DOXYGEN_EXECUTABLE ${ESPERT_DIR}/libs/doxygen/${CMAKE_BUILD_TYPE}/bin/doxygen)
+        if (NOT EXISTS ${DOXYGEN_EXECUTABLE})
+            include(${ESPERT_DIR}/cmake/install-library.cmake)
+            install_library(NAME doxygen
+                PREFIX ${ESPERT_DIR}/libs/doxygen/${CMAKE_BUILD_TYPE}
+            )
+        endif()
+        add_subdirectory(docs)
+    endif()
 endif()
 
 get_library(NAME entt

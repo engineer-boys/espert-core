@@ -8,6 +8,7 @@ ESPERT_LIBS_CONF = {
         CmakeParameter("ASSIMP_INSTALL_PDB", "OFF"),
     ],
     "catch2": [],
+    "doxygen": [],
     "entt": [],
     "glfw": [
         CmakeParameter("GLFW_BUILD_DOCS", "OFF"),

@@ -1,0 +1,100 @@
+/*!
+
+@page systems_guide Systems guide
+
+@tableofcontents
+
+This guide introduces the systems of Espert engine. While they have different
+puroses they operate on similar basis. All of these systems deal with some form
+of data that needs to be handled in a special way. Most of them cache data to 
+conserve time and memory. Finally they provide simple API's so the user
+doesn't need to know all the technical details.
+
+@section resource_system Resource system
+
+Resource system is responsible for loading and unloading data from drive.
+It has been designed in a way that is easy to expand, should the user wish
+to load a new type of resource. It consists of pairs of Resources and Loaders
+that are registered together.
+
+@subsection resource_types Resource types
+
+The predefined resource types include:
+
+- BinaryResource - regular binary data
+
+- TextResource - data read in text mode
+
+- ImageResource - image loaded by the stb_image libarary
+
+- SpirvResource - shader source files in SPIR-V format. To load a group of shaders
+with the same name but of different type use the path to shader file without any extensions.
+For example if you want to load shaders/default.vert.spv and shaders/default.frag.spv use the
+shaders/default path. All matching files will be loaded and stored as one SpirvResource.
+
+- CubemapResource - represents a collection of 6 images that form a cubemap. The valid face names
+are top, bottom, left, right, front, back. Filenames should be named: path/name_<face>.<extension>.
+To load such cubemap you should use the path: path/name.<extension>. For example to load a cubemap
+consisting of files: test_top.png, test_bottom.png, test_left.png, test_right.png, test_front.png,
+test_back.png use path: test.png.
+
+Example:
+@code
+auto resource = ResourceSystem::load<ImageResource>("path/to/image.png");
+auto image_resource = unique_cast<ImageResource>(std::move(resource));
+@endcode
+
+To use ResourceSystem with a new resource create a resource class that inherits from Resource class
+and a class that inherits from Loader class that will be responsible for loading and unloading of the
+new resoruce. Now all that's left to do is to register a pair of those classes:
+@code
+ResourceSystem::register_loader<ExampleResource>(std::move(std::unique_ptr<Loader>(new ExampleLoader())));
+@endcode
+
+@section texture_system Texture system
+
+The texture system is responsible for loading, configuring and caching textures. Raw texture data is first
+loaded using resource system, then approprieate data structures are created and texture data is copied to the
+GPU memory. The system provides access to both regular textures and cubemaps. Texture system also provides
+a seleciton of default textures depending on their type. These default textures are used in case of loading error.
+
+@subsection texture_types Texture types
+
+The currently supported texture types are textures used in physical based rendering:
+
+- albedo
+- normal
+- metallic
+- roughness
+- ambient occlusion
+
+@section shader_system Shader system
+
+While Shader system's responsibilities include loading and caching shaders one of it's main features is shader
+configuration. Shader's cannot be used right away after loading. They need configuration which reguires knowledge
+of the shader code and the graphics API. While other RenderAPI helps with the boilerplate code needed by graphics API,
+the shader system uses reflections to process shader sources and perform necessary configurations.
+Shaders are cached by their name as well as configuration, so for example one can use the same shader with different
+specialization constant values.
+
+@subsection shader_reflections Shader reflections
+
+The SPIRV-Reflect library is used to perform reflections on shader sources. The metadata that it gathers is used to
+ocnfigure things like push constants, uniform buffers, texture samplers or input.
+
+@subsection specialization_constatnts Specialization constants
+
+Specialization constants are a feature of Vulkan and OpenGL (since version 4.6). They are values that are set right before
+compilation of spir-v code to binary data. This means that from perspective of user they are set at runtime and from GPU'S
+perspective they are constant. Because of this shader compiler can perform many optimizations like loop unrolling or if-statement
+evaluation. What's more they can be used to deretmine size of arrays so user doesn't have to use a constant max value and 
+waste resources.
+
+@section material_system Material system
+
+Material system is responsible for creation and caching of materials. In Espert materials are simply collections
+of a shader and few textures. It posesses an uniform manager that is linked to that one shader and controlls set 
+of textures. It's primary goal is to group objects of the same material during rendering process to minimize the 
+number of texture bindings which are expensive.
+
+*/
