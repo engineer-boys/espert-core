@@ -19,6 +19,7 @@
 /* --------- Render API --------------------- */
 #include "Core/RenderAPI/Pipeline/EspPipeline.hh"
 #include "Core/RenderAPI/Pipeline/EspPipelineBuilder.hh"
+#include "Core/RenderAPI/PipelineOrdering/EspCommandBuffer.hh"
 #include "Core/RenderAPI/PipelineOrdering/EspRenderPlan.hh"
 #include "Core/RenderAPI/Resources/EspIndexBuffer.hh"
 #include "Core/RenderAPI/Resources/EspVertexBuffer.hh"
