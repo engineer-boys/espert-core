@@ -89,28 +89,18 @@ namespace esp
     auto image_resource = unique_cast<ImageResource>(std::move(resource));
 
     /*
-      TODO: The code below shouldn't be commented out. However, current render API
-      implementation doesn't support images with fewer than 4 channels.
+      TODO: Current render API implementation doesn't support
+      images with fewer than 4 channels. So, TextureSystems too.
     */
     EspTextureFormat format;
-    // switch (image_resource->get_channel_count())
-    // {
-    // case 1:
-    //   format = params.is_srgb ? EspTextureFormat::ESP_FORMAT_R8_SRGB : EspTextureFormat::ESP_FORMAT_R8_UNORM;
-    //   break;
 
-    // case 3:
-    //   format = params.is_srgb ? EspTextureFormat::ESP_FORMAT_R8G8B8_SRGB : EspTextureFormat::ESP_FORMAT_R8G8B8_UNORM;
-    //   break;
-
-    // case 4:
-    format = params.is_srgb ? EspTextureFormat::ESP_FORMAT_R8G8B8A8_SRGB : EspTextureFormat::ESP_FORMAT_R8G8B8A8_UNORM;
-    //   break;
-
-    // default:
-    //   ESP_ERROR("You load texture {} with unsupported channel count", name);
-    //   throw std::runtime_error("Unsupported channel count");
-    // }
+    // channels 4:
+    if (params.is_hdr) { format = EspTextureFormat::ESP_FORMAT_R16G16B16A16_SFLOAT; }
+    else
+    {
+      format =
+          params.is_srgb ? EspTextureFormat::ESP_FORMAT_R8G8B8A8_SRGB : EspTextureFormat::ESP_FORMAT_R8G8B8A8_UNORM;
+    }
 
     auto texture = EspTexture::create(name, std::move(image_resource), params.type, params.mipmapping, format);
     s_instance->m_texture_map.insert({ name, texture });
@@ -131,28 +121,18 @@ namespace esp
     auto cubemap_resource = unique_cast<CubemapResource>(std::move(resource));
 
     /*
-      TODO: The code below shouldn't be commented out. However, current render API
-      implementation doesn't support images with fewer than 4 channels.
+    TODO: Current render API implementation doesn't support
+    images with fewer than 4 channels. So, TextureSystems too.
     */
     EspTextureFormat format;
-    // switch (cubemap_resource->get_channel_count())
-    // {
-    // case 1:
-    //   format = params.is_srgb ? EspTextureFormat::ESP_FORMAT_R8_SRGB : EspTextureFormat::ESP_FORMAT_R8_UNORM;
-    //   break;
 
-    // case 3:
-    //   format = params.is_srgb ? EspTextureFormat::ESP_FORMAT_R8G8B8_SRGB : EspTextureFormat::ESP_FORMAT_R8G8B8_UNORM;
-    //   break;
-
-    // case 4:
-    format = params.is_srgb ? EspTextureFormat::ESP_FORMAT_R8G8B8A8_SRGB : EspTextureFormat::ESP_FORMAT_R8G8B8A8_UNORM;
-    //   break;
-
-    // default:
-    //   ESP_ERROR("You load texture {} with unsupported channel count", name);
-    //   throw std::runtime_error("Unsupported channel count");
-    // }
+    // channels 4:
+    if (params.is_hdr) { format = EspTextureFormat::ESP_FORMAT_R16G16B16A16_SFLOAT; }
+    else
+    {
+      format =
+          params.is_srgb ? EspTextureFormat::ESP_FORMAT_R8G8B8A8_SRGB : EspTextureFormat::ESP_FORMAT_R8G8B8A8_UNORM;
+    }
 
     auto cubemap = EspTexture::create_cubemap(name, std::move(cubemap_resource), format);
     s_instance->m_cubemap_map.insert({ name, cubemap });
