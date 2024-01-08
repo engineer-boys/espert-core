@@ -3,6 +3,7 @@
 
 #include "esppch.hh"
 
+#include "Core/RenderAPI/PipelineOrdering/Block/Types/EspSampleCountFlag.hh"
 #include "Core/RenderAPI/Resources/Format/EspTextureFormat.hh"
 #include "Core/Resources/ResourceTypes.hh"
 
@@ -88,10 +89,24 @@ namespace esp
     }
   }
 
+  struct EspRawTextureParams
+  {
+    EspTextureFormat format;
+    EspSampleCountFlag sample_count = EspSampleCountFlag::ESP_SAMPLE_COUNT_1_BIT;
+
+    uint32_t width;
+    uint32_t height;
+    uint32_t mip_levels = 1;
+
+    bool as_cubemap = false;
+  };
+
   class EspTexture
   {
    public:
     PREVENT_COPY(EspTexture);
+
+    virtual ~EspTexture() {}
 
     static std::shared_ptr<EspTexture> create(const std::string& name,
                                               std::unique_ptr<ImageResource> image,
@@ -102,6 +117,8 @@ namespace esp
     static std::shared_ptr<EspTexture> create_cubemap(const std::string& name,
                                                       std::unique_ptr<CubemapResource> cubemap_resource,
                                                       EspTextureFormat format);
+
+    static std::shared_ptr<EspTexture> create_raw_texture(EspRawTextureParams params);
 
     inline const std::string& get_name() const { return m_name; }
     inline const uint64_t get_size() const { return m_channel_count * m_width * m_height; }
@@ -125,7 +142,7 @@ namespace esp
                uint32_t width,
                uint32_t height,
                EspTextureType type = EspTextureType::ALBEDO);
-    EspTexture(uint32_t width, uint32_t height);
+    EspTexture(uint32_t width, uint32_t height, uint32_t mip_levels = 1);
     EspTexture(const std::string& name, uint8_t channel_count, uint32_t width, uint32_t height);
 
     std::string m_name;

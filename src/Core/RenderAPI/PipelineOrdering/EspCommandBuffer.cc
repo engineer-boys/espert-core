@@ -1,39 +1,34 @@
-#include "EspRenderPlan.hh"
+#include "EspCommandBuffer.hh"
 
-#include "Platform/Vulkan/PipelineOrdering/VulkanFinalRenderPlan.hh"
-#include "Platform/Vulkan/PipelineOrdering/VulkanRenderPlan.hh"
+#include "Platform/Vulkan/PipelineOrdering/VulkanCommandBuffer.hh"
+#include "Platform/Vulkan/Work/VulkanWorkOrchestrator.hh"
 
 namespace esp
 {
-
-  std::unique_ptr<EspRenderPlan> EspRenderPlan::create()
+  std::unique_ptr<EspCommandBufferId> EspCommandBuffer::begin_only_once()
   {
     //     /* ---------------------------------------------------------*/
     //     /* ------------- PLATFORM DEPENDENT ------------------------*/
     //     /* ---------------------------------------------------------*/
     //     // #if defined(OPENGL_PLATFORM)
     //     // #elif defined(VULKAN_PLATFORM)
-    return std::make_unique<VulkanRenderPlan>();
+    VkCommandBuffer command_buffer = VulkanWorkOrchestrator::begin_single_time_commands();
+    return std::make_unique<VulkanCommandBufferId>(command_buffer);
     //     // #else
     //     // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
     //     // #endif
     //     /* ---------------------------------------------------------*/
   }
 
-  std::unique_ptr<EspRenderPlan> EspRenderPlan::create_final(glm::vec3 clear_color,
-                                                             EspSampleCountFlag sample_count_flag)
+  void EspCommandBuffer::end_only_once(std::unique_ptr<EspCommandBufferId> command_buffer_id)
   {
     //     /* ---------------------------------------------------------*/
     //     /* ------------- PLATFORM DEPENDENT ------------------------*/
     //     /* ---------------------------------------------------------*/
     //     // #if defined(OPENGL_PLATFORM)
     //     // #elif defined(VULKAN_PLATFORM)
-    auto plan = std::make_unique<VulkanFinalRenderPlan>(clear_color);
-    if (sample_count_flag != EspSampleCountFlag::ESP_SAMPLE_COUNT_1_BIT)
-    {
-      plan->enable_resolve_block(sample_count_flag);
-    }
-    return plan;
+    VulkanWorkOrchestrator::end_single_time_commands(
+        static_cast<VulkanCommandBufferId*>(command_buffer_id.get())->m_command_buffer);
     //     // #else
     //     // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
     //     // #endif

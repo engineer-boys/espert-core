@@ -43,6 +43,21 @@ namespace esp
     return cubemap;
   }
 
+  std::shared_ptr<EspTexture> EspTexture::create_raw_texture(EspRawTextureParams params)
+  {
+    /* ---------------------------------------------------------*/
+    /* ------------- PLATFORM DEPENDENT ------------------------*/
+    /* ---------------------------------------------------------*/
+    // #if defined(OPENGL_PLATFORM)
+    //     auto context = std::make_unique<OpenGLContext>();
+    // #elif defined(VULKAN_PLATFORM)
+    return VulkanTexture::create_raw_texture(params);
+    // #else
+    // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
+    // #endif
+    /* ---------------------------------------------------------*/
+  }
+
   EspTexture::EspTexture(const std::string& name,
                          const uint8_t* pixels,
                          uint8_t channel_count,
@@ -62,10 +77,10 @@ namespace esp
   {
   }
 
-  EspTexture::EspTexture(uint32_t width, uint32_t height) :
-      m_name(""), m_channel_count(0), m_width(width), m_height(height), m_has_transparency(false)
+  EspTexture::EspTexture(uint32_t width, uint32_t height, uint32_t mip_levels) :
+      m_name(""), m_channel_count(0), m_width(width), m_height(height), m_has_transparency(false),
+      m_mip_levels(mip_levels)
   {
-    m_mip_levels = 1;
   }
 
   void EspTexture::calculate_mip_levels() { m_mip_levels = std::floor(std::log2(std::max(m_width, m_height))) + 1; }
