@@ -66,8 +66,13 @@ namespace esp
     inline EspWindow& get_window() { return *m_window; }
 
    public:
-    EspApplication(const std::string title = "Espert window", unsigned int width = 1280, unsigned int height = 720);
+    EspApplication(const std::string title = "Espert window",
+                   unsigned int width      = 1280,
+                   unsigned int height     = 720,
+                   bool disable_cursor     = false);
     virtual ~EspApplication();
+
+    void virtual update(float dt) {}
 
     void push_layer(Layer* layer);
     void push_overlayer(Layer* layer);

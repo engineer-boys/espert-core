@@ -20,6 +20,7 @@ namespace esp
     ~VulkanIndexBuffer() override = default;
 
     virtual void attach() override;
+    virtual void attach(EspCommandBufferId* id) override;
 
    private:
     VulkanIndexBuffer() = default;

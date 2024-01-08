@@ -52,12 +52,7 @@ namespace esp
     }
     glfwSetWindowUserPointer(m_window, m_data.get());
 
-    // TODO: set flag for cursor disabled
-    // Now disable cursor is always false
-    if (m_data->m_disable_cursor)
-    {
-      // glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-    }
+    if (m_data->m_disable_cursor) { glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); }
 
     set_callbacks();
     ESP_CORE_INFO("window created: w {}, h {}, t {}", m_data->m_width, m_data->m_height, m_data->m_title);
@@ -82,17 +77,6 @@ namespace esp
   void EspWindow::set_callbacks()
   {
     /* set callbacks for glfw events */
-    glfwSetWindowSizeCallback(m_window,
-                              [](GLFWwindow* window, int width, int height)
-                              {
-                                WindowData* data = static_cast<WindowData*>(glfwGetWindowUserPointer(window));
-                                data->m_width    = width;
-                                data->m_height   = height;
-
-                                WindowResizedEvent event(width, height);
-                                data->m_events_manager_fun(event);
-                              });
-
     glfwSetWindowCloseCallback(m_window,
                                [](GLFWwindow* window)
                                {

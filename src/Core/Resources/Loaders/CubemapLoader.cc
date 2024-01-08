@@ -22,6 +22,7 @@ namespace esp
         return nullptr;
       }
       auto image_resource = unique_cast<ImageResource>(std::move(resource));
+      image_resource->get_channel_count();
       face_resource_map.insert({ face, std::move(image_resource) });
     }
 

@@ -5,6 +5,7 @@
 #include "Core/RenderAPI/Pipeline/EspPipeline.hh"
 
 // Platform
+#include "Platform/Vulkan/PipelineOrdering/VulkanCommandBuffer.hh"
 #include "Platform/Vulkan/Uniforms/EspUniformDataStorage.hh"
 #include "Platform/Vulkan/Uniforms/VulkanUniformManager.hh"
 #include "Platform/Vulkan/Uniforms/VulkanUniformMetaData.hh"
@@ -42,6 +43,16 @@ namespace esp
       set_viewport();
       set_scissors();
     }
+
+    inline virtual void only_attach(EspCommandBufferId* id) const override
+    {
+      vkCmdBindPipeline(static_cast<VulkanCommandBufferId*>(id)->m_command_buffer,
+                        VK_PIPELINE_BIND_POINT_GRAPHICS,
+                        m_graphics_pipeline);
+    }
+
+    virtual void set_viewport(EspCommandBufferId* id, EspViewport viewport) override;
+    virtual void set_scissors(EspCommandBufferId* id, EspScissorRect scissor_rect) override;
 
     virtual std::unique_ptr<EspUniformManager> create_uniform_manager(int start_managed_ds = -1,
                                                                       int end_managed_ds   = -1) const override;

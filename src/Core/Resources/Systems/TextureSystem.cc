@@ -87,7 +87,22 @@ namespace esp
       return get_default_texture(params.type);
     }
     auto image_resource = unique_cast<ImageResource>(std::move(resource));
-    auto texture        = EspTexture::create(name, std::move(image_resource), params.type, params.mipmapping);
+
+    /*
+      TODO: Current render API implementation doesn't support
+      images with fewer than 4 channels. So, TextureSystems too.
+    */
+    EspTextureFormat format;
+
+    // channels 4:
+    if (params.is_hdr) { format = EspTextureFormat::ESP_FORMAT_R16G16B16A16_SFLOAT; }
+    else
+    {
+      format =
+          params.is_srgb ? EspTextureFormat::ESP_FORMAT_R8G8B8A8_SRGB : EspTextureFormat::ESP_FORMAT_R8G8B8A8_UNORM;
+    }
+
+    auto texture = EspTexture::create(name, std::move(image_resource), params.type, params.mipmapping, format);
     s_instance->m_texture_map.insert({ name, texture });
     ESP_CORE_TRACE("Loaded texture {}.", name);
     return texture;
@@ -104,7 +119,22 @@ namespace esp
       return nullptr;
     }
     auto cubemap_resource = unique_cast<CubemapResource>(std::move(resource));
-    auto cubemap          = EspTexture::create_cubemap(name, std::move(cubemap_resource));
+
+    /*
+    TODO: Current render API implementation doesn't support
+    images with fewer than 4 channels. So, TextureSystems too.
+    */
+    EspTextureFormat format;
+
+    // channels 4:
+    if (params.is_hdr) { format = EspTextureFormat::ESP_FORMAT_R16G16B16A16_SFLOAT; }
+    else
+    {
+      format =
+          params.is_srgb ? EspTextureFormat::ESP_FORMAT_R8G8B8A8_SRGB : EspTextureFormat::ESP_FORMAT_R8G8B8A8_UNORM;
+    }
+
+    auto cubemap = EspTexture::create_cubemap(name, std::move(cubemap_resource), format);
     s_instance->m_cubemap_map.insert({ name, cubemap });
     ESP_CORE_TRACE("Loaded cubemap {}.", name);
     return cubemap;

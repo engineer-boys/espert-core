@@ -37,7 +37,10 @@ namespace esp
     m_worker_builder->enable_multisampling(sample_count_flag);
   }
 
-  void EspShader::set_attachment_formats(std::vector<EspBlockFormat> formats) {}
+  void EspShader::set_attachment_formats(std::vector<EspBlockFormat> formats)
+  {
+    m_worker_builder->set_attachment_formats(formats);
+  }
 
   void EspShader::attach() { m_worker->attach(); }
 
@@ -49,6 +52,15 @@ namespace esp
   void EspShader::set_worker_layout(std::unique_ptr<EspUniformMetaData> uniforms_meta_data)
   {
     m_worker_builder->set_worker_layout(std::move(uniforms_meta_data));
+  }
+
+  void EspShader::only_attach(EspCommandBufferId* id) const { m_worker->only_attach(id); }
+
+  void EspShader::set_viewport(EspCommandBufferId* id, EspViewport viewport) { m_worker->set_viewport(id, viewport); }
+
+  void EspShader::set_scissors(EspCommandBufferId* id, EspScissorRect scissor_rect)
+  {
+    m_worker->set_scissors(id, scissor_rect);
   }
 
   void EspShader::build_worker() { m_worker = m_worker_builder->build_worker(); }

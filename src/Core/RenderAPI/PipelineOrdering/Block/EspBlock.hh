@@ -5,6 +5,7 @@
 
 #include "Core/RenderAPI/PipelineOrdering/Block/Types/EspBlockFormat.hh"
 #include "Core/RenderAPI/PipelineOrdering/Block/Types/EspSampleCountFlag.hh"
+#include "Core/RenderAPI/Resources/EspTexture.hh"
 
 // std
 #include <vector>
@@ -37,11 +38,21 @@ namespace esp
     virtual inline glm::vec3 get_clear_color() const { return m_clear_color; }
     virtual inline EspSampleCountFlag get_sample_count_flag() { return m_sample_count_flag; }
 
+    virtual std::shared_ptr<EspTexture> use_as_texture() const = 0;
+
     /* -------------------------- STATIC METHODS --------------------------- */
    public:
     static std::shared_ptr<EspBlock> build(EspBlockFormat format,
                                            EspSampleCountFlag sample_count_flag,
                                            glm::vec3 clear_color);
+
+    static std::shared_ptr<EspBlock> build(EspBlockFormat format,
+                                           EspSampleCountFlag sample_count_flag,
+                                           uint32_t width,
+                                           uint32_t height,
+                                           glm::vec3 clear_color);
+
+    static std::shared_ptr<EspTexture> extract_texture(std::shared_ptr<EspBlock> block);
   };
 
 } // namespace esp

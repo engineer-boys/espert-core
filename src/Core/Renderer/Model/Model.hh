@@ -11,8 +11,9 @@ namespace esp
 {
   enum EspPostProcessSteps
   {
-    EspProcessDefault = 0x0,
-    EspProcessFlipUVs = 0x800000
+    EspProcessDefault   = 0x0,
+    EspProcessFlipUVs   = 0x800000,
+    EspCaclTangentSpace = 0x1,
   };
 
   struct ModelParams

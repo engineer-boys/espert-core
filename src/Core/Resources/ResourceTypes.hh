@@ -159,12 +159,16 @@ namespace esp
     CubemapResource(const fs::path& path, FaceResourceMap face_resource_map) :
         Resource(path), m_face_resource_map(std::move(face_resource_map))
     {
+      m_channel_count = get_face(EspCubemapFace::RIGHT).get_channel_count();
     }
 
     inline const ImageResource& get_face(EspCubemapFace face) { return *(m_face_resource_map.at(face)); }
+    inline const uint8_t get_channel_count() const { return m_channel_count; }
+
     PREVENT_COPY(CubemapResource);
 
    private:
+    uint8_t m_channel_count;
     FaceResourceMap m_face_resource_map;
   };
 

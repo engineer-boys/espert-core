@@ -6,7 +6,8 @@ namespace esp
   std::shared_ptr<EspTexture> EspTexture::create(const std::string& name,
                                                  std::unique_ptr<ImageResource> image,
                                                  EspTextureType type,
-                                                 bool mipmapping)
+                                                 bool mipmapping,
+                                                 EspTextureFormat format)
   {
     /* ---------------------------------------------------------*/
     /* ------------- PLATFORM DEPENDENT ------------------------*/
@@ -14,7 +15,7 @@ namespace esp
     // #if defined(OPENGL_PLATFORM)
     //     auto context = std::make_unique<OpenGLContext>();
     // #elif defined(VULKAN_PLATFORM)
-    auto texture = VulkanTexture::create(name, std::move(image), type, mipmapping);
+    auto texture = VulkanTexture::create(name, std::move(image), type, mipmapping, format);
     // #else
     // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
     // #endif
@@ -24,7 +25,8 @@ namespace esp
   }
 
   std::shared_ptr<EspTexture> EspTexture::create_cubemap(const std::string& name,
-                                                         std::unique_ptr<CubemapResource> cubemap_resource)
+                                                         std::unique_ptr<CubemapResource> cubemap_resource,
+                                                         EspTextureFormat format)
   {
     /* ---------------------------------------------------------*/
     /* ------------- PLATFORM DEPENDENT ------------------------*/
@@ -32,13 +34,28 @@ namespace esp
     // #if defined(OPENGL_PLATFORM)
     //     auto context = std::make_unique<OpenGLContext>();
     // #elif defined(VULKAN_PLATFORM)
-    auto cubemap = VulkanTexture::create_cubemap(name, std::move(cubemap_resource));
+    auto cubemap = VulkanTexture::create_cubemap(name, std::move(cubemap_resource), format);
     // #else
     // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
     // #endif
     /* ---------------------------------------------------------*/
 
     return cubemap;
+  }
+
+  std::shared_ptr<EspTexture> EspTexture::create_raw_texture(EspRawTextureParams params)
+  {
+    /* ---------------------------------------------------------*/
+    /* ------------- PLATFORM DEPENDENT ------------------------*/
+    /* ---------------------------------------------------------*/
+    // #if defined(OPENGL_PLATFORM)
+    //     auto context = std::make_unique<OpenGLContext>();
+    // #elif defined(VULKAN_PLATFORM)
+    return VulkanTexture::create_raw_texture(params);
+    // #else
+    // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
+    // #endif
+    /* ---------------------------------------------------------*/
   }
 
   EspTexture::EspTexture(const std::string& name,
@@ -60,10 +77,10 @@ namespace esp
   {
   }
 
-  EspTexture::EspTexture(uint32_t width, uint32_t height) :
-      m_name(""), m_channel_count(0), m_width(width), m_height(height), m_has_transparency(false)
+  EspTexture::EspTexture(uint32_t width, uint32_t height, uint32_t mip_levels) :
+      m_name(""), m_channel_count(0), m_width(width), m_height(height), m_has_transparency(false),
+      m_mip_levels(mip_levels)
   {
-    m_mip_levels = 1;
   }
 
   void EspTexture::calculate_mip_levels() { m_mip_levels = std::floor(std::log2(std::max(m_width, m_height))) + 1; }

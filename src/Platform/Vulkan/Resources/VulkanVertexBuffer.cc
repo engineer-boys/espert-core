@@ -1,4 +1,5 @@
 #include "VulkanVertexBuffer.hh"
+#include "Platform/Vulkan/PipelineOrdering/VulkanCommandBuffer.hh"
 #include "Platform/Vulkan/Work/VulkanWorkOrchestrator.hh"
 
 namespace esp
@@ -57,5 +58,22 @@ namespace esp
     VkDeviceSize offsets[] = { 0, 0 };
 
     vkCmdBindVertexBuffers(VulkanWorkOrchestrator::get_current_command_buffer(), 0, 2, buffers, offsets);
+  }
+
+  void VulkanVertexBuffer::attach(EspCommandBufferId* id)
+  {
+    VkBuffer buffers[]     = { m_vertex_buffer->get_buffer() };
+    VkDeviceSize offsets[] = { 0 };
+
+    vkCmdBindVertexBuffers(static_cast<VulkanCommandBufferId*>(id)->m_command_buffer, 0, 1, buffers, offsets);
+  }
+
+  void VulkanVertexBuffer::attach_instanced(EspCommandBufferId* id, EspVertexBuffer& instance_buffer)
+  {
+    VkBuffer buffers[]     = { m_vertex_buffer->get_buffer(),
+                               dynamic_cast<VulkanVertexBuffer&>(instance_buffer).m_vertex_buffer->get_buffer() };
+    VkDeviceSize offsets[] = { 0, 0 };
+
+    vkCmdBindVertexBuffers(static_cast<VulkanCommandBufferId*>(id)->m_command_buffer, 0, 2, buffers, offsets);
   }
 } // namespace esp

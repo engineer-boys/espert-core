@@ -45,7 +45,9 @@ namespace esp
 
     m_binding_count += 1;
     m_general_buffer_uniform_counter++;
-    m_meta_descriptor_sets.back().m_buffer_uniform_counter++;
+
+    // TEST:DAWID:XD
+    m_meta_descriptor_sets.back().m_buffer_uniform_counter += count_of_data_chunks;
 
     return *this;
   }
@@ -60,7 +62,7 @@ namespace esp
 
     m_binding_count += 1;
     m_general_texture_uniform_counter++;
-    m_meta_descriptor_sets.back().m_texture_uniform_counter++;
+    m_meta_descriptor_sets.back().m_texture_uniform_counter += count_of_textures;
 
     return *this;
   }

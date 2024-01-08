@@ -14,7 +14,8 @@ static VkFormat find_depth_format();
 static VkSurfaceFormatKHR choose_swap_chain_surface_format(const std::vector<VkSurfaceFormatKHR>& available_formats);
 static VkPresentModeKHR choose_swap_chain_present_mode(const std::vector<VkPresentModeKHR>& available_present_modes);
 static VkExtent2D choose_swap_chain_extent(const VkSurfaceCapabilitiesKHR& capabilities);
-static void log_chosen_swap_chain_present_mode(const std::string& mode);
+static void log_swap_chain_image_format(VkFormat format);
+// static void log_chosen_swap_chain_present_mode(const std::string& mode);
 
 /* --------------------------------------------------------- */
 /* ---------------- CLASS IMPLEMENTATION ------------------- */
@@ -176,15 +177,23 @@ static VkFormat find_depth_format()
 
 static VkSurfaceFormatKHR choose_swap_chain_surface_format(const std::vector<VkSurfaceFormatKHR>& available_formats)
 {
+  std::vector<VkFormat> preferred_image_unorm_formats = { VK_FORMAT_B8G8R8A8_UNORM,
+                                                          VK_FORMAT_R8G8B8A8_UNORM,
+                                                          VK_FORMAT_A8B8G8R8_UNORM_PACK32 };
+
   for (const auto& available_format : available_formats)
   {
-    if (available_format.format == VK_FORMAT_B8G8R8A8_SRGB &&
-        available_format.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
+    for (const auto& prefered_format : preferred_image_unorm_formats)
     {
-      return available_format;
+      if (available_format.format == prefered_format)
+      {
+        log_swap_chain_image_format(prefered_format);
+        return available_format;
+      }
     }
   }
 
+  log_swap_chain_image_format(available_formats[0].format);
   return available_formats[0];
 }
 
@@ -219,4 +228,15 @@ static VkExtent2D choose_swap_chain_extent(const VkSurfaceCapabilitiesKHR& capab
 
     return actual_extent;
   }
+}
+
+static void log_swap_chain_image_format(VkFormat format)
+{
+  if (format == VK_FORMAT_B8G8R8A8_UNORM) { ESP_INFO("Swap chain format : VK_FORMAT_B8G8R8A8_UNORM"); }
+  else if (format == VK_FORMAT_R8G8B8A8_UNORM) { ESP_INFO("Swap chain format : VK_FORMAT_R8G8B8A8_UNORM"); }
+  else if (format == VK_FORMAT_A8B8G8R8_UNORM_PACK32)
+  {
+    ESP_INFO("Swap chain format : VK_FORMAT_A8B8G8R8_UNORM_PACK32");
+  }
+  else { ESP_INFO("Swap chain format : {} nr", format); }
 }

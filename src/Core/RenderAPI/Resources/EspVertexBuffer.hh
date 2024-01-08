@@ -3,6 +3,8 @@
 
 #include "EspBuffer.hh"
 
+#include "Core/RenderAPI/PipelineOrdering/EspCommandBuffer.hh"
+
 namespace esp
 {
   class EspVertexBuffer : public EspBuffer
@@ -28,6 +30,9 @@ namespace esp
 
     virtual void attach()                                           = 0;
     virtual void attach_instanced(EspVertexBuffer& instance_buffer) = 0;
+
+    virtual void attach(EspCommandBufferId* id)                                             = 0;
+    virtual void attach_instanced(EspCommandBufferId* id, EspVertexBuffer& instance_buffer) = 0;
   };
 } // namespace esp
 

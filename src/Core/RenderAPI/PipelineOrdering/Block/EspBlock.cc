@@ -31,4 +31,37 @@ namespace esp
     //     // #endif
     //     /* ---------------------------------------------------------*/
   }
+
+  std::shared_ptr<EspBlock> EspBlock::build(EspBlockFormat format,
+                                            EspSampleCountFlag sample_count_flag,
+                                            uint32_t width,
+                                            uint32_t height,
+                                            glm::vec3 clear_color)
+  {
+    //     /* ---------------------------------------------------------*/
+    //     /* ------------- PLATFORM DEPENDENT ------------------------*/
+    //     /* ---------------------------------------------------------*/
+    //     // #if defined(OPENGL_PLATFORM)
+    //     // #elif defined(VULKAN_PLATFORM)
+    return std::make_shared<VulkanBlock>(format, sample_count_flag, width, height, clear_color);
+    //     // #else
+    //     // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
+    //     // #endif
+    //     /* ---------------------------------------------------------*/
+  }
+
+  std::shared_ptr<EspTexture> EspBlock::extract_texture(std::shared_ptr<EspBlock> block)
+  {
+    //     /* ---------------------------------------------------------*/
+    //     /* ------------- PLATFORM DEPENDENT ------------------------*/
+    //     /* ---------------------------------------------------------*/
+    //     // #if defined(OPENGL_PLATFORM)
+    //     // #elif defined(VULKAN_PLATFORM)
+    auto vulkan_block = std::static_pointer_cast<VulkanBlock>(block);
+    return vulkan_block->extract_texture();
+    //     // #else
+    //     // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
+    //     // #endif
+    //     /* ---------------------------------------------------------*/
+  }
 } // namespace esp

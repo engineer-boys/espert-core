@@ -61,6 +61,11 @@ namespace esp
       }
       else { vertex.m_tex_coord = glm::vec2{ 0.f, 0.f }; }
 
+      if ((params.p_flags & aiProcess_CalcTangentSpace) != 0)
+      {
+        vertex.m_tangent = glm::vec3{ mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z };
+      }
+
       vertices.push_back(vertex);
     }
 
