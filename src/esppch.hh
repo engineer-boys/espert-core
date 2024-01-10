@@ -1,7 +1,10 @@
 #ifndef ESPERT_ESPPCH_HH
 #define ESPERT_ESPPCH_HH
 
+#define _USE_MATH_DEFINES
+
 #include <algorithm>
+#include <cmath>
 #include <filesystem>
 #include <fstream>
 #include <functional>
