@@ -121,7 +121,7 @@ namespace esp
                                  memcpy(p_data, &a, sizeof(a));
                                  auto ptr_a = &a;
                                  p_data     = const_cast<void*>(
-                                     reinterpret_cast<const void*>(reinterpret_cast<typeof(ptr_a)>(p_data) + 1));
+                                     reinterpret_cast<const void*>(reinterpret_cast<decltype(ptr_a)>(p_data) + 1));
                                } },
                    spec_const.value);
       }
