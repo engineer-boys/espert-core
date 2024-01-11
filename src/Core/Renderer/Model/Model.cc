@@ -124,4 +124,12 @@ namespace esp
       else { mesh->draw(); }
     }
   }
+
+  void Model::draw_raw()
+  {
+    for (auto& mesh : m_meshes)
+    {
+      mesh->draw_raw();
+    }
+  }
 } // namespace esp
