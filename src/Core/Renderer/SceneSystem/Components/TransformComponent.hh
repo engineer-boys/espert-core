@@ -25,6 +25,10 @@ namespace esp
     inline void reset() { m_model = glm::mat4{ 1.f }; }
     inline const glm::mat4& get_model_mat() { return m_model; }
 
+    inline const glm::vec3& get_translation() const { return m_translation; }
+    inline const float& get_scale() const { return m_scale; }
+    inline const glm::quat& get_rotation() const { return m_rotation; }
+
    private:
     inline void translate() { m_model = glm::translate(m_model, m_translation); }
     inline void rotate() { m_model *= glm::mat4_cast(m_rotation); }
