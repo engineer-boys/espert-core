@@ -66,4 +66,16 @@ namespace esp
     }
     else { EspJob::draw(get_vertex_count(), instance_buffer.get_vertex_count()); }
   }
+
+  void Mesh::draw_raw()
+  {
+    m_vertex_buffer->attach();
+    if (m_has_index_buffer)
+    {
+      m_index_buffer->attach();
+      EspJob::draw_indexed(get_index_count());
+    }
+    else { EspJob::draw(get_vertex_count()); }
+  }
+
 } // namespace esp

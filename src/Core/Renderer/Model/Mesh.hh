@@ -53,6 +53,7 @@ namespace esp
 
     void draw();
     void draw(EspVertexBuffer& instance_buffer);
+    void draw_raw(); // draw without attaching material
 
     void set_material(std::shared_ptr<Material> material);
 
