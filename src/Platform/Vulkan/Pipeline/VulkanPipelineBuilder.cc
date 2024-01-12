@@ -300,18 +300,22 @@ namespace esp
       p_depth_stencil = &depth_stencil;
     }
 
+    uint32_t attachment_count    = m_color_attachment_formats.size();
+    auto color_blend_attachments = std::vector<VkPipelineColorBlendAttachmentState>(attachment_count);
     VkPipelineColorBlendStateCreateInfo color_blending{};
-    VkPipelineColorBlendAttachmentState color_blend_attachment{};
     {
-      color_blend_attachment.colorWriteMask =
-          VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-      color_blend_attachment.blendEnable = VK_FALSE;
+      for (auto& attachment : color_blend_attachments)
+      {
+        attachment.colorWriteMask =
+            VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+        attachment.blendEnable = VK_FALSE;
+      }
 
       color_blending.sType             = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
       color_blending.logicOpEnable     = VK_FALSE;
       color_blending.logicOp           = VK_LOGIC_OP_COPY;
-      color_blending.attachmentCount   = 1;
-      color_blending.pAttachments      = &color_blend_attachment;
+      color_blending.attachmentCount   = m_color_attachment_formats.size();
+      color_blending.pAttachments      = color_blend_attachments.data();
       color_blending.blendConstants[0] = 0.0f;
       color_blending.blendConstants[1] = 0.0f;
       color_blending.blendConstants[2] = 0.0f;
