@@ -5,20 +5,20 @@ namespace esp
 {
   std::shared_ptr<VulkanSampler> VulkanSampler::s_default_sampler = nullptr;
 
-  std::shared_ptr<VulkanSampler> VulkanSampler::create(uint32_t mip_levels)
+  std::shared_ptr<VulkanSampler> VulkanSampler::create(uint32_t mip_levels, VkSamplerAddressMode address_mode)
   {
-    return std::make_shared<VulkanSampler>(mip_levels);
+    return std::make_shared<VulkanSampler>(mip_levels, address_mode);
   }
 
-  VulkanSampler::VulkanSampler(uint32_t mip_levels)
+  VulkanSampler::VulkanSampler(uint32_t mip_levels, VkSamplerAddressMode address_mode)
   {
     VkSamplerCreateInfo sampler_info{};
     sampler_info.sType                   = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
     sampler_info.magFilter               = VK_FILTER_LINEAR;
     sampler_info.minFilter               = VK_FILTER_LINEAR;
-    sampler_info.addressModeU            = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-    sampler_info.addressModeV            = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-    sampler_info.addressModeW            = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    sampler_info.addressModeU            = address_mode;
+    sampler_info.addressModeV            = address_mode;
+    sampler_info.addressModeW            = address_mode;
     sampler_info.anisotropyEnable        = VK_TRUE;
     sampler_info.maxAnisotropy           = VulkanDevice::get_properties().limits.maxSamplerAnisotropy;
     sampler_info.borderColor             = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
@@ -42,7 +42,7 @@ namespace esp
     if (this != s_default_sampler.get()) { vkDestroySampler(VulkanDevice::get_logical_device(), m_sampler, nullptr); }
   }
 
-  void VulkanSampler::create_default_sampler() { s_default_sampler = std::make_shared<VulkanSampler>(0); }
+  void VulkanSampler::create_default_sampler() { s_default_sampler = std::make_shared<VulkanSampler>(); }
 
   void VulkanSampler::terminate_default_sampler()
   {

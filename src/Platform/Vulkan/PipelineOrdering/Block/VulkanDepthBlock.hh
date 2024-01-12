@@ -21,7 +21,11 @@ namespace esp
 
     /* -------------------------- METHODS ---------------------------------- */
    public:
-    VulkanDepthBlock(EspDepthBlockFormat format, EspSampleCountFlag sample_count_flag, uint32_t width, uint32_t height);
+    VulkanDepthBlock(EspDepthBlockFormat format,
+                     EspSampleCountFlag sample_count_flag,
+                     EspImageUsageFlag image_usage_flag,
+                     uint32_t width,
+                     uint32_t height);
     virtual ~VulkanDepthBlock();
 
     VulkanDepthBlock(const VulkanDepthBlock&)            = delete;
@@ -31,6 +35,7 @@ namespace esp
 
     inline VkImage get_image() const { return m_image; }
     inline VkImageView get_image_view() const { return m_image_view; }
+    inline VkDeviceMemory get_image_memory() const { return m_image_memory; }
 
     inline bool need_transition() const { return m_need_layout_transition; }
     inline void on_transition_need() { m_need_layout_transition = true; }

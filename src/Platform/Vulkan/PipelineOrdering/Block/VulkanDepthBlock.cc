@@ -7,9 +7,10 @@ namespace esp
 {
   VulkanDepthBlock::VulkanDepthBlock(EspDepthBlockFormat format,
                                      EspSampleCountFlag sample_count_flag,
+                                     EspImageUsageFlag image_usage_flag,
                                      uint32_t width,
                                      uint32_t height) :
-      EspDepthBlock(format, sample_count_flag, width, height)
+      EspDepthBlock(format, sample_count_flag, image_usage_flag, width, height)
   {
     VulkanResourceManager::create_image(m_width,
                                         m_height,
@@ -17,7 +18,7 @@ namespace esp
                                         static_cast<VkSampleCountFlagBits>(m_sample_count_flag),
                                         static_cast<VkFormat>(m_format),
                                         VK_IMAGE_TILING_OPTIMAL,
-                                        VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+                                        static_cast<VkImageUsageFlags>(m_image_usage_flag),
                                         1,
                                         {},
                                         VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,

@@ -194,6 +194,14 @@ namespace esp
       return *this;
     }
 
+    inline virtual EspUniformManager& load_depth_block(uint32_t set, uint32_t binding, EspDepthBlock* block) override
+    {
+      m_textures[set][binding].emplace_back(
+          VulkanTexture::create_from_depth_block(static_cast<VulkanDepthBlock*>(block)));
+
+      return *this;
+    }
+
    public:
     ~VulkanUniformManager();
   };

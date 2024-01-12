@@ -68,12 +68,15 @@ namespace esp
 
     if (m_depth_block)
     {
-      m_depth_begin_barrier_info                  = {};
-      m_depth_begin_barrier_info.sType            = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-      m_depth_begin_barrier_info.srcAccessMask    = 0;
-      m_depth_begin_barrier_info.dstAccessMask    = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-      m_depth_begin_barrier_info.oldLayout        = VK_IMAGE_LAYOUT_UNDEFINED;
-      m_depth_begin_barrier_info.newLayout        = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+      m_depth_begin_barrier_info               = {};
+      m_depth_begin_barrier_info.sType         = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+      m_depth_begin_barrier_info.srcAccessMask = 0;
+      m_depth_begin_barrier_info.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+      m_depth_begin_barrier_info.oldLayout     = VK_IMAGE_LAYOUT_UNDEFINED;
+      m_depth_begin_barrier_info.newLayout =
+          static_cast<bool>(m_depth_block->get_image_usage_flag() & EspImageUsageFlag::ESP_IMAGE_USAGE_SAMPLED_BIT)
+          ? VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+          : VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
       m_depth_begin_barrier_info.image            = m_depth_block->get_image();
       m_depth_begin_barrier_info.subresourceRange = { VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 1 };
     }
