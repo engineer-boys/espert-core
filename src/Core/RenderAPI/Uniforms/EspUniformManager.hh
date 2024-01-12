@@ -4,6 +4,7 @@
 #include "esppch.hh"
 
 #include "Core/RenderAPI/PipelineOrdering/Block/EspBlock.hh"
+#include "Core/RenderAPI/PipelineOrdering/Block/EspDepthBlock.hh"
 #include "Core/RenderAPI/PipelineOrdering/EspCommandBuffer.hh"
 #include "Core/Resources/Systems/TextureSystem.hh"
 #include "EspUniformMetaData.hh"
@@ -32,7 +33,8 @@ namespace esp
                                                   uint32_t size,
                                                   void* data) = 0;
 
-    virtual EspUniformManager& load_block(uint32_t set, uint32_t binding, EspBlock* block) = 0;
+    virtual EspUniformManager& load_block(uint32_t set, uint32_t binding, EspBlock* block)            = 0;
+    virtual EspUniformManager& load_depth_block(uint32_t set, uint32_t binding, EspDepthBlock* block) = 0;
 
     virtual EspUniformManager& load_texture(uint32_t set, uint32_t binding, std::shared_ptr<EspTexture> texture) = 0;
 

@@ -16,9 +16,10 @@ namespace esp
     VkSampler m_sampler;
 
    public:
-    static std::shared_ptr<VulkanSampler> create(uint32_t mip_levels);
+    static std::shared_ptr<VulkanSampler> create(uint32_t mip_levels               = 0,
+                                                 VkSamplerAddressMode address_mode = VK_SAMPLER_ADDRESS_MODE_REPEAT);
 
-    VulkanSampler(uint32_t mip_levels);
+    VulkanSampler(uint32_t mip_levels = 0, VkSamplerAddressMode address_mode = VK_SAMPLER_ADDRESS_MODE_REPEAT);
 
     VulkanSampler(const VulkanSampler&)            = delete;
     VulkanSampler& operator=(const VulkanSampler&) = delete;

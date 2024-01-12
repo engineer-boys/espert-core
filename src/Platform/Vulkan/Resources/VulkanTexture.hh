@@ -12,6 +12,7 @@
 
 // Render API Vulkan
 #include "Platform/Vulkan/PipelineOrdering/Block/VulkanBlock.hh"
+#include "Platform/Vulkan/PipelineOrdering/Block/VulkanDepthBlock.hh"
 
 namespace esp
 {
@@ -42,6 +43,8 @@ namespace esp
 
     static std::unique_ptr<VulkanTexture> create_from_block(const VulkanBlock* block,
                                                             bool set_as_retrived_from_block = true);
+    static std::unique_ptr<VulkanTexture> create_from_depth_block(const VulkanDepthBlock* block,
+                                                                  bool set_as_retrived_from_block = true);
 
     PREVENT_COPY(VulkanTexture);
 
