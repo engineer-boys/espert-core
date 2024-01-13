@@ -49,6 +49,8 @@ namespace esp
   {
     using Ts::operator()...;
   };
+
+  template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
 } // namespace esp
 #include <bitset>
 
