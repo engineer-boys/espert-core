@@ -44,6 +44,16 @@ namespace esp
       set_scissors();
     }
 
+    inline virtual void only_attach() const override
+    {
+      vkCmdBindPipeline(VulkanWorkOrchestrator::get_current_command_buffer(),
+                        VK_PIPELINE_BIND_POINT_GRAPHICS,
+                        m_graphics_pipeline);
+    }
+
+    virtual void set_viewport(EspViewport viewport) override;
+    virtual void set_scissors(EspScissorRect scissor_rect) override;
+
     inline virtual void only_attach(EspCommandBufferId* id) const override
     {
       vkCmdBindPipeline(static_cast<VulkanCommandBufferId*>(id)->m_command_buffer,

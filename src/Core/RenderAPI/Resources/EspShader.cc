@@ -59,6 +59,12 @@ namespace esp
     m_worker_builder->set_worker_layout(std::move(uniforms_meta_data));
   }
 
+  void EspShader::only_attach() const { m_worker->only_attach(); }
+
+  void EspShader::set_viewport(EspViewport viewport) { m_worker->set_viewport(viewport); }
+
+  void EspShader::set_scissors(EspScissorRect scissor_rect) { m_worker->set_scissors(scissor_rect); }
+
   void EspShader::only_attach(EspCommandBufferId* id) const { m_worker->only_attach(id); }
 
   void EspShader::set_viewport(EspCommandBufferId* id, EspViewport viewport) { m_worker->set_viewport(id, viewport); }

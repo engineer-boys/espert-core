@@ -68,15 +68,12 @@ namespace esp
 
     if (m_depth_block)
     {
-      m_depth_begin_barrier_info               = {};
-      m_depth_begin_barrier_info.sType         = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-      m_depth_begin_barrier_info.srcAccessMask = 0;
-      m_depth_begin_barrier_info.dstAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-      m_depth_begin_barrier_info.oldLayout     = VK_IMAGE_LAYOUT_UNDEFINED;
-      m_depth_begin_barrier_info.newLayout =
-          static_cast<bool>(m_depth_block->get_image_usage_flag() & EspImageUsageFlag::ESP_IMAGE_USAGE_SAMPLED_BIT)
-          ? VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-          : VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+      m_depth_begin_barrier_info                  = {};
+      m_depth_begin_barrier_info.sType            = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+      m_depth_begin_barrier_info.srcAccessMask    = 0;
+      m_depth_begin_barrier_info.dstAccessMask    = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+      m_depth_begin_barrier_info.oldLayout        = VK_IMAGE_LAYOUT_UNDEFINED;
+      m_depth_begin_barrier_info.newLayout        = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
       m_depth_begin_barrier_info.image            = m_depth_block->get_image();
       m_depth_begin_barrier_info.subresourceRange = { VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 1 };
     }
@@ -106,6 +103,19 @@ namespace esp
 
       m_end_barriers_infos[i].image =
           m_blocks[i]->is_resolvable() ? m_blocks[i]->get_resolve_image() : m_blocks[i]->get_image();
+    }
+
+    if (m_depth_block &&
+        static_cast<bool>(m_depth_block->get_image_usage_flag() & EspImageUsageFlag::ESP_IMAGE_USAGE_SAMPLED_BIT))
+    {
+      m_depth_end_barrier_info                  = {};
+      m_depth_end_barrier_info.sType            = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+      m_depth_end_barrier_info.srcAccessMask    = 0;
+      m_depth_end_barrier_info.dstAccessMask    = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+      m_depth_end_barrier_info.oldLayout        = VK_IMAGE_LAYOUT_UNDEFINED;
+      m_depth_end_barrier_info.newLayout        = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+      m_depth_end_barrier_info.image            = m_depth_block->get_image();
+      m_depth_end_barrier_info.subresourceRange = { VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 1 };
     }
 
     // ................................
@@ -220,5 +230,21 @@ namespace esp
                          static_cast<uint32_t>(m_end_barriers_infos.size()), // imageMemoryBarrierCount
                          m_end_barriers_infos.data()                         // pImageMemoryBarriers
     );
+
+    if (m_depth_block &&
+        static_cast<bool>(m_depth_block->get_image_usage_flag() & EspImageUsageFlag::ESP_IMAGE_USAGE_SAMPLED_BIT))
+    {
+      vkCmdPipelineBarrier(m_out_command_buffers[frame_idx],
+                           VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, // srcStageMask TODO: change this mask
+                           VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, // dstStageMask TODO: change this mask
+                           0,
+                           0,
+                           nullptr,
+                           0,
+                           nullptr,
+                           1,                        // imageMemoryBarrierCount
+                           &m_depth_end_barrier_info // pImageMemoryBarriers
+      );
+    }
   }
 } // namespace esp
