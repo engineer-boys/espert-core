@@ -33,6 +33,10 @@ namespace esp
 
     virtual void attach() const = 0;
 
+    virtual void only_attach() const                       = 0;
+    virtual void set_viewport(EspViewport viewport)        = 0;
+    virtual void set_scissors(EspScissorRect scissor_rect) = 0;
+
     virtual void only_attach(EspCommandBufferId* id) const                         = 0;
     virtual void set_viewport(EspCommandBufferId* id, EspViewport viewport)        = 0;
     virtual void set_scissors(EspCommandBufferId* id, EspScissorRect scissor_rect) = 0;
