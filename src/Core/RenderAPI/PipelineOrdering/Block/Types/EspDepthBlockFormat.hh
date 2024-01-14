@@ -10,6 +10,7 @@ namespace esp
   TODO: OpenGL version
   */
 
+  /// @brief Type of data in a depth block
   enum class EspDepthBlockFormat
   {
     ESP_FORMAT_D32_SFLOAT         = 126,

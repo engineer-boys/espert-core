@@ -33,18 +33,28 @@
 
 namespace esp
 {
+  /// @brief Normalizes object of type T.
+  /// @tparam T Type of object to normalize.
+  /// @param v Object to normalize.
+  /// @return Normalized object.
   template<typename T> T normalize(const T& v)
   {
     if (glm::abs(glm::length(v) - 1.0f) < ESP_EPSILON || glm::abs(glm::length(v)) < ESP_EPSILON) return v;
     return glm::normalize(v);
   }
 
+  /// @brief Combines two hashes.
+  /// @tparam T Type of object to hash.
+  /// @param seed Previous hashes to combine to.
+  /// @param v Object to hash.
   template<class T> inline void hash_combine(std::size_t& seed, const T& v)
   {
     std::hash<T> hasher;
     seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
   }
 
+  /// @brief Allows running multiple lambdas in std::visit.
+  /// @tparam ...Ts Types of lambdas.
   template<class... Ts> struct overloaded : Ts...
   {
     using Ts::operator()...;
@@ -56,14 +66,20 @@ namespace esp
 
 namespace esp
 {
+  /// @brief Collection of bits.
+  /// @tparam Size size of bitset.
   template<size_t Size> class EspBitset
   {
    private:
     std::bitset<Size> m_bitset;
 
    public:
+    /// @brief Default constructor.
     EspBitset() : m_bitset{ std::bitset<Size>() } {}
 
+    /// @brief Sets range of bits.
+    /// @param offset Offset of the range to set.
+    /// @param size Size of the range to set.
     inline void set(uint32_t offset, uint32_t size)
     {
       for (uint32_t i = offset; i < size; i++)
@@ -71,6 +87,10 @@ namespace esp
         m_bitset.set(i);
       }
     }
+    /// @brief Checks if any of the bits in range is set.
+    /// @param offset Offset of the range of bits to check.
+    /// @param size Size of the range to check.
+    /// @return True if any of the bits in range is set. False otherwise.
     inline bool any(uint32_t offset, uint32_t size)
     {
       for (uint32_t i = offset; i < size; i++)

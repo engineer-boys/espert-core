@@ -10,6 +10,7 @@ namespace esp
     struct TransformAction;
   }
 
+  /// @brief ECS component that allows translation of component in space.
   struct TransformComponent
   {
    private:
@@ -20,9 +21,13 @@ namespace esp
     glm::mat4 m_model{ 1.f };
 
    public:
+    /// @brief Default constructor.
     TransformComponent() : m_translation{ 0.f, 0.f, 0.f }, m_scale{ 1.f }, m_rotation{ 1.f, 0.f, 0.f, 0.f } {}
 
+    /// @brief Resets component's model matrix.
     inline void reset() { m_model = glm::mat4{ 1.f }; }
+    /// @brief Returns component's model matrix.
+    /// @return Component's model matrix.
     inline const glm::mat4& get_model_mat() { return m_model; }
 
     inline const glm::vec3& get_translation() const { return m_translation; }

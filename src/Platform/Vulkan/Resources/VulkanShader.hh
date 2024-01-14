@@ -11,13 +11,19 @@
 
 namespace esp
 {
+  /// @brief Represents Vulkan's shader. (encapsulates graphics pipeline)
   class VulkanShader : public EspShader
   {
    public:
+    /// @brief Creates VulkanShader with the spirv resource.
+    /// @param name Name of the shader.
+    /// @param spirv_resource SpirvResource containing the shader code.
+    /// @return Shared pointer to uninitialized VulkanShader.
     static std::shared_ptr<VulkanShader> create(const std::string name, std::unique_ptr<SpirvResource> spirv_resource);
 
     PREVENT_COPY(VulkanShader);
 
+    /// @brief Destructor unload's Vulkan's GPU objects.
     ~VulkanShader();
 
    private:

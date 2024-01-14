@@ -6,6 +6,7 @@
 
 namespace esp
 {
+  /// @brief Logs messages to the console.
   class Logger
   {
    private:
@@ -18,11 +19,18 @@ namespace esp
     Logger();
 
    public:
+    /// @brief Destructor destroys instance of Logger.
     ~Logger();
     static std::unique_ptr<Logger> create();
 
+    /// @brief Returns instance of Logger.
+    /// @return Instance of Logger.
     inline static Logger* get_instance() { return Logger::s_instance; }
+    /// @brief Returns reference to core logger.
+    /// @return Reference to core logger.
     inline static std::shared_ptr<spdlog::logger>& get_core_logger() { return Logger::s_instance->m_core_logger; }
+    /// @brief Returns reference to client logger.
+    /// @return Reference to client logger.
     inline static std::shared_ptr<spdlog::logger>& get_client_logger() { return Logger::s_instance->m_client_logger; }
   };
 
