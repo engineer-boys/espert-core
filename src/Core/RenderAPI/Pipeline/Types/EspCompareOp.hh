@@ -10,6 +10,7 @@ namespace esp
   TODO: OpenGL version
   */
 
+  /// @brief Compare operator for depth test.
   enum class EspCompareOp
   {
     ESP_COMPARE_OP_NEVER            = 0,

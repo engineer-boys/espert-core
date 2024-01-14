@@ -20,6 +20,7 @@
 
 namespace esp
 {
+  /// @brief Application aggregates all operations run by the engine.
   class EspApplication
   {
     /* -------------------------- FIELDS ----------------------------------- */
@@ -66,19 +67,36 @@ namespace esp
     inline EspWindow& get_window() { return *m_window; }
 
    public:
+    /// @brief Constuctor sets window title, width, height and whether to lock cursor.
+    /// @param title Window title.
+    /// @param width Window width.
+    /// @param height Window height.
+    /// @param disable_cursor Lock the cursor.
     EspApplication(const std::string title = "Espert window",
                    unsigned int width      = 1280,
                    unsigned int height     = 720,
                    bool disable_cursor     = false);
+    /// @brief Virtual destructor.
     virtual ~EspApplication();
 
+    /// @brief Updates all app layers.
+    /// @param dt Delta time since last update.
     void virtual update(float dt) {}
 
+    /// @brief Add new layer to stack.
+    /// @param layer Layer to be added to stack.
     void push_layer(Layer* layer);
+    /// @brief Push new special layer above other layers.
+    /// @param layer Special layer to be added to stack.
     void push_overlayer(Layer* layer);
 
+    /// @brief Run the application.
     void run();
+    /// @brief Set app context.
+    /// @param context Application context.
     void set_context(std::unique_ptr<EspApplicationContext> context);
+    /// @brief Handle event by the event manager.
+    /// @param e Event to be handled.
     void events_manager(Event& e);
   };
 

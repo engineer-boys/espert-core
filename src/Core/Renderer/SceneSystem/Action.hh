@@ -22,13 +22,14 @@ namespace esp
 
   namespace action
   {
+    /// @brief Type of action.
     enum ActionType
     {
       ESP_ABSOLUTE,
       ESP_RELATIVE
     };
 
-    // TODO: try to add default action types
+    /// @brief Action that allows translation in space.
     struct TransformAction
     {
       static Action<void(Node*)> reset;

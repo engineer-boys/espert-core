@@ -10,6 +10,7 @@ namespace esp
   TODO: OpenGL version
   */
 
+  /// @brief Type of data in a block
   enum class EspBlockFormat
   {
     ESP_FORMAT_R8G8B8A8_UNORM = 37,

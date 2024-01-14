@@ -4,6 +4,8 @@
 #include "EspApplication.hh"
 #include "EspApplicationContext.hh"
 
+/// @brief Creates instance of the app. (to be defined by the user0
+/// @return Pointer to created app.
 extern esp::EspApplication* esp::create_app_instance();
 
 int main(int argc, char** argv)

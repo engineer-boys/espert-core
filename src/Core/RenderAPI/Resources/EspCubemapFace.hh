@@ -5,6 +5,7 @@
 
 namespace esp
 {
+  /// @brief Type of face in cubemap.
   enum class EspCubemapFace : uint8_t
   {
     RIGHT    = 0x01,
@@ -16,6 +17,9 @@ namespace esp
     ENUM_END = 0x40
   };
 
+  /// @brief Sets cubemap face to next face type. (useful for iterating enum)
+  /// @param a Reference to cubemap face.
+  /// @return Cubemap face before 'incrementation'.
   inline EspCubemapFace operator++(EspCubemapFace& a)
   {
     if (a == EspCubemapFace::ENUM_END) return a;
@@ -24,6 +28,10 @@ namespace esp
     return copy;
   }
 
+  /// @brief Sets cubemap face to next face type. (useful for iterating enum)
+  /// @param a Reference to cubemap face.
+  /// @param dummy Dummy parameter needed to differentiate incrementation operators.
+  /// @return Cubemap face after 'incrementation'.
   inline EspCubemapFace operator++(EspCubemapFace& a, int dummy)
   {
     if (a == EspCubemapFace::ENUM_END) return a;
@@ -31,6 +39,9 @@ namespace esp
     return a;
   }
 
+  /// @brief Sets cubemap face to previous face type. (useful for iterating enum)
+  /// @param a Reference to cubemap face.
+  /// @return Cubemap face before 'decrementation'.
   inline EspCubemapFace operator--(EspCubemapFace& a)
   {
     if (a == EspCubemapFace::RIGHT) return a;
@@ -39,6 +50,10 @@ namespace esp
     return copy;
   }
 
+  /// @brief Sets cubemap face to previous face type. (useful for iterating enum)
+  /// @param a Reference to cubemap face.
+  /// @param dummy Dummy parameter needed to differentiate decrementation operators.
+  /// @return Cubemap face before 'decrementation'.
   inline EspCubemapFace operator--(EspCubemapFace& a, int dummy)
   {
     if (a == EspCubemapFace::RIGHT) return a;
@@ -46,9 +61,12 @@ namespace esp
     return a;
   }
 
-  inline std::string esp_cubemap_face_to_str(EspCubemapFace stage)
+  /// @brief Converts cubemap face to human readable string.
+  /// @param face Cubemap face. 
+  /// @return Human readable string describing cubemap face.
+  inline std::string esp_cubemap_face_to_str(EspCubemapFace face)
   {
-    switch (stage)
+    switch (face)
     {
     case EspCubemapFace::TOP:
       return "top";

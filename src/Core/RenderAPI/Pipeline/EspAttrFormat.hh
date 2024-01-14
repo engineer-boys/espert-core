@@ -3,12 +3,14 @@
 
 namespace esp
 {
+  /// @brief Represents how vertices are passed to shaders
   enum EspVertexInputRate
   {
     ESP_VERTEX_INPUT_RATE_VERTEX   = 0,
     ESP_VERTEX_INPUT_RATE_INSTANCE = 1,
   };
 
+  /// @brief Describes data format
   enum EspAttrFormat
   {
     ESP_FORMAT_UNDEFINED                  = 0,

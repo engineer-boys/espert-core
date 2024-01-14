@@ -10,6 +10,7 @@ namespace esp
   TODO: OpenGL version
   */
 
+  /// @brief Format of texture data. Tells how pixels are aranged.
   enum class EspTextureFormat
   {
     ESP_FORMAT_R8_UNORM            = 9,

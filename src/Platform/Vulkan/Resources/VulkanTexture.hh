@@ -15,6 +15,7 @@
 
 namespace esp
 {
+  /// @brief Texture stored on the GPU with Vulkan.
   class VulkanTexture : public EspTexture
   {
    private:
@@ -28,12 +29,24 @@ namespace esp
     std::shared_ptr<VulkanSampler> m_sampler;
 
    public:
+    /// @brief Creates texture with all necessary components.
+    /// @param name Texture name.
+    /// @param image Image resource containing pixel data.
+    /// @param type Type of texture.
+    /// @param mipmapping Bool indicating if texture uses mipmaps.
+    /// @param format Format of textures pixel data.
+    /// @return Shared pointer to instance of texture.
     static std::shared_ptr<VulkanTexture> create(const std::string name,
                                                  std::unique_ptr<ImageResource> image,
                                                  EspTextureType type     = EspTextureType::ALBEDO,
                                                  bool mipmapping         = false,
                                                  EspTextureFormat format = EspTextureFormat::ESP_FORMAT_R8G8B8A8_SRGB);
 
+    /// @brief Creates cubemap texture with all necessary components.
+    /// @param name Cubemap name.
+    /// @param cubemap_resource Cubemap resource containing pixel data for all 6 faces.
+    /// @param format Format of cubemap pixel data.
+    /// @return Shared pointer to instance of cubemap.
     static std::shared_ptr<VulkanTexture> create_cubemap(const std::string name,
                                                          std::unique_ptr<CubemapResource> cubemap_resource,
                                                          EspTextureFormat format);
@@ -45,11 +58,20 @@ namespace esp
 
     PREVENT_COPY(VulkanTexture);
 
+    /// @brief Destroys Vulkan's GPU objects.
     ~VulkanTexture();
 
+    /// @brief Returns Vulkan's texture image.
+    /// @return Vulkan's texture image.
     inline VkImage get_texture_image() { return m_texture_image; }
+    /// @brief Returns Vulkan's texture image memory.
+    /// @return Vulkan's texture image memory.
     inline VkDeviceMemory get_texture_image_memory() { return m_texture_image_memory; }
+    /// @brief Returns Vulkan's texture image view.
+    /// @return Vulkan's texture image view.
     inline VkImageView get_texture_image_view() { return m_texture_image_view; }
+    /// @brief Returns Vulkan's texture sampler.
+    /// @return Vulkan's texture sampler.
     inline VkSampler get_sampler() { return m_sampler->get_sampler(); }
 
    private:

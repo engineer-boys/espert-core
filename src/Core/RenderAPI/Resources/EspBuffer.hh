@@ -5,18 +5,23 @@
 
 namespace esp
 {
+  /// @brief Interface for a general buffer.
   class EspBuffer
   {
    public:
+    /// @brief Type of buffer.
     enum BufferType
     {
       LOCAL,
       VISIBLE
     };
 
+    /// @brief Default constructor.
     EspBuffer()          = default;
+    /// @brief Virtual destructor.
     virtual ~EspBuffer() = default;
 
+    /// @brief Attaches buffer to be included in next operations.
     virtual void attach() = 0;
   };
 } // namespace esp
