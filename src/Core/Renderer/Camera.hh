@@ -20,7 +20,7 @@ namespace esp
 
    private:
     static constexpr glm::vec3 S_UP{ 0.f, 1.f, 0.f };
-    static constexpr glm::vec3 S_FRONT{ 0.f, 0.f, 1.f };
+    static constexpr glm::vec3 S_FRONT{ 0.f, 0.f, -1.f };
     static constexpr float S_PITCH_TRESHOLD{ glm::radians(89.f) };
 
     glm::mat4 m_view{ 1.f };
@@ -30,7 +30,7 @@ namespace esp
     float m_near{ .1f };
     float m_far{ 100.f };
     float m_pitch{ glm::radians(0.f) };
-    float m_jaw{ ESP_PI / 2 };
+    float m_jaw{ -ESP_PI / 2 };
     float m_move_speed{ 1.f };
     float m_sensitivity{ 1.f };
 
@@ -38,8 +38,8 @@ namespace esp
     bool m_first_move{ true };
 
     glm::vec3 m_position{ 0.f };
-    glm::vec3 m_front{ 0.f, 0.f, 1.f };
-    glm::vec3 m_camera_up{ 0.f, -1.f, 0.f };
+    glm::vec3 m_camera_front = S_FRONT;
+    glm::vec3 m_camera_up    = S_UP;
 
    public:
     Camera()  = default;
@@ -70,7 +70,10 @@ namespace esp
 
     inline glm::vec3 get_positiion() const { return m_position; }
 
-    inline const glm::mat4& get_view() { return m_view = glm::lookAt(m_position, m_position + m_front, m_camera_up); }
+    inline const glm::mat4& get_view()
+    {
+      return m_view = glm::lookAt(m_position, m_position + m_camera_front, m_camera_up);
+    }
     inline const glm::mat4& get_projection() { return m_projection_mat; }
 
    private:
