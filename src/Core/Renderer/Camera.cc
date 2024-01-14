@@ -16,16 +16,16 @@ namespace esp
     switch (direction)
     {
     case FORWARD:
-      m_position += m_front * m_move_speed * dt;
+      m_position += m_camera_front * m_move_speed * dt;
       break;
     case BACKWARD:
-      m_position -= m_front * m_move_speed * dt;
+      m_position -= m_camera_front * m_move_speed * dt;
       break;
     case LEFT:
-      m_position -= esp::normalize(glm::cross(m_front, m_camera_up)) * m_move_speed * dt;
+      m_position -= esp::normalize(glm::cross(m_camera_front, m_camera_up)) * m_move_speed * dt;
       break;
     case RIGHT:
-      m_position += esp::normalize(glm::cross(m_front, m_camera_up)) * m_move_speed * dt;
+      m_position += esp::normalize(glm::cross(m_camera_front, m_camera_up)) * m_move_speed * dt;
       break;
     case UP:
       m_position += m_camera_up * m_move_speed * dt;
@@ -38,13 +38,13 @@ namespace esp
 
   void Camera::look_at(glm::vec3 target)
   {
-    m_front = esp::normalize(target - m_position);
+    m_camera_front = esp::normalize(m_position - target);
 
-    m_pitch = std::clamp(ESP_PI / 2 - glm::acos(glm::dot(m_front, S_UP)), -S_PITCH_TRESHOLD, S_PITCH_TRESHOLD);
+    m_pitch = std::clamp(glm::acos(glm::dot(m_camera_front, S_UP)) - ESP_PI / 2, -S_PITCH_TRESHOLD, S_PITCH_TRESHOLD);
 
-    glm::vec3 front_xz = esp::normalize(glm::vec3{ m_front.x, 0.f, m_front.z });
-    m_jaw              = m_front.x > 0 ? ESP_PI / 2 - glm::acos(glm::dot(front_xz, S_FRONT))
-                                       : ESP_PI / 2 + glm::acos(glm::dot(front_xz, S_FRONT));
+    glm::vec3 front_xz = esp::normalize(glm::vec3{ m_camera_front.x, 0.f, m_camera_front.z });
+    m_jaw              = m_camera_front.x < 0 ? ESP_PI / 2 - glm::acos(glm::dot(front_xz, S_FRONT))
+                                              : ESP_PI / 2 + glm::acos(glm::dot(front_xz, S_FRONT));
 
     update_camera_up();
   }
@@ -70,14 +70,14 @@ namespace esp
     direction.y = sin(m_pitch);
     direction.z = sin(m_jaw) * cos(m_pitch);
 
-    m_front = esp::normalize(direction);
+    m_camera_front = esp::normalize(direction);
 
     update_camera_up();
   }
 
   void Camera::update_camera_up()
   {
-    glm::vec3 camera_right = esp::normalize(glm::cross(S_UP, m_front));
-    m_camera_up            = glm::cross(m_front, camera_right);
+    glm::vec3 camera_right = esp::normalize(glm::cross(S_UP, m_camera_front));
+    m_camera_up            = glm::cross(m_camera_front, camera_right);
   }
 } // namespace esp
