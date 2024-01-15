@@ -51,7 +51,8 @@ namespace esp
     /// @brief Sets specialization constant values for specific shader stages.
     /// @param spec_const_map Map containing specialzation constant data for shader stages.
     void set_specialization(const SpecializationConstantMap& spec_const_map);
-    /// @brief Sets uniform metadata that contains information about uniform buffers, texture uniforms and push constants.
+    /// @brief Sets uniform metadata that contains information about uniform buffers, texture uniforms and push
+    /// constants.
     /// @param uniforms_meta_data Object with data needed to configure uniforms.
     void set_worker_layout(std::unique_ptr<EspUniformMetaData> uniforms_meta_data);
 
@@ -59,7 +60,7 @@ namespace esp
     void set_viewport(EspCommandBufferId* id, EspViewport viewport);
     void set_scissors(EspCommandBufferId* id, EspScissorRect scissor_rect);
 
-    /// @brief 
+    /// @brief
     void build_worker();
   };
 } // namespace esp

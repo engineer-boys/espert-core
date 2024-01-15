@@ -62,7 +62,7 @@ namespace esp
   }
 
   /// @brief Converts cubemap face to human readable string.
-  /// @param face Cubemap face. 
+  /// @param face Cubemap face.
   /// @return Human readable string describing cubemap face.
   inline std::string esp_cubemap_face_to_str(EspCubemapFace face)
   {

@@ -17,7 +17,7 @@ namespace esp
     };
 
     /// @brief Default constructor.
-    EspBuffer()          = default;
+    EspBuffer() = default;
     /// @brief Virtual destructor.
     virtual ~EspBuffer() = default;
 

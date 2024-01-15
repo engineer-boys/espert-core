@@ -48,7 +48,7 @@ namespace esp
     /// @brief Termiantes the debug messenger.
     virtual void terminate() = 0;
     /// @brief Initializes the debug messenger.
-    virtual void init()      = 0;
+    virtual void init() = 0;
   };
 
 } // namespace esp
