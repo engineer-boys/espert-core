@@ -21,7 +21,6 @@ namespace esp
     /// @param model Shared pointer to model.
     ModelComponent(std::shared_ptr<Model> model) : m_model_handle{ std::move(model) } {}
 
-    
     /// @brief Equals operator checks if two components reference the same model.
     /// @param other Other component to compare to.
     /// @return True if two components reference the same model. False otherwise.

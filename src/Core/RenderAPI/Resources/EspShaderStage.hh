@@ -91,7 +91,7 @@ namespace esp
   }
 
   /// @brief Converts shader stage to human readable string.
-  /// @param face Shader stage. 
+  /// @param face Shader stage.
   /// @return Human readable string describing shader stage.
   inline std::string esp_shader_stage_to_string(EspShaderStage stage)
   {

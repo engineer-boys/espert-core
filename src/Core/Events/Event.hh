@@ -49,7 +49,7 @@ namespace esp
     virtual EventSubtype get_subtype() const = 0;
     /// @brief Returns event's type.
     /// @return Type of an event.
-    virtual int get_type() const             = 0;
+    virtual int get_type() const = 0;
 
     /// @brief Checks whether event's type is the same as the passed one.
     /// @param type Type of event to check against.

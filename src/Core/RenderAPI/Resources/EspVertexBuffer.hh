@@ -29,7 +29,7 @@ namespace esp
     EspVertexBuffer& operator=(const EspVertexBuffer&) = delete;
 
     /// @brief Default constructor.
-    EspVertexBuffer()          = default;
+    EspVertexBuffer() = default;
     /// @brief Cirtual destructor.
     virtual ~EspVertexBuffer() = default;
 
@@ -45,14 +45,15 @@ namespace esp
     inline uint32_t get_vertex_count() { return m_vertex_count; }
 
     /// @brief Attaches the buffer to be used in next operations.
-    virtual void attach()                                           = 0;
+    virtual void attach() = 0;
     /// @brief Attaches the buffer as well as an instance buffer to be used in next operations.
     virtual void attach_instanced(EspVertexBuffer& instance_buffer) = 0;
 
     /// @brief Attaches the buffer to specific EspCommandBuffer to be used in next operations.
     /// @param id Id of the EspCommandBufferId.
-    virtual void attach(EspCommandBufferId* id)                                             = 0;
-    /// @brief Attaches the buffer as well as an instance buffer to specific EspCommandBuffer to be used in next operations.
+    virtual void attach(EspCommandBufferId* id) = 0;
+    /// @brief Attaches the buffer as well as an instance buffer to specific EspCommandBuffer to be used in next
+    /// operations.
     /// @param id Id of the EspCommandBufferId.
     virtual void attach_instanced(EspCommandBufferId* id, EspVertexBuffer& instance_buffer) = 0;
   };

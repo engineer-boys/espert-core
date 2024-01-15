@@ -24,7 +24,7 @@ namespace esp
     EspIndexBuffer& operator=(const EspIndexBuffer&) = delete;
 
     /// @brief Default constructor.
-    EspIndexBuffer()          = default;
+    EspIndexBuffer() = default;
     /// @brief Virtual destructor.
     virtual ~EspIndexBuffer() = default;
 
@@ -33,7 +33,7 @@ namespace esp
     inline uint32_t get_index_count() { return m_index_count; }
 
     /// @brief Attaches index buffer to be used in next operations.
-    virtual void attach()                       = 0;
+    virtual void attach() = 0;
 
     /// @brief Attaches index buffer for specific command buffer.
     /// @param id Id of command buffer to attach index buffer to.

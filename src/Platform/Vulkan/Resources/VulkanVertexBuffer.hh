@@ -6,7 +6,7 @@
 
 namespace esp
 {
-    /// @brief Vulkan's buffer of vertices that will be input for shaders.
+  /// @brief Vulkan's buffer of vertices that will be input for shaders.
   class VulkanVertexBuffer : public EspVertexBuffer
   {
    private:
@@ -44,7 +44,8 @@ namespace esp
     /// @brief Attaches the buffer to specific EspCommandBuffer to be used in next operations.
     /// @param id Id of the EspCommandBufferId.
     virtual void attach(EspCommandBufferId* id) override;
-    /// @brief Attaches the buffer as well as an instance buffer to specific EspCommandBuffer to be used in next operations.
+    /// @brief Attaches the buffer as well as an instance buffer to specific EspCommandBuffer to be used in next
+    /// operations.
     /// @param id Id of the EspCommandBufferId.
     virtual void attach_instanced(EspCommandBufferId* id, EspVertexBuffer& instance_buffer) override;
 

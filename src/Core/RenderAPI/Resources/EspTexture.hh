@@ -93,7 +93,7 @@ namespace esp
   }
 
   /// @brief Converts texture type to human readable string.
-  /// @param face texture type. 
+  /// @param face texture type.
   /// @return Human readable string describing texture type.
   inline aiTextureType esp_texture_type_to_assimp(EspTextureType type)
   {
