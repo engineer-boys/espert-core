@@ -196,9 +196,18 @@ namespace esp
   {
     auto vulkan_texture = std::unique_ptr<VulkanTexture>(new VulkanTexture(block->get_width(), block->get_height()));
 
-    vulkan_texture->m_texture_image        = block->get_image();
-    vulkan_texture->m_texture_image_memory = block->get_image_memory();
-    vulkan_texture->m_texture_image_view   = block->get_image_view();
+    if (block->is_resolvable())
+    {
+      vulkan_texture->m_texture_image        = block->get_resolve_image();
+      vulkan_texture->m_texture_image_memory = block->get_resolve_image_memory();
+      vulkan_texture->m_texture_image_view   = block->get_resolve_image_view();
+    }
+    else
+    {
+      vulkan_texture->m_texture_image        = block->get_image();
+      vulkan_texture->m_texture_image_memory = block->get_image_memory();
+      vulkan_texture->m_texture_image_view   = block->get_image_view();
+    }
     vulkan_texture->m_retrieved_from_block = set_as_retrived_from_block;
 
     vulkan_texture->m_sampler = VulkanSampler::create(0, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE);
