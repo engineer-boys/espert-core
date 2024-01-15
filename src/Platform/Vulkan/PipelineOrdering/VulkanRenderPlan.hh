@@ -22,6 +22,7 @@ namespace esp
    private:
     std::vector<VkImageMemoryBarrier> m_begin_barriers_infos;
     VkImageMemoryBarrier m_depth_begin_barrier_info;
+    VkImageMemoryBarrier m_resolvable_depth_begin_barrier_info; // needed if depth block is multisampled
     VkImageMemoryBarrier m_depth_end_barrier_info;
 
     std::vector<VkImageMemoryBarrier> m_end_barriers_infos;
