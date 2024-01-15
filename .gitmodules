@@ -18,19 +18,19 @@
 	url = https://github.com/gabime/spdlog
 [submodule "external/catch2"]
 	path = external/catch2
-	url = https://github.com/catchorg/Catch2.git
+	url = https://github.com/catchorg/Catch2
 [submodule "external/entt"]
 	path = external/entt
-	url = git@github.com:skypjack/entt.git
+	url = https://github.com/skypjack/entt
 [submodule "external/stb"]
 	path = external/stb
-	url = git@github.com:nothings/stb.git
+	url = https://github.com/nothings/stb
 [submodule "external/vvl"]
 	path = external/vvl
 	url = https://github.com/KhronosGroup/Vulkan-ValidationLayers
 [submodule "external/assimp"]
 	path = external/assimp
-	url = git@github.com:assimp/assimp.git
+	url = https://github.com/assimp/assimp
 [submodule "external/doxygen"]
 	path = external/doxygen
-	url = https://github.com/doxygen/doxygen.git
+	url = https://github.com/doxygen/doxygen
