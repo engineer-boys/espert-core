@@ -5,15 +5,18 @@ system ([entt](https://github.com/skypjack/entt) library) and scene graph. Scene
 1. Entity - responsible for managing object's components
 2. Node - scene graph's Node, manages Entity taking into account relations with other Nodes. It can posess multiple 
 children and a single parent (just like in a regular tree).
-3. Scene - registers each Entity that is to be rendered. It contains 
-   - a root Node which is the root of scene's graph. All created Nodes must be attached to the root in order to be
+3. Scene - registers each Entity that is on scene. Every Entity has 2 components (TagComponent and TransformComponent) 
+after creation. Scene contains 
+   - a root Node which is the root of scene's graph. All created Nodes must have connection (path) to root in order to be
     processed by Renderer.
    - vector of Cameras which user can create and add. Also, there is a static pointer on Camera that is currently in use.  
 
-User can interact with Entities directly through it's class, or by applying an Action on Node. This way changes can be 
-propagated down the graph applying the same [Action](#action) on Node's children.  
-As mentioned, every object (Entity) can have it's own components, and there are some base ones predefined
-(i.e. TransformComponent) but more can be created by the user if needed.
+User can interact with Entity's components directly through it's class, or by applying an [Action](#action) on Node. 
+This way changes can be propagated down the graph applying the same Action on Node's children. As mentioned, every 
+object (Entity) can have it's own components, and there are some base ones predefined
+(i.e. TransformComponent) but more can be created by the user if needed. Another approach for utilizing components is to
+inherit from Node and create a new class with extension methods for desired components. For convenience, Node has
+predefined methods for TransformComponent's usage.
 
 ## 1. Entity
 ```Python 
@@ -52,17 +55,60 @@ class Node:
     def attach_entity(entity: std::shared_ptr<Entity>) -> None:
     # Attaches provided entity to node
 
-    def set_parent(parent: std::shared_ptr<SceneNode>) -> None:
-    # Sets parent of node
-
-    def add_child(child: std::shared_ptr<SceneNode>) -> None:
-    # Adds child to node 
+    def add_child(node: std::shared_ptr<SceneNode>) -> None:
+    # Adds child to node and sets node as child's parent
+    
+    def get_parent() -> Node*:
+    # Returns parent of node
+    
+    def get_child(index: uint32_t) -> Node*:
+    # Returns child of node at given index (if exists)
+    
+    def get_entity() -> Entity*:
+    # Returns entity attached to node
 
     def act<Args...>(
         f: Action<void(SceneNode*, Args...)>,
         args...) -> None:
     # Executes provided action 'f' on node, and propagates 
     # it to node's children
+
+    # ---------- Transform component functions ----------
+    def translate(vec: glm::vec3) -> None:
+    # Translates node's by given vector
+    def rotate(angle: float, axis: glm::vec3) -> None:
+    # Rotates node's by given angle and axis
+    def scale(val: float) -> None:
+    # Scales node's by given value
+
+    def set_translation(vec: glm::vec3) -> None:
+    # Sets node's translation to given vector
+    def set_rotation(angle: float, axis: glm::vec3) -> None:
+    # Sets node's rotastion to given angle and axis
+    def set_scale(val: float) -> None:
+    # Sets node's scale to given value
+
+    def get_model_mat(type: ActionType::ABSOLUTE) -> glm::mat4:
+    # Gets node's model matrix. If type is 
+    # - ABSOLUTE then matrix is relative to world
+    # - RELATIVE then matrix is relative to parent
+    def get_translation(type: ActionType::ABSOLUTE) -> glm::vec3:
+    # Gets node's translation. If type is 
+    # - ABSOLUTE then translation is relative to world
+    # - RELATIVE then translation is relative to parent
+    def get_rotation(type: ActionType::ABSOLUTE) -> glm::quat:
+    # Gets node's rotation. If type is 
+    # - ABSOLUTE then rotation is relative to world
+    # - RELATIVE then rotation is relative to parent
+    def get_scale(type: ActionType::ABSOLUTE) -> float:
+    # Gets node's scale. If type is 
+    # - ABSOLUTE then scale is relative to world
+    # - RELATIVE then scale is relative to parent
+    
+    def get_transform() -> TransformComponent&:
+    # Gets node's TransformComponent
+    # ---------------------------------------------------
+
 ```
 
 ### Action
@@ -79,8 +125,7 @@ It doesn't really matter because 'act' accepts both conventions.
 
 Action can also have an ActionType which is either RELATIVE or ABSOLUTE. The first one suggests that Action is dependant
 from parent and second one that it isn't, however user has complete freedom in creating Actions, and it is up to him to
-decide what each Action will be responsible for. Action.hh contains static TransformAction class with some base actions for TransformComponent which can be used as a 
-pattern. 
+decide what each Action will be responsible for.
 
 ## 3. Scene
 ```Python 
@@ -128,7 +173,7 @@ def main() -> None:
     # Add and adjust camera
     scene->add_camera(std::make_shared<Camera>())
     camera = scene->get_camera(0)
-    camera->set_position(glm::vec3{ 0.f, -1.f, -5.f })
+    camera->set_position(glm::vec3{ 0.f, 1.f, 5.f })
     camera->look_at(glm::vec3{ 0.f, 0.f, 0.f })
     camera->set_move_speed(3.f)
     camera->set_sensitivity(4.f)
@@ -140,7 +185,6 @@ def main() -> None:
     cubes: list[std::shared_ptr<Entity>]
     for i in range(0, 3):
         cubes[i] = scene->create_entity()
-        cubes[i]->add_component<TransformComponent>()
     
     # Create nodes
     nodes: list[std::shared_prt<Node>]
@@ -149,37 +193,22 @@ def main() -> None:
         nodes[i]->attach_entity(cubes[i])
     
     scene->get_root().add_child(nodes[0])
-    TransformAction::set_translation(nodes[0].get(),
-                                     glm::vec3{ 0.f, 0.f, 0.f }, 
-                                     RELATIVE)
+    nodes[0]->translate(glm::vec3(0.f, 0.f, -1.f))
+    
     for i in range(1, 3):
         nodes[i-1]->add_child(nodes[i])
-        nodes[i]->set_parent(nodes[i-1])
-        TransformAction::set_translation(nodes[i].get(),
-                                         glm::vec3{ 1.f, 0.f, 0.f },
-                                         RELATIVE)
-        
+        nodes[i]->translate(glm::vec3(1.f, 0.f, 0.f))
+        nodes[i]->scale(.5f)
+
+
     # Update scene
+    nodes[0]->rotate(get_dt(), glm::vec3(0,f 1.f, 0.f))
+
+    # Render scene (simplified)
     nodes[0]->act(
-        [dt](Node* node)
+        [](Node* node)
         {
-            auto& transform = node->get_entity()->get_component<TransformComponent>()
-            transform.reset();
-
-            TransformAction::update_rotation(node,
-                                             -dt / 2,
-                                             glm::vec3{ 0.f, 1.f, 0.f },
-                                             ABSOLUTE)
-            TransformAction::translate(node, ABSOLUTE)
-            TransformAction::scale(node, ABSOLUTE)
+            model = node->get_entity()->get_component<ModelComponent>()
+            model.m_model_handle->draw()
         })
-
-    # Alternatively
-    nodes[0]->act(TransformAction::reset)
-    nodes[0]->act(TransformAction::translate, ABSOLUTE)
-    nodes[0]->act(TransformAction::update_rotation,
-                 dt / 2,
-                 glm::vec3{ 0.f, 1.f, 0.f }, 
-                 ABSOLUTE)
-    nodes[0]->act(TransformAction::scale, ABSOLUTE)
 ```
