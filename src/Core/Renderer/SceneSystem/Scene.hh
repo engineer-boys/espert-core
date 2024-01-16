@@ -15,7 +15,7 @@ namespace esp
   {
    private:
     entt::registry m_registry;
-    std::unique_ptr<Node> m_root_node;
+    std::shared_ptr<Node> m_root_node;
 
     static Camera* s_current_camera;
     std::vector<std::shared_ptr<Camera>> m_cameras;
@@ -65,7 +65,7 @@ namespace esp
     inline static Camera* get_current_camera() { return s_current_camera; }
 
    private:
-    Scene() : m_root_node{ Node::create_root() } {}
+    Scene() : m_root_node{ Node::create_root(this) } {}
 
     friend class Entity;
   };

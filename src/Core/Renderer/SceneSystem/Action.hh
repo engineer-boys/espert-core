@@ -1,56 +1,30 @@
-#ifndef SCENE_SCENE_ACTIONS_HH
-#define SCENE_SCENE_ACTIONS_HH
-
-#include "Core/Renderer/SceneSystem/Components/Components.hh"
+#ifndef SCENE_ACTION_HH
+#define SCENE_ACTION_HH
 
 #include "esppch.hh"
 
 namespace esp
 {
-  /* -------------------- Action template -------------------- */
-  template<typename Func> struct Action_t;
-
-  template<typename T, typename... Args> struct Action_t<T(Args...)>
-  {
-    using type = std::function<T(Args...)>;
-  };
-
-  template<typename Func> using Action = typename Action_t<Func>::type;
-  /* -------------------------------------------------------- */
-
-  class Node;
-
   namespace action
   {
-    /// @brief Type of action.
-    enum ActionType
+    /* -------------------- Action template -------------------- */
+    template<typename Func> struct Action_t;
+
+    template<typename T, typename... Args> struct Action_t<T(Args...)>
     {
-      ESP_ABSOLUTE,
-      ESP_RELATIVE
+      using type = std::function<T(Args...)>;
     };
 
-    /// @brief Action that allows translation in space.
-    struct TransformAction
+    template<typename Func> using Action = typename Action_t<Func>::type;
+
+    /* -------------------------------------------------------- */
+
+    enum ActionType
     {
-      static Action<void(Node*)> reset;
-
-      static Action<void(Node*, glm::vec3, ActionType)> set_translation;
-      static Action<void(Node*, glm::vec3, ActionType)> update_translation;
-      static Action<void(Node*, ActionType)> translate;
-
-      static Action<void(Node*, float, ActionType)> set_scale;
-      static Action<void(Node*, float, ActionType)> update_scale;
-      static Action<void(Node*, ActionType)> scale;
-
-      // TODO: try to separate axis and self rotations
-      static Action<void(Node*, float, glm::vec3, ActionType)> set_rotation;
-      static Action<void(Node*, float, glm::vec3, ActionType)> update_rotation;
-      static Action<void(Node*, ActionType)> rotate;
-
-     private:
-      static TransformComponent& get_transform(Node* node);
+      ABSOLUTE,
+      RELATIVE
     };
   } // namespace action
 } // namespace esp
 
-#endif // SCENE_SCENE_ACTIONS_HH
+#endif // SCENE_ACTION_HH

@@ -1,4 +1,5 @@
 #include "Scene.hh"
+#include "Components/Components.hh"
 #include "Entity.hh"
 
 namespace esp
@@ -13,6 +14,8 @@ namespace esp
 
     auto& tag = entity.add_component<TagComponent>();
     tag.m_tag = name.empty() ? "entity" : name;
+
+    entity.add_component<TransformComponent>();
 
     return std::make_shared<Entity>(entity);
   }
