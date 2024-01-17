@@ -53,13 +53,13 @@ namespace esp
 
    public:
     Model(Builder& builder);
-    Model(std::shared_ptr<Mesh> mesh);
+    Model(std::shared_ptr<Mesh>& mesh);
 
     PREVENT_COPY(Model)
 
     ~Model() = default;
 
-    void draw();     // TODO: this will be called only through renderer - make it private
+    void draw();
     void draw_raw(); // draw without attaching material
 
     inline const std::vector<std::shared_ptr<Mesh>>& get_meshes() { return m_meshes; }

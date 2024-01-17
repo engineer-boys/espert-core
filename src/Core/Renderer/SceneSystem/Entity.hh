@@ -35,6 +35,11 @@ namespace esp
       return m_scene->m_registry.get<T>(m_handle);
     }
 
+    /// @brief Returns pointer to a certain type of component if it exists.
+    /// @tparam T Type of component to return.
+    /// @return Pointer to component if exists. Else nullptr.
+    template<typename T> T* try_get_component() { return m_scene->m_registry.try_get<T>(m_handle); }
+
     /// @brief Removes component of certain type from Entity.
     /// @tparam T Type of component to remove.
     template<typename T> void remove_component()

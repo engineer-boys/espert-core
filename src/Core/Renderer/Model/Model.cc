@@ -114,7 +114,7 @@ namespace esp
 
   Model::Model(esp::Model::Builder& builder) : m_meshes{ std::move(builder.m_meshes) } {}
 
-  Model::Model(std::shared_ptr<Mesh> mesh) : m_meshes{ std::move(mesh) } {}
+  Model::Model(std::shared_ptr<Mesh>& mesh) : m_meshes{ mesh } {}
 
   void Model::draw()
   {

@@ -7,24 +7,56 @@
 
 namespace esp
 {
-  //  class Model;
-
   /// @brief ECS component that attaches Material.
   struct ModelComponent
   {
-    /// @brief Shared pointer to model instance.
-    std::shared_ptr<Model> m_model_handle;
+   private:
+    std::shared_ptr<Model> m_model;
+    std::shared_ptr<EspShader> m_shader;
+    std::unique_ptr<EspUniformManager> m_uniform_manager;
 
+   public:
     /// @brief Default constructor.
     ModelComponent() = default;
-    /// @brief Constructor that sets shared pointer to model.
+    /// @brief Constructor that initializes model, model's shader and model's uniform manager.
     /// @param model Shared pointer to model.
-    ModelComponent(std::shared_ptr<Model> model) : m_model_handle{ std::move(model) } {}
+    /// @param shader Shared pointer to model's shader
+    /// @param start_managed_ds First managed descriptor set of model's uniform manager. 0 by default.
+    /// @param end_managed_ds Last managed descriptor set of model's uniform manager. 0 by default.
+    ModelComponent(std::shared_ptr<Model>& model,
+                   std::shared_ptr<EspShader>& shader,
+                   int start_managed_ds = 0,
+                   int end_managed_ds   = 0) :
+        m_model{ model },
+        m_shader{ shader }, m_uniform_manager{ shader->create_uniform_manager(start_managed_ds, end_managed_ds) }
+    {
+      m_uniform_manager->build();
+    }
+    /// @brief Constructor that initializes model, model's shader and model's uniform manager.
+    /// @param builder Model builder.
+    /// @param start_managed_ds First managed descriptor set of model's uniform manager. 0 by default.
+    /// @param end_managed_ds Last managed descriptor set of model's uniform manager. 0 by default.
+    ModelComponent(Model::Builder& builder, int start_managed_ds = 0, int end_managed_ds = 0) :
+        m_model{ std::make_shared<Model>(builder) }, m_shader{ builder.m_shader },
+        m_uniform_manager{ builder.m_shader->create_uniform_manager(start_managed_ds, end_managed_ds) }
+    {
+      m_uniform_manager->build();
+    }
+
+    /// @brief Returns reference to model.
+    /// @return Model reference.
+    inline Model& get_model() { return *m_model; }
+    /// @brief Returns reference to model shader.
+    /// @return Shader reference.
+    inline EspShader& get_shader() { return *m_shader; }
+    /// @brief Returns reference to model uniform manager.
+    /// @return Uniform manager reference.
+    inline EspUniformManager& get_uniform_manager() { return *m_uniform_manager; }
 
     /// @brief Equals operator checks if two components reference the same model.
     /// @param other Other component to compare to.
     /// @return True if two components reference the same model. False otherwise.
-    bool operator==(const ModelComponent& other) const { return m_model_handle.get() == other.m_model_handle.get(); }
+    bool operator==(const ModelComponent& other) const { return m_model.get() == other.m_model.get(); }
   };
 } // namespace esp
 

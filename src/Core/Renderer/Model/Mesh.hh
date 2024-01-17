@@ -14,8 +14,6 @@
 
 namespace esp
 {
-  class Model;
-
   class Mesh
   {
    public:

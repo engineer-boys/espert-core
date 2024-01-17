@@ -5,11 +5,15 @@ system ([entt](https://github.com/skypjack/entt) library) and scene graph. Scene
 1. Entity - responsible for managing object's components
 2. Node - scene graph's Node, manages Entity taking into account relations with other Nodes. It can posess multiple 
 children and a single parent (just like in a regular tree).
-3. Scene - registers each Entity that is on scene. Every Entity has 2 components (TagComponent and TransformComponent) 
-after creation. Scene contains 
-   - a root Node which is the root of scene's graph. All created Nodes must have connection (path) to root in order to be
-    processed by Renderer.
-   - vector of Cameras which user can create and add. Also, there is a static pointer on Camera that is currently in use.  
+3. Scene - registers each Entity that is on scene. Every Entity has 2 components (Tag and Transform) after creation.
+Scene contains 
+   - Entt registry for registering entities.  
+   - Root Node which is the root of scene's graph. 
+   - Vector of Cameras which user can create and add. Also, there is a static pointer on Camera that is currently in use.
+     
+Scene class provides method for rendering itself on the screen. In order for Node to be rendered through this method it
+must meet 2 conditions. It has to have connection (path) to root Node, plus it has to have ModelComponent registered with 
+valid model
 
 User can interact with Entity's components directly through it's class, or by applying an [Action](#action) on Node. 
 This way changes can be propagated down the graph applying the same Action on Node's children. As mentioned, every 
@@ -25,11 +29,15 @@ class Entity:
     self.handle # handle to entt entity
     self.scene  # pointer to scene on which entity is registered
 
-    def add_component<T, Args...>(args...) -> T:
+    def add_component<T, Args...>(args...) -> T&:
     # Constructs and adds component T to entity using provided args
     
-    def get_transform<T>() -> T:
+    def get_component<T>() -> T&:
     # Returns component T of entity (if exists)
+
+    def try_get_component<T>() -> T*:
+    # Returns pointer to component T of entity if it exists.
+    # Else returns null.
 
     def remove_component<T>() -> None:
     # Removes component T from entity (if exists)
@@ -117,9 +125,9 @@ constructed as a functor (lambda):
 ```cpp 
 Action<void(Node*)> foo = [](Node* node) {...}
 ```
-or as a regular function:
+or as a static function:
 ```cpp 
-void foo(Node* node) {...}
+static void foo(Node* node) {...}
 ```
 It doesn't really matter because 'act' accepts both conventions.
 
@@ -162,6 +170,9 @@ class Scene:
 
     def get_current_camera() -> Camera*:
     # Returns current camera
+
+    def render() -> None:
+    # Renders each Node on scene graph that has ModelComponent
 ```
 
 # USAGE
@@ -204,11 +215,13 @@ def main() -> None:
     # Update scene
     nodes[0]->rotate(get_dt(), glm::vec3(0,f 1.f, 0.f))
 
-    # Render scene (simplified)
-    nodes[0]->act(
+    # Render scene 
+    scene->render()
+    # Alternatively (simplified)
+     nodes[0]->act(
         [](Node* node)
         {
             model = node->get_entity()->get_component<ModelComponent>()
-            model.m_model_handle->draw()
+            model.m_model->draw()
         })
 ```
