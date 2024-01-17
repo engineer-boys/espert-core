@@ -2,6 +2,13 @@
 #include "Components/Components.hh"
 #include "Entity.hh"
 
+// signatures
+static void render_model(esp::Node* node);
+
+/* --------------------------------------------------------- */
+/* ---------------- CLASS IMPLEMENTATION ------------------- */
+/* --------------------------------------------------------- */
+
 namespace esp
 {
   Camera* Scene::s_current_camera = nullptr;
@@ -21,4 +28,26 @@ namespace esp
   }
 
   void Scene::destroy_entity(Entity& entity) { m_registry.destroy(entity.m_handle); }
+
+  void Scene::render()
+  {
+    // TODO: optimize by
+    //  - sorting shaders
+    //  - grouping instances of the same model
+    m_root_node->act(render_model);
+  }
 } // namespace esp
+
+/* --------------------------------------------------------- */
+/* ------------------ HELPFUL FUNCTIONS -------------------- */
+/* --------------------------------------------------------- */
+static void render_model(esp::Node* node)
+{
+  auto* model = node->get_entity()->try_get_component<esp::ModelComponent>();
+  if (model)
+  {
+    model->get_shader().attach();
+    model->get_uniform_manager().attach();
+    model->get_model().draw();
+  }
+}

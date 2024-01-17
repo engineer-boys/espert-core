@@ -3,28 +3,26 @@
 
 #include "esppch.hh"
 
-namespace esp
+namespace esp::action
 {
-  namespace action
+  /* -------------------- Action template -------------------- */
+  template<typename Func> struct Action_t;
+
+  template<typename T, typename... Args> struct Action_t<T(Args...)>
   {
-    /* -------------------- Action template -------------------- */
-    template<typename Func> struct Action_t;
+    using type = std::function<T(Args...)>;
+  };
 
-    template<typename T, typename... Args> struct Action_t<T(Args...)>
-    {
-      using type = std::function<T(Args...)>;
-    };
+  template<typename Func> using Action = typename Action_t<Func>::type;
 
-    template<typename Func> using Action = typename Action_t<Func>::type;
+  /* -------------------------------------------------------- */
 
-    /* -------------------------------------------------------- */
-
-    enum ActionType
-    {
-      ABSOLUTE,
-      RELATIVE
-    };
-  } // namespace action
-} // namespace esp
+  /// @brief Type of action.
+  enum ActionType
+  {
+    ABSOLUTE,
+    RELATIVE
+  };
+} // namespace esp::action
 
 #endif // SCENE_ACTION_HH
