@@ -20,8 +20,8 @@ namespace esp::action
   /// @brief Type of action.
   enum ActionType
   {
-    ABSOLUTE,
-    RELATIVE
+    ESP_ABSOLUTE,
+    ESP_RELATIVE
   };
 } // namespace esp::action
 
