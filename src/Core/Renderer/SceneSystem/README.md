@@ -96,22 +96,22 @@ class Node:
     def set_scale(val: float) -> None:
     # Sets node's scale to given value
 
-    def get_model_mat(type: ActionType::ABSOLUTE) -> glm::mat4:
+    def get_model_mat(type: ActionType::ESP_ABSOLUTE) -> glm::mat4:
     # Gets node's model matrix. If type is 
-    # - ABSOLUTE then matrix is relative to world
-    # - RELATIVE then matrix is relative to parent
-    def get_translation(type: ActionType::ABSOLUTE) -> glm::vec3:
+    # - ESP_ABSOLUTE then matrix is relative to world
+    # - ESP_RELATIVE then matrix is relative to parent
+    def get_translation(type: ActionType::ESP_ABSOLUTE) -> glm::vec3:
     # Gets node's translation. If type is 
-    # - ABSOLUTE then translation is relative to world
-    # - RELATIVE then translation is relative to parent
-    def get_rotation(type: ActionType::ABSOLUTE) -> glm::quat:
+    # - ESP_ABSOLUTE then translation is relative to world
+    # - ESP_RELATIVE then translation is relative to parent
+    def get_rotation(type: ActionType::ESP_ABSOLUTE) -> glm::quat:
     # Gets node's rotation. If type is 
-    # - ABSOLUTE then rotation is relative to world
-    # - RELATIVE then rotation is relative to parent
-    def get_scale(type: ActionType::ABSOLUTE) -> float:
+    # - ESP_ABSOLUTE then rotation is relative to world
+    # - ESP_RELATIVE then rotation is relative to parent
+    def get_scale(type: ActionType::ESP_ABSOLUTE) -> float:
     # Gets node's scale. If type is 
-    # - ABSOLUTE then scale is relative to world
-    # - RELATIVE then scale is relative to parent
+    # - ESP_ABSOLUTE then scale is relative to world
+    # - ESP_RELATIVE then scale is relative to parent
     
     def get_transform() -> TransformComponent&:
     # Gets node's TransformComponent
@@ -131,7 +131,7 @@ static void foo(Node* node) {...}
 ```
 It doesn't really matter because 'act' accepts both conventions.
 
-Action can also have an ActionType which is either RELATIVE or ABSOLUTE. The first one suggests that Action is dependant
+Action can also have an ActionType which is either ESP_RELATIVE or ESP_ABSOLUTE. The first one suggests that Action is dependant
 from parent and second one that it isn't, however user has complete freedom in creating Actions, and it is up to him to
 decide what each Action will be responsible for.
 

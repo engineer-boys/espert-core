@@ -89,24 +89,24 @@ namespace esp
     void set_scale(float val);
 
     /// @brief Returns entity's model matrix
-    /// @param type Tells whether matrix is relative to parent
-    /// or world (relative to world by default)
-    glm::mat4 get_model_mat(action::ActionType type = action::ABSOLUTE);
+    /// @param type Tells whether matrix is ESP_RELATIVE to parent
+    /// or world (ESP_RELATIVE to world by default)
+    glm::mat4 get_model_mat(action::ActionType type = action::ESP_ABSOLUTE);
     /// @brief Returns entity's translation
-    /// @param type Tells whether translation is relative to parent
-    /// or world (relative to world by default)
+    /// @param type Tells whether translation is ESP_RELATIVE to parent
+    /// or world (ESP_RELATIVE to world by default)
     /// @return Entity's translation
-    glm::vec3 get_translation(action::ActionType type = action::ABSOLUTE);
+    glm::vec3 get_translation(action::ActionType type = action::ESP_ABSOLUTE);
     /// @brief Returns entity's rotation
-    /// @param type Tells whether rotation is relative to parent
-    /// or world (relative to world by default)
+    /// @param type Tells whether rotation is ESP_RELATIVE to parent
+    /// or world (ESP_RELATIVE to world by default)
     /// @return Entity's rotation
-    glm::quat get_rotation(action::ActionType type = action::ABSOLUTE);
+    glm::quat get_rotation(action::ActionType type = action::ESP_ABSOLUTE);
     /// @brief Returns entity's scale
-    /// @param type Tells whether scale is relative to parent
-    /// or world (relative to world by default)
+    /// @param type Tells whether scale is ESP_RELATIVE to parent
+    /// or world (ESP_RELATIVE to world by default)
     /// @return Entity's scale
-    float get_scale(action::ActionType type = action::ABSOLUTE);
+    float get_scale(action::ActionType type = action::ESP_ABSOLUTE);
 
     /// @brief Returns entity's TransformComponent
     /// @return TransformComponent's reference

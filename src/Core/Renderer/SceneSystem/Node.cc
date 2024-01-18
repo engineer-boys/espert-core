@@ -76,7 +76,7 @@ namespace esp
     auto& transform = get_transform();
     auto parent     = get_parent();
 
-    if (type == ActionType::RELATIVE || !parent) { return transform.get_model_mat(); }
+    if (type == ActionType::ESP_RELATIVE || !parent) { return transform.get_model_mat(); }
     else { return TransformComponent::calculate_model_mat(get_translation(type), get_rotation(type), get_scale(type)); }
   }
 
@@ -86,7 +86,7 @@ namespace esp
     auto parent     = get_parent();
 
     glm::vec3 translation = transform.get_translation();
-    if (type == ActionType::ABSOLUTE && parent) { return translation + parent->get_translation(type); }
+    if (type == ActionType::ESP_ABSOLUTE && parent) { return translation + parent->get_translation(type); }
     return translation;
   }
 
@@ -96,7 +96,7 @@ namespace esp
     auto parent     = get_parent();
 
     glm::quat rotation = transform.get_rotation();
-    if (type == ActionType::ABSOLUTE && parent) { return parent->get_rotation(type) * rotation; }
+    if (type == ActionType::ESP_ABSOLUTE && parent) { return parent->get_rotation(type) * rotation; }
     return rotation;
   }
 
@@ -106,7 +106,7 @@ namespace esp
     auto parent     = get_parent();
 
     float scale = transform.get_scale();
-    if (type == ActionType::ABSOLUTE && parent) { return scale * parent->get_scale(type); }
+    if (type == ActionType::ESP_ABSOLUTE && parent) { return scale * parent->get_scale(type); }
     return scale;
   }
 
