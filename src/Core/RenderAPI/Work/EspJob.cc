@@ -52,7 +52,7 @@ namespace esp
     /* ---------------------------------------------------------*/
   }
 
-  void EspJob::draw_indexed(uint32_t index_count)
+  void EspJob::draw_indexed(uint32_t index_count, uint32_t instance_count, uint32_t first_index)
   {
     /* ---------------------------------------------------------*/
     /* ------------- PLATFORM DEPENDENT ------------------------*/
@@ -60,22 +60,7 @@ namespace esp
     // #if defined(OPENGL_PLATFORM)
     //     auto context = std::make_unique<OpenGLContext>();
     // #elif defined(VULKAN_PLATFORM)
-    VulkanJob::draw_indexed(index_count);
-    // #else
-    // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
-    // #endif
-    /* ---------------------------------------------------------*/
-  }
-
-  void EspJob::draw_indexed(uint32_t index_count, uint32_t instance_count)
-  {
-    /* ---------------------------------------------------------*/
-    /* ------------- PLATFORM DEPENDENT ------------------------*/
-    /* ---------------------------------------------------------*/
-    // #if defined(OPENGL_PLATFORM)
-    //     auto context = std::make_unique<OpenGLContext>();
-    // #elif defined(VULKAN_PLATFORM)
-    VulkanJob::draw_indexed(index_count, instance_count);
+    VulkanJob::draw_indexed(index_count, instance_count, first_index);
     // #else
     // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
     // #endif
@@ -112,7 +97,7 @@ namespace esp
     /* ---------------------------------------------------------*/
   }
 
-  void EspJob::draw_indexed(EspCommandBufferId* id, uint32_t index_count)
+  void EspJob::draw_indexed(EspCommandBufferId* id, uint32_t index_count, uint32_t instance_count, uint32_t first_index)
   {
     /* ---------------------------------------------------------*/
     /* ------------- PLATFORM DEPENDENT ------------------------*/
@@ -120,22 +105,7 @@ namespace esp
     // #if defined(OPENGL_PLATFORM)
     //     auto context = std::make_unique<OpenGLContext>();
     // #elif defined(VULKAN_PLATFORM)
-    VulkanJob::draw_indexed(id, index_count);
-    // #else
-    // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
-    // #endif
-    /* ---------------------------------------------------------*/
-  }
-
-  void EspJob::draw_indexed(EspCommandBufferId* id, uint32_t index_count, uint32_t instance_count)
-  {
-    /* ---------------------------------------------------------*/
-    /* ------------- PLATFORM DEPENDENT ------------------------*/
-    /* ---------------------------------------------------------*/
-    // #if defined(OPENGL_PLATFORM)
-    //     auto context = std::make_unique<OpenGLContext>();
-    // #elif defined(VULKAN_PLATFORM)
-    VulkanJob::draw_indexed(id, index_count, instance_count);
+    VulkanJob::draw_indexed(id, index_count, instance_count, first_index);
     // #else
     // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
     // #endif

@@ -41,9 +41,10 @@ namespace esp
 
     /* -------------------------- STATIC METHODS --------------------------- */
    public:
-    static std::unique_ptr<EspDepthBlock> build(EspDepthBlockFormat format,
-                                                EspSampleCountFlag sample_count_flag,
-                                                EspImageUsageFlag image_usage_flag);
+    static std::unique_ptr<EspDepthBlock> build(
+        EspDepthBlockFormat format,
+        EspSampleCountFlag sample_count_flag,
+        EspImageUsageFlag image_usage_flag = EspImageUsageFlag::ESP_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT);
     static std::unique_ptr<EspDepthBlock> build(EspDepthBlockFormat format,
                                                 EspSampleCountFlag sample_count_flag,
                                                 EspImageUsageFlag image_usage_flag,
