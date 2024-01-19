@@ -31,15 +31,14 @@ namespace esp
    public:
     static std::unique_ptr<VulkanJob> create();
 
-    static void draw(uint32_t vertex_count);
-    static void draw(uint32_t vertex_count, uint32_t instance_count);
-    static void draw_indexed(uint32_t index_count);
-    static void draw_indexed(uint32_t index_count, uint32_t instance_count);
+    static void draw(uint32_t vertex_count, uint32_t instance_count = 1);
+    static void draw_indexed(uint32_t index_count, uint32_t instance_count = 1, uint32_t first_index = 0);
 
-    static void draw(EspCommandBufferId* id, uint32_t vertex_count);
-    static void draw(EspCommandBufferId* id, uint32_t vertex_count, uint32_t instance_count);
-    static void draw_indexed(EspCommandBufferId* id, uint32_t index_count);
-    static void draw_indexed(EspCommandBufferId* id, uint32_t index_count, uint32_t instance_count);
+    static void draw(EspCommandBufferId* id, uint32_t vertex_count, uint32_t instance_count = 1);
+    static void draw_indexed(EspCommandBufferId* id,
+                             uint32_t index_count,
+                             uint32_t instance_count = 1,
+                             uint32_t first_index    = 0);
 
     static void copy_image(EspCommandBufferId* id,
                            std::shared_ptr<EspTexture> src_texture,
