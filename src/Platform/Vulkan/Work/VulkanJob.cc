@@ -32,46 +32,39 @@ namespace esp
 
   void VulkanJob::done_all_jobs() { vkDeviceWaitIdle(VulkanDevice::get_logical_device()); }
 
-  void VulkanJob::draw(uint32_t vertex_count)
-  {
-    vkCmdDraw(VulkanWorkOrchestrator::get_current_command_buffer(), vertex_count, 1, 0, 0);
-  }
-
   void VulkanJob::draw(uint32_t vertex_count, uint32_t instance_count)
   {
     vkCmdDraw(VulkanWorkOrchestrator::get_current_command_buffer(), vertex_count, instance_count, 0, 0);
   }
 
-  void VulkanJob::draw_indexed(uint32_t index_count)
+  void VulkanJob::draw_indexed(uint32_t index_count, uint32_t instance_count, uint32_t first_index)
   {
-    vkCmdDrawIndexed(VulkanWorkOrchestrator::get_current_command_buffer(), index_count, 1, 0, 0, 0);
-  }
-
-  void VulkanJob::draw_indexed(uint32_t index_count, uint32_t instance_count)
-  {
-    vkCmdDrawIndexed(VulkanWorkOrchestrator::get_current_command_buffer(), index_count, instance_count, 0, 0, 0);
+    vkCmdDrawIndexed(VulkanWorkOrchestrator::get_current_command_buffer(),
+                     index_count,
+                     instance_count,
+                     first_index,
+                     0,
+                     0);
   }
 
   /*---------------------------------------------------------------------------*/
-
-  void VulkanJob::draw(EspCommandBufferId* id, uint32_t vertex_count)
-  {
-    vkCmdDraw(static_cast<VulkanCommandBufferId*>(id)->m_command_buffer, vertex_count, 1, 0, 0);
-  }
 
   void VulkanJob::draw(EspCommandBufferId* id, uint32_t vertex_count, uint32_t instance_count)
   {
     vkCmdDraw(static_cast<VulkanCommandBufferId*>(id)->m_command_buffer, vertex_count, instance_count, 0, 0);
   }
 
-  void VulkanJob::draw_indexed(EspCommandBufferId* id, uint32_t index_count)
+  void VulkanJob::draw_indexed(EspCommandBufferId* id,
+                               uint32_t index_count,
+                               uint32_t instance_count,
+                               uint32_t first_index)
   {
-    vkCmdDrawIndexed(static_cast<VulkanCommandBufferId*>(id)->m_command_buffer, index_count, 1, 0, 0, 0);
-  }
-
-  void VulkanJob::draw_indexed(EspCommandBufferId* id, uint32_t index_count, uint32_t instance_count)
-  {
-    vkCmdDrawIndexed(static_cast<VulkanCommandBufferId*>(id)->m_command_buffer, index_count, instance_count, 0, 0, 0);
+    vkCmdDrawIndexed(static_cast<VulkanCommandBufferId*>(id)->m_command_buffer,
+                     index_count,
+                     instance_count,
+                     first_index,
+                     0,
+                     0);
   }
 
   void VulkanJob::copy_image(EspCommandBufferId* id,
