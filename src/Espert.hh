@@ -26,6 +26,9 @@
 #include "Core/RenderAPI/Uniforms/EspUniformMetaData.hh"
 
 /* --------- Renderer --------------------- */
+#include "Core/Renderer/Model3/Animation/Animator.hh"
+#include "Core/Renderer/Model3/NModel.hh"
+
 #include "Core/Renderer/Camera.hh"
 #include "Core/Renderer/Model/Model.hh"
 #include "Core/Renderer/SceneSystem/Action.hh"
