@@ -30,6 +30,7 @@
 #include <assimp/scene.h>
 
 // glm
+#include "glm/gtc/type_ptr.hpp"
 #include "glm/gtx/hash.hpp"
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
