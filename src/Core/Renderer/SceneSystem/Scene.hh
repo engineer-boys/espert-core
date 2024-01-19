@@ -64,8 +64,8 @@ namespace esp
     /// @return Pointer to the current Camera.
     inline static Camera* get_current_camera() { return s_current_camera; }
 
-    /// @brief Renders each Node on scene graph that has ModelComponent
-    void render();
+    /// @brief Draws each Node on scene graph that has ModelComponent
+    void draw(); // TODO: move draw logic to Renderer class
 
    private:
     Scene() : m_root_node{ Node::create_root(this) } {}

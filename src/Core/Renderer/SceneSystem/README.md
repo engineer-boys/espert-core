@@ -171,8 +171,8 @@ class Scene:
     def get_current_camera() -> Camera*:
     # Returns current camera
 
-    def render() -> None:
-    # Renders each Node on scene graph that has ModelComponent
+    def draw() -> None:
+    # Draws each Node on scene graph that has ModelComponent
 ```
 
 # USAGE
@@ -215,8 +215,8 @@ def main() -> None:
     # Update scene
     nodes[0]->rotate(get_dt(), glm::vec3(0,f 1.f, 0.f))
 
-    # Render scene 
-    scene->render()
+    # Draw scene 
+    scene->draw()
     # Alternatively (simplified)
      nodes[0]->act(
         [](Node* node)

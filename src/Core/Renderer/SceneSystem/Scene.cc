@@ -29,7 +29,7 @@ namespace esp
 
   void Scene::destroy_entity(Entity& entity) { m_registry.destroy(entity.m_handle); }
 
-  void Scene::render()
+  void Scene::draw()
   {
     // TODO: optimize by
     //  - sorting shaders
