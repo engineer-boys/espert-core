@@ -31,6 +31,7 @@ ESPERT_LIBS_CONF = {
         CmakeParameter("BUILD_TESTING", "OFF"),
         CmakeParameter("BUILD_EXTERNAL", "OFF"),
     ],
+    "imgui": [],
     "spdlog": [
         CmakeParameter("SPDLOG_ENABLE_PCH", "ON"),
         CmakeParameter("SPDLOG_BUILD_EXAMPLE", "OFF"),

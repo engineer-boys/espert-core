@@ -42,6 +42,9 @@
 // entt
 #include "entt/entt.hpp"
 
+// imgui
+#include <imgui.h>
+
 // espert
 #include "Core/Utils/Logger.hh"
 #include "Core/Utils/Utils.hh"

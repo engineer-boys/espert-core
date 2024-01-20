@@ -78,6 +78,10 @@ get_library(NAME glslang
     CONF_PATH lib/cmake/glslang
 )
 
+get_library(NAME imgui
+    CONF_PATH include/cmake/imgui
+)
+
 get_library(NAME spdlog
     CONF_PATH lib/cmake/spdlog
 )
@@ -114,6 +118,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
     EnTT::EnTT
     stb
     assimp::assimp
+    imgui
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/external/stb)

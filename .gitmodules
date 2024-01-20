@@ -34,3 +34,6 @@
 [submodule "external/doxygen"]
 	path = external/doxygen
 	url = https://github.com/doxygen/doxygen
+[submodule "external/imgui"]
+	path = external/imgui
+	url = https://github.com/ocornut/imgui
