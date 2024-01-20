@@ -4,15 +4,18 @@
 #include "esppch.hh"
 
 #include "Core/RenderAPI/Resources/EspIndexBuffer.hh"
+#include "Core/RenderAPI/Resources/EspTexture.hh"
 #include "Core/RenderAPI/Resources/EspVertexBuffer.hh"
 #include "Core/RenderAPI/Uniforms/EspUniformManager.hh"
 
 #include "Core/Renderer/Model3/Animation/BoneInfo.hh"
 
 #include "Mesh/ModelParts.hh"
+#include "Mesh/NMaterial.hh"
 #include "Mesh/NVertex.hh"
 
 #include "NModelIterator.hh"
+#include "NModelParams.hh"
 
 namespace esp
 {
@@ -36,6 +39,9 @@ namespace esp
     std::unique_ptr<EspVertexBuffer> m_vertex_buffer;
     std::unique_ptr<EspIndexBuffer> m_index_buffer;
 
+    std::vector<NMaterial> m_materials;
+    std::vector<std::shared_ptr<EspTexture>> m_textures;
+
    private:
     void process_node(NNode* n_node,
                       aiNode* node,
@@ -56,6 +62,8 @@ namespace esp
 
     void precompute_transform_matrices(NNode* node, glm::mat4 prev_matrix);
 
+    void load_materials(std::string path_to_model, const aiScene* scene);
+
    public:
     PREVENT_COPY(NModel)
 
@@ -67,14 +75,6 @@ namespace esp
     inline const NNode& get_root_node() const { return m_root_node; }
 
     void set_localisation(glm::mat4 localisation = glm::mat4(1));
-
-    void draw(std::vector<std::unique_ptr<EspUniformManager>>& u_manager,
-              std::vector<std::unique_ptr<EspUniformManager>>& u_anim_manager);
-
-    void drawNode(NNode* node,
-                  glm::mat4 prev_trans,
-                  std::vector<std::unique_ptr<EspUniformManager>>& u_manager,
-                  std::vector<std::unique_ptr<EspUniformManager>>& u_anim_manager);
 
     NModelIterator begin() { return NModelIterator(this); }
     NModelIterator end() { return NModelIterator(nullptr); }
