@@ -7,10 +7,115 @@
 
 #include "Core/Renderer/Model3/Animation/Animation.hh"
 
+#include "Core/Resources/Systems/TextureSystem.hh"
+
+#include <map>
+
 #define MAX_BONE_WEIGHTS 4
 
 namespace esp
 {
+  void NModel::load_materials(std::string path_to_model, const aiScene* scene)
+  {
+    std::map<std::string, uint32_t> texture_name_to_idx;
+    auto path = fs::path(path_to_model);
+
+    for (uint32_t mtr_idx = 0; mtr_idx < scene->mNumMaterials; ++mtr_idx)
+    {
+      NMaterial n_material = {};
+      auto material        = scene->mMaterials[mtr_idx];
+
+      // albedo
+      if (m_params.m_material_params.m_albedo && material->GetTextureCount(aiTextureType_DIFFUSE) != 0)
+      {
+        aiString ai_name;
+        material->GetTexture(aiTextureType_DIFFUSE, 0, &ai_name);
+
+        std::string txt_name = ai_name.C_Str();
+        if (texture_name_to_idx.contains(txt_name) == 0)
+        {
+          texture_name_to_idx[txt_name] = m_textures.size();
+          n_material.m_albedo           = m_textures.size();
+
+          m_textures.push_back(TextureSystem::acquire(path.parent_path() / txt_name));
+        }
+        else { n_material.m_albedo = texture_name_to_idx[txt_name]; }
+      }
+
+      // normal
+      if (m_params.m_material_params.m_normal && material->GetTextureCount(aiTextureType_NORMALS) != 0)
+      {
+        aiString ai_name;
+        material->GetTexture(aiTextureType_NORMALS, 0, &ai_name);
+
+        std::string txt_name = ai_name.C_Str();
+        if (texture_name_to_idx.contains(txt_name) == 0)
+        {
+          texture_name_to_idx[txt_name] = m_textures.size();
+          n_material.m_normal           = m_textures.size();
+
+          m_textures.push_back(TextureSystem::acquire(path.parent_path() / txt_name));
+        }
+        else { n_material.m_normal = texture_name_to_idx[txt_name]; }
+      }
+
+      // metallic
+      if (m_params.m_material_params.m_metallic && material->GetTextureCount(aiTextureType_METALNESS) != 0)
+      {
+        aiString ai_name;
+        material->GetTexture(aiTextureType_METALNESS, 0, &ai_name);
+
+        std::string txt_name = ai_name.C_Str();
+        if (texture_name_to_idx.contains(txt_name) == 0)
+        {
+          texture_name_to_idx[txt_name] = m_textures.size();
+          n_material.m_metallic         = m_textures.size();
+
+          m_textures.push_back(TextureSystem::acquire(path.parent_path() / txt_name));
+        }
+        else { n_material.m_metallic = texture_name_to_idx[txt_name]; }
+      }
+
+      // roughness
+      if (m_params.m_material_params.m_roughness && material->GetTextureCount(aiTextureType_DIFFUSE_ROUGHNESS) != 0)
+      {
+        aiString ai_name;
+        material->GetTexture(aiTextureType_DIFFUSE_ROUGHNESS, 0, &ai_name);
+
+        std::string txt_name = ai_name.C_Str();
+        if (texture_name_to_idx.contains(txt_name) == 0)
+        {
+          texture_name_to_idx[txt_name] = m_textures.size();
+          n_material.m_roughness        = m_textures.size();
+
+          m_textures.push_back(TextureSystem::acquire(path.parent_path() / txt_name));
+        }
+        else { n_material.m_roughness = texture_name_to_idx[txt_name]; }
+      }
+
+      // ao
+      if (m_params.m_material_params.m_ao && material->GetTextureCount(aiTextureType_AMBIENT_OCCLUSION) != 0)
+      {
+        aiString ai_name;
+        material->GetTexture(aiTextureType_AMBIENT_OCCLUSION, 0, &ai_name);
+
+        std::string txt_name = ai_name.C_Str();
+        if (texture_name_to_idx.contains(txt_name) == 0)
+        {
+          texture_name_to_idx[txt_name] = m_textures.size();
+          n_material.m_ao               = m_textures.size();
+
+          m_textures.push_back(TextureSystem::acquire(path.parent_path() / txt_name));
+        }
+        else { n_material.m_ao = texture_name_to_idx[txt_name]; }
+      }
+
+      if (n_material.is_empty()) { continue; }
+
+      m_materials.push_back(n_material);
+    }
+  }
+
   void NModel::precompute_transform_matrices(NNode* node, glm::mat4 prev_matrix)
   {
     node->m_precomputed_transformation = prev_matrix * node->m_transformation;
@@ -95,7 +200,7 @@ namespace esp
         vertex.m_normal = AssimpUtils::convert_assimp_vec_to_glm_vec3(mesh->mNormals[vert_idx]);
       }
 
-      if (m_params.m_tex_coord && mesh->HasTextureCoords(0))
+      if (m_params.m_tex_coord)
       {
         vertex.m_tex_coord = glm::vec2{ mesh->mTextureCoords[0][vert_idx].x, mesh->mTextureCoords[0][vert_idx].y };
       }
@@ -110,6 +215,7 @@ namespace esp
         auto color     = AssimpUtils::convert_assimp_color_to_glm_vec4(mesh->mColors[0][vert_idx]);
         vertex.m_color = glm::vec3(color);
       }
+      else { vertex.m_color = glm::vec3(1); }
 
       vertex_buffer.push_back(vertex);
     }
@@ -164,13 +270,20 @@ namespace esp
   NModel::NModel(std::string path_to_model, NModelParams params) : m_bone_counter{ 0 }, m_params{ params }
   {
     Assimp::Importer importer;
-    auto scene = importer.ReadFile(ResourceSystem::get_asset_base_path() / path_to_model, aiProcess_Triangulate);
+
+    uint32_t assimp_params = 0;
+    if (m_params.m_tangent) { assimp_params = aiProcess_CalcTangentSpace; }
+
+    auto scene =
+        importer.ReadFile(ResourceSystem::get_asset_base_path() / path_to_model, aiProcess_Triangulate | assimp_params);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {
       ESP_CORE_ERROR("Failed to load model");
       throw std::runtime_error(importer.GetErrorString());
     }
+
+    load_materials(path_to_model, scene);
 
     m_meshes.reserve(scene->mNumMeshes);
     std::vector<uint32_t> index_buffer;
@@ -200,35 +313,6 @@ namespace esp
     }
 
     m_nodes.clear();
-  }
-
-  void NModel::draw(std::vector<std::unique_ptr<EspUniformManager>>& u_manager,
-                    std::vector<std::unique_ptr<EspUniformManager>>& u_anim_manager)
-  {
-    m_vertex_buffer->attach();
-    m_index_buffer->attach();
-
-    drawNode(&m_root_node, glm::mat4(1), u_manager, u_anim_manager);
-  }
-
-  void NModel::drawNode(NNode* node,
-                        glm::mat4 prev_trans,
-                        std::vector<std::unique_ptr<EspUniformManager>>& u_manager,
-                        std::vector<std::unique_ptr<EspUniformManager>>& u_anim_manager)
-  {
-    // prev_trans = prev_trans * node->m_transformation;
-
-    // u_manager[0]->update_push_uniform(0, &prev_trans);
-    // u_manager[0]->attach();
-    for (auto& mesh_idx : node->m_meshes)
-    {
-      EspJob::draw_indexed(m_meshes[mesh_idx].m_index_count, 1, m_meshes[mesh_idx].m_first_index);
-    }
-
-    for (auto& node_idx : node->m_children)
-    {
-      drawNode(m_nodes[node_idx], prev_trans, u_manager, u_anim_manager);
-    }
   }
 
   void NModel::set_localisation(glm::mat4 localisation) { precompute_transform_matrices(&m_root_node, localisation); }
