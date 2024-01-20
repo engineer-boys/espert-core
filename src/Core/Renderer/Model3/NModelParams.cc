@@ -1,4 +1,4 @@
-#include "NVertex.hh"
+#include "NModelParams.hh"
 
 namespace esp
 {
