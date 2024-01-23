@@ -2,6 +2,8 @@
 #include "Components/Components.hh"
 #include "Entity.hh"
 
+#include "Core/RenderAPI/Work/EspJob.hh"
+
 // signatures
 static void draw_model(esp::Node* node);
 
@@ -43,7 +45,7 @@ namespace esp
 /* --------------------------------------------------------- */
 static void draw_model(esp::Node* node)
 {
-  auto* model_component = node->get_entity()->try_get_component<esp::NModelComponent>();
+  auto* model_component = node->get_entity()->try_get_component<esp::ModelComponent>();
   if (model_component)
   {
     model_component->get_shader().attach();
