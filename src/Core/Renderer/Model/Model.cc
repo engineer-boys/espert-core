@@ -91,10 +91,11 @@ namespace esp
         if (texture) textures.push_back(texture);
       }
 
-      material = MaterialSystem::acquire(textures, m_shader, params.layouts);
+      material = MaterialSystem::acquire(textures, params.layouts);
     }
 
     m_meshes.push_back(std::make_shared<Mesh>(vertices, indices, material));
+    if (!m_material_uniform_managers.contains(material)) m_material_uniform_managers.insert({material, std::move(material->create_uniform_manager(m_shader))});
   }
 
   std::shared_ptr<EspTexture> Model::Builder::load_material_texture(aiMaterial* mat, aiTextureType type)
@@ -112,14 +113,19 @@ namespace esp
     return nullptr;
   }
 
-  Model::Model(esp::Model::Builder& builder) : m_meshes{ std::move(builder.m_meshes) } {}
+  Model::Model(esp::Model::Builder& builder) : m_meshes{ std::move(builder.m_meshes) }, m_material_uniform_managers{std::move(builder.m_material_uniform_managers)} {}
 
-  Model::Model(std::shared_ptr<Mesh> mesh) : m_meshes{ std::move(mesh) } {}
+  Model::Model(std::shared_ptr<Mesh> mesh) : m_meshes{ std::move(mesh) }, m_material_uniform_managers{} {}
+
+  Model::Model(std::shared_ptr<Mesh> mesh, std::shared_ptr<EspShader> shader) : Model(mesh) {
+    m_material_uniform_managers.insert({mesh->m_material, mesh->m_material->create_uniform_manager(shader)});
+  }
 
   void Model::draw()
   {
     for (auto& mesh : m_meshes)
     {
+      m_material_uniform_managers.at(mesh->m_material)->attach();
       if (m_has_instance_buffer) { mesh->draw(*m_instance_buffer); }
       else { mesh->draw(); }
     }

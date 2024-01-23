@@ -7,17 +7,10 @@
 
 #include "Core/Renderer/Model3/Mesh/NVertex.hh"
 
+#include "Core/Resources/Systems/MaterialSystem.hh"
+
 namespace esp
 {
-  struct NModelMaterialParams
-  {
-    bool m_albedo    = false;
-    bool m_normal    = false;
-    bool m_metallic  = false;
-    bool m_roughness = false;
-    bool m_ao        = false;
-  };
-
   struct NModelParams
   {
     /// @brief vec3
@@ -41,7 +34,7 @@ namespace esp
     /// @brief vec3
     bool m_tangent = false;
 
-    NModelMaterialParams m_material_params = {};
+    std::vector<MaterialTextureLayout> m_material_texture_layout = {};
 
     EspVertexLayout get_vertex_layouts(bool instancing = false) const;
 

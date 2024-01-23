@@ -35,6 +35,7 @@ namespace esp
       std::vector<std::shared_ptr<Mesh>> m_meshes;
       std::string m_dir;
       std::shared_ptr<EspShader> m_shader = ShaderSystem::get_default_shader();
+      std::unordered_map<std::shared_ptr<Material>, std::unique_ptr<EspUniformManager>> m_material_uniform_managers;
 
       Builder& load_model(const std::string& filepath, const ModelParams& params = {});
       Builder& set_shader(std::shared_ptr<EspShader> shader);
@@ -47,6 +48,7 @@ namespace esp
 
    private:
     std::vector<std::shared_ptr<Mesh>> m_meshes;
+    std::unordered_map<std::shared_ptr<Material>, std::unique_ptr<EspUniformManager>> m_material_uniform_managers;
 
     bool m_has_instance_buffer{ false };
     std::unique_ptr<EspVertexBuffer> m_instance_buffer;
@@ -54,6 +56,7 @@ namespace esp
    public:
     Model(Builder& builder);
     Model(std::shared_ptr<Mesh> mesh);
+    Model(std::shared_ptr<Mesh> mesh, std::shared_ptr<EspShader> shader);
 
     PREVENT_COPY(Model)
 
