@@ -18,6 +18,15 @@ if(WIN32)
     add_compile_definitions(_SILENCE_ALL_MS_EXT_DEPRECATION_WARNINGS)
 endif()
 
+# currently only vulkan is supported
+set(ESP_USE_VULKAN ON)
+
+if(ESP_USE_VULKAN)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC ESP_USE_VULKAN)
+elseif(ESP_USE_OPENGL)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC ESP_USE_OPENGL)
+endif()
+
 target_include_directories(${PROJECT_NAME} PUBLIC 
     ${PROJECT_SOURCE_DIR}/src
 )
