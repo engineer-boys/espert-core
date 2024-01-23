@@ -11,7 +11,6 @@
 #include "Core/Renderer/Model3/Animation/BoneInfo.hh"
 
 #include "Mesh/ModelParts.hh"
-#include "Mesh/NMaterial.hh"
 #include "Mesh/NVertex.hh"
 
 #include "NModelIterator.hh"
@@ -24,6 +23,7 @@ namespace esp
   class NModel
   {
    private:
+    std::string m_dir;
    public:
     NModelParams m_params;
 
@@ -38,9 +38,6 @@ namespace esp
 
     std::unique_ptr<EspVertexBuffer> m_vertex_buffer;
     std::unique_ptr<EspIndexBuffer> m_index_buffer;
-
-    std::vector<NMaterial> m_materials;
-    std::vector<std::shared_ptr<EspTexture>> m_textures;
 
    private:
     void process_node(NNode* n_node,
@@ -62,7 +59,8 @@ namespace esp
 
     void precompute_transform_matrices(NNode* node, glm::mat4 prev_matrix);
 
-    void load_materials(std::string path_to_model, const aiScene* scene);
+    std::shared_ptr<Material> load_material(const aiMaterial* ai_material);
+    std::shared_ptr<EspTexture> load_material_texture(const aiMaterial* mat, aiTextureType type);
 
    public:
     PREVENT_COPY(NModel)

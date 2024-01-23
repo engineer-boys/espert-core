@@ -46,7 +46,6 @@ namespace esp
   void Mesh::draw()
   {
     m_vertex_buffer->attach();
-    if (m_material) m_material->attach(); // TODO: NOT OPTIMAL, add sorting by material
     if (m_has_index_buffer)
     {
       m_index_buffer->attach();
@@ -58,7 +57,6 @@ namespace esp
   void Mesh::draw(esp::EspVertexBuffer& instance_buffer)
   {
     m_vertex_buffer->attach_instanced(instance_buffer);
-    if (m_material) m_material->attach(); // TODO: NOT OPTIMAL, add sorting by material
     if (m_has_index_buffer)
     {
       m_index_buffer->attach();
