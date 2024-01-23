@@ -43,6 +43,12 @@ namespace esp
     return nullptr;
   }
 
+  void NModel::set_renderer_flags()
+  {
+    m_has_many_mesh_nodes =
+        std::count_if(m_nodes.begin(), m_nodes.end(), [](NNode* node) { return node->m_has_meshes; }) > 1;
+  }
+
   void NModel::precompute_transform_matrices(NNode* node, glm::mat4 prev_matrix)
   {
     node->m_precomputed_transformation = prev_matrix * node->m_transformation;
@@ -181,7 +187,7 @@ namespace esp
 
       process_mesh(m_meshes.back(), mesh, scene, index_buffer, vertex_buffer);
     }
-    n_node->m_mesh_node = n_node->m_meshes.size() != 0;
+    n_node->m_has_meshes = n_node->m_meshes.size() != 0;
 
     for (uint32_t child_idx = 0; child_idx < node->mNumChildren; child_idx++)
     {
@@ -194,13 +200,13 @@ namespace esp
     }
   }
 
-  NModel::NModel(std::string path_to_model, NModelParams params) : m_bone_counter{ 0 }, m_params{ params }
+  NModel::NModel(const std::string& path_to_model, NModelParams params) : m_bone_counter{ 0 }, m_params{ params }
   {
     m_dir = path_to_model.substr(0, path_to_model.find_last_of('/'));
 
     Assimp::Importer importer;
 
-    uint32_t assimp_params = 0;
+    uint32_t assimp_params = m_params.m_load_process_flags;
     if (m_params.m_tangent) { assimp_params = aiProcess_CalcTangentSpace; }
 
     auto scene = importer.ReadFile((ResourceSystem::get_asset_base_path() / path_to_model).string().c_str(),
@@ -229,6 +235,30 @@ namespace esp
       m_animations.push_back(std::make_shared<Animation>(scene->mAnimations[anim_idx], *this));
     }
 
+    set_renderer_flags();
+    precompute_transform_matrices(&m_root_node, glm::mat4(1));
+  }
+
+  NModel::NModel(std::vector<NVertex> vertex_buffer,
+                 std::vector<uint32_t> index_buffer,
+                 const std::vector<std::shared_ptr<EspTexture>>& textures,
+                 NModelParams params) :
+      m_bone_counter{ 0 },
+      m_params{ params }
+  {
+    m_root_node.m_transformation = glm::mat4(1);
+    m_root_node.m_meshes.push_back(0);
+    auto material = textures.empty() ? nullptr : MaterialSystem::acquire(textures, m_params.m_material_texture_layout);
+    m_meshes.push_back(
+        { .m_first_index = 0, .m_index_count = static_cast<uint32_t>(index_buffer.size()), .m_material = material });
+
+    std::vector<uint8_t> vertex_byte_buffer;
+    m_params.parse_to_vertex_byte_buffer(vertex_buffer, vertex_byte_buffer);
+
+    m_vertex_buffer = EspVertexBuffer::create(vertex_byte_buffer.data(), sizeof(uint8_t), vertex_byte_buffer.size());
+    m_index_buffer  = EspIndexBuffer::create(index_buffer.data(), index_buffer.size());
+
+    set_renderer_flags();
     precompute_transform_matrices(&m_root_node, glm::mat4(1));
   }
 
@@ -241,6 +271,4 @@ namespace esp
 
     m_nodes.clear();
   }
-
-  void NModel::set_localisation(glm::mat4 localisation) { precompute_transform_matrices(&m_root_node, localisation); }
 } // namespace esp

@@ -48,6 +48,6 @@ namespace esp
           m_stack.push(node);
         }
       }
-    } while (m_current_node && !m_current_node->m_mesh_node);
+    } while (m_current_node && !m_current_node->m_has_meshes);
   }
 } // namespace esp
