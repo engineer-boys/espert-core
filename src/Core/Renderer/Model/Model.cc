@@ -125,7 +125,7 @@ namespace esp
 
   Model::Model(std::shared_ptr<Mesh>& mesh) : m_meshes{ std::move(mesh) }, m_material_uniform_managers{} {}
 
-  Model::Model(std::shared_ptr<Mesh>& mesh, std::shared_ptr<EspShader> shader) : Model(mesh)
+  Model::Model(std::shared_ptr<Mesh>& mesh, std::shared_ptr<EspShader>& shader) : Model(mesh)
   {
     m_material_uniform_managers.insert({ mesh->m_material, mesh->m_material->create_uniform_manager(shader) });
   }

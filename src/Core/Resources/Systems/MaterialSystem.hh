@@ -44,15 +44,12 @@ namespace esp
     /// @brief Constructor without material name (cannot be acquired by name). Sets up underlying EspUniformManager.
     /// @param textures Map of textures to use in material.
     /// @param layouts Information on textures' sets and bindings inside shader.
-    Material(MaterialTexutresMap textures,
-             std::vector<MaterialTextureLayout> layouts);
+    Material(MaterialTexutresMap textures, std::vector<MaterialTextureLayout> layouts);
 
     /// @brief Constructor with material name (can be acquired by name). Sets up underlying EspUniformManager.
     /// @param textures Map of textures to use in material.
     /// @param layouts Information on textures' sets and bindings inside shader.
-    Material(const std::string& name,
-             MaterialTexutresMap textures,
-             std::vector<MaterialTextureLayout> layouts);
+    Material(const std::string& name, MaterialTexutresMap textures, std::vector<MaterialTextureLayout> layouts);
 
     /// @brief Default destructor.
     ~Material() = default;
@@ -69,14 +66,18 @@ namespace esp
     /// @return True if materials are the same.
     inline bool operator==(const Material& other)
     {
-      return m_name == other.m_name && m_material_texture_layouts == other.m_material_texture_layouts && m_textures_map == other.m_textures_map;
+      return m_name == other.m_name && m_material_texture_layouts == other.m_material_texture_layouts &&
+          m_textures_map == other.m_textures_map;
     }
     /// @brief Returns MaterialTexutresMap.
     /// @return MaterialTexutresMap.
     inline const MaterialTexutresMap& get_material_textures_map() const { return m_textures_map; }
     /// @brief Returns vector of MaterialTextureLayout.
     /// @return Vector of MaterialTextureLayout.
-    inline const std::vector<MaterialTextureLayout>& get_material_texture_layouts() const { return m_material_texture_layouts; }
+    inline const std::vector<MaterialTextureLayout>& get_material_texture_layouts() const
+    {
+      return m_material_texture_layouts;
+    }
     /// @brief Returns material's name.
     /// @return Material's name.
     inline const std::string get_name() const { return m_name; }
@@ -180,7 +181,8 @@ template<> struct std::hash<std::vector<esp::MaterialTextureLayout>>
   std::size_t operator()(const std::vector<esp::MaterialTextureLayout>& k) const
   {
     std::size_t seed = 0;
-    for (const auto& e : k) {
+    for (const auto& e : k)
+    {
       esp::hash_combine(seed, e);
     }
     return seed;
@@ -192,14 +194,14 @@ template<> struct std::hash<esp::MaterialTexutresMap>
   std::size_t operator()(const esp::MaterialTexutresMap& k) const
   {
     std::size_t seed = 0;
-    for (const auto& e : k) {
+    for (const auto& e : k)
+    {
       esp::hash_combine(seed, e.first);
       esp::hash_combine(seed, e.second);
     }
     return seed;
   }
 };
-
 
 template<> struct std::hash<esp::Material>
 {

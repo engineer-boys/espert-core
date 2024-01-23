@@ -56,7 +56,7 @@ namespace esp
    public:
     Model(Builder& builder);
     Model(std::shared_ptr<Mesh>& mesh);
-    Model(std::shared_ptr<Mesh>& mesh, std::shared_ptr<EspShader> shader);
+    Model(std::shared_ptr<Mesh>& mesh, std::shared_ptr<EspShader>& shader);
 
     PREVENT_COPY(Model)
 
