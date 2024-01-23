@@ -110,7 +110,7 @@ namespace esp
   {
     uint32_t vertex_bias = static_cast<uint32_t>(vertex_buffer.size());
 
-    n_mesh.m_first_index    = static_cast<uint32_t>(index_buffer.size());
+    n_mesh.m_first_index = static_cast<uint32_t>(index_buffer.size());
 
     for (uint32_t vert_idx = 0; vert_idx < mesh->mNumVertices; vert_idx++)
     {
@@ -160,7 +160,7 @@ namespace esp
     }
 
     n_mesh.m_index_count = number_of_indices;
-    n_mesh.m_material = load_material(scene->mMaterials[mesh->mMaterialIndex]);
+    n_mesh.m_material    = load_material(scene->mMaterials[mesh->mMaterialIndex]);
   }
 
   void NModel::process_node(NNode* n_node,
@@ -203,8 +203,8 @@ namespace esp
     uint32_t assimp_params = 0;
     if (m_params.m_tangent) { assimp_params = aiProcess_CalcTangentSpace; }
 
-    auto scene =
-        importer.ReadFile((ResourceSystem::get_asset_base_path() / path_to_model).string().c_str(), aiProcess_Triangulate | assimp_params);
+    auto scene = importer.ReadFile((ResourceSystem::get_asset_base_path() / path_to_model).string().c_str(),
+                                   aiProcess_Triangulate | assimp_params);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {

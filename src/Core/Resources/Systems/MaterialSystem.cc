@@ -2,8 +2,7 @@
 
 namespace esp
 {
-  Material::Material(MaterialTexutresMap textures,
-                     std::vector<MaterialTextureLayout> layouts) :
+  Material::Material(MaterialTexutresMap textures, std::vector<MaterialTextureLayout> layouts) :
       m_name(""), m_textures_map(std::move(textures)), m_material_texture_layouts(std::move(layouts))
   {
   }
@@ -16,7 +15,8 @@ namespace esp
     m_name = name;
   }
 
-  std::unique_ptr<EspUniformManager> Material::create_uniform_manager(std::shared_ptr<EspShader> shader) const {
+  std::unique_ptr<EspUniformManager> Material::create_uniform_manager(std::shared_ptr<EspShader> shader) const
+  {
     int start_ds = -1, end_ds = -1;
     if (m_material_texture_layouts.size() > 0) { start_ds = end_ds = m_material_texture_layouts.begin()->set; }
     for (const auto& layout : m_material_texture_layouts)
@@ -123,8 +123,7 @@ namespace esp
     }
     fill_default_textures(textures_map);
 
-    auto material =
-        std::shared_ptr<Material>(new Material(name, std::move(textures_map), std::move(layouts)));
+    auto material = std::shared_ptr<Material>(new Material(name, std::move(textures_map), std::move(layouts)));
     s_instance->m_material_by_name_map.insert({ name, material });
     s_instance->m_material_by_texture_map.insert({ textures, material });
 
@@ -146,8 +145,7 @@ namespace esp
     }
     fill_default_textures(textures_map);
 
-    auto material =
-        std::shared_ptr<Material>(new Material(std::move(textures_map), std::move(layouts)));
+    auto material = std::shared_ptr<Material>(new Material(std::move(textures_map), std::move(layouts)));
     s_instance->m_material_by_texture_map.insert({ textures, material });
 
     return material;

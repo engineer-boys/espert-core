@@ -24,6 +24,7 @@ namespace esp
   {
    private:
     std::string m_dir;
+
    public:
     NModelParams m_params;
 
