@@ -7,15 +7,10 @@
 // Render API
 #include "Core/RenderAPI/Work/EspJob.hh"
 
+#include "../Model3/NModel.hh"
+
 namespace esp
 {
-  enum EspPostProcessSteps
-  {
-    EspProcessDefault   = 0x0,
-    EspProcessFlipUVs   = 0x800000,
-    EspCaclTangentSpace = 0x1,
-  };
-
   struct ModelParams
   {
     unsigned int p_flags                       = EspProcessDefault;

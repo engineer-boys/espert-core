@@ -11,6 +11,13 @@
 
 namespace esp
 {
+  enum EspPostProcessSteps
+  {
+    EspProcessDefault   = 0x0,
+    EspProcessFlipUVs   = 0x800000,
+    EspCaclTangentSpace = 0x1,
+  };
+
   struct NModelParams
   {
     /// @brief vec3
@@ -35,6 +42,8 @@ namespace esp
     bool m_tangent = false;
 
     std::vector<MaterialTextureLayout> m_material_texture_layout = {};
+
+    uint32_t m_load_process_flags = EspPostProcessSteps::EspProcessDefault;
 
     EspVertexLayout get_vertex_layouts(bool instancing = false) const;
 

@@ -9,7 +9,7 @@ namespace esp
 {
   struct NNode
   {
-    bool m_mesh_node;
+    bool m_has_meshes;
 
     std::string m_name;
     glm::mat4 m_transformation;

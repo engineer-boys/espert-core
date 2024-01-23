@@ -111,7 +111,7 @@ namespace esp
 
     /// @brief Returns Camera's position.
     /// @return Camera's position.
-    inline glm::vec3 get_positiion() const { return m_position; }
+    inline glm::vec3 get_position() const { return m_position; }
 
     /// @brief Returns Camera's view matrix.
     /// @return Camera's view matrix.
