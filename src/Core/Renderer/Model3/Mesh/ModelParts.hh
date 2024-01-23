@@ -3,6 +3,8 @@
 
 #include "esppch.hh"
 
+#include "Core/Resources/Systems/MaterialSystem.hh"
+
 namespace esp
 {
   struct NNode
@@ -22,7 +24,7 @@ namespace esp
     uint32_t m_first_index;
     uint32_t m_index_count;
 
-    uint32_t m_material_index;
+    std::shared_ptr<Material> m_material;
   };
 } // namespace esp
 

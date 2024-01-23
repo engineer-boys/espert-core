@@ -15,105 +15,32 @@
 
 namespace esp
 {
-  void NModel::load_materials(std::string path_to_model, const aiScene* scene)
+  std::shared_ptr<Material> NModel::load_material(const aiMaterial* ai_material)
   {
-    std::map<std::string, uint32_t> texture_name_to_idx;
-    auto path = fs::path(path_to_model);
+    std::vector<std::shared_ptr<EspTexture>> textures;
 
-    for (uint32_t mtr_idx = 0; mtr_idx < scene->mNumMaterials; ++mtr_idx)
+    for (const auto& layout : m_params.m_material_texture_layout)
     {
-      NMaterial n_material = {};
-      auto material        = scene->mMaterials[mtr_idx];
-
-      // albedo
-      if (m_params.m_material_params.m_albedo && material->GetTextureCount(aiTextureType_DIFFUSE) != 0)
-      {
-        aiString ai_name;
-        material->GetTexture(aiTextureType_DIFFUSE, 0, &ai_name);
-
-        std::string txt_name = ai_name.C_Str();
-        if (texture_name_to_idx.contains(txt_name) == 0)
-        {
-          texture_name_to_idx[txt_name] = m_textures.size();
-          n_material.m_albedo           = m_textures.size();
-
-          m_textures.push_back(TextureSystem::acquire(path.parent_path() / txt_name));
-        }
-        else { n_material.m_albedo = texture_name_to_idx[txt_name]; }
-      }
-
-      // normal
-      if (m_params.m_material_params.m_normal && material->GetTextureCount(aiTextureType_NORMALS) != 0)
-      {
-        aiString ai_name;
-        material->GetTexture(aiTextureType_NORMALS, 0, &ai_name);
-
-        std::string txt_name = ai_name.C_Str();
-        if (texture_name_to_idx.contains(txt_name) == 0)
-        {
-          texture_name_to_idx[txt_name] = m_textures.size();
-          n_material.m_normal           = m_textures.size();
-
-          m_textures.push_back(TextureSystem::acquire(path.parent_path() / txt_name));
-        }
-        else { n_material.m_normal = texture_name_to_idx[txt_name]; }
-      }
-
-      // metallic
-      if (m_params.m_material_params.m_metallic && material->GetTextureCount(aiTextureType_METALNESS) != 0)
-      {
-        aiString ai_name;
-        material->GetTexture(aiTextureType_METALNESS, 0, &ai_name);
-
-        std::string txt_name = ai_name.C_Str();
-        if (texture_name_to_idx.contains(txt_name) == 0)
-        {
-          texture_name_to_idx[txt_name] = m_textures.size();
-          n_material.m_metallic         = m_textures.size();
-
-          m_textures.push_back(TextureSystem::acquire(path.parent_path() / txt_name));
-        }
-        else { n_material.m_metallic = texture_name_to_idx[txt_name]; }
-      }
-
-      // roughness
-      if (m_params.m_material_params.m_roughness && material->GetTextureCount(aiTextureType_DIFFUSE_ROUGHNESS) != 0)
-      {
-        aiString ai_name;
-        material->GetTexture(aiTextureType_DIFFUSE_ROUGHNESS, 0, &ai_name);
-
-        std::string txt_name = ai_name.C_Str();
-        if (texture_name_to_idx.contains(txt_name) == 0)
-        {
-          texture_name_to_idx[txt_name] = m_textures.size();
-          n_material.m_roughness        = m_textures.size();
-
-          m_textures.push_back(TextureSystem::acquire(path.parent_path() / txt_name));
-        }
-        else { n_material.m_roughness = texture_name_to_idx[txt_name]; }
-      }
-
-      // ao
-      if (m_params.m_material_params.m_ao && material->GetTextureCount(aiTextureType_AMBIENT_OCCLUSION) != 0)
-      {
-        aiString ai_name;
-        material->GetTexture(aiTextureType_AMBIENT_OCCLUSION, 0, &ai_name);
-
-        std::string txt_name = ai_name.C_Str();
-        if (texture_name_to_idx.contains(txt_name) == 0)
-        {
-          texture_name_to_idx[txt_name] = m_textures.size();
-          n_material.m_ao               = m_textures.size();
-
-          m_textures.push_back(TextureSystem::acquire(path.parent_path() / txt_name));
-        }
-        else { n_material.m_ao = texture_name_to_idx[txt_name]; }
-      }
-
-      if (n_material.is_empty()) { continue; }
-
-      m_materials.push_back(n_material);
+      auto texture = load_material_texture(ai_material, esp_texture_type_to_assimp(layout.type));
+      if (texture) textures.push_back(texture);
     }
+
+    return MaterialSystem::acquire(textures, m_params.m_material_texture_layout);
+  }
+
+  std::shared_ptr<EspTexture> NModel::load_material_texture(const aiMaterial* mat, aiTextureType type)
+  {
+    for (uint32_t i = 0; i < mat->GetTextureCount(type); i++)
+    {
+      aiString str;
+      mat->GetTexture(type, i, &str);
+      TextureParams params;
+      auto file_path = (fs::path(m_dir) / fs::path(str.C_Str())).string();
+
+      return TextureSystem::acquire(file_path, params);
+    }
+
+    return nullptr;
   }
 
   void NModel::precompute_transform_matrices(NNode* node, glm::mat4 prev_matrix)
@@ -184,7 +111,6 @@ namespace esp
     uint32_t vertex_bias = static_cast<uint32_t>(vertex_buffer.size());
 
     n_mesh.m_first_index    = static_cast<uint32_t>(index_buffer.size());
-    n_mesh.m_material_index = mesh->mMaterialIndex;
 
     for (uint32_t vert_idx = 0; vert_idx < mesh->mNumVertices; vert_idx++)
     {
@@ -234,6 +160,7 @@ namespace esp
     }
 
     n_mesh.m_index_count = number_of_indices;
+    n_mesh.m_material = load_material(scene->mMaterials[mesh->mMaterialIndex]);
   }
 
   void NModel::process_node(NNode* n_node,
@@ -269,21 +196,21 @@ namespace esp
 
   NModel::NModel(std::string path_to_model, NModelParams params) : m_bone_counter{ 0 }, m_params{ params }
   {
+    m_dir = path_to_model.substr(0, path_to_model.find_last_of('/'));
+
     Assimp::Importer importer;
 
     uint32_t assimp_params = 0;
     if (m_params.m_tangent) { assimp_params = aiProcess_CalcTangentSpace; }
 
     auto scene =
-        importer.ReadFile(ResourceSystem::get_asset_base_path() / path_to_model, aiProcess_Triangulate | assimp_params);
+        importer.ReadFile((ResourceSystem::get_asset_base_path() / path_to_model).string().c_str(), aiProcess_Triangulate | assimp_params);
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {
       ESP_CORE_ERROR("Failed to load model");
       throw std::runtime_error(importer.GetErrorString());
     }
-
-    load_materials(path_to_model, scene);
 
     m_meshes.reserve(scene->mNumMeshes);
     std::vector<uint32_t> index_buffer;
