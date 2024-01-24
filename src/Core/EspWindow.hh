@@ -2,6 +2,7 @@
 #define ESPERT_CORE_ESP_WINDOW_HH
 
 #include "Core/Events/Event.hh"
+#include "EspApplicationParams.hh"
 #include "esppch.hh"
 
 #include "GLFW/glfw3.h"
@@ -23,22 +24,30 @@ namespace esp
       /// @brief Window title.
       std::string m_title;
       /// @brief Window width.
-      const unsigned int m_width;
+      const uint32_t m_width;
       /// @brief Window height.
-      const unsigned int m_height;
+      const uint32_t m_height;
       /// @brief Window event manager.
       EventManagerFun m_events_manager_fun;
 
       /// @brief Indicator if the cursor should be locked. (true if not locked, false otherwise)
       const bool m_disable_cursor = false;
 
+      /// @brief Window's presentation mode
+      EspPresentationMode m_presentation_mode;
+
       /// @brief Constructor setting basic window info.
       /// @param title Window title.
       /// @param width Window width.
       /// @param height Window height.
       /// @param disable_cursor Indicator if the cursor should be locked. (true if not locked, false otherwise)
-      WindowData(const std::string title, unsigned int width, unsigned int height, bool disable_cursor) :
-          m_title(title), m_width(width), m_height(height), m_disable_cursor(disable_cursor)
+      WindowData(const std::string title,
+                 uint32_t width,
+                 uint32_t height,
+                 bool disable_cursor,
+                 EspPresentationMode presentation_mode) :
+          m_title(title),
+          m_width(width), m_height(height), m_disable_cursor(disable_cursor), m_presentation_mode(presentation_mode)
       {
       }
     };
@@ -47,16 +56,13 @@ namespace esp
    private:
     static EspWindow* s_instance;
 
-    // std::array<int, 6> m_camera_keys = { GLFW_KEY_W, GLFW_KEY_S,     GLFW_KEY_A,
-    //                                      GLFW_KEY_D, GLFW_KEY_SPACE, GLFW_KEY_LEFT_SHIFT };
-
     std::unique_ptr<WindowData> m_data;
     GLFWwindow* m_window;
 
     /* -------------------------- METHODS ---------------------------------- */
    private:
     void set_callbacks();
-    // void handle_camera_key_presses();
+    void set_presentation_mode();
 
    public:
     /// @brief Constructor that sets window data.
@@ -76,10 +82,10 @@ namespace esp
 
     /// @brief Returns window's width.
     /// @return Windows's width.
-    inline unsigned int get_width() { return m_data->m_width; }
+    inline uint32_t get_width() { return m_data->m_width; }
     /// @brief Returns window's height.
     /// @return Window's height.
-    inline unsigned int get_height() { return m_data->m_height; }
+    inline uint32_t get_height() { return m_data->m_height; }
 
     /// @brief Returns pointer to the window.
     /// @return Pointer to the window.
