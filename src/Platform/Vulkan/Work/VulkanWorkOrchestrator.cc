@@ -8,11 +8,11 @@ namespace esp
 {
   VulkanWorkOrchestrator* VulkanWorkOrchestrator::s_instance = nullptr;
 
-  std::unique_ptr<VulkanWorkOrchestrator> VulkanWorkOrchestrator::create()
+  std::unique_ptr<VulkanWorkOrchestrator> VulkanWorkOrchestrator::create(EspPresentationMode presentation_mode)
   {
     ESP_ASSERT(VulkanWorkOrchestrator::s_instance == nullptr, "The vulkan work orchestrator already exists!");
     VulkanWorkOrchestrator::s_instance = new VulkanWorkOrchestrator();
-    VulkanWorkOrchestrator::s_instance->init();
+    VulkanWorkOrchestrator::s_instance->init(presentation_mode);
 
     return std::unique_ptr<VulkanWorkOrchestrator>{ VulkanWorkOrchestrator::s_instance };
   }
@@ -21,9 +21,9 @@ namespace esp
 
   VulkanWorkOrchestrator::~VulkanWorkOrchestrator() {}
 
-  void VulkanWorkOrchestrator::init()
+  void VulkanWorkOrchestrator::init(EspPresentationMode presentation_mode)
   {
-    m_swap_chain = VulkanSwapChain::create();
+    m_swap_chain = VulkanSwapChain::create(presentation_mode);
 
     create_command_pool();
     create_command_buffers();

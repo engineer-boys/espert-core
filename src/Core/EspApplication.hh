@@ -8,6 +8,7 @@
 #include "Core/Resources/Systems/ShaderSystem.hh"
 #include "Core/Resources/Systems/TextureSystem.hh"
 #include "EspApplicationContext.hh"
+#include "EspApplicationParams.hh"
 #include "EspWindow.hh"
 #include "Events/WindowEvent.hh"
 #include "Layers/Layer.hh"
@@ -68,14 +69,8 @@ namespace esp
 
    public:
     /// @brief Constuctor sets window title, width, height and whether to lock cursor.
-    /// @param title Window title.
-    /// @param width Window width.
-    /// @param height Window height.
-    /// @param disable_cursor Lock the cursor.
-    EspApplication(const std::string title = "Espert window",
-                   unsigned int width      = 1280,
-                   unsigned int height     = 720,
-                   bool disable_cursor     = false);
+    /// @param params Application params
+    EspApplication(EspApplicationParams params = {});
     /// @brief Virtual destructor.
     virtual ~EspApplication();
 

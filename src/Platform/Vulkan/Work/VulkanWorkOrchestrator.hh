@@ -43,7 +43,7 @@ namespace esp
     VulkanWorkOrchestrator(const VulkanWorkOrchestrator& other)            = delete;
     VulkanWorkOrchestrator& operator=(const VulkanWorkOrchestrator& other) = delete;
 
-    virtual void init() override;
+    virtual void init(EspPresentationMode presentation_mode) override;
     virtual void terminate() override;
 
     virtual void begin_frame() override;
@@ -51,7 +51,7 @@ namespace esp
 
     /* -------------------------- STATIC METHODS --------------------------- */
    public:
-    static std::unique_ptr<VulkanWorkOrchestrator> create();
+    static std::unique_ptr<VulkanWorkOrchestrator> create(EspPresentationMode presentation_mode);
 
     inline static uint32_t get_number_of_command_buffers() { return s_instance->m_command_buffers.size(); }
     static VkCommandBuffer begin_single_time_commands();

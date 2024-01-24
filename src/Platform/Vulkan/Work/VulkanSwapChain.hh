@@ -3,6 +3,8 @@
 
 #include "esppch.hh"
 
+#include "Core/EspApplicationParams.hh"
+
 #include "Platform/Vulkan/VulkanContext.hh"
 
 namespace esp
@@ -50,7 +52,7 @@ namespace esp
 
     /* -------------------------- METHODS ---------------------------------- */
    private:
-    void create_swap_chain(VkSwapchainKHR old_swap_chain);
+    void create_swap_chain(VkSwapchainKHR old_swap_chain, EspPresentationMode presentation_mode);
 
    public:
     VulkanSwapChain();
@@ -59,7 +61,7 @@ namespace esp
     VulkanSwapChain(const VulkanSwapChain&)            = delete;
     VulkanSwapChain& operator=(const VulkanSwapChain&) = delete;
 
-    void init();
+    void init(EspPresentationMode presentation_mode);
     void terminate();
 
     inline VkResult acquire_next_image(std::vector<VkSemaphore>& image_available_semaphores)
@@ -87,7 +89,7 @@ namespace esp
       return s_instance->m_swap_chain_buffers[s_instance->m_image_index].m_image_view;
     }
 
-    static std::unique_ptr<VulkanSwapChain> create();
+    static std::unique_ptr<VulkanSwapChain> create(EspPresentationMode presentation_mode);
     static SwapChainSupportDetails query_swap_chain_support(const VkPhysicalDevice& device,
                                                             const VulkanContextData& context_data);
     inline static VkFormat* get_swap_chain_image_format() { return &(s_instance->m_swap_chain_image_format); }

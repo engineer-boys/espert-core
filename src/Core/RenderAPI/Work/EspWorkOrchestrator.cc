@@ -5,7 +5,7 @@
 
 namespace esp
 {
-  std::unique_ptr<EspWorkOrchestrator> EspWorkOrchestrator::build()
+  std::unique_ptr<EspWorkOrchestrator> EspWorkOrchestrator::build(EspPresentationMode presentation_mode)
   {
     /* ---------------------------------------------------------*/
     /* ------------- PLATFORM DEPENDENT ------------------------*/
@@ -13,12 +13,12 @@ namespace esp
     // #if defined(OPENGL_PLATFORM)
     //     auto context = std::make_unique<OpenGLContext>();
     // #elif defined(VULKAN_PLATFORM)
-    auto work_orchestrat = VulkanWorkOrchestrator::create();
+    auto work_orchestrator = VulkanWorkOrchestrator::create(presentation_mode);
     // #else
     // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
     // #endif
     /* ---------------------------------------------------------*/
-    return work_orchestrat;
+    return work_orchestrator;
   }
 
   std::pair<uint32_t, uint32_t> EspWorkOrchestrator::get_swap_chain_extent()
