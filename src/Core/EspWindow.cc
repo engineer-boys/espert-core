@@ -52,6 +52,8 @@ namespace esp
     }
     glfwSetWindowUserPointer(m_window, m_data.get());
 
+    set_presentation_mode();
+
     if (m_data->m_disable_cursor) { glfwSetInputMode(m_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED); }
 
     set_callbacks();
@@ -71,7 +73,6 @@ namespace esp
   void EspWindow::update()
   {
     glfwPollEvents();
-    // handle_camera_key_presses();
   }
 
   void EspWindow::set_callbacks()
@@ -148,17 +149,23 @@ namespace esp
                              });
   }
 
-  // void EspWindow::handle_camera_key_presses()
-  // {
-  //   for (auto& key : m_camera_keys)
-  //   {
-  //     if (glfwGetKey(m_window, key) == GLFW_PRESS)
-  //     {
-  //       KeyPressedEvent event(key, true);
-  //       m_data.m_events_manager_fun(event);
-  //     }
-  //   }
-  // }
+  void EspWindow::set_presentation_mode()
+  {
+    /* ---------------------------------------------------------*/
+    /* ------------- PLATFORM DEPENDENT ------------------------*/
+    /* ---------------------------------------------------------*/
+    // #if defined(OPENGL_PLATFORM)
+    //     if (m_data->m_presentation_mode == EspPresentationMode::ESP_PRESENT_MODE_IMMEDIATE_KHR)
+    //     {
+    //       glfwMakeContextCurrent(m_window);
+    //       glfwSwapInterval(0);
+    //     }
+    // #elif defined(VULKAN_PLATFORM)
+    // #else
+    // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
+    // #endif
+    /* ---------------------------------------------------------*/
+  }
 
   void EspWindow::create_window_surface()
   {

@@ -9,8 +9,11 @@ namespace esp
 
   {
     // create (alloc and init) window
-    m_window = EspWindow::create(
-        new EspWindow::WindowData(params.m_title, params.m_width, params.m_height, params.m_disable_cursor));
+    m_window = EspWindow::create(new EspWindow::WindowData(params.m_title,
+                                                           params.m_width,
+                                                           params.m_height,
+                                                           params.m_disable_cursor,
+                                                           params.m_presentation_mode));
     m_window->set_events_manager_fun(ESP_BIND_EVENT_FOR_FUN(EspApplication::events_manager));
 
     // create (alloc and init) timer
