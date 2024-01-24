@@ -5,15 +5,12 @@ namespace esp
 {
   fs::path EspApplication::s_asset_base_path = fs::current_path().parent_path() / "resources";
 
-  EspApplication::EspApplication(const std::string title,
-                                 unsigned int width,
-                                 unsigned int height,
-                                 bool disable_cursor) :
-      m_running(true)
+  EspApplication::EspApplication(EspApplicationParams params) : m_running(true)
 
   {
     // create (alloc and init) window
-    m_window = EspWindow::create(new EspWindow::WindowData(title, width, height, disable_cursor));
+    m_window = EspWindow::create(
+        new EspWindow::WindowData(params.m_title, params.m_width, params.m_height, params.m_disable_cursor));
     m_window->set_events_manager_fun(ESP_BIND_EVENT_FOR_FUN(EspApplication::events_manager));
 
     // create (alloc and init) timer
@@ -24,7 +21,7 @@ namespace esp
     m_renderer.m_render_context = EspRenderContext::build(*m_window);
     m_debug_messenger->init();
 
-    m_renderer.m_work_orchestrator = EspWorkOrchestrator::build();
+    m_renderer.m_work_orchestrator = EspWorkOrchestrator::build(params.m_presentation_mode);
     m_renderer.m_jobs              = EspJob::build();
 
     // create basic systems

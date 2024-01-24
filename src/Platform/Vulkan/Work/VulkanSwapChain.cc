@@ -12,10 +12,11 @@
 // signatures
 static VkFormat find_depth_format();
 static VkSurfaceFormatKHR choose_swap_chain_surface_format(const std::vector<VkSurfaceFormatKHR>& available_formats);
-static VkPresentModeKHR choose_swap_chain_present_mode(const std::vector<VkPresentModeKHR>& available_present_modes);
+static VkPresentModeKHR choose_swap_chain_present_mode(const std::vector<VkPresentModeKHR>& available_present_modes,
+                                                       esp::EspPresentationMode presentation_mode);
 static VkExtent2D choose_swap_chain_extent(const VkSurfaceCapabilitiesKHR& capabilities);
 static void log_swap_chain_image_format(VkFormat format);
-// static void log_chosen_swap_chain_present_mode(const std::string& mode);
+static void log_chosen_swap_chain_present_mode(esp::EspPresentationMode presentation_mode);
 
 /* --------------------------------------------------------- */
 /* ---------------- CLASS IMPLEMENTATION ------------------- */
@@ -25,11 +26,11 @@ namespace esp
 {
   VulkanSwapChain* VulkanSwapChain::s_instance = nullptr;
 
-  std::unique_ptr<VulkanSwapChain> VulkanSwapChain::create()
+  std::unique_ptr<VulkanSwapChain> VulkanSwapChain::create(EspPresentationMode presentation_mode)
   {
     ESP_ASSERT(VulkanSwapChain::s_instance == nullptr, "VulkanSwapChain already exists!");
     VulkanSwapChain::s_instance = new VulkanSwapChain();
-    VulkanSwapChain::s_instance->init();
+    VulkanSwapChain::s_instance->init(presentation_mode);
 
     return std::unique_ptr<VulkanSwapChain>{ VulkanSwapChain::s_instance };
   }
@@ -38,7 +39,10 @@ namespace esp
 
   VulkanSwapChain::~VulkanSwapChain() {}
 
-  void VulkanSwapChain::init() { create_swap_chain(VK_NULL_HANDLE); }
+  void VulkanSwapChain::init(EspPresentationMode presentation_mode)
+  {
+    create_swap_chain(VK_NULL_HANDLE, presentation_mode);
+  }
 
   void VulkanSwapChain::terminate()
   {
@@ -59,7 +63,7 @@ namespace esp
     VulkanSwapChain::s_instance = nullptr;
   }
 
-  void VulkanSwapChain::create_swap_chain(VkSwapchainKHR old_swap_chain)
+  void VulkanSwapChain::create_swap_chain(VkSwapchainKHR old_swap_chain, EspPresentationMode presentation_mode)
   {
     auto& context_data = VulkanContext::get_context_data();
 
@@ -67,8 +71,9 @@ namespace esp
         VulkanSwapChain::query_swap_chain_support(VulkanDevice::get_physical_device(), context_data);
 
     VkSurfaceFormatKHR surface_format = choose_swap_chain_surface_format(swap_chain_support.m_formats);
-    VkPresentModeKHR present_mode     = choose_swap_chain_present_mode(swap_chain_support.m_present_modes);
-    VkExtent2D extent                 = choose_swap_chain_extent(swap_chain_support.m_capabilities);
+    VkPresentModeKHR present_mode =
+        choose_swap_chain_present_mode(swap_chain_support.m_present_modes, presentation_mode);
+    VkExtent2D extent = choose_swap_chain_extent(swap_chain_support.m_capabilities);
 
     uint32_t image_count = swap_chain_support.m_capabilities.minImageCount + 1;
     if (swap_chain_support.m_capabilities.maxImageCount > 0 &&
@@ -197,19 +202,23 @@ static VkSurfaceFormatKHR choose_swap_chain_surface_format(const std::vector<VkS
   return available_formats[0];
 }
 
-static VkPresentModeKHR choose_swap_chain_present_mode(const std::vector<VkPresentModeKHR>& available_present_modes)
+static VkPresentModeKHR choose_swap_chain_present_mode(const std::vector<VkPresentModeKHR>& available_present_modes,
+                                                       esp::EspPresentationMode presentation_mode)
 {
-  /*for (const auto& available_present_mode : available_present_modes)
+  bool mailbox_mode_available = false;
+  for (const auto& available_present_mode : available_present_modes)
   {
-    if (available_present_mode == VK_PRESENT_MODE_MAILBOX_KHR)
-    {
-      log_chosen_swap_chain_present_mode("Mailbox");
-      return available_present_mode;
-    }
-  }*/
+    if (available_present_mode == VK_PRESENT_MODE_MAILBOX_KHR) { mailbox_mode_available = true; }
+  }
 
-  // log_chosen_swap_chain_present_mode("V-Sync");
-  return VK_PRESENT_MODE_IMMEDIATE_KHR;
+  auto chosen_mode = presentation_mode;
+  if (presentation_mode == esp::EspPresentationMode::ESP_PRESENT_MODE_MAILBOX_KHR && !mailbox_mode_available)
+  {
+    chosen_mode = esp::EspPresentationMode::ESP_PRESENT_MODE_FIFO_KHR;
+  }
+
+  log_chosen_swap_chain_present_mode(chosen_mode);
+  return static_cast<VkPresentModeKHR>(chosen_mode);
 }
 
 static VkExtent2D choose_swap_chain_extent(const VkSurfaceCapabilitiesKHR& capabilities)
@@ -239,4 +248,20 @@ static void log_swap_chain_image_format(VkFormat format)
     ESP_INFO("Swap chain format : VK_FORMAT_A8B8G8R8_UNORM_PACK32");
   }
   else { ESP_INFO("Swap chain format : {} nr", format); }
+}
+
+static void log_chosen_swap_chain_present_mode(esp::EspPresentationMode presentation_mode)
+{
+  switch (presentation_mode)
+  {
+  case esp::ESP_PRESENT_MODE_IMMEDIATE_KHR:
+    ESP_INFO("Presentation mode: Immediate");
+    break;
+  case esp::ESP_PRESENT_MODE_MAILBOX_KHR:
+    ESP_INFO("Presentation mode: Mailbox");
+    break;
+  case esp::ESP_PRESENT_MODE_FIFO_KHR:
+    ESP_INFO("Presentation mode: Fifo (V-Sync)");
+    break;
+  }
 }

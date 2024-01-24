@@ -1,6 +1,7 @@
 #ifndef RENDER_API_ESP_WORK_ORCHESTRATION_HH
 #define RENDER_API_ESP_WORK_ORCHESTRATION_HH
 
+#include "Core/EspApplicationParams.hh"
 #include "Core/EspWindow.hh"
 #include "Core/Events/WindowEvent.hh"
 
@@ -18,8 +19,8 @@ namespace esp
     EspWorkOrchestrator(const EspWorkOrchestrator& other)            = delete;
     EspWorkOrchestrator& operator=(const EspWorkOrchestrator& other) = delete;
 
-    virtual void init()      = 0;
-    virtual void terminate() = 0;
+    virtual void init(EspPresentationMode presentation_mode) = 0;
+    virtual void terminate()                                 = 0;
 
     virtual void begin_frame() = 0;
     virtual void end_frame()   = 0;
@@ -29,7 +30,7 @@ namespace esp
 
     /* -------------------------- STATIC METHODS --------------------------- */
    public:
-    static std::unique_ptr<EspWorkOrchestrator> build();
+    static std::unique_ptr<EspWorkOrchestrator> build(EspPresentationMode presentation_mode);
   };
 } // namespace esp
 
