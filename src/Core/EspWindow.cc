@@ -70,10 +70,7 @@ namespace esp
     EspWindow::s_instance = nullptr;
   }
 
-  void EspWindow::update()
-  {
-    glfwPollEvents();
-  }
+  void EspWindow::update() { glfwPollEvents(); }
 
   void EspWindow::set_callbacks()
   {
