@@ -274,20 +274,35 @@ class EspDepthBlock:
       # when it should be cleared.
 
   def get_width() -> uint32_t:
-      # Return the width of EspDepthBlock
+      # Return the width of EspDepthBlock.
 
   def get_height() -> uint32_t:
-      # Return the height of EspDepthBlock
+      # Return the height of EspDepthBlock.
 
   def get_sample_count_flag() -> EspSampleCountFlag:
-      # Return the sample count flag of EspDepthBlock
+      # Return the sample count flag of EspDepthBlock.
+  
+  def get_image_usage_flag() -> EspImageUsageFlag:
+      # Return the usage flag of the block.
 
-   @staticmethod
+  @staticmethod
   def build(
-      EspDepthBlockFormat format, 
-      EspSampleCountFlag sample_count_flag
+        EspDepthBlockFormat format,
+        EspSampleCountFlag sample_count_flag,
+        EspImageUsageFlag image_usage_flag = 
+        EspImageUsageFlag::ESP_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT
       ) -> std::unique_ptr<EspDepthBlock>:
-      # Create EspDepthBlock
+      # Create EspDepthBlock.
+  
+  @staticmethod
+  def build(
+        EspDepthBlockFormat format,
+        EspSampleCountFlag sample_count_flag,
+        EspImageUsageFlag image_usage_flag,
+        uint32_t width,
+        uint32_t height
+      ) -> std::unique_ptr<EspDepthBlock>:
+      # Create EspDepthBlock.
 ```
 
 ```Python
@@ -315,6 +330,9 @@ class EspWorkerBuilder:
 
   def set_shaders(std::unique_ptr<SpirvResource> spirv_resource) -> None:
       # Set resources with shader code.
+
+  def set_specialization(const SpecializationConstantMap& spec_const_map) -> None:
+      # Set specialization constant for shaders' programs.
 
   def set_vertex_layouts(std::vector<EspVertexLayout> vertex_layouts) -> None:
       # Set the layout of vertex
@@ -346,12 +364,18 @@ class EspWorker:
       # set the viewport and scissors
       # according to the dimensions of
       # the application window.
-
-  def set_viewport(EspCommandBufferId* id, EspViewport viewport) -> None:
+  
+  def set_viewport(EspViewport viewport) -> None:
       # Set viewport of the pipeline.
 
-  def set_scissors(EspCommandBufferId* id, EspScissorRect scissor_rect) -> None:
+  def set_scissors(EspScissorRect scissor_rect) -> None:
       # Set scissors of the pipeline.
+
+  def set_viewport(EspCommandBufferId* id, EspViewport viewport) -> None:
+      # Set viewport of the pipeline using given command buffer.
+
+  def set_scissors(EspCommandBufferId* id, EspScissorRect scissor_rect) -> None:
+      # Set scissors of the pipeline using given command buffer.
 
   def create_uniform_manager(
         int start_managed_ds = -1,
