@@ -585,7 +585,9 @@ class EspVertexBuffer:
       # the global command buffer.
 
   def attach_instanced(EspVertexBuffer& instance_buffer) -> None:
-      # ....
+      # Attach EspVertexBuffer to
+      # the global command buffer,
+      # with instance buffer included.
 
   def attach(EspCommandBufferId* id) -> None:
       # Attach EspVertexBuffer to
@@ -595,7 +597,9 @@ class EspVertexBuffer:
         EspCommandBufferId* id, 
         EspVertexBuffer& instance_buffer
         ) -> None:
-      # ...
+      # Attach EspVertexBuffer to
+      # the given command buffer,
+      # with instance buffer included.
 
   @staticmethod
   def create(
