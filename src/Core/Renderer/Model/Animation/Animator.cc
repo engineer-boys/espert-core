@@ -31,10 +31,7 @@ namespace esp
     if (to_break) { m_current_animation = nullptr; }
   }
 
-  void Animator::play_animation(Model* model,
-                                uint32_t animation_index,
-                                AnimationPeriodType type,
-                                uint32_t cycles_count)
+  void Animator::play_animation(Model* model, uint32_t animation_index, AnimationPeriodType type, uint32_t cycles_count)
   {
     m_current_animation = model->m_animations[animation_index].get();
     m_current_time      = 0.0f;
