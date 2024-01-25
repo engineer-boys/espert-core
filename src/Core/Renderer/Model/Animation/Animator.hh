@@ -5,7 +5,7 @@
 
 #include "Animation.hh"
 
-#include "Core/Renderer/Model3/NModel.hh"
+#include "Core/Renderer/Model/Model.hh"
 
 namespace esp
 {
@@ -36,8 +36,8 @@ namespace esp
     } m_period;
 
    private:
-    void calculate_bone_transform(NModel* model, NNode* node, glm::mat4 parent_transform);
-    void caclucate_bote_transform_moment_zero(NModel* model, NNode* node, glm::mat4 parent_transform);
+    void calculate_bone_transform(Model* model, ModelNode* node, glm::mat4 parent_transform);
+    void caclucate_bote_transform_moment_zero(Model* model, ModelNode* node, glm::mat4 parent_transform);
     bool check_animation_period();
 
    public:
@@ -46,9 +46,9 @@ namespace esp
     Animator();
     ~Animator();
 
-    void update_animation(float dt, NModel* model);
+    void update_animation(float dt, Model* model);
 
-    void play_animation(NModel* model, uint32_t animation_index, AnimationPeriodType type, uint32_t cycles_count = 1);
+    void play_animation(Model* model, uint32_t animation_index, AnimationPeriodType type, uint32_t cycles_count = 1);
 
     inline glm::mat4* get_final_bone_matrices() { return m_current_bone_matrices; }
 

@@ -1,82 +1,94 @@
-#ifndef SCENE_MODEL_MODEL_HH
-#define SCENE_MODEL_MODEL_HH
+#ifndef RENDERER_MODEL_MODEL_HH
+#define RENDERER_MODEL_MODEL_HH
 
-#include "Mesh.hh"
 #include "esppch.hh"
 
-// Render API
-#include "Core/RenderAPI/Work/EspJob.hh"
+#include "Core/RenderAPI/Resources/EspIndexBuffer.hh"
+#include "Core/RenderAPI/Resources/EspTexture.hh"
+#include "Core/RenderAPI/Resources/EspVertexBuffer.hh"
+#include "Core/RenderAPI/Uniforms/EspUniformManager.hh"
 
-#include "../Model3/NModel.hh"
+#include "Core/Renderer/Model/Animation/BoneInfo.hh"
+
+#include "Mesh/ModelParts.hh"
+#include "Mesh/Vertex.hh"
+
+#include "ModelIterator.hh"
+#include "ModelParams.hh"
 
 namespace esp
 {
-  struct ModelParams
-  {
-    unsigned int p_flags                       = EspProcessDefault;
-    bool load_material                         = true;
-    std::vector<MaterialTextureLayout> layouts = { { 1, 0, EspTextureType::ALBEDO },
-                                                   { 1, 1, EspTextureType::NORMAL },
-                                                   { 1, 2, EspTextureType::METALLIC },
-                                                   { 1, 3, EspTextureType::ROUGHNESS },
-                                                   { 1, 4, EspTextureType::AO } };
-  };
+  class Animation;
 
   class Model
   {
+   private:
+    std::string m_dir;
+
+    // ---------- FLAGS FOR RENDERER ----------
+    bool m_has_many_mesh_nodes;
+    // ----------------------------------------
+
    public:
-    struct Builder
-    {
-      std::vector<std::shared_ptr<Mesh>> m_meshes;
-      std::string m_dir;
-      std::shared_ptr<EspShader> m_shader = ShaderSystem::get_default_shader();
-      std::unordered_map<std::shared_ptr<Material>, std::unique_ptr<EspUniformManager>> m_material_uniform_managers;
+    ModelParams m_params;
 
-      Builder& load_model(const std::string& filepath, const ModelParams& params = {});
-      Builder& set_shader(std::shared_ptr<EspShader> shader);
+    ModelNode m_root_node;
+    std::vector<Mesh> m_meshes;
+    std::vector<ModelNode*> m_nodes;
 
-     private:
-      void process_node(aiNode* node, const aiScene* scene, const ModelParams& params);
-      void process_mesh(aiMesh* mesh, const aiScene* scene, const ModelParams& params);
-      std::shared_ptr<EspTexture> load_material_texture(aiMaterial* mat, aiTextureType type);
-    };
+    std::map<std::string, BoneInfo> m_bone_info_map;
+    uint32_t m_bone_counter;
+
+    std::vector<std::shared_ptr<Animation>> m_animations;
+
+    std::unique_ptr<EspVertexBuffer> m_vertex_buffer;
+    std::unique_ptr<EspIndexBuffer> m_index_buffer;
+
+    static const uint32_t MAX_BONES_PER_VERTEX = 4;
 
    private:
-    std::vector<std::shared_ptr<Mesh>> m_meshes;
-    std::unordered_map<std::shared_ptr<Material>, std::unique_ptr<EspUniformManager>> m_material_uniform_managers;
+    void process_node(ModelNode* n_node,
+                      aiNode* node,
+                      const aiScene* scene,
+                      std::vector<uint32_t>& index_buffer,
+                      std::vector<Vertex>& vertex_buffer);
 
-    bool m_has_instance_buffer{ false };
-    std::unique_ptr<EspVertexBuffer> m_instance_buffer;
+    void process_mesh(Mesh& n_mesh,
+                      const aiMesh* mesh,
+                      const aiScene* scene,
+                      std::vector<uint32_t>& index_buffer,
+                      std::vector<Vertex>& vertex_buffer);
+
+    void process_mesh_bones(uint32_t vertex_bias,
+                            const aiMesh* mesh,
+                            const aiScene* scene,
+                            std::vector<Vertex>& vertex_buffer);
+
+    void set_renderer_flags();
+    void precompute_transform_matrices(ModelNode* node, glm::mat4 prev_matrix);
+
+    std::shared_ptr<Material> load_material(const aiMaterial* ai_material);
+    std::shared_ptr<EspTexture> load_material_texture(const aiMaterial* mat, aiTextureType type);
 
    public:
-    Model(Builder& builder);
-    Model(std::shared_ptr<Mesh>& mesh);
-    Model(std::shared_ptr<Mesh>& mesh, std::shared_ptr<EspShader>& shader);
-
     PREVENT_COPY(Model)
 
-    ~Model() = default;
+    Model(const std::string& path_to_model, ModelParams params);
+    Model(std::vector<Vertex>& vertex_buffer,
+          std::vector<uint32_t>& index_buffer,
+          const std::vector<std::shared_ptr<EspTexture>>& textures,
+          ModelParams params);
+    ~Model();
 
-    void draw();
-    void draw_raw(); // draw without attaching material
+    inline auto& get_bone_info_map() { return m_bone_info_map; }
+    inline uint32_t& get_bone_count() { return m_bone_counter; }
+    inline const ModelNode& get_root_node() const { return m_root_node; }
 
-    inline const std::vector<std::shared_ptr<Mesh>>& get_meshes() { return m_meshes; }
-    inline const uint32_t get_meshes_count() const { return m_meshes.size(); }
+    inline bool has_many_mesh_nodes() { return m_has_many_mesh_nodes; }
 
-    template<typename T> void add_instance_buffer(std::vector<T> instances)
-    {
-      ESP_ASSERT(!m_has_instance_buffer, "Model already has instance buffer")
-
-      m_has_instance_buffer = true;
-      m_instance_buffer = EspVertexBuffer::create(instances.data(), sizeof(T), instances.size(), EspBuffer::VISIBLE);
-    }
-    template<typename T> void update_instance_buffer(std::vector<T> instances, uint32_t offset)
-    {
-      ESP_ASSERT(m_has_instance_buffer, "Model doesn't have an instance buffer")
-
-      m_instance_buffer->update(instances.data(), sizeof(T), instances.size(), offset);
-    }
+    ModelIterator begin() { return ModelIterator(this); }
+    ModelIterator end() { return ModelIterator(nullptr); }
   };
 } // namespace esp
 
-#endif // SCENE_MODEL_MODEL_HH
+#endif // RENDERER_MODEL_MODEL_HH

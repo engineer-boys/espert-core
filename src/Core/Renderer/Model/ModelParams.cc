@@ -1,8 +1,8 @@
-#include "NModelParams.hh"
+#include "ModelParams.hh"
 
 namespace esp
 {
-  EspVertexLayout NModelParams::get_vertex_layouts(bool instancing) const
+  EspVertexLayout ModelParams::get_vertex_layouts(bool instancing) const
   {
     auto input_rate = EspVertexInputRate::ESP_VERTEX_INPUT_RATE_VERTEX;
     if (instancing) { input_rate = EspVertexInputRate::ESP_VERTEX_INPUT_RATE_INSTANCE; }
@@ -10,13 +10,13 @@ namespace esp
     uint32_t binding = 0;
 
     uint32_t size = 0;
-    size += m_position ? sizeof(glm::vec3) : 0;
-    size += m_color ? sizeof(glm::vec3) : 0;
-    size += m_normal ? sizeof(glm::vec3) : 0;
-    size += m_tex_coord ? sizeof(glm::vec2) : 0;
-    size += m_tangent ? sizeof(glm::vec3) : 0;
-    size += m_bone_ids ? sizeof(glm::ivec4) : 0;
-    size += m_weights ? sizeof(glm::vec4) : 0;
+    size += m_position ? Vertex::size_of_position() : 0;
+    size += m_color ? Vertex::size_of_color() : 0;
+    size += m_normal ? Vertex::size_of_normal() : 0;
+    size += m_tex_coord ? Vertex::size_of_tex_coord() : 0;
+    size += m_bone_ids ? Vertex::size_of_bone_ids() : 0;
+    size += m_weights ? Vertex::size_of_weights() : 0;
+    size += m_tangent ? Vertex::size_of_tangent() : 0;
 
     uint32_t offset   = 0;
     uint32_t location = 0;
@@ -27,7 +27,7 @@ namespace esp
       attr.push_back(EspVertexAttribute(location, ESP_FORMAT_R32G32B32_SFLOAT, offset));
 
       location += 1;
-      offset += sizeof(glm::vec3);
+      offset += Vertex::size_of_position();
     }
 
     if (m_color)
@@ -35,7 +35,7 @@ namespace esp
       attr.push_back(EspVertexAttribute(location, ESP_FORMAT_R32G32B32_SFLOAT, offset));
 
       location += 1;
-      offset += sizeof(glm::vec3);
+      offset += Vertex::size_of_color();
     }
 
     if (m_normal)
@@ -43,7 +43,7 @@ namespace esp
       attr.push_back(EspVertexAttribute(location, ESP_FORMAT_R32G32B32_SFLOAT, offset));
 
       location += 1;
-      offset += sizeof(glm::vec3);
+      offset += Vertex::size_of_normal();
     }
 
     if (m_tex_coord)
@@ -51,15 +51,7 @@ namespace esp
       attr.push_back(EspVertexAttribute(location, ESP_FORMAT_R32G32_SFLOAT, offset));
 
       location += 1;
-      offset += sizeof(glm::vec2);
-    }
-
-    if (m_tangent)
-    {
-      attr.push_back(EspVertexAttribute(location, ESP_FORMAT_R32G32B32_SFLOAT, offset));
-
-      location += 1;
-      offset += sizeof(glm::vec3);
+      offset += Vertex::size_of_tex_coord();
     }
 
     if (m_bone_ids)
@@ -67,7 +59,7 @@ namespace esp
       attr.push_back(EspVertexAttribute(location, ESP_FORMAT_R32G32B32A32_SINT, offset));
 
       location += 1;
-      offset += sizeof(glm::ivec4);
+      offset += Vertex::size_of_bone_ids();
     }
 
     if (m_weights)
@@ -75,14 +67,22 @@ namespace esp
       attr.push_back(EspVertexAttribute(location, ESP_FORMAT_R32G32B32A32_SFLOAT, offset));
 
       location += 1;
-      offset += sizeof(glm::vec4);
+      offset += Vertex::size_of_weights();
+    }
+
+    if (m_tangent)
+    {
+      attr.push_back(EspVertexAttribute(location, ESP_FORMAT_R32G32B32_SFLOAT, offset));
+
+      location += 1;
+      offset += Vertex::size_of_tangent();
     }
 
     return EspVertexLayout(size, binding, input_rate, attr);
   }
 
-  void NModelParams::parse_to_vertex_byte_buffer(std::vector<NVertex>& vertex_buffer,
-                                                 std::vector<uint8_t>& vertex_byte_buffer) const
+  void ModelParams::parse_to_vertex_byte_buffer(std::vector<Vertex>& vertex_buffer,
+                                                std::vector<uint8_t>& vertex_byte_buffer) const
   {
     for (auto& vert : vertex_buffer)
     {

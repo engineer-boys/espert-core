@@ -18,7 +18,7 @@ namespace esp
     // Nothing
   }
 
-  void Animator::update_animation(float dt, NModel* model)
+  void Animator::update_animation(float dt, Model* model)
   {
     if (!m_current_animation) return;
 
@@ -31,7 +31,7 @@ namespace esp
     if (to_break) { m_current_animation = nullptr; }
   }
 
-  void Animator::play_animation(NModel* model,
+  void Animator::play_animation(Model* model,
                                 uint32_t animation_index,
                                 AnimationPeriodType type,
                                 uint32_t cycles_count)
@@ -46,7 +46,7 @@ namespace esp
     m_current_bone_matrices = m_final_bone_matrices;
   }
 
-  void Animator::calculate_bone_transform(NModel* model, NNode* node, glm::mat4 parent_transform)
+  void Animator::calculate_bone_transform(Model* model, ModelNode* node, glm::mat4 parent_transform)
   {
     std::string node_name    = node->m_name;
     glm::mat4 node_transform = node->m_transformation;
@@ -75,7 +75,7 @@ namespace esp
     }
   }
 
-  void Animator::caclucate_bote_transform_moment_zero(NModel* model, NNode* node, glm::mat4 parent_transform)
+  void Animator::caclucate_bote_transform_moment_zero(Model* model, ModelNode* node, glm::mat4 parent_transform)
   {
     std::string node_name    = node->m_name;
     glm::mat4 node_transform = node->m_transformation;

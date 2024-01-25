@@ -6,7 +6,7 @@
 #include "BoneInfo.hh"
 #include "Channel.hh"
 
-#include "Core/Renderer/Model3/NModel.hh"
+#include "Core/Renderer/Model/Model.hh"
 
 namespace esp
 {
@@ -20,10 +20,10 @@ namespace esp
     std::map<std::string, BoneInfo> m_bone_info_map;
 
    private:
-    void read_missing_bones(const aiAnimation* animation, NModel& model);
+    void read_missing_bones(const aiAnimation* animation, Model& model);
 
    public:
-    Animation(aiAnimation* animation, NModel& model);
+    Animation(aiAnimation* animation, Model& model);
 
     PREVENT_COPY(Animation)
 

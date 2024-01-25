@@ -1,11 +1,11 @@
-#ifndef RENDERER_NMODEL_NMODEL_PARAMS_HH
-#define RENDERER_NMODEL_NMODEL_PARAMS_HH
+#ifndef RENDERER_MODEL_MODEL_PARAMS_HH
+#define RENDERER_MODEL_MODEL_PARAMS_HH
 
 #include "esppch.hh"
 
 #include "Core/RenderAPI/Pipeline/EspPipelineBuilder.hh"
 
-#include "Core/Renderer/Model3/Mesh/NVertex.hh"
+#include "Core/Renderer/Model/Mesh/Vertex.hh"
 
 #include "Core/Resources/Systems/MaterialSystem.hh"
 
@@ -18,7 +18,7 @@ namespace esp
     EspCaclTangentSpace = 0x1,
   };
 
-  struct NModelParams
+  struct ModelParams
   {
     /// @brief vec3
     bool m_position = false;
@@ -47,9 +47,9 @@ namespace esp
 
     EspVertexLayout get_vertex_layouts(bool instancing = false) const;
 
-    void parse_to_vertex_byte_buffer(std::vector<NVertex>& vertex_buffer,
+    void parse_to_vertex_byte_buffer(std::vector<Vertex>& vertex_buffer,
                                      std::vector<uint8_t>& vertex_byte_buffer) const;
   };
 } // namespace esp
 
-#endif // RENDERER_NMODEL_NMODEL_PARAMS_HH
+#endif // RENDERER_MODEL_MODEL_PARAMS_HH

@@ -1,5 +1,5 @@
-#ifndef CORE_RENDERER_MESH_MODE_PARTS_HH
-#define CORE_RENDERER_MESH_MODE_PARTS_HH
+#ifndef CORE_RENDERER_MODEL_MODEL_PARTS_HH
+#define CORE_RENDERER_MODEL_MODEL_PARTS_HH
 
 #include "esppch.hh"
 
@@ -7,7 +7,7 @@
 
 namespace esp
 {
-  struct NNode
+  struct ModelNode
   {
     bool m_has_meshes;
 
@@ -19,7 +19,7 @@ namespace esp
     std::vector<uint32_t> m_children;
   };
 
-  struct NMesh
+  struct Mesh
   {
     uint32_t m_first_index;
     uint32_t m_index_count;
@@ -28,4 +28,4 @@ namespace esp
   };
 } // namespace esp
 
-#endif // CORE_RENDERER_MESH_MODE_PARTS_HH
+#endif // CORE_RENDERER_MODEL_MODEL_PARTS_HH

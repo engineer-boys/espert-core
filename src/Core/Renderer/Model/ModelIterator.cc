@@ -1,10 +1,9 @@
-#include "NModelIterator.hh"
-
-#include "NModel.hh"
+#include "Model.hh"
+#include "ModelIterator.hh"
 
 namespace esp
 {
-  NModelIterator::NModelIterator(NModel* model)
+  ModelIterator::ModelIterator(Model* model)
   {
     if (!model)
     {
@@ -25,15 +24,15 @@ namespace esp
     }
   }
 
-  NModelIterator::~NModelIterator()
+  ModelIterator::~ModelIterator()
   { /* nothing */
   }
 
-  bool NModelIterator::operator!=(const NModelIterator& other) { return m_current_node != other.m_current_node; }
+  bool ModelIterator::operator!=(const ModelIterator& other) { return m_current_node != other.m_current_node; }
 
-  NNodeInfo NModelIterator::operator*() { return NNodeInfo{ .m_current_node = m_current_node }; }
+  NNodeInfo ModelIterator::operator*() { return NNodeInfo{ .m_current_node = m_current_node }; }
 
-  void NModelIterator::operator++()
+  void ModelIterator::operator++()
   {
     do
     {

@@ -3,7 +3,7 @@
 
 #include "esppch.hh"
 
-#include "Core/Renderer/Model3/NModel.hh"
+#include "Core/Renderer/Model/Model.hh"
 
 namespace esp
 {
@@ -11,7 +11,7 @@ namespace esp
   struct ModelComponent
   {
    private:
-    std::shared_ptr<NModel> m_model; // TODO: don't use ptrs
+    std::shared_ptr<Model> m_model; // TODO: don't use ptrs
     std::shared_ptr<EspShader> m_shader;
     std::unique_ptr<EspUniformManager> m_uniform_manager;
     std::unordered_map<std::shared_ptr<Material>, std::unique_ptr<EspUniformManager>> m_material_managers;
@@ -23,7 +23,7 @@ namespace esp
     /// @param start_managed_ds_for_uniform_manager First descriptor set of model's uniform manager. 0 by default.
     /// @param end_managed_ds_for_uniform_manager Last descriptor set of model's uniform manager. 0 by default.
     /// @param managed_ds_for_material_manager Descriptor set of model's material managers. 1 by default.
-    ModelComponent(std::shared_ptr<NModel>& model,
+    ModelComponent(std::shared_ptr<Model>& model,
                    std::shared_ptr<EspShader>& shader,
                    int start_managed_ds_for_uniform_manager = 0,
                    int end_managed_ds_for_uniform_manager   = 0,
@@ -46,7 +46,7 @@ namespace esp
 
     /// @brief Returns reference to model.
     /// @return Model reference.
-    inline NModel& get_model() { return *m_model; }
+    inline Model& get_model() { return *m_model; }
     /// @brief Returns reference to model shader.
     /// @return Shader reference.
     inline EspShader& get_shader() { return *m_shader; }
