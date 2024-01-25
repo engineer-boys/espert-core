@@ -1,5 +1,5 @@
-#include "Model.hh"
 #include "ModelIterator.hh"
+#include "Model.hh"
 
 namespace esp
 {
