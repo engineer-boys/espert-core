@@ -1,347 +1,605 @@
-# RENDER API 2
+# RENDER API 2 #
 
-Disclaimers:
-1. Espert's Vulkan API uses 'VK_KHR_maintenance1' extension to flip the viewport's Y coordinate so it points upwards (like in OpenGL). 
-
+## GLOBAL OBJECTS
 ```Python
 class EspRenderContext:
-    def create_and_init(window: EspWindow) -> None:
-    # Init render context.
-
-    def terminate() -> None:
-    # Terminate render context.
+  def init(EspWindow& window) -> None:
+      # This function is responsible 
+      # for initializing all resources 
+      # related to the external render 
+      # API, which are unchanged while 
+      # the application is running.
+  
+  def terminate() -> None:
+      # Freeing resources related to 
+      # the external render API.
+  
+  @staticmethod
+  def build(EspWindow& window) -> EspRenderContext:
+      # A static function returning a
+      # singleton of the EspRenderContext
+      # class.
 ```
 
 ```Python
-class EspFrameManager:
-    def create_and_init(
-            window: EspWindow,
-            clear_color: glm::vec4(0.1, 0.1, 0.1, 1.0)) -> None:
-        # Init frame manager.
+class EspDebugMessenger:
+  def init() -> None:
+      # This function is responsible 
+      # for initializing the diagnostic 
+      # message handler from the external 
+      # render API, in debug mode.
+  
+  def terminate() -> None:
+      # Freeing up resources.
+  
+  @staticmethod
+  def create() -> EspDebugMessenger:
+      # Creating a singleton of the 
+      # EspDebugMessenger class.
+```
 
-        # Class members:
-        self.window_width
-        self.window_height
-        self.depth_stencil
-        self.clear_color
+```Python
+class EspWorkOrchestrator:
+  def init() -> None:
+      # Initialization of external
+      # render API resources related 
+      # to the process of presenting
+      # pipeline results on the screen.
 
-    def begin_frame() -> None:
-        # Set clear values
-        # Set viewport & scissors
-        # Bind appropriate commandBuffer.
-        # Begin appropriate commandBuffer.
-        # Begin appropriate renderPass.
+  def terminate() -> None:
+      # Freeing up resources.
 
-    def end_frame() -> None:
-        # End appropriate renderPass.
-        # End appropriate commandBuffer.
+  def begin_frame() -> None:
+      # Start recording commands 
+      # to the global command buffer.
 
-    def termiate() -> None:
-        # Terminate frame manager
+  def end_frame() -> None:
+      # End of recording commands
+      # to the global command buffer
+      # and sending them for execution.
 
-    def on_window_resized(e: WindowResizedEvent) -> None:
-        # Recreate swap chain
+  @staticmethod
+  def get_swap_chain_extent() -> std::pair<uint32_t, uint32_t>:
+      # Returns the width and height
+      # of the surface on which we draw.
 
-    def get_swap_chain_extent() -> std::pair<uint32,uint32>:
-        # Get swap chain (window) width and height.
-    
-    def set_depth_stencil(depth: float,
-                          stencil: uint32_t) -> None:
-        # Set both depth and stencil values
-        # for render pass
-    
-    def set_clear_color(color: glm::vec3) -> None:
-        # Set clear color r,g,b
-    
-    def set_clear_color(color: glm::vec4) -> None:
-        # Set clear color r,g,b,a
+  @staticmethod
+  def get_swap_chain_extent_aspect_ratio() -> float:
+      # Returns the ratio of the width
+      # to the height of the surface on
+      # which we draw.
+```
+
+```Python
+class EspJob:
+
+  def init() -> None:
+      # Initialization of external 
+      # render API resources related 
+      # to commands sent to the GPU.
+
+  def terminate() -> None:
+      # Freeing up resources.
+
+  def done_all_jobs() -> None:
+      # Pauses further program 
+      # execution until the external 
+      # render API command on the 
+      # GPU finishes executing.
+
+  @staticmethod
+  def draw(uint32_t vertex_count) -> None:
+      # Draw the given number
+      # of vertices from the 
+      # connected vertex buffer.
+
+  @staticmethod
+  def draw(uint32_t vertex_count, uint32_t instance_count) -> None:
+      # Draw the given number of
+      # vertices from the attached
+      # vertex buffer, as many times
+      # as the given `instance_count` instances.
+
+  @staticmethod
+  def draw_indexed(
+              uint32_t index_count, 
+              uint32_t instance_count = 1, 
+              uint32_t first_index = 0) -> None:
+      # This function draws the given
+      # number of vertices, based on
+      # the index buffer. We draw 
+      # `instance_count` times this 
+      # way. We start with the `first_index` index.
+
+  @staticmethod
+  def draw(EspCommandBufferId* id, uint32_t vertex_count) -> None:
+      # Draw the given number
+      # of vertices from the 
+      # connected vertex buffer.
+      # Save the command to the 
+      # command buffer indicated 
+      # as the `id` argument.
+  
+  @staticmethod
+  def draw(
+          EspCommandBufferId* id, 
+          uint32_t vertex_count, 
+          uint32_t instance_count) -> None:
+      # Draw the given number of
+      # vertices from the connected
+      # vertex buffer. Save the command
+      # to the command buffer indicated
+      # as the `id` argument.
+
+  @staticmethod
+  def draw_indexed(
+        EspCommandBufferId* id,
+        uint32_t index_count,
+        uint32_t instance_count = 1,
+        uint32_t first_index  = 0) -> None:
+      # Draw the given number of vertices
+      # from the attached vertex buffer,
+      # as many times as the given `instance_count`
+      # instances. Save the command to the
+      # command buffer indicated as the `id` argument.
+
+  @staticmethod
+  def copy_image(
+        EspCommandBufferId* id,
+        std::shared_ptr<EspTexture> src_texture,
+        EspImageLayout src_layout,
+        std::shared_ptr<EspTexture> dst_texture,
+        EspImageLayout dst_layout,
+        EspImageCopy region) -> None:
+      # Copy an image from one texture to 
+      # another. Save the command to the
+      # command buffer indicated as 
+      # the `id` argument.
+
+  @staticmethod
+  def transform_image_layout(
+        EspCommandBufferId* id,
+        std::shared_ptr<EspTexture> texture,
+        EspImageLayout old_layout,
+        EspImageLayout new_layout,
+        EspImageSubresourceRange image_subresource_range) -> None:
+      # Change the texture layout
+      # from `old_layout` to `new_layout`.
+      # Save the command to the command
+      # buffer indicated as the `id` argument.
+
+```
+## LOCAL OBJECTS
+
+### CONST OBJECTS
+
+```Python
+class EspRenderPlan:
+  def add_block(std::shared_ptr<EspBlock> block) -> None:
+      # Added EspBlock to the set
+      # of all colour attachments.
+
+  def add_depth_block(std::shared_ptr<EspDepthBlock> depth_block) -> None:
+      # Set given EspDepthBlock as
+      # depth attachment.
+
+  def set_new_layout(EspImageLayout new_layout) -> None:
+      # Set memory layout of
+      # rendered texture.
+
+  def set_command_buffer(EspCommandBufferId* id) -> None:
+      # Set command buffer which will
+      # record commands.
+
+  def build() -> None:
+      # Initialize/Build the internal 
+      # structures necessary for 
+      # image rendering.
+
+  def begin_plan() -> None:
+      # Start drawing to the 
+      # specified attachments.
+
+  def end_plan() -> None:
+      # End drawing to the 
+      # specified attachments.
+  
+  @staticmethod
+  def create() -> std::unique_ptr<EspRenderPlan>:
+      # Create an EspRenderPlan that 
+      # does not draw on the screen, 
+      # only to selected attachments.
+      
+  @staticmethod
+  def create_final(
+      glm::vec3 clear_color = { 0.1, 0.1, 0.1 },
+      EspSampleCountFlag sample_count_flag = EspSampleCountFlag::ESP_SAMPLE_COUNT_1_BIT
+      ) -> std::unique_ptr<EspRenderPlan>:
+      # Create an EspRenderPlan 
+      # that draws on the screen.
 ```
 
 ```Python
 class EspBlock:
-    def __init__(format: EspBlockFormatEnum, usage: EspBlockUsageEnum, type: EspBlockTypeEnum, clear_color: glm:vec3 = (0, 0, 0)):
-      # ...
-```
+  def get_width() -> uint32_t:
+      # Return the width of EspBlock
 
-```Python
-class EspProductPlanBuilder:
-    def set_building_blocks(blocks: list[EspBlock]) -> None:
-        # Set attachements for the render pass.
+  def get_height() -> uint32_t:
+      # Return the height of EspBlock
 
-    def build_product_plan() -> EspRenderPlan:
-        # Create EspRenderPlan based on specified data.
-        # The rendering process is off-screen.
+  def get_clear_color() -> glm::vec3:
+      # Return the color of EspBlock
 
-    def build_final_product_plan() -> (EspRenderPlan, list[EspBlock]):
-        # Create EspRenderPlan and products (list[EspBlock]). 
-        # The rendering process is on-screen.
-```
+  def get_sample_count_flag() -> EspSampleCountFlag:
+      # Return the sample count flag of EspBlock
 
-```Python
-class EspRenderPlan:
-  def __init__():
-      # The constructor is the private method.
+  def use_as_texture() -> std::shared_ptr<EspTexture>:
+      # This function allows you to use a 
+      # block as a texture without turning 
+      # it into a texture. This means that 
+      # the EspBlock instance frees up
+      # resources so it must be preserved.
+
+  @staticmethod
+  def build(
+        EspBlockFormat format,
+        EspSampleCountFlag sample_count_flag,
+        glm::vec3 clear_color) -> std::shared_ptr<EspBlock>:
+      # Create EspBlock
+
+  @staticmethod
+  def build(
+        EspBlockFormat format,
+        EspSampleCountFlag sample_count_flag,
+        uint32_t width,
+        uint32_t height,
+        glm::vec3 clear_color) -> std::shared_ptr<EspBlock>:
+      # Create EspBlock
   
-  def begin_plan() -> None:
-      # Begin the render pass with specified attachements.
-    
-  def end_plan() -> None:
-      # End the render pass.
+  @staticmethod
+  def extract_texture(std::shared_ptr<EspBlock> block) -> std::shared_ptr<EspTexture>:
+      # Change EspBlock into EspTexture. 
+      # This function transfers all resources 
+      # from the EspBlock instance to the texture.
+      # Therefore, releasing EspBlock
+      # will not affect the created EspTexture.
+```
+
+```Python
+class EspDepthBlock:
+  def clear() -> None:
+      # EspDepthBlock can in theory be used
+      # across multiple EspRenderPlans, 
+      # so you need to mark the moment 
+      # when it should be cleared.
+
+  def get_width() -> uint32_t:
+      # Return the width of EspDepthBlock
+
+  def get_height() -> uint32_t:
+      # Return the height of EspDepthBlock
+
+  def get_sample_count_flag() -> EspSampleCountFlag:
+      # Return the sample count flag of EspDepthBlock
+
+   @staticmethod
+  def build(
+      EspDepthBlockFormat format, 
+      EspSampleCountFlag sample_count_flag
+      ) -> std::unique_ptr<EspDepthBlock>:
+      # Create EspDepthBlock
 ```
 
 ```Python
 class EspWorkerBuilder:
-    def set_shaders(path_vertex, path_fragment) -> None:
-        # Set given shaders as a pipeline shader program.
-    
-    def set_vertex_shader(path_vertex) -> None:
-        # Set given shader
-    
-    def set_fragment_shader(path_fragment) -> None:
-        # Set given shader
+  def enable_depth_test(EspDepthBlockFormat format, EspCompareOp compare_op) -> None:
+      # Enables the possibility of 
+      # depth testing for a given pipeline.
+      # If EspRenderPlan has EspDepthBlock,
+      # this option must be used.
 
-    def set_vertex_layouts( vertex_layouts: list = {
-            {
-                .size: int
-                .binding: int
-                .inputRate: EspVertexInputRate
-                .attrs: list = {
-                    {
-                        .location: int
-                        .format: EspAttrFormat
-                        .offset: int # This may be automatised in the future
-                    },
-                    {
-                        # next attr
-                    }
-                    # etc ...
-                }
-            },
-            {
-                # next vertex vector
-            }
-            # etc ...
-        }  ) -> None:
-        # Set structure info about vertices in vertex buffers
-        # which can be attach. This will be called vertex layout.
+  def enable_multisampling(EspSampleCountFlag sample_count_flag) -> None:
+      # Enables multisampling for a given
+      # pipeline. If EspRenderPlan supports
+      # more than one sample, this 
+      # option must be used.
 
-    def set_worker_layout(uniforms_meta_data: EspUniformMetaData) -> None:
-        # Set layout for this pipeline. The layout describes
-        # what data can be eaten by pipeline. The parameter is
-        # PipelineLayoutManufacture which contains info about
-        # needed uniforms, textures and it provides private API
-        # for EspWorkeBuilder to get this data.
-    
-    def build_worker() -> EspWorke:
-        # Build EspWorker object based on
-        # given data from above functions.
+  def set_attachment_formats(std::vector<EspBlockFormat> formats) -> None:
+      # If we want render plan to write
+      # to more than one attachment, 
+      # the formats of all attachments 
+      # must be provided in this function.
+      # This function overwrites the previous
+      # setting and the basic setting,
+      # which is the attachment of the screen format.
+
+  def set_shaders(std::unique_ptr<SpirvResource> spirv_resource) -> None:
+      # Set resources with shader code.
+
+  def set_vertex_layouts(std::vector<EspVertexLayout> vertex_layouts) -> None:
+      # Set the layout of vertex
+      # attachments for the pipeline.
+
+  def set_worker_layout(std::unique_ptr<EspUniformMetaData> uniforms_meta_data) -> None:
+      # Set the layout of 
+      # used uniforms by pipeline.
+
+  def build_worker() -> std::unique_ptr<EspWorker>:
+      # Create a pipeline based 
+      # on the information provided
+      # earlier and the code.
+
+  @staticmethod
+  def create() -> std::unique_ptr<EspWorkerBuilder> :
+      # Create EspWorkerBuilder.
 ```
 
 ```Python
 class EspWorker:
-    def __init__():
-        # This is private function. Because pipeline objects
-        # can only be created by EspWorkerBuilder.
-        # Inner members:
-        self.buf_uniforms: map[int, list[void*]]
+  def attach() -> None:
+      # Attach the given pipeline 
+      # to the global command buffer.
 
-    def attach() -> None:
-        # Bind this pipeline to using command buffer.
+  def only_attach(EspCommandBufferId* id) -> None:
+      # Attach the given pipeline 
+      # to the command buffer and
+      # set the viewport and scissors
+      # according to the dimensions of
+      # the application window.
 
-    def create_uniform_manager() -> EspUniformManager:
-        # Create the object of EspUniformManager
-        # which can be used to manipulate pipile inner data (uniforms).
-```
+  def set_viewport(EspCommandBufferId* id, EspViewport viewport) -> None:
+      # Set viewport of the pipeline.
 
-```Python
-class EspIndexBuffer:
-    def create(indices, index_count):
-        # The constructor get a vector of indices and
-        # allocate needed buffers.
-    
-    def get_index_count() -> int:
-        # Return the number of indices.
+  def set_scissors(EspCommandBufferId* id, EspScissorRect scissor_rect) -> None:
+      # Set scissors of the pipeline.
 
-    def attach():
-        # Bind index buffer to pipeline.
-```
-
-```Python
-class EspVertexBuffers:
-    def add(data, vertex_size, vertex_count, type: BufferType):
-        # Adds data to a buffer storage and allocates needed memory.
-        # 'type' indicates wether the memory should be visible for
-        # cpu (and hence frequently updated) i.e. instance buffer
-        # or not i.e. vertex buffer
-
-    def update(index, data, instance_size, instance_count, offset):
-        # Updates buffer at specified index in buffer storage
-        # with provided data. To update buffer, one must be declared 
-        # with 'type' = BufferType::VISIBLE
-    
-    def attach():
-        # Bind all buffers to pipeline.
-```
-
-```Python
-class EspUniformMetaData:
-    def __init__():
-        self.current_ds_counter = -1
-
-    def establish_descriptor_set() -> self:
-        sefl.current_ds_counter += 1
-    
-    def add_buffer_uniform(stage: EspUniformShaderStage, size_of_data_chunk: int, count_of_data_chunks: int = 1) -> self:
-        # Add buffer uniform to currently established ds.
-        # If the count_of_data_chunks is greater than 1
-        # the uniform is an array.
-    
-    def add_texture_uniform(stage: EspUniformShaderStage, count_of_textures: int = 1) -> self:
-        # Add texture uniform to currently established ds.
+  def create_uniform_manager(
+        int start_managed_ds = -1,
+        int end_managed_ds   = -1
+        ) -> std::unique_ptr<EspUniformManager>:
+      # Create a EspUniformManager that is
+      # compatible with the given pipeline.
 ```
 
 ```Python
 class EspUniformManager:
-    def __init__():
-        # The constructor is private and the object can be
-        # created only by pipeline.
+  def build() -> None:
+      # Build EspUniformManager based
+      # on the collected information.
 
-    def build() -> None:
-        # Use after defining all necesarry
-        # descriptors (uniforms, textures, etc.)
-    
-    def attach() -> None:
-        # After this action a pipeline will use data defined in this object.
+  def attach() -> None:
+      # Ettach EspUniformManager to 
+      # the global command buffer
 
-    def update_buffer_uniform(set: int, binding: int, offset: int, size: int, data: void*) -> self:
-        # Update buffer uniform with given index (set, binding, offset).
-    
-    def load_texture(set: int, binding: int, offset: int, path_to_texture: str, mipmapping: bool = false) -> self:
-        # Load the given texture under the given index. The offset here is the number of a texture is
-        # uniform which is a table. Mipmaps can be enabled by setting mipmapping to true 
+  def attach(EspCommandBufferId* id)  -> None:
+      # Ettach EspUniformManager to 
+      # the given command buffer by `id`.
+
+  def load_block(
+        uint32_t set, 
+        uint32_t binding, 
+        EspBlock* block) -> EspUniformManager&:
+      # Load block as texture under given
+      # set and binding.
+
+  def load_texture(
+        uint32_t set, 
+        uint32_t binding, 
+        std::shared_ptr<EspTexture> texture) -> EspUniformManager&:
+      # Load texture under given
+      # set and binding.
+  
+  def set_buffer_uniform(
+        uint32_t set,
+        uint32_t binding,
+        uint64_t offset,
+        uint32_t size,
+        void* data) -> EspUniformManager&:
+      # Set buffer uniform permanently.
+
+  def update_buffer_uniform(
+        uint32_t set,
+        uint32_t binding,
+        uint64_t offset,
+        uint32_t size,
+        void* data) -> EspUniformManager&:
+      # Update the selected buffer
+      # uniform with the given data.
+  
+  def update_push_uniform(
+        uint32_t index, 
+        void* data) -> EspUniformManager&:
+      # Update the selected push
+      # uniform with the given data.
+      # Using global command buffer.
+
+  def update_push_uniform(
+        EspCommandBufferId* id, 
+        uint32_t index, 
+        void* data) -> EspUniformManager&:
+      # Update the selected push
+      # uniform with the given data.
+      # Using selected command buffer.
 ```
 
 ```Python
-class EspCommandHandler:
-    def create_and_init() -> None:
-        # Init command handler.
+class EspUniformMetaData:
+  def  establish_descriptor_set() -> EspUniformMetaData&:
+      # Create a new descriptor set and add to it all
+      # following uniforms.
 
-    def terminate() -> None:
-        # Terminate command handler.
-    
-    @staticmethod
-    def draw(vertex_count: uint32_t) -> None:
-        # Draw using vertex buffer.
+  def add_buffer_uniform(
+        EspUniformShaderStage stage,
+        uint32_t size_of_data_chunk,
+        uint32_t count_of_data_chunks = 1) -> EspUniformMetaData&:
+      # Create buffer uniform.
 
-    @staticmethod
-    def draw(vertex_count: uint32_t, 
-             instance_count: uint32_t) -> None:
-        # Draw with instancing using vertex buffer - 
-        # vertex buffer for instances must be provided
-        # and specified in pipeline creation.
-    
-    @staticmethod
-    def draw_indexed(index_count: uint32_t) -> None:
-        # Draw using index buffer.
+  def add_texture_uniform(
+        EspUniformShaderStage stage,
+        uint32_t count_of_textures = 1) -> EspUniformMetaData&:
+      # Create texture uniform.
 
-    @staticmethod
-    def draw_indexed(index_count: uint32_t,
-             instance_count: uint32_t) -> None:
-    # Draw with instancing using index buffer - 
-    # vertex buffer for instances must be provided
-    # and specified in pipeline creation.
+  def add_push_uniform(
+      EspUniformShaderStage stage, 
+      uint32_t offset, 
+      uint32_t size) -> EspUniformMetaData&:
+      # Create push uniform.
+  
+  @staticmethod
+  def create() -> std::unique_ptr<EspUniformMetaData>:
+      # Create EspUniformMetaData 
+      # based on the collected data.
 ```
 
-# USAGE
+### TEMPORARY OBJECTS
+
 ```Python
-class MVP:
-    mode: mat4
-    view: mat4
-    proj: mat4
+class EspCommandBuffer:
+  @staticmethod
+  def begin_only_once() -> std::unique_ptr<EspCommandBufferId>:
+      # Start recording commands 
+      # to local command buffer.
+      
+  @staticmethod
+  def end_only_once(
+      std::unique_ptr<EspCommandBufferId> command_buffer_id
+      ) -> None:
+      # Stop recording commands
+      # to given command buffer and
+      # submit all commands.
+```
 
-class ExampleVertex:
-    position: vec2
-    color: vec3
+### RESOURCES
+```Python
+class EspShader:
 
-def main() -> None:
-    renderContext = EspRenderContext()
-    renderContext.init()
+  def attach() -> None:
+      # Attach shader to the global
+      # command buffer, set viewport and scissors.
 
-    # -------- WORKING USING CONTEXT ---------
+  def create_uniform_manager(
+        int start_managed_ds = -1, 
+        int end_managed_ds = -1
+        ) -> std::unique_ptr<EspUniformManager>
+      # Create EspUniformManager.
 
-    frameManager = EspFrameManger(Color(122,122,122))
+  def enable_depth_test(
+        EspDepthBlockFormat format, 
+        EspCompareOp compare_op
+        )  -> None:
+      # Enable depth testing.
 
+  def enable_multisampling(
+        EspSampleCountFlag sample_count_flag
+        )  -> None:
+      # Enable multisampling.
 
-    # 3 * float (for position), 3 * float (for color)
-    cube_vertices: list[ExampleVertex] = get_cube_v_function()
-    v_buffers = EspVertexBuffers()
-    v_buffers.add(cube_vertices, len(ExampleVertex), len(cube_vertices))
-    
-    cube_indices: list[int] = get_cube_i_function()
-    i_buffer = EspIndexBuffer(cube_indices, len(cube_indices))
+  def set_attachment_formats(
+        std::vector<EspBlockFormat> formats
+        )  -> None:
+      # Set colour attachments.
 
-    pp_layout_metadata = EspUniformMetaData()
-    pp_layout_metadata.establish_descriptor_set()
-    pp_layout_metadata.add_buffer_uniform(EspUniformShaderStage::ESP_VTX_STAGE, len(MVP))
+  def set_vertex_layouts(
+        std::vector<EspVertexLayout> vertex_layouts
+        )  -> None:
+      # Set vertex layouts.
 
-    builder = EspWorkerBuilder()
-    builder.set_shader(
-        path_to_vertex_sh,
-        path_to_fragment_sh,
-    )
-    builder.set_vertex_layout(
-        [
-            {
-                .size = len(MVP)
-                .binding = 0
-                .attr = [
-                    {
-                        .location = 0
-                        .format: EspFormatEnum.32_32_32_SFLOAT
-                        .offset: # not important
-                    },
-                    {
-                        .location = 1
-                        .format: EspFormatEnum.32_32_32_SFLOAT
-                        .offset: # not important
-                    },
-                ]
-            }
-        ]
-    )
-    builder.set_worker_layout(pp_layout_metadata)
-    pp_graphic = builder.build_worker()
-    uniform_manager = pp_graphic.create_uniform_manager()
+  def set_worker_layout(
+        std::unique_ptr<EspUniformMetaData> uniforms_meta_data
+        )  -> None:
+      # Set layout of uniforms.
 
-    # Load texture
-    uniform_manager.load_texture(0, 1, "path/to/texture");
-    
-    # Initialize all descriptor sets
-    uniform_manager.build();
-    
-    while not end_of_program():
-        frameManager.begin_frame()
+  def only_attach(EspCommandBufferId* id)  -> None:
+      # Only attach pipeline to the
+      # given command buffer.
 
-            # ---- IN RENDER PASS -----
-            pp_graphic.attach()
-            v_buffers.attach()
+  def set_viewport(
+        EspCommandBufferId* id, 
+        EspViewport viewport
+        )  -> None:
+      # Set viewport under given command buffer.
 
-            mvp = get_new_mvp()
-            uniform_manager.update_buffer_uniform(0,0,0,len(MVP), mvp)
-            uniform_manager.attach()
+  def set_scissors(
+        EspCommandBufferId* id, 
+        EspScissorRect scissor_rect
+      )  -> None:
+    # Set scissors under given command buffer.
 
-            i_buffer.attach()
-            pp_graphic.update_buffer_uniform(
-                idx = 0,
-                size = len(MVP),
-                data = update_mvp(),
-            )
+  def build_worker()  -> None:
+      # Build shader based on the collected data.
 
-            EspCommands.draw_indices(i_buffer.size())
-            # ---- -------------- -----
+  @staticmethod
+  def create(
+        const std::string& name, 
+        td::unique_ptr<SpirvResource> spirv_resource
+        ) -> std::shared_ptr<EspShader>:
+      # Create Shader.
+```
 
-        framgeManager.end_frame()
+```Python
+class EspTexture:
+  @staticmethod
+  def create_raw_texture(EspRawTextureParams params) ->  std::shared_ptr<EspTexture>:
+      # Create empty texture.
+```
 
-    # -------- --------------------- ---------
-    renderContext.terminate()
+```Python
+class EspVertexBuffer:
+  def update(
+        void* data, 
+        uint32_t instance_size, 
+        uint32_t instance_count, 
+        uint64_t offset
+        ) -> None:
+      # ...
+
+  def  get_vertex_count() -> uint32_t:
+      # Get number of vertex.
+
+  def attach() -> None:
+      # Attach EspVertexBuffer to
+      # the global command buffer.
+
+  def attach_instanced(EspVertexBuffer& instance_buffer) -> None:
+      # ....
+
+  def attach(EspCommandBufferId* id) -> None:
+      # Attach EspVertexBuffer to
+      # the given command buffer.
+
+  def attach_instanced(
+        EspCommandBufferId* id, 
+        EspVertexBuffer& instance_buffer
+        ) -> None:
+      # ...
+
+  @staticmethod
+  def create(
+        void* data,
+        uint32_t vertex_size,
+        uint32_t vertex_count,
+        BufferType type = LOCAL
+        ) -> std::unique_ptr<EspVertexBuffer>:
+      # Create EspVertexBuffer.
+```
+
+```Python
+class EspIndexBuffer:
+  def  get_index_count() -> uint32_t:
+      # Get number of indices.
+
+  def attach() -> None:
+      # Attach EspIndexBuffer to the
+      # global command buffer.
+
+  def attach(EspCommandBufferId* id) -> None:
+      # Attach EspIndexBuffer to the
+      # given command buffer.
+
+  @staticmethod
+  def create(
+        uint32_t* indices, 
+        uint32_t index_count
+        ) -> std::unique_ptr<EspIndexBuffer>:
+      # Create EspIndexBuffer.
 ```

@@ -5,12 +5,11 @@
 namespace esp
 {
 
-  Animation::Animation(aiAnimation* animation, NModel& model)
+  Animation::Animation(aiAnimation* animation, Model& model)
   {
     m_duration         = animation->mDuration;
     m_ticks_per_second = animation->mTicksPerSecond;
 
-    // read_hierarchy_data(m_root_node, scene->mRootNode);
     read_missing_bones(animation, model);
   }
 
@@ -34,7 +33,7 @@ namespace esp
     else { return *iter; }
   }
 
-  void Animation::read_missing_bones(const aiAnimation* animation, NModel& model)
+  void Animation::read_missing_bones(const aiAnimation* animation, Model& model)
   {
     int channel_count = animation->mNumChannels;
 
@@ -56,22 +55,4 @@ namespace esp
 
     m_bone_info_map = bone_info_map;
   }
-
-  // void Animation::read_hierarchy_data(HierarchyNodeData& dest, const aiNode* src)
-  // {
-  //   ESP_ASSERT(src, "Reading hierarchy data is uncorrect");
-
-  //   dest.name           = src->mName.data;
-  //   dest.transformation = AssimpUtils::convert_assimp_mat_to_glm_mat4(src->mTransformation);
-  //   // dest.transformation = glm::mat4(1);
-  //   dest.children_count = src->mNumChildren;
-
-  //   for (int i = 0; i < src->mNumChildren; i++)
-  //   {
-  //     HierarchyNodeData new_data = {};
-  //     read_hierarchy_data(new_data, src->mChildren[i]);
-
-  //     dest.children.push_back(new_data);
-  //   }
-  // }
 } // namespace esp
