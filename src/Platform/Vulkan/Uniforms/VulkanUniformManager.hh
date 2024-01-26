@@ -161,7 +161,7 @@ namespace esp
       return *this;
     }
 
-    inline virtual EspUniformManager& update_push_uniform(uint32_t index, void* data) override
+    inline virtual const EspUniformManager& update_push_uniform(uint32_t index, void* data) const override
     {
       auto& push_range = m_out_uniform_data_storage.m_push_constant_ranges[index];
       vkCmdPushConstants(VulkanWorkOrchestrator::get_current_command_buffer(),

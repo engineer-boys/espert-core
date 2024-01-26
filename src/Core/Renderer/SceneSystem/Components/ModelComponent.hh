@@ -46,16 +46,16 @@ namespace esp
 
     /// @brief Returns reference to model.
     /// @return Model reference.
-    inline Model& get_model() { return *m_model; }
+    inline Model& get_model() const { return *m_model; }
     /// @brief Returns reference to model shader.
     /// @return Shader reference.
-    inline EspShader& get_shader() { return *m_shader; }
+    inline EspShader& get_shader() const { return *m_shader; }
     /// @brief Returns reference to model uniform manager.
     /// @return Uniform manager reference.
-    inline EspUniformManager& get_uniform_manager() { return *m_uniform_manager; }
+    inline EspUniformManager& get_uniform_manager() const { return *m_uniform_manager; }
     /// @brief Returns reference to model material managers.
     /// @return Material managers reference.
-    inline auto& get_material_managers() { return m_material_managers; }
+    inline auto& get_material_managers() const { return m_material_managers; }
   };
 } // namespace esp
 

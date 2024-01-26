@@ -162,7 +162,7 @@ class Scene:
     def get_root() -> Node&:
     # Returns root of the scene graph
 
-    def view<Args...>() -> entt::basic_view<Args...>:
+    def get_view<Args...>() -> entt::basic_view<Args...>:
     # Returns entt view with provided components
 
     def set_current_camera(camera: Camera*) -> None:

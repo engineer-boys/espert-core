@@ -38,7 +38,7 @@ namespace esp
 
     virtual EspUniformManager& load_texture(uint32_t set, uint32_t binding, std::shared_ptr<EspTexture> texture) = 0;
 
-    virtual EspUniformManager& update_push_uniform(uint32_t index, void* data)                         = 0;
+    virtual const EspUniformManager& update_push_uniform(uint32_t index, void* data) const             = 0;
     virtual EspUniformManager& update_push_uniform(EspCommandBufferId* id, uint32_t index, void* data) = 0;
   };
 
