@@ -55,7 +55,7 @@ namespace esp
     /// @brief Returns a view for the given component.
     /// @tparam ...Args Type of component used to construct the view.
     /// @return View for the given component.
-    template<typename... Args> auto& view() const { return m_registry.view<Args...>(); }
+    template<typename... Args> auto get_view() const { return m_registry.view<Args...>(); }
 
     /// @brief Sets the current Camera.
     /// @param camera Pointer to he Camera to be set as current one.
