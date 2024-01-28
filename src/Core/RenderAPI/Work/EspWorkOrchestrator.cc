@@ -10,13 +10,11 @@ namespace esp
     /* ---------------------------------------------------------*/
     /* ------------- PLATFORM DEPENDENT ------------------------*/
     /* ---------------------------------------------------------*/
-    // #if defined(OPENGL_PLATFORM)
-    //     auto context = std::make_unique<OpenGLContext>();
-    // #elif defined(VULKAN_PLATFORM)
+#if ESP_USE_VULKAN
     auto work_orchestrator = VulkanWorkOrchestrator::create(presentation_mode);
-    // #else
-    // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
-    // #endif
+#else
+#error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
+#endif
     /* ---------------------------------------------------------*/
     return work_orchestrator;
   }
@@ -26,13 +24,11 @@ namespace esp
     /* ---------------------------------------------------------*/
     /* ------------- PLATFORM DEPENDENT ------------------------*/
     /* ---------------------------------------------------------*/
-    // #if defined(OPENGL_PLATFORM)
-    //     auto context = std::make_unique<OpenGLContext>();
-    // #elif defined(VULKAN_PLATFORM)
+#if ESP_USE_VULKAN
     return VulkanWorkOrchestrator::get_swap_chain_extent();
-    // #else
-    // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
-    // #endif
+#else
+#error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
+#endif
     /* ---------------------------------------------------------*/
   }
 
@@ -41,13 +37,11 @@ namespace esp
     /* ---------------------------------------------------------*/
     /* ------------- PLATFORM DEPENDENT ------------------------*/
     /* ---------------------------------------------------------*/
-    // #if defined(OPENGL_PLATFORM)
-    //     auto context = std::make_unique<OpenGLContext>();
-    // #elif defined(VULKAN_PLATFORM)
+#if ESP_USE_VULKAN
     return VulkanWorkOrchestrator::get_swap_chain_extent_aspect_ratio();
-    // #else
-    // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
-    // #endif
+#else
+#error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
+#endif
     /* ---------------------------------------------------------*/
   }
 } // namespace esp

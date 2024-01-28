@@ -3,8 +3,8 @@
 
 #include "esppch.hh"
 
-#include "Core/RenderAPI/PipelineOrdering/Block/Types/EspImageLayout.hh"
-#include "Core/RenderAPI/PipelineOrdering/EspCommandBuffer.hh"
+#include "Core/RenderAPI/RenderPlans/Block/Types/EspImageLayout.hh"
+#include "Core/RenderAPI/RenderPlans/EspCommandBuffer.hh"
 #include "Core/RenderAPI/Resources/EspImageCopy.hh"
 #include "Core/RenderAPI/Resources/EspImageSubresourceRange.hh"
 #include "Core/RenderAPI/Resources/EspTexture.hh"

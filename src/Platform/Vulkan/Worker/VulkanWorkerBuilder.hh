@@ -4,8 +4,8 @@
 #include "esppch.hh"
 
 // Render API
-#include "Core/RenderAPI/Pipeline/EspPipelineBuilder.hh"
 #include "Core/RenderAPI/Resources/EspShader.hh"
+#include "Core/RenderAPI/Worker/EspWorkerBuilder.hh"
 
 // Platform
 #include "Platform/Vulkan/Uniforms/EspUniformDataStorage.hh"

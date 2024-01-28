@@ -1,21 +1,19 @@
-#ifndef PLATFORM_VULKAN_RENDER_API_VULKAN_BLOCK_HH
-#define PLATFORM_VULKAN_RENDER_API_VULKAN_BLOCK_HH
+#ifndef PLATFORM_VULKAN_RENDER_API_VULKAN_DEPHT_BLOCK_HH
+#define PLATFORM_VULKAN_RENDER_API_VULKAN_DEPHT_BLOCK_HH
 
 // libs
 #include "esppch.hh"
 
 // Render API
-#include "Core/RenderAPI/PipelineOrdering/Block/EspBlock.hh"
+#include "Core/RenderAPI/RenderPlans/Block/EspDepthBlock.hh"
 
 namespace esp
 {
-  class VulkanBlock : public EspBlock
+  class VulkanDepthBlock : public EspDepthBlock
   {
-    friend class VulkanTexture;
-
     /* -------------------------- FIELDS ----------------------------------- */
    private:
-    struct VulkanBlockBuffer
+    struct VulkanDepthBlockBuffer
     {
       VkImage m_image;
       VkImageView m_image_view;
@@ -24,26 +22,25 @@ namespace esp
       void terminate();
     };
 
-    bool m_buffer_exist = false;
-    VulkanBlockBuffer m_buffer;
+    bool m_need_layout_transition;
+    VulkanDepthBlockBuffer m_buffer;
 
     bool m_resolve_buffer_exist = false;
-    VulkanBlockBuffer m_resolve_buffer;
+    VulkanDepthBlockBuffer m_resolve_buffer;
 
     /* -------------------------- METHODS ---------------------------------- */
    public:
-    VulkanBlock(EspBlockFormat format,
-                EspSampleCountFlag sample_count_flag,
-                uint32_t width,
-                uint32_t height,
-                glm::vec3 clear_color);
-    virtual ~VulkanBlock();
+    VulkanDepthBlock(EspDepthBlockFormat format,
+                     EspSampleCountFlag sample_count_flag,
+                     EspImageUsageFlag image_usage_flag,
+                     uint32_t width,
+                     uint32_t height);
+    virtual ~VulkanDepthBlock();
 
-    VulkanBlock(const VulkanBlock&)            = delete;
-    VulkanBlock& operator=(const VulkanBlock&) = delete;
+    VulkanDepthBlock(const VulkanDepthBlock&)            = delete;
+    VulkanDepthBlock& operator=(const VulkanDepthBlock&) = delete;
 
-    virtual std::shared_ptr<EspTexture> use_as_texture() const override;
-    std::shared_ptr<EspTexture> extract_texture();
+    inline virtual void clear() override { on_transition_need(); }
 
     inline VkImage get_image() const { return m_buffer.m_image; }
     inline VkImageView get_image_view() const { return m_buffer.m_image_view; }
@@ -65,7 +62,11 @@ namespace esp
       ESP_ASSERT(m_resolve_buffer_exist == true, "The resolve image memory doesn't exist!");
       return m_resolve_buffer.m_image_memory;
     }
+
+    inline bool need_transition() const { return m_need_layout_transition; }
+    inline void on_transition_need() { m_need_layout_transition = true; }
+    inline void off_transition_need() { m_need_layout_transition = false; }
   };
 } // namespace esp
 
-#endif /* PLATFORM_VULKAN_RENDER_API_VULKAN_BLOCK_HH */
+#endif /* PLATFORM_VULKAN_RENDER_API_VULKAN_DEPHT_BLOCK_HH */

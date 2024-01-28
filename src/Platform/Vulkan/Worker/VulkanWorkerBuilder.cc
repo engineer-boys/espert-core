@@ -1,4 +1,4 @@
-#include "VulkanPipelineBuilder.hh"
+#include "VulkanWorkerBuilder.hh"
 
 // std
 #include <fstream>
@@ -8,7 +8,7 @@
 #include "Platform/Vulkan/Uniforms/VulkanUniformMetaData.hh"
 #include "Platform/Vulkan/VulkanDevice.hh"
 #include "Platform/Vulkan/Work/VulkanSwapChain.hh"
-#include "VulkanPipeline.hh"
+#include "VulkanWorker.hh"
 
 // signatures
 static VkShaderModule create_shader_module(const esp::SpirvData& code, VkDevice device);

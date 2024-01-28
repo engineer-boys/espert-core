@@ -11,8 +11,8 @@
 #include "Core/Resources/Systems/TextureSystem.hh"
 
 // Render API Vulkan
-#include "Platform/Vulkan/PipelineOrdering/Block/VulkanBlock.hh"
-#include "Platform/Vulkan/PipelineOrdering/Block/VulkanDepthBlock.hh"
+#include "Platform/Vulkan/RenderPlans/Block/VulkanBlock.hh"
+#include "Platform/Vulkan/RenderPlans/Block/VulkanDepthBlock.hh"
 
 namespace esp
 {

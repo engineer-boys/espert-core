@@ -1,7 +1,7 @@
 #include "EspDepthBlock.hh"
 
 #include "Core/RenderAPI/Work/EspWorkOrchestrator.hh"
-#include "Platform/Vulkan/PipelineOrdering/Block/VulkanDepthBlock.hh"
+#include "Platform/Vulkan/RenderPlans/Block/VulkanDepthBlock.hh"
 
 namespace esp
 {
@@ -23,13 +23,12 @@ namespace esp
     //     /* ---------------------------------------------------------*/
     //     /* ------------- PLATFORM DEPENDENT ------------------------*/
     //     /* ---------------------------------------------------------*/
-    //     // #if defined(OPENGL_PLATFORM)
-    //     // #elif defined(VULKAN_PLATFORM)
+#if ESP_USE_VULKAN
     auto [width, height] = EspWorkOrchestrator::get_swap_chain_extent();
     return std::make_unique<VulkanDepthBlock>(format, sample_count_flag, image_usage_flag, width, height);
-    //     // #else
-    //     // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
-    //     // #endif
+#else
+#error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
+#endif
     //     /* ---------------------------------------------------------*/
   }
 
@@ -42,12 +41,11 @@ namespace esp
     //     /* ---------------------------------------------------------*/
     //     /* ------------- PLATFORM DEPENDENT ------------------------*/
     //     /* ---------------------------------------------------------*/
-    //     // #if defined(OPENGL_PLATFORM)
-    //     // #elif defined(VULKAN_PLATFORM)
+#if ESP_USE_VULKAN
     return std::make_unique<VulkanDepthBlock>(format, sample_count_flag, image_usage_flag, width, height);
-    //     // #else
-    //     // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
-    //     // #endif
+#else
+#error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
+#endif
     //     /* ---------------------------------------------------------*/
   }
 } // namespace esp

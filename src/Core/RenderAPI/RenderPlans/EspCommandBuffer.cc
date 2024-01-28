@@ -1,6 +1,6 @@
 #include "EspCommandBuffer.hh"
 
-#include "Platform/Vulkan/PipelineOrdering/VulkanCommandBuffer.hh"
+#include "Platform/Vulkan/RenderPlans/VulkanCommandBuffer.hh"
 #include "Platform/Vulkan/Work/VulkanWorkOrchestrator.hh"
 
 namespace esp
@@ -10,13 +10,12 @@ namespace esp
     //     /* ---------------------------------------------------------*/
     //     /* ------------- PLATFORM DEPENDENT ------------------------*/
     //     /* ---------------------------------------------------------*/
-    //     // #if defined(OPENGL_PLATFORM)
-    //     // #elif defined(VULKAN_PLATFORM)
+#if ESP_USE_VULKAN
     VkCommandBuffer command_buffer = VulkanWorkOrchestrator::begin_single_time_commands();
     return std::make_unique<VulkanCommandBufferId>(command_buffer);
-    //     // #else
-    //     // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
-    //     // #endif
+#else
+#error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
+#endif
     //     /* ---------------------------------------------------------*/
   }
 
@@ -25,13 +24,12 @@ namespace esp
     //     /* ---------------------------------------------------------*/
     //     /* ------------- PLATFORM DEPENDENT ------------------------*/
     //     /* ---------------------------------------------------------*/
-    //     // #if defined(OPENGL_PLATFORM)
-    //     // #elif defined(VULKAN_PLATFORM)
+#if ESP_USE_VULKAN
     VulkanWorkOrchestrator::end_single_time_commands(
         static_cast<VulkanCommandBufferId*>(command_buffer_id.get())->m_command_buffer);
-    //     // #else
-    //     // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
-    //     // #endif
+#else
+#error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
+#endif
     //     /* ---------------------------------------------------------*/
   }
 } // namespace esp

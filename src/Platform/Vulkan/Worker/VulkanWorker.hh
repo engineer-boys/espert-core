@@ -2,10 +2,10 @@
 #define PLATFORM_VULKAN_RENDER_API_VULKAN_PIPELINE_HH
 
 // Render API
-#include "Core/RenderAPI/Pipeline/EspPipeline.hh"
+#include "Core/RenderAPI/Worker/EspWorker.hh"
 
 // Platform
-#include "Platform/Vulkan/PipelineOrdering/VulkanCommandBuffer.hh"
+#include "Platform/Vulkan/RenderPlans/VulkanCommandBuffer.hh"
 #include "Platform/Vulkan/Uniforms/EspUniformDataStorage.hh"
 #include "Platform/Vulkan/Uniforms/VulkanUniformManager.hh"
 #include "Platform/Vulkan/Uniforms/VulkanUniformMetaData.hh"
