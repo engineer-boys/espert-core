@@ -17,13 +17,13 @@
 #include "Core/Input/EspMouseButtonCode.hh"
 
 /* --------- Render API --------------------- */
-#include "Core/RenderAPI/Pipeline/EspPipeline.hh"
-#include "Core/RenderAPI/Pipeline/EspPipelineBuilder.hh"
-#include "Core/RenderAPI/PipelineOrdering/EspCommandBuffer.hh"
-#include "Core/RenderAPI/PipelineOrdering/EspRenderPlan.hh"
+#include "Core/RenderAPI/RenderPlans/EspCommandBuffer.hh"
+#include "Core/RenderAPI/RenderPlans/EspRenderPlan.hh"
 #include "Core/RenderAPI/Resources/EspIndexBuffer.hh"
 #include "Core/RenderAPI/Resources/EspVertexBuffer.hh"
 #include "Core/RenderAPI/Uniforms/EspUniformMetaData.hh"
+#include "Core/RenderAPI/Worker/EspWorker.hh"
+#include "Core/RenderAPI/Worker/EspWorkerBuilder.hh"
 
 /* --------- Renderer --------------------- */
 #include "Core/Renderer/Model/Animation/Animator.hh"

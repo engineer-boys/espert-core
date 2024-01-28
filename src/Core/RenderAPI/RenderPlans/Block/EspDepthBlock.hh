@@ -3,9 +3,9 @@
 
 #include "esppch.hh"
 
-#include "Core/RenderAPI/PipelineOrdering/Block/Types/EspDepthBlockFormat.hh"
-#include "Core/RenderAPI/PipelineOrdering/Block/Types/EspImageUsageFlag.hh"
-#include "Core/RenderAPI/PipelineOrdering/Block/Types/EspSampleCountFlag.hh"
+#include "Core/RenderAPI/RenderPlans/Block/Types/EspDepthBlockFormat.hh"
+#include "Core/RenderAPI/RenderPlans/Block/Types/EspImageUsageFlag.hh"
+#include "Core/RenderAPI/RenderPlans/Block/Types/EspSampleCountFlag.hh"
 
 // std
 #include <vector>

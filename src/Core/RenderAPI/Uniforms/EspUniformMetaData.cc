@@ -9,12 +9,11 @@ namespace esp
     /* ---------------------------------------------------------*/
     /* ------------- PLATFORM DEPENDENT ------------------------*/
     /* ---------------------------------------------------------*/
-    // #if defined(OPENGL_PLATFORM)
-    // #elif defined(VULKAN_PLATFORM)
+#if ESP_USE_VULKAN
     return std::make_unique<VulkanUniformMetaData>();
-    // #else
-    // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
-    // #endif
+#else
+#error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
+#endif
     /* ---------------------------------------------------------*/
   }
 } // namespace esp

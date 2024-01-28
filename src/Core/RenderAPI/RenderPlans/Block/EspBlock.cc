@@ -1,7 +1,7 @@
 #include "EspBlock.hh"
 
 #include "Core/RenderAPI/Work/EspWorkOrchestrator.hh"
-#include "Platform/Vulkan/PipelineOrdering/Block/VulkanBlock.hh"
+#include "Platform/Vulkan/RenderPlans/Block/VulkanBlock.hh"
 
 namespace esp
 {
@@ -22,13 +22,12 @@ namespace esp
     //     /* ---------------------------------------------------------*/
     //     /* ------------- PLATFORM DEPENDENT ------------------------*/
     //     /* ---------------------------------------------------------*/
-    //     // #if defined(OPENGL_PLATFORM)
-    //     // #elif defined(VULKAN_PLATFORM)
+#if ESP_USE_VULKAN
     auto [width, height] = EspWorkOrchestrator::get_swap_chain_extent();
     return std::make_shared<VulkanBlock>(format, sample_count_flag, width, height, clear_color);
-    //     // #else
-    //     // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
-    //     // #endif
+#else
+#error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
+#endif
     //     /* ---------------------------------------------------------*/
   }
 
@@ -38,15 +37,14 @@ namespace esp
                                             uint32_t height,
                                             glm::vec3 clear_color)
   {
-    //     /* ---------------------------------------------------------*/
-    //     /* ------------- PLATFORM DEPENDENT ------------------------*/
-    //     /* ---------------------------------------------------------*/
-    //     // #if defined(OPENGL_PLATFORM)
-    //     // #elif defined(VULKAN_PLATFORM)
+//     /* ---------------------------------------------------------*/
+//     /* ------------- PLATFORM DEPENDENT ------------------------*/
+//     /* ---------------------------------------------------------*/
+#if ESP_USE_VULKAN
     return std::make_shared<VulkanBlock>(format, sample_count_flag, width, height, clear_color);
-    //     // #else
-    //     // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
-    //     // #endif
+#else
+#error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
+#endif
     //     /* ---------------------------------------------------------*/
   }
 
@@ -55,13 +53,12 @@ namespace esp
     //     /* ---------------------------------------------------------*/
     //     /* ------------- PLATFORM DEPENDENT ------------------------*/
     //     /* ---------------------------------------------------------*/
-    //     // #if defined(OPENGL_PLATFORM)
-    //     // #elif defined(VULKAN_PLATFORM)
+#if ESP_USE_VULKAN
     auto vulkan_block = std::static_pointer_cast<VulkanBlock>(block);
     return vulkan_block->extract_texture();
-    //     // #else
-    //     // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
-    //     // #endif
+#else
+#error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
+#endif
     //     /* ---------------------------------------------------------*/
   }
 } // namespace esp

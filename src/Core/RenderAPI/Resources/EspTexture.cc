@@ -12,13 +12,11 @@ namespace esp
     /* ---------------------------------------------------------*/
     /* ------------- PLATFORM DEPENDENT ------------------------*/
     /* ---------------------------------------------------------*/
-    // #if defined(OPENGL_PLATFORM)
-    //     auto context = std::make_unique<OpenGLContext>();
-    // #elif defined(VULKAN_PLATFORM)
+#if ESP_USE_VULKAN
     auto texture = VulkanTexture::create(name, std::move(image), type, mipmapping, format);
-    // #else
-    // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
-    // #endif
+#else
+#error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
+#endif
     /* ---------------------------------------------------------*/
 
     return texture;
@@ -31,13 +29,11 @@ namespace esp
     /* ---------------------------------------------------------*/
     /* ------------- PLATFORM DEPENDENT ------------------------*/
     /* ---------------------------------------------------------*/
-    // #if defined(OPENGL_PLATFORM)
-    //     auto context = std::make_unique<OpenGLContext>();
-    // #elif defined(VULKAN_PLATFORM)
+#if ESP_USE_VULKAN
     auto cubemap = VulkanTexture::create_cubemap(name, std::move(cubemap_resource), format);
-    // #else
-    // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
-    // #endif
+#else
+#error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
+#endif
     /* ---------------------------------------------------------*/
 
     return cubemap;
@@ -48,13 +44,11 @@ namespace esp
     /* ---------------------------------------------------------*/
     /* ------------- PLATFORM DEPENDENT ------------------------*/
     /* ---------------------------------------------------------*/
-    // #if defined(OPENGL_PLATFORM)
-    //     auto context = std::make_unique<OpenGLContext>();
-    // #elif defined(VULKAN_PLATFORM)
+#if ESP_USE_VULKAN
     return VulkanTexture::create_raw_texture(params);
-    // #else
-    // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
-    // #endif
+#else
+#error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
+#endif
     /* ---------------------------------------------------------*/
   }
 

@@ -1,4 +1,4 @@
-#include "VulkanPipeline.hh"
+#include "VulkanWorker.hh"
 
 // libs
 #include "volk.h"

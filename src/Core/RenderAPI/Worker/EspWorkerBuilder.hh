@@ -4,13 +4,13 @@
 #include "esppch.hh"
 
 // Render API
-#include "Core/RenderAPI/Pipeline/Types/EspCompareOp.hh"
-#include "Core/RenderAPI/PipelineOrdering/Block/Types/EspDepthBlockFormat.hh"
-#include "Core/RenderAPI/PipelineOrdering/Block/Types/EspSampleCountFlag.hh"
+#include "Core/RenderAPI/RenderPlans/Block/Types/EspDepthBlockFormat.hh"
+#include "Core/RenderAPI/RenderPlans/Block/Types/EspSampleCountFlag.hh"
 #include "Core/RenderAPI/Resources/EspSpecializationConstant.hh"
 #include "Core/RenderAPI/Uniforms/EspUniformMetaData.hh"
+#include "Core/RenderAPI/Worker/Types/EspCompareOp.hh"
 #include "EspAttrFormat.hh"
-#include "EspPipeline.hh"
+#include "EspWorker.hh"
 
 // Resources
 #include "Core/Resources/ResourceTypes.hh"

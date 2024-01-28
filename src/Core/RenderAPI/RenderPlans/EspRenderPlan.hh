@@ -3,11 +3,11 @@
 
 #include "esppch.hh"
 
-#include "Core/RenderAPI/PipelineOrdering/Block/EspBlock.hh"
-#include "Core/RenderAPI/PipelineOrdering/Block/EspDepthBlock.hh"
-#include "Core/RenderAPI/PipelineOrdering/Block/Types/EspImageLayout.hh"
-#include "Core/RenderAPI/PipelineOrdering/Block/Types/EspSampleCountFlag.hh"
-#include "Core/RenderAPI/PipelineOrdering/EspCommandBuffer.hh"
+#include "Core/RenderAPI/RenderPlans/Block/EspBlock.hh"
+#include "Core/RenderAPI/RenderPlans/Block/EspDepthBlock.hh"
+#include "Core/RenderAPI/RenderPlans/Block/Types/EspImageLayout.hh"
+#include "Core/RenderAPI/RenderPlans/Block/Types/EspSampleCountFlag.hh"
+#include "Core/RenderAPI/RenderPlans/EspCommandBuffer.hh"
 
 namespace esp
 {

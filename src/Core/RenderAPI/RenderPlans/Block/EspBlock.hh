@@ -3,8 +3,8 @@
 
 #include "esppch.hh"
 
-#include "Core/RenderAPI/PipelineOrdering/Block/Types/EspBlockFormat.hh"
-#include "Core/RenderAPI/PipelineOrdering/Block/Types/EspSampleCountFlag.hh"
+#include "Core/RenderAPI/RenderPlans/Block/Types/EspBlockFormat.hh"
+#include "Core/RenderAPI/RenderPlans/Block/Types/EspSampleCountFlag.hh"
 #include "Core/RenderAPI/Resources/EspTexture.hh"
 
 // std

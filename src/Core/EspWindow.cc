@@ -151,16 +151,15 @@ namespace esp
     /* ---------------------------------------------------------*/
     /* ------------- PLATFORM DEPENDENT ------------------------*/
     /* ---------------------------------------------------------*/
-    // #if defined(OPENGL_PLATFORM)
+#if ESP_USE_VULKAN
     //     if (m_data->m_presentation_mode == EspPresentationMode::ESP_PRESENT_MODE_IMMEDIATE_KHR)
     //     {
     //       glfwMakeContextCurrent(m_window);
     //       glfwSwapInterval(0);
     //     }
-    // #elif defined(VULKAN_PLATFORM)
-    // #else
-    // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
-    // #endif
+#else
+#error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
+#endif
     /* ---------------------------------------------------------*/
   }
 
@@ -169,9 +168,7 @@ namespace esp
     /* ---------------------------------------------------------*/
     /* ------------- PLATFORM DEPENDENT ------------------------*/
     /* ---------------------------------------------------------*/
-    // #if defined(OPENGL_PLATFORM)
-    //     ...
-    // #elif defined(VULKAN_PLATFORM)
+#if ESP_USE_VULKAN
     auto& context_data = VulkanContext::get_context_data();
     if (glfwCreateWindowSurface(context_data.m_instance,
                                 m_window,
@@ -181,9 +178,9 @@ namespace esp
       ESP_CORE_ERROR("Failed to create window surface");
       throw std::runtime_error("Failed to create window surface");
     }
-    // #else
-    // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
-    // #endif
+#else
+#error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
+#endif
     /* ---------------------------------------------------------*/
   }
 } // namespace esp

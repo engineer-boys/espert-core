@@ -3,9 +3,9 @@
 
 #include "esppch.hh"
 
-#include "Core/RenderAPI/PipelineOrdering/Block/EspBlock.hh"
-#include "Core/RenderAPI/PipelineOrdering/Block/EspDepthBlock.hh"
-#include "Core/RenderAPI/PipelineOrdering/EspCommandBuffer.hh"
+#include "Core/RenderAPI/RenderPlans/Block/EspBlock.hh"
+#include "Core/RenderAPI/RenderPlans/Block/EspDepthBlock.hh"
+#include "Core/RenderAPI/RenderPlans/EspCommandBuffer.hh"
 #include "Core/Resources/Systems/TextureSystem.hh"
 #include "EspUniformMetaData.hh"
 

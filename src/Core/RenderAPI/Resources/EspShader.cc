@@ -10,13 +10,11 @@ namespace esp
     /* ---------------------------------------------------------*/
     /* ------------- PLATFORM DEPENDENT ------------------------*/
     /* ---------------------------------------------------------*/
-    // #if defined(OPENGL_PLATFORM)
-    //     auto context = std::make_unique<OpenGLContext>();
-    // #elif defined(VULKAN_PLATFORM)
+#if ESP_USE_VULKAN
     auto shader = VulkanShader::create(name, std::move(spirv_resource));
-    // #else
-    // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
-    // #endif
+#else
+#error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
+#endif
     /* ---------------------------------------------------------*/
 
     return shader;

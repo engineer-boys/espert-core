@@ -5,11 +5,11 @@
 #include "esppch.hh"
 
 // Render API Vulkan
-#include "Platform/Vulkan/PipelineOrdering/Block/VulkanBlock.hh"
-#include "Platform/Vulkan/PipelineOrdering/Block/VulkanDepthBlock.hh"
+#include "Platform/Vulkan/RenderPlans/Block/VulkanBlock.hh"
+#include "Platform/Vulkan/RenderPlans/Block/VulkanDepthBlock.hh"
 
 // Render API
-#include "Core/RenderAPI/PipelineOrdering/EspRenderPlan.hh"
+#include "Core/RenderAPI/RenderPlans/EspRenderPlan.hh"
 
 // std
 #include <vector>

@@ -10,13 +10,11 @@ namespace esp
     /* ---------------------------------------------------------*/
     /* ------------- PLATFORM DEPENDENT ------------------------*/
     /* ---------------------------------------------------------*/
-    // #if defined(OPENGL_PLATFORM)
-    //     auto context = std::make_unique<OpenGLContext>();
-    // #elif defined(VULKAN_PLATFORM)
+#if ESP_USE_VULKAN
     auto command_handler = VulkanJob::create();
-    // #else
-    // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
-    // #endif
+#else
+#error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
+#endif
     /* ---------------------------------------------------------*/
 
     return command_handler;
@@ -27,13 +25,11 @@ namespace esp
     /* ---------------------------------------------------------*/
     /* ------------- PLATFORM DEPENDENT ------------------------*/
     /* ---------------------------------------------------------*/
-    // #if defined(OPENGL_PLATFORM)
-    //     auto context = std::make_unique<OpenGLContext>();
-    // #elif defined(VULKAN_PLATFORM)
+#if ESP_USE_VULKAN
     VulkanJob::draw(vertex_count);
-    // #else
-    // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
-    // #endif
+#else
+#error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
+#endif
     /* ---------------------------------------------------------*/
   }
 
@@ -42,13 +38,11 @@ namespace esp
     /* ---------------------------------------------------------*/
     /* ------------- PLATFORM DEPENDENT ------------------------*/
     /* ---------------------------------------------------------*/
-    // #if defined(OPENGL_PLATFORM)
-    //     auto context = std::make_unique<OpenGLContext>();
-    // #elif defined(VULKAN_PLATFORM)
+#if ESP_USE_VULKAN
     VulkanJob::draw(vertex_count, instance_count);
-    // #else
-    // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
-    // #endif
+#else
+#error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
+#endif
     /* ---------------------------------------------------------*/
   }
 
@@ -57,13 +51,11 @@ namespace esp
     /* ---------------------------------------------------------*/
     /* ------------- PLATFORM DEPENDENT ------------------------*/
     /* ---------------------------------------------------------*/
-    // #if defined(OPENGL_PLATFORM)
-    //     auto context = std::make_unique<OpenGLContext>();
-    // #elif defined(VULKAN_PLATFORM)
+#if ESP_USE_VULKAN
     VulkanJob::draw_indexed(index_count, instance_count, first_index);
-    // #else
-    // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
-    // #endif
+#else
+#error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
+#endif
     /* ---------------------------------------------------------*/
   }
 
@@ -72,13 +64,11 @@ namespace esp
     /* ---------------------------------------------------------*/
     /* ------------- PLATFORM DEPENDENT ------------------------*/
     /* ---------------------------------------------------------*/
-    // #if defined(OPENGL_PLATFORM)
-    //     auto context = std::make_unique<OpenGLContext>();
-    // #elif defined(VULKAN_PLATFORM)
+#if ESP_USE_VULKAN
     VulkanJob::draw(id, vertex_count);
-    // #else
-    // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
-    // #endif
+#else
+#error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
+#endif
     /* ---------------------------------------------------------*/
   }
 
@@ -87,13 +77,11 @@ namespace esp
     /* ---------------------------------------------------------*/
     /* ------------- PLATFORM DEPENDENT ------------------------*/
     /* ---------------------------------------------------------*/
-    // #if defined(OPENGL_PLATFORM)
-    //     auto context = std::make_unique<OpenGLContext>();
-    // #elif defined(VULKAN_PLATFORM)
+#if ESP_USE_VULKAN
     VulkanJob::draw(id, vertex_count, instance_count);
-    // #else
-    // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
-    // #endif
+#else
+#error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
+#endif
     /* ---------------------------------------------------------*/
   }
 
@@ -102,13 +90,11 @@ namespace esp
     /* ---------------------------------------------------------*/
     /* ------------- PLATFORM DEPENDENT ------------------------*/
     /* ---------------------------------------------------------*/
-    // #if defined(OPENGL_PLATFORM)
-    //     auto context = std::make_unique<OpenGLContext>();
-    // #elif defined(VULKAN_PLATFORM)
+#if ESP_USE_VULKAN
     VulkanJob::draw_indexed(id, index_count, instance_count, first_index);
-    // #else
-    // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
-    // #endif
+#else
+#error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
+#endif
     /* ---------------------------------------------------------*/
   }
 
@@ -122,13 +108,11 @@ namespace esp
     /* ---------------------------------------------------------*/
     /* ------------- PLATFORM DEPENDENT ------------------------*/
     /* ---------------------------------------------------------*/
-    // #if defined(OPENGL_PLATFORM)
-    //     auto context = std::make_unique<OpenGLContext>();
-    // #elif defined(VULKAN_PLATFORM)
+#if ESP_USE_VULKAN
     VulkanJob::copy_image(id, src_texture, src_layout, dst_texture, dst_layout, region);
-    // #else
-    // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
-    // #endif
+#else
+#error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
+#endif
     /* ---------------------------------------------------------*/
   }
 
@@ -141,13 +125,11 @@ namespace esp
     /* ---------------------------------------------------------*/
     /* ------------- PLATFORM DEPENDENT ------------------------*/
     /* ---------------------------------------------------------*/
-    // #if defined(OPENGL_PLATFORM)
-    //     auto context = std::make_unique<OpenGLContext>();
-    // #elif defined(VULKAN_PLATFORM)
+#if ESP_USE_VULKAN
     VulkanJob::transform_image_layout(id, texture, old_layout, new_layout, image_subresource_range);
-    // #else
-    // #error Unfortunatelly, neither Vulkan nor OpenGL is supported.
-    // #endif
+#else
+#error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
+#endif
     /* ---------------------------------------------------------*/
   }
 } // namespace esp

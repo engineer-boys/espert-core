@@ -3,8 +3,8 @@
 
 #include "esppch.hh"
 
-#include "Core/RenderAPI/Pipeline/EspPipelineBuilder.hh"
 #include "Core/RenderAPI/Resources/EspShaderStage.hh"
+#include "Core/RenderAPI/Worker/EspWorkerBuilder.hh"
 
 namespace esp
 {
