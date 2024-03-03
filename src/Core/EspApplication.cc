@@ -6,7 +6,6 @@ namespace esp
   fs::path EspApplication::s_asset_base_path = fs::current_path().parent_path() / "resources";
 
   EspApplication::EspApplication(EspApplicationParams params) : m_running(true)
-
   {
     // create (alloc and init) window
     m_window = EspWindow::create(new EspWindow::WindowData(params.m_title,
@@ -35,6 +34,9 @@ namespace esp
 
     // create (alloc and init) layer stacks
     m_layer_stack = new LayerStack();
+
+    EspGui::m_use_gui = params.m_use_gui;
+    if (EspGui::m_use_gui) { m_gui = EspGui::create(); }
   }
 
   EspApplication::~EspApplication()
@@ -42,6 +44,9 @@ namespace esp
     // all jobs, which are processing by renderer, must be completed
     // before making free other resources.
     m_renderer.done_all_jobs();
+
+    // terminate imgui if it's used
+    if (EspGui::m_use_gui) { EspGui::terminate(); }
 
     // [1] resources from layers should be deleted because they may depend on
     // other resources allocated by Application.
@@ -80,6 +85,8 @@ namespace esp
       {
         layer->update(m_timer->get_dt());
       }
+
+      if (EspGui::m_use_gui) { EspGui::render(); }
 
       m_renderer.m_work_orchestrator->end_frame();
 

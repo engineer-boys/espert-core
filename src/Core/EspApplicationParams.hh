@@ -32,6 +32,8 @@ namespace esp
     bool m_disable_cursor = false;
     /// @brief Presentation mode used for displaying images to the screen
     EspPresentationMode m_presentation_mode = EspPresentationMode::ESP_PRESENT_MODE_FIFO_KHR;
+
+    bool m_use_gui = false;
   };
 
 } // namespace esp

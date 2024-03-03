@@ -47,8 +47,8 @@ namespace esp
                  uint32_t height,
                  bool disable_cursor,
                  EspPresentationMode presentation_mode) :
-          m_title(title),
-          m_width(width), m_height(height), m_disable_cursor(disable_cursor), m_presentation_mode(presentation_mode)
+          m_title(title), m_width(width), m_height(height), m_disable_cursor(disable_cursor),
+          m_presentation_mode(presentation_mode)
       {
       }
     };
@@ -90,7 +90,7 @@ namespace esp
 
     /// @brief Returns pointer to the window.
     /// @return Pointer to the window.
-    inline GLFWwindow* get_window() const { return m_window; }
+    inline static GLFWwindow* get_window() { return s_instance->m_window; }
 
     /// @brief Sets window's event manager's callback.
     /// @param callback Event manager's callback to be set.

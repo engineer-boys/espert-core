@@ -9,6 +9,7 @@
 #include "Core/Resources/Systems/TextureSystem.hh"
 #include "EspApplicationContext.hh"
 #include "EspApplicationParams.hh"
+#include "EspGui.hh"
 #include "EspWindow.hh"
 #include "Events/WindowEvent.hh"
 #include "Layers/Layer.hh"
@@ -37,6 +38,8 @@ namespace esp
     std::unique_ptr<MaterialSystem> m_material_system;
 
     LayerStack* m_layer_stack;
+
+    std::unique_ptr<EspGui> m_gui;
 
    protected:
     struct
