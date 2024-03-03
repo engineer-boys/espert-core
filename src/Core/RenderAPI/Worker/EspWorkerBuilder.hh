@@ -8,6 +8,7 @@
 #include "Core/RenderAPI/RenderPlans/Block/Types/EspSampleCountFlag.hh"
 #include "Core/RenderAPI/Resources/EspSpecializationConstant.hh"
 #include "Core/RenderAPI/Uniforms/EspUniformMetaData.hh"
+#include "Core/RenderAPI/Worker/EspCullMode.hh"
 #include "Core/RenderAPI/Worker/EspPolygonMode.hh"
 #include "Core/RenderAPI/Worker/Types/EspCompareOp.hh"
 #include "EspAttrFormat.hh"
@@ -40,10 +41,16 @@ namespace esp
                     std::vector<EspVertexAttribute> attr);
   };
 
+  struct EspRasterizerSettings
+  {
+    EspPolygonMode m_polygon_mode = EspPolygonMode::ESP_POLYGON_MODE_FILL;
+    EspCullMode m_cull_mode       = EspCullMode::ESP_CULL_MODE_BACK_BIT;
+  };
+
   class EspWorkerBuilder
   {
    protected:
-    EspPolygonMode m_polygon_mode;
+    EspRasterizerSettings m_rasterizer_settings;
 
     /* -------------------------- METHODS ---------------------------------- */
    public:
@@ -63,7 +70,7 @@ namespace esp
 
     virtual std::unique_ptr<EspWorker> build_worker() = 0;
 
-    void set_polygon_mode(EspPolygonMode mode);
+    void set_rasterizer_settings(EspRasterizerSettings settings);
 
     /* -------------------------- STATIC METHODS --------------------------- */
    public:

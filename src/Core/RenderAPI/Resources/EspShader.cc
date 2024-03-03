@@ -57,7 +57,10 @@ namespace esp
     m_worker_builder->set_worker_layout(std::move(uniforms_meta_data));
   }
 
-  void EspShader::set_polygon_mode(esp::EspPolygonMode mode) { m_worker_builder->set_polygon_mode(mode); }
+  void EspShader::set_rasterizer_settings(esp::EspRasterizerSettings settings)
+  {
+    m_worker_builder->set_rasterizer_settings(settings);
+  }
 
   void EspShader::only_attach() const { m_worker->only_attach(); }
 

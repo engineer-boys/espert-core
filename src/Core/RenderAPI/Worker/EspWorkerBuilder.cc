@@ -17,7 +17,10 @@ namespace esp
   {
   }
 
-  void EspWorkerBuilder::set_polygon_mode(esp::EspPolygonMode mode) { m_polygon_mode = mode; }
+  void EspWorkerBuilder::set_rasterizer_settings(esp::EspRasterizerSettings settings)
+  {
+    m_rasterizer_settings = settings;
+  }
 
   std::unique_ptr<EspWorkerBuilder> EspWorkerBuilder::create()
   {
@@ -25,14 +28,10 @@ namespace esp
     /* ------------- PLATFORM DEPENDENT ------------------------*/
     /* ---------------------------------------------------------*/
 #if ESP_USE_VULKAN
-    auto worker_builder = std::make_unique<VulkanWorkerBuilder>();
+    return std::make_unique<VulkanWorkerBuilder>();
 #else
 #error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
 #endif
     /* ---------------------------------------------------------*/
-
-    worker_builder->m_polygon_mode = EspPolygonMode::ESP_POLYGON_MODE_FILL;
-
-    return worker_builder;
   }
 } // namespace esp

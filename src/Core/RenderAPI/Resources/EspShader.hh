@@ -56,7 +56,7 @@ namespace esp
     /// @param uniforms_meta_data Object with data needed to configure uniforms.
     void set_worker_layout(std::unique_ptr<EspUniformMetaData> uniforms_meta_data);
 
-    void set_polygon_mode(EspPolygonMode mode);
+    void set_rasterizer_settings(EspRasterizerSettings settings);
 
     void only_attach() const;
     void set_viewport(EspViewport viewport);
