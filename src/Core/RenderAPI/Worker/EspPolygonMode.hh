@@ -1,0 +1,16 @@
+#ifndef ESPERT_SANDBOX_ESPPOLYGONMODE_HH
+#define ESPERT_SANDBOX_ESPPOLYGONMODE_HH
+
+namespace esp
+{
+  enum EspPolygonMode
+  {
+    ESP_POLYGON_MODE_FILL              = 0,
+    ESP_POLYGON_MODE_LINE              = 1,
+    ESP_POLYGON_MODE_POINT             = 2,
+    ESP_POLYGON_MODE_FILL_RECTANGLE_NV = 1000153000,
+    ESP_POLYGON_MODE_MAX_ENUM          = 0x7FFFFFFF
+  };
+}
+
+#endif // ESPERT_SANDBOX_ESPPOLYGONMODE_HH

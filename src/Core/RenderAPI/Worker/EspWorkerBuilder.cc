@@ -13,10 +13,11 @@ namespace esp
                                    uint32_t binding,
                                    EspVertexInputRate input_rate,
                                    std::vector<EspVertexAttribute> attr) :
-      m_size{ size },
-      m_binding{ binding }, m_input_rate{ input_rate }, m_attrs{ std::move(attr) }
+      m_size{ size }, m_binding{ binding }, m_input_rate{ input_rate }, m_attrs{ std::move(attr) }
   {
   }
+
+  void EspWorkerBuilder::set_polygon_mode(esp::EspPolygonMode mode) { m_polygon_mode = mode; }
 
   std::unique_ptr<EspWorkerBuilder> EspWorkerBuilder::create()
   {
@@ -24,10 +25,14 @@ namespace esp
     /* ------------- PLATFORM DEPENDENT ------------------------*/
     /* ---------------------------------------------------------*/
 #if ESP_USE_VULKAN
-    return std::make_unique<VulkanWorkerBuilder>();
+    auto worker_builder = std::make_unique<VulkanWorkerBuilder>();
 #else
 #error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
 #endif
     /* ---------------------------------------------------------*/
+
+    worker_builder->m_polygon_mode = EspPolygonMode::ESP_POLYGON_MODE_FILL;
+
+    return worker_builder;
   }
 } // namespace esp

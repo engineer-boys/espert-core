@@ -57,6 +57,8 @@ namespace esp
     m_worker_builder->set_worker_layout(std::move(uniforms_meta_data));
   }
 
+  void EspShader::set_polygon_mode(esp::EspPolygonMode mode) { m_worker_builder->set_polygon_mode(mode); }
+
   void EspShader::only_attach() const { m_worker->only_attach(); }
 
   void EspShader::set_viewport(EspViewport viewport) { m_worker->set_viewport(viewport); }

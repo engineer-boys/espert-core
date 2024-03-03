@@ -8,6 +8,7 @@
 #include "Core/RenderAPI/RenderPlans/Block/Types/EspSampleCountFlag.hh"
 #include "Core/RenderAPI/Resources/EspSpecializationConstant.hh"
 #include "Core/RenderAPI/Uniforms/EspUniformMetaData.hh"
+#include "Core/RenderAPI/Worker/EspPolygonMode.hh"
 #include "Core/RenderAPI/Worker/Types/EspCompareOp.hh"
 #include "EspAttrFormat.hh"
 #include "EspWorker.hh"
@@ -41,6 +42,9 @@ namespace esp
 
   class EspWorkerBuilder
   {
+   protected:
+    EspPolygonMode m_polygon_mode;
+
     /* -------------------------- METHODS ---------------------------------- */
    public:
     virtual ~EspWorkerBuilder() {}
@@ -58,6 +62,8 @@ namespace esp
     virtual void set_worker_layout(std::unique_ptr<EspUniformMetaData> uniforms_meta_data) = 0;
 
     virtual std::unique_ptr<EspWorker> build_worker() = 0;
+
+    void set_polygon_mode(EspPolygonMode mode);
 
     /* -------------------------- STATIC METHODS --------------------------- */
    public:
