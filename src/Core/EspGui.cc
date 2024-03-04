@@ -52,6 +52,32 @@ namespace esp
     /* ---------------------------------------------------------*/
   }
 
+  void EspGui::begin()
+  {
+    /* ---------------------------------------------------------*/
+    /* ------------- PLATFORM DEPENDENT ------------------------*/
+    /* ---------------------------------------------------------*/
+#if ESP_USE_VULKAN
+    VulkanGui::begin();
+#else
+#error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
+#endif
+    /* ---------------------------------------------------------*/
+  }
+
+  void EspGui::end()
+  {
+    /* ---------------------------------------------------------*/
+    /* ------------- PLATFORM DEPENDENT ------------------------*/
+    /* ---------------------------------------------------------*/
+#if ESP_USE_VULKAN
+    VulkanGui::end();
+#else
+#error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
+#endif
+    /* ---------------------------------------------------------*/
+  }
+
   void EspGui::end_frame()
   {
     /* ---------------------------------------------------------*/

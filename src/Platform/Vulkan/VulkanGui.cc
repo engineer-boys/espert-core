@@ -30,9 +30,10 @@ namespace esp
     ImGui_ImplVulkan_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
+  }
 
-    ImGui::SetNextWindowPos(OFFSET, ImGuiCond_Appearing);
-
+  void VulkanGui::begin()
+  {
     ImGui::Begin(s_instance->m_name.c_str());
 
     ImGuiIO& io                        = ImGui::GetIO();
@@ -43,12 +44,9 @@ namespace esp
     s_instance->m_render_area.m_height = ImGui::GetWindowHeight() * scale.y;
   }
 
-  void VulkanGui::end_frame()
-  {
-    ImGui::End();
+  void VulkanGui::end() { ImGui::End(); }
 
-    ImGui::Render();
-  }
+  void VulkanGui::end_frame() { ImGui::Render(); }
 
   void VulkanGui::render()
   {
