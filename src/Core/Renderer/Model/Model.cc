@@ -264,9 +264,10 @@ namespace esp
     m_vertex_buffer = EspVertexBuffer::create(vertex_byte_buffer.data(), sizeof(uint8_t), vertex_byte_buffer.size());
   }
 
-  void Model::set_index_buffer(std::vector<uint32_t>& index_buffer)
+  void Model::set_index_buffer(std::vector<uint32_t>& index_buffer, uint32_t buffer_index)
   {
-    m_index_buffer = EspIndexBuffer::create(index_buffer.data(), index_buffer.size());
+    m_index_buffer                       = EspIndexBuffer::create(index_buffer.data(), index_buffer.size());
+    m_meshes[buffer_index].m_index_count = index_buffer.size();
   }
 
   Model::~Model()
