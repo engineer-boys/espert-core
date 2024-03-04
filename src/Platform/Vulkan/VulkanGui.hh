@@ -8,6 +8,8 @@ namespace esp
   class VulkanGui : public EspGui
   {
    private:
+    static constexpr ImVec2 OFFSET{ 10, 10 };
+
     static VulkanGui* s_instance;
 
     VkDescriptorPool m_desc_pool;

@@ -31,6 +31,8 @@ namespace esp
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
+    ImGui::SetNextWindowPos(OFFSET, ImGuiCond_Appearing);
+
     ImGui::Begin(s_instance->m_name.c_str());
 
     ImGuiIO& io                        = ImGui::GetIO();
