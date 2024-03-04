@@ -239,9 +239,7 @@ namespace esp
   Model::Model(std::vector<Vertex>& vertex_buffer,
                std::vector<uint32_t>& index_buffer,
                const std::vector<std::shared_ptr<EspTexture>>& textures,
-               ModelParams params) :
-      m_bone_counter{ 0 },
-      m_params{ params }
+               ModelParams params) : m_bone_counter{ 0 }, m_params{ params }
   {
     m_root_node.m_transformation = glm::mat4(1);
     m_root_node.m_meshes.push_back(0);
@@ -257,6 +255,18 @@ namespace esp
 
     set_renderer_flags();
     precompute_transform_matrices(&m_root_node, glm::mat4(1));
+  }
+
+  void Model::set_vertex_buffer(std::vector<Vertex>& vertex_buffer)
+  {
+    std::vector<uint8_t> vertex_byte_buffer;
+    m_params.parse_to_vertex_byte_buffer(vertex_buffer, vertex_byte_buffer);
+    m_vertex_buffer = EspVertexBuffer::create(vertex_byte_buffer.data(), sizeof(uint8_t), vertex_byte_buffer.size());
+  }
+
+  void Model::set_index_buffer(std::vector<uint32_t>& index_buffer)
+  {
+    m_index_buffer = EspIndexBuffer::create(index_buffer.data(), index_buffer.size());
   }
 
   Model::~Model()

@@ -79,16 +79,17 @@ namespace esp
       this->update(m_timer->get_dt());
       if (!m_running) break;
 
+      pre_update();
+
       m_renderer.m_work_orchestrator->begin_frame();
 
-      for (auto layer : *m_layer_stack)
-      {
-        layer->update(m_timer->get_dt());
-      }
+      update();
 
       if (EspGui::m_use_gui) { EspGui::render(); }
 
       m_renderer.m_work_orchestrator->end_frame();
+
+      post_update();
 
       m_window->update();
     }
@@ -113,6 +114,30 @@ namespace esp
     {
       iter->handle_event(e, m_timer->get_dt());
       if (e.handled) { break; }
+    }
+  }
+
+  void EspApplication::pre_update()
+  {
+    for (auto layer : *m_layer_stack)
+    {
+      layer->pre_update(m_timer->get_dt());
+    }
+  }
+
+  void EspApplication::update()
+  {
+    for (auto layer : *m_layer_stack)
+    {
+      layer->update(m_timer->get_dt());
+    }
+  }
+
+  void EspApplication::post_update()
+  {
+    for (auto layer : *m_layer_stack)
+    {
+      layer->post_update(m_timer->get_dt());
     }
   }
 

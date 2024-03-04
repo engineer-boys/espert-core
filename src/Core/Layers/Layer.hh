@@ -22,9 +22,15 @@ namespace esp
     virtual void attach() {}
     /// @brief Disables layer.
     virtual void detach() {}
+    /// @brief Runs pre update layer logic.
+    /// @param dt Time that has passed since last update.
+    virtual void pre_update(float dt) {}
     /// @brief Runs layer logic.
     /// @param dt Time that has passed since last update.
     virtual void update(float dt) {}
+    /// @brief Runs post update layer logic.
+    /// @param dt Time that has passed since last update.
+    virtual void post_update(float dt) {}
     /// @brief Handle event by this layer.
     /// @param event Event to be handled.
     /// @param dt Time that has passed since last update.

@@ -96,6 +96,11 @@ namespace esp
     /// @brief Handle event by the event manager.
     /// @param e Event to be handled.
     void events_manager(Event& e);
+
+   private:
+    void pre_update();
+    void update();
+    void post_update();
   };
 
   /* This function is defined by CLIENT */

@@ -84,6 +84,9 @@ namespace esp
     inline uint32_t& get_bone_count() { return m_bone_counter; }
     inline const ModelNode& get_root_node() const { return m_root_node; }
 
+    void set_vertex_buffer(std::vector<Vertex>& vertex_buffer); // Do not use inside layer's update function!
+    void set_index_buffer(std::vector<uint32_t>& index_buffer); // Do not use inside layer's update function!
+
     inline bool has_many_mesh_nodes() { return m_has_many_mesh_nodes; }
 
     ModelIterator begin() { return ModelIterator(this); }
