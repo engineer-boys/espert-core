@@ -19,9 +19,6 @@ namespace esp
     struct WindowData
     {
      public:
-      using EventManagerFun = std::function<void(Event&)>;
-
-     public:
       /// @brief Window title.
       std::string m_title;
       /// @brief Window width.
@@ -88,16 +85,9 @@ namespace esp
     /// @return Window's height.
     inline uint32_t get_height() { return m_data->m_height; }
 
-    /// @brief Returns pointer to the window.
-    /// @return Pointer to the window.
-    inline static GLFWwindow* get_window() { return s_instance->m_window; }
-
     /// @brief Sets window's event manager's callback.
     /// @param callback Event manager's callback to be set.
-    inline void set_events_manager_fun(const WindowData::EventManagerFun& callback)
-    {
-      m_data->m_events_manager_fun = callback;
-    }
+    inline void set_events_manager_fun(const EventManagerFun& callback) { m_data->m_events_manager_fun = callback; }
 
     /* -------------------------- STATIC METHODS --------------------------- */
    public:
@@ -116,7 +106,13 @@ namespace esp
 
     /// @brief Returns pointer to the instance of EspWindow.
     /// @return Pointer to the instance of EspWindow.
-    static inline const EspWindow* get_instance() { return s_instance; }
+    inline static const EspWindow* get_instance() { return s_instance; }
+
+    /// @brief Returns pointer to the window.
+    /// @return Pointer to the window.
+    inline static GLFWwindow* get_window() { return s_instance->m_window; }
+
+    inline static const EventManagerFun& get_event_manager_fun() { return s_instance->m_data->m_events_manager_fun; }
   };
 } // namespace esp
 

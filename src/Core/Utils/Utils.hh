@@ -102,4 +102,11 @@ namespace esp
   };
 } // namespace esp
 
+namespace esp
+{
+  class Event;
+
+  using EventManagerFun = std::function<void(Event&)>;
+} // namespace esp
+
 #endif // ESPERT_CORE_CORE_HH

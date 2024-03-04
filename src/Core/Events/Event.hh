@@ -35,6 +35,7 @@ namespace esp
       EventTypeInput    = SET_BIT(1),
       EventTypeKeyboard = SET_BIT(2),
       EventTypeMouse    = SET_BIT(3),
+      EventTypeGui      = SET_BIT(4)
     };
 
     template<typename T> using EventHandler = std::function<bool(T&)>;
