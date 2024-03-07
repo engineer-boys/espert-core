@@ -32,17 +32,7 @@ namespace esp
     ImGui::NewFrame();
   }
 
-  void VulkanGui::begin()
-  {
-    ImGui::Begin(s_instance->m_name.c_str());
-
-    ImGuiIO& io                        = ImGui::GetIO();
-    auto scale                         = io.DisplayFramebufferScale;
-    s_instance->m_render_area.m_x      = ImGui::GetWindowPos().x * scale.x;
-    s_instance->m_render_area.m_y      = ImGui::GetWindowPos().y * scale.y;
-    s_instance->m_render_area.m_width  = ImGui::GetWindowWidth() * scale.x;
-    s_instance->m_render_area.m_height = ImGui::GetWindowHeight() * scale.y;
-  }
+  void VulkanGui::begin() { ImGui::Begin(s_instance->m_name.c_str()); }
 
   void VulkanGui::end() { ImGui::End(); }
 
@@ -50,11 +40,7 @@ namespace esp
 
   void VulkanGui::render()
   {
-    s_instance->m_render_plan->begin_plan(s_instance->m_render_area);
-    {
-      ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), VulkanWorkOrchestrator::get_current_command_buffer());
-    }
-    s_instance->m_render_plan->end_plan();
+    ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), VulkanWorkOrchestrator::get_current_command_buffer());
   }
 
   void VulkanGui::init()

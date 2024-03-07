@@ -91,8 +91,6 @@ namespace esp
 
       update();
 
-      if (EspGui::m_use_gui) { EspGui::render(); }
-
       m_renderer.m_work_orchestrator->end_frame();
 
       post_update();

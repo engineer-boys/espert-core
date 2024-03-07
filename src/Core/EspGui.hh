@@ -3,18 +3,12 @@
 
 #include "esppch.hh"
 
-// Render API
-#include "Core/RenderAPI/RenderPlans/EspGuiRenderPlan.hh"
-
 namespace esp
 {
   class EspGui
   {
    protected:
-    std::unique_ptr<EspGuiRenderPlan> m_render_plan;
-
     std::string m_name;
-    EspRenderArea m_render_area;
 
    public:
     static bool m_use_gui;

@@ -128,8 +128,15 @@ namespace esp
     physical_device_features2.features = device_features;
     physical_device_features2.pNext    = &dynamic_rendering_feature;
 
+    VkPhysicalDeviceDynamicRenderingUnusedAttachmentsFeaturesEXT
+        physical_device_dynamic_rendering_unused_attachments_features_ext{};
+    physical_device_dynamic_rendering_unused_attachments_features_ext.sType =
+        VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DYNAMIC_RENDERING_UNUSED_ATTACHMENTS_FEATURES_EXT;
+    physical_device_dynamic_rendering_unused_attachments_features_ext.dynamicRenderingUnusedAttachments = VK_TRUE;
+    physical_device_dynamic_rendering_unused_attachments_features_ext.pNext = &physical_device_features2;
+
     create_info.pEnabledFeatures = nullptr;
-    create_info.pNext            = &physical_device_features2;
+    create_info.pNext            = &physical_device_dynamic_rendering_unused_attachments_features_ext;
 
     if (vkCreateDevice(m_physical_device, &create_info, nullptr, &m_device) != VK_SUCCESS)
     {

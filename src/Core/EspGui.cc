@@ -17,11 +17,7 @@ namespace esp
 #endif
     /* ---------------------------------------------------------*/
 
-    gui->m_render_plan = EspGuiRenderPlan::create();
-    gui->m_render_plan->build();
-
-    gui->m_name        = name;
-    gui->m_render_area = { 0, 0, 0, 0 };
+    gui->m_name = name;
 
     return gui;
   }
