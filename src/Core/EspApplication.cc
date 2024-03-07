@@ -1,19 +1,25 @@
 #include "EspApplication.hh"
+#include "Layers/Layer.hh"
+#include "Layers/LayerStack.hh"
 #include <ranges>
 
 namespace esp
 {
-  fs::path EspApplication::s_asset_base_path = fs::current_path().parent_path() / "resources";
+  fs::path EspApplication::s_asset_base_path      = fs::current_path().parent_path() / "resources";
+  EventManagerFun EspApplication::s_event_manager = nullptr;
 
   EspApplication::EspApplication(EspApplicationParams params) : m_running(true)
   {
+    // create events manager
+    s_event_manager = ESP_BIND_EVENT_FOR_FUN(EspApplication::events_manager);
+
     // create (alloc and init) window
     m_window = EspWindow::create(new EspWindow::WindowData(params.m_title,
                                                            params.m_width,
                                                            params.m_height,
                                                            params.m_disable_cursor,
                                                            params.m_presentation_mode));
-    m_window->set_events_manager_fun(ESP_BIND_EVENT_FOR_FUN(EspApplication::events_manager));
+    m_window->set_events_manager_fun(s_event_manager);
 
     // create (alloc and init) timer
     m_timer = Timer::create();

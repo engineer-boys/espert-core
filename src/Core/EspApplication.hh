@@ -12,16 +12,18 @@
 #include "EspGui.hh"
 #include "EspWindow.hh"
 #include "Events/WindowEvent.hh"
-#include "Layers/Layer.hh"
-#include "Layers/LayerStack.hh"
 #include "RenderAPI/EspDebugMessenger.hh"
 #include "RenderAPI/EspRenderContext.hh"
 #include "RenderAPI/Work/EspJob.hh"
 #include "RenderAPI/Work/EspWorkOrchestrator.hh"
 #include "Utils/Timer.hh"
+#include "Utils/Utils.hh"
 
 namespace esp
 {
+  class Layer;
+  class LayerStack;
+
   /// @brief Application aggregates all operations run by the engine.
   class EspApplication
   {
@@ -60,6 +62,7 @@ namespace esp
 
     bool m_running;
     static fs::path s_asset_base_path;
+    static EventManagerFun s_event_manager;
 
     /* -------------------------- METHODS ---------------------------------- */
    private:
@@ -96,6 +99,8 @@ namespace esp
     /// @brief Handle event by the event manager.
     /// @param e Event to be handled.
     void events_manager(Event& e);
+
+    inline static const EventManagerFun& get_event_manager() { return s_event_manager; }
 
    private:
     void pre_update();

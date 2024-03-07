@@ -111,8 +111,6 @@ namespace esp
     /// @brief Returns pointer to the window.
     /// @return Pointer to the window.
     inline static GLFWwindow* get_window() { return s_instance->m_window; }
-
-    inline static const EventManagerFun& get_event_manager_fun() { return s_instance->m_data->m_events_manager_fun; }
   };
 } // namespace esp
 

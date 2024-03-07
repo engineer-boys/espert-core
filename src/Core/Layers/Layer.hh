@@ -1,7 +1,7 @@
 #ifndef ESPERT_CORE_LAYERS_LAYER_HH
 #define ESPERT_CORE_LAYERS_LAYER_HH
 
-#include "Core/EspWindow.hh"
+#include "Core/EspApplication.hh"
 #include "Core/Events/Event.hh"
 
 namespace esp
@@ -11,9 +11,9 @@ namespace esp
   {
    private:
     EventManagerFun m_events_manager_fun;
-
+    
    public:
-    Layer() : m_events_manager_fun{ EspWindow::get_event_manager_fun() } {}
+    Layer() : m_events_manager_fun{ EspApplication::get_event_manager() } {}
 
     /// @brief Virtual destructor.
     virtual ~Layer() {}
