@@ -73,6 +73,13 @@ namespace esp
     /// @param angle Angle to rotate by in radians
     /// @param axis Axis to rotate around
     void rotate(float angle, glm::vec3 axis);
+
+    // ---------------------------------------- MG1 -------------------------------------------------------
+    void rotate_x(float angle);
+    void rotate_y(float angle);
+    void rotate_z(float angle);
+    // ----------------------------------------------------------------------------------------------------
+
     /// @brief Scales entity by given argument
     /// @param val Value to scale by
     void scale(float val);

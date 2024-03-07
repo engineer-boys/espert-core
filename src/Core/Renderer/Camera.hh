@@ -38,6 +38,7 @@ namespace esp
 
     glm::vec2 m_last_move{};
     bool m_first_move{ true };
+    glm::vec2 m_delta_move{};
 
     glm::vec3 m_position{ 0.f };
     glm::vec3 m_camera_front = S_FRONT;
@@ -112,6 +113,8 @@ namespace esp
     /// @brief Returns Camera's position.
     /// @return Camera's position.
     inline glm::vec3 get_position() const { return m_position; }
+
+    inline glm::vec2 get_delta_move() const { return m_delta_move; }
 
     /// @brief Returns Camera's view matrix.
     /// @return Camera's view matrix.

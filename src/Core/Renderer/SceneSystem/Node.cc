@@ -47,6 +47,26 @@ namespace esp
     transform.rotate(angle, axis);
   }
 
+  // ---------------------------------------- MG1 -------------------------------------------------------
+  void Node::rotate_x(float angle)
+  {
+    auto& transform = get_transform();
+    transform.rotate_x(angle);
+  }
+
+  void Node::rotate_y(float angle)
+  {
+    auto& transform = get_transform();
+    transform.rotate_y(angle);
+  }
+
+  void Node::rotate_z(float angle)
+  {
+    auto& transform = get_transform();
+    transform.rotate_z(angle);
+  }
+  // ----------------------------------------------------------------------------------------------------
+
   void Node::scale(float val)
   {
     auto& transform = get_transform();
@@ -76,8 +96,13 @@ namespace esp
     auto& transform = get_transform();
     auto parent     = get_parent();
 
-    if (type == ActionType::ESP_RELATIVE || !parent) { return transform.get_model_mat(); }
-    else { return TransformComponent::calculate_model_mat(get_translation(type), get_rotation(type), get_scale(type)); }
+    /*if (type == ActionType::ESP_RELATIVE || !parent) { return transform.get_model_mat(); }
+    else { return TransformComponent::calculate_model_mat(get_translation(type), get_rotation(type), get_scale(type));
+    }*/
+
+    // ---------------------------------------- MG1 -------------------------------------------------------
+    return transform.get_model_mat();
+    // ----------------------------------------------------------------------------------------------------
   }
 
   glm::vec3 Node::get_translation(ActionType type)

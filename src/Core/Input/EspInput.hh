@@ -16,7 +16,6 @@ namespace esp
     /// @param keycode Integer code of keyboard key.
     /// @return True if said keyboard key is currently pressed. False otherwise.
     static bool is_key_pressed(int keycode);
-
     /// @brief Checks wheter a certaing mouse key is currently pressed.
     /// @param keycode Integer code of mouse key.
     /// @return True if said mouse key is currently pressed. False otherwise.
