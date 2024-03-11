@@ -12,9 +12,10 @@ namespace esp
 {
   VulkanWorker::VulkanWorker(VkPipelineLayout pipeline_layout,
                              VkPipeline graphics_pipeline,
-                             std::unique_ptr<EspUniformDataStorage> uniform_data) :
-      m_pipeline_layout{ pipeline_layout },
-      m_graphics_pipeline{ graphics_pipeline }, m_uniform_data{ std::move(uniform_data) }
+                             std::unique_ptr<EspUniformDataStorage> uniform_data,
+                             EspWorkerSettings settings) :
+      EspWorker(settings), m_pipeline_layout{ pipeline_layout }, m_graphics_pipeline{ graphics_pipeline },
+      m_uniform_data{ std::move(uniform_data) }
   {
   }
 
@@ -46,6 +47,11 @@ namespace esp
     viewport.maxDepth = 1.0f;
 
     vkCmdSetViewport(VulkanWorkOrchestrator::get_current_command_buffer(), 0, 1, &viewport);
+  }
+
+  void VulkanWorker::set_line_width() const
+  {
+    vkCmdSetLineWidth(VulkanWorkOrchestrator::get_current_command_buffer(), m_worker_params.m_line_width);
   }
 
   void VulkanWorker::set_viewport(esp::EspViewport viewport)

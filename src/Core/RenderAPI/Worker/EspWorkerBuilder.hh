@@ -10,6 +10,7 @@
 #include "Core/RenderAPI/Uniforms/EspUniformMetaData.hh"
 #include "Core/RenderAPI/Worker/EspCullMode.hh"
 #include "Core/RenderAPI/Worker/EspPolygonMode.hh"
+#include "Core/RenderAPI/Worker/EspPrimitiveTopology.hh"
 #include "Core/RenderAPI/Worker/Types/EspCompareOp.hh"
 #include "EspAttrFormat.hh"
 #include "EspWorker.hh"
@@ -45,12 +46,19 @@ namespace esp
   {
     EspPolygonMode m_polygon_mode = EspPolygonMode::ESP_POLYGON_MODE_FILL;
     EspCullMode m_cull_mode       = EspCullMode::ESP_CULL_MODE_BACK_BIT;
+    float m_line_width            = 1.f;
+  };
+
+  struct EspInputAssemblySettings
+  {
+    EspPrimitiveTopology m_primitive_topology = EspPrimitiveTopology::ESP_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
   };
 
   class EspWorkerBuilder
   {
    protected:
     EspRasterizerSettings m_rasterizer_settings;
+    EspInputAssemblySettings m_input_assembly_settings;
 
     /* -------------------------- METHODS ---------------------------------- */
    public:
@@ -71,6 +79,7 @@ namespace esp
     virtual std::unique_ptr<EspWorker> build_worker() = 0;
 
     void set_rasterizer_settings(EspRasterizerSettings settings);
+    void set_input_assembly_settings(EspInputAssemblySettings settings);
 
     /* -------------------------- STATIC METHODS --------------------------- */
    public:

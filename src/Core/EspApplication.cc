@@ -76,6 +76,9 @@ namespace esp
 
   void EspApplication::run()
   {
+    //    GLFWcursor* cursor = glfwCreateStandardCursor(GLFW_CROSSHAIR_CURSOR);
+    //    glfwSetCursor(m_window->get_window(), cursor);
+
     while (m_running)
     {
       m_timer->tick();

@@ -243,15 +243,17 @@ namespace esp
     ESP_ASSERT(m_is_pipeline_layout, "You cannot create a pipeline without a pipeline layout.")
     ESP_ASSERT(m_color_attachment_formats.size() != 0, "You cannot create a pipeline  without color attachments.");
 
-    VkPipelineShaderStageCreateInfo shader_stages[] = {
-      m_pipeline_stage_data_map.at(EspShaderStage::VERTEX).shader_stage_create_info,
-      m_pipeline_stage_data_map.at(EspShaderStage::FRAGMENT).shader_stage_create_info
-    };
+    VkPipelineShaderStageCreateInfo shader_stages[m_pipeline_stage_data_map.size()];
+    size_t i = 0;
+    for (const auto& kv : m_pipeline_stage_data_map)
+    {
+      shader_stages[i++] = kv.second.shader_stage_create_info;
+    }
 
     VkPipelineInputAssemblyStateCreateInfo input_assembly{};
     {
-      input_assembly.sType                  = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-      input_assembly.topology               = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+      input_assembly.sType    = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
+      input_assembly.topology = static_cast<VkPrimitiveTopology>(m_input_assembly_settings.m_primitive_topology);
       input_assembly.primitiveRestartEnable = VK_FALSE;
     }
 
@@ -267,12 +269,11 @@ namespace esp
       rasterizer.sType                   = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
       rasterizer.depthClampEnable        = VK_FALSE;
       rasterizer.rasterizerDiscardEnable = VK_FALSE;
-      rasterizer.polygonMode =
-          static_cast<VkPolygonMode>(m_rasterizer_settings.m_polygon_mode); // TODO: enable fillModeNonSolid
-      rasterizer.lineWidth       = 1.0f;
-      rasterizer.cullMode        = static_cast<VkCullModeFlags>(m_rasterizer_settings.m_cull_mode);
-      rasterizer.frontFace       = VK_FRONT_FACE_COUNTER_CLOCKWISE;
-      rasterizer.depthBiasEnable = VK_FALSE;
+      rasterizer.polygonMode             = static_cast<VkPolygonMode>(m_rasterizer_settings.m_polygon_mode);
+      rasterizer.lineWidth               = m_rasterizer_settings.m_line_width;
+      rasterizer.cullMode                = static_cast<VkCullModeFlags>(m_rasterizer_settings.m_cull_mode);
+      rasterizer.frontFace               = VK_FRONT_FACE_COUNTER_CLOCKWISE;
+      rasterizer.depthBiasEnable         = VK_FALSE;
     }
 
     VkPipelineMultisampleStateCreateInfo multisampling{};
@@ -324,7 +325,9 @@ namespace esp
     }
 
     VkPipelineDynamicStateCreateInfo dynamic_state{};
-    std::vector<VkDynamicState> dynamic_states = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
+    std::vector<VkDynamicState> dynamic_states = { VK_DYNAMIC_STATE_VIEWPORT,
+                                                   VK_DYNAMIC_STATE_SCISSOR,
+                                                   VK_DYNAMIC_STATE_LINE_WIDTH };
     {
       dynamic_state.sType             = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
       dynamic_state.dynamicStateCount = static_cast<uint32_t>(dynamic_states.size());
@@ -347,7 +350,7 @@ namespace esp
     VkGraphicsPipelineCreateInfo pipeline_info{};
 
     pipeline_info.sType               = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-    pipeline_info.stageCount          = 2;
+    pipeline_info.stageCount          = sizeof(shader_stages) / sizeof(shader_stages[0]);
     pipeline_info.pStages             = shader_stages;
     pipeline_info.pVertexInputState   = &m_vertex_input_info;
     pipeline_info.pInputAssemblyState = &input_assembly;
@@ -388,9 +391,10 @@ namespace esp
 
     m_is_pipeline_layout = false;
 
-    return std::unique_ptr<EspWorker>{
-      new VulkanWorker(m_pipeline_layout, graphics_pipeline, std::move(m_uniform_data_storage))
-    };
+    return std::unique_ptr<EspWorker>{ new VulkanWorker(m_pipeline_layout,
+                                                        graphics_pipeline,
+                                                        std::move(m_uniform_data_storage),
+                                                        { .m_line_width = m_rasterizer_settings.m_line_width }) };
   }
 } // namespace esp
 

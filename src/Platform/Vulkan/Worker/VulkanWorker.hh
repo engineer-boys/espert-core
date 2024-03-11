@@ -25,11 +25,13 @@ namespace esp
    private:
     void set_viewport() const;
     void set_scissors() const;
+    void set_line_width() const;
 
    public:
     VulkanWorker(VkPipelineLayout pipeline_layout,
                  VkPipeline graphics_pipeline,
-                 std::unique_ptr<EspUniformDataStorage> uniform_data);
+                 std::unique_ptr<EspUniformDataStorage> uniform_data,
+                 EspWorkerSettings settings = {});
     ~VulkanWorker();
 
     VulkanWorker(const VulkanWorker&)            = delete;
@@ -40,8 +42,10 @@ namespace esp
       vkCmdBindPipeline(VulkanWorkOrchestrator::get_current_command_buffer(),
                         VK_PIPELINE_BIND_POINT_GRAPHICS,
                         m_graphics_pipeline);
+
       set_viewport();
       set_scissors();
+      set_line_width();
     }
 
     inline virtual void only_attach() const override

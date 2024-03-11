@@ -80,10 +80,10 @@ namespace esp
 
     /// @brief Returns window's width.
     /// @return Windows's width.
-    inline uint32_t get_width() { return m_data->m_width; }
+    inline static const uint32_t get_width() { return s_instance->m_data->m_width; }
     /// @brief Returns window's height.
     /// @return Window's height.
-    inline uint32_t get_height() { return m_data->m_height; }
+    inline static const uint32_t get_height() { return s_instance->m_data->m_height; }
 
     /// @brief Sets window's event manager's callback.
     /// @param callback Event manager's callback to be set.

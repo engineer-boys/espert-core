@@ -62,6 +62,11 @@ namespace esp
     m_worker_builder->set_rasterizer_settings(settings);
   }
 
+  void EspShader::set_input_assembly_settings(esp::EspInputAssemblySettings settings)
+  {
+    m_worker_builder->set_input_assembly_settings(settings);
+  }
+
   void EspShader::only_attach() const { m_worker->only_attach(); }
 
   void EspShader::set_viewport(EspViewport viewport) { m_worker->set_viewport(viewport); }

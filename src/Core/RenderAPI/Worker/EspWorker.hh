@@ -25,10 +25,19 @@ namespace esp
     int32_t m_offset_y;
   };
 
+  struct EspWorkerSettings
+  {
+    float m_line_width = 1.f;
+  };
+
   class EspWorker
   {
     /* -------------------------- METHODS ---------------------------------- */
+   protected:
+    EspWorkerSettings m_worker_params;
+
    public:
+    EspWorker(EspWorkerSettings settings) : m_worker_params{ settings } {}
     virtual ~EspWorker() {}
 
     virtual void attach() const = 0;

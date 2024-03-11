@@ -57,6 +57,7 @@ namespace esp
     void set_worker_layout(std::unique_ptr<EspUniformMetaData> uniforms_meta_data);
 
     void set_rasterizer_settings(EspRasterizerSettings settings);
+    void set_input_assembly_settings(EspInputAssemblySettings settings);
 
     void only_attach() const;
     void set_viewport(EspViewport viewport);

@@ -11,7 +11,7 @@ namespace esp
   {
    private:
     EventManagerFun m_events_manager_fun;
-    
+
    public:
     Layer() : m_events_manager_fun{ EspApplication::get_event_manager() } {}
 

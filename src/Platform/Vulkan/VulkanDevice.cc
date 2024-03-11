@@ -95,6 +95,8 @@ namespace esp
     VkPhysicalDeviceFeatures device_features = {};
     device_features.samplerAnisotropy        = VK_TRUE;
     device_features.fillModeNonSolid         = VK_TRUE;
+    device_features.geometryShader           = VK_TRUE;
+    device_features.wideLines                = VK_TRUE;
     // TODO: let user decide whether he wants higher quality or better performance - put this in some if statement
     // device_features.sampleRateShading        = VK_TRUE; // enable sample shading feature for the device
 

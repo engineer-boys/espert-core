@@ -22,6 +22,11 @@ namespace esp
     m_rasterizer_settings = settings;
   }
 
+  void EspWorkerBuilder::set_input_assembly_settings(esp::EspInputAssemblySettings settings)
+  {
+    m_input_assembly_settings = settings;
+  }
+
   std::unique_ptr<EspWorkerBuilder> EspWorkerBuilder::create()
   {
     /* ---------------------------------------------------------*/

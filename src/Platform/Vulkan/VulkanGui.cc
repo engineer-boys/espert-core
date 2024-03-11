@@ -74,6 +74,7 @@ namespace esp
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
     (void)io;
+    // io.ConfigFlags |= ImGuiConfigFlags_NoMouseCursorChange;
 
     // - initialize IMGUI for GLFW
     ImGui_ImplGlfw_InitForVulkan(EspWindow::get_window(), true);
