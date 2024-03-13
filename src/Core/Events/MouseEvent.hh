@@ -25,7 +25,7 @@ namespace esp
     /// @return Position of the mouse in y axis.
     inline float get_y() const { return m_y; }
 
-    EVENT_CLASS_TYPE(EventType::EventTypeInput | EventType::EventTypeMouse)
+    EVENT_CLASS_TYPE(EventTypeInput | EventTypeMouse)
     EVENT_CLASS_SUBTYPE(MouseMoved)
   };
 
@@ -49,7 +49,7 @@ namespace esp
     /// @return Mouse wheel's offset in y axis.
     inline float get_offset_y() const { return m_offset_y; }
 
-    EVENT_CLASS_TYPE(EventType::EventTypeInput | EventType::EventTypeMouse)
+    EVENT_CLASS_TYPE(EventTypeInput | EventTypeMouse)
     EVENT_CLASS_SUBTYPE(MouseScrolled)
   };
 
@@ -66,7 +66,7 @@ namespace esp
     /// @return Mouse button's integer code.
     inline int get_button_code() const { return m_button_code; }
 
-    EVENT_CLASS_TYPE(EventType::EventTypeInput | EventType::EventTypeMouse)
+    EVENT_CLASS_TYPE(EventTypeInput | EventTypeMouse)
   };
 
   /// @brief Event representing mouse button press.

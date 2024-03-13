@@ -18,7 +18,7 @@ namespace esp
     /// @return Integer code of a keyboard key.
     inline int get_code() const { return m_key_code; }
 
-    EVENT_CLASS_TYPE(EventType::EventTypeInput | EventType::EventTypeKeyboard)
+    EVENT_CLASS_TYPE(EventTypeInput | EventTypeKeyboard)
   };
 
   /// @brief Event representing press event of a keyboard key.

@@ -24,7 +24,7 @@ namespace esp
       MouseButtonPressed,
       MouseButtonReleased,
       MouseMoved,
-      MouseScrolled
+      MouseScrolled,
     };
 
     /// @brief A broad type of event that listeners can subscribe to.
@@ -35,7 +35,8 @@ namespace esp
       EventTypeInput    = SET_BIT(1),
       EventTypeKeyboard = SET_BIT(2),
       EventTypeMouse    = SET_BIT(3),
-      EventTypeGui      = SET_BIT(4)
+      EventTypeGui      = SET_BIT(4),
+      EventTypeLayer    = SET_BIT(5)
     };
 
     template<typename T> using EventHandler = std::function<bool(T&)>;
@@ -64,7 +65,7 @@ namespace esp
     /// @return True if event's subtype matches with handlers subtype. False otherwise.
     template<typename T> static bool try_handler(Event& event, EventHandler<T> handler)
     {
-      if (event.get_subtype() == T::get_class_subtype())
+      if (event.get_type() == T::get_class_type() && event.get_subtype() == T::get_class_subtype())
       {
         event.handled = handler(*(T*)&event);
         return true;
@@ -79,7 +80,8 @@ namespace esp
   static esp::Event::EventSubtype get_class_subtype() { return esp::Event::EventSubtype::subtype; } \
   virtual esp::Event::EventSubtype get_subtype() const override { return get_class_subtype(); }
 
-#define EVENT_CLASS_TYPE(type) \
+#define EVENT_CLASS_TYPE(type)                                        \
+  static int get_class_type() { return esp::Event::EventType::type; } \
   virtual int get_type() const override { return type; }
 
 #endif // ESPERT_CORE_EVENT_HH

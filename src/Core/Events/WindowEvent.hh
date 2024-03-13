@@ -12,7 +12,7 @@ namespace esp
     /// @brief Default constructor.
     WindowClosedEvent() {}
 
-    EVENT_CLASS_TYPE(EventType::EventTypeWindow)
+    EVENT_CLASS_TYPE(EventTypeWindow)
     EVENT_CLASS_SUBTYPE(WindowClosed)
   };
 
@@ -36,7 +36,7 @@ namespace esp
     /// @return New window height.
     inline unsigned int get_height() const { return m_height; }
 
-    EVENT_CLASS_TYPE(EventType::EventTypeWindow)
+    EVENT_CLASS_TYPE(EventTypeWindow)
     EVENT_CLASS_SUBTYPE(WindowResized)
   };
 } // namespace esp
