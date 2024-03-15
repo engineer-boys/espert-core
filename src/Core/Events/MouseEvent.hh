@@ -12,11 +12,20 @@ namespace esp
     float m_x;
     float m_y;
 
+    static float s_last_x;
+    static float s_last_y;
+
    public:
     /// @brief Constructor setting position of mouse.
     /// @param x Position of the mouse in x axis.
     /// @param y Position of the mouse in y axis.
     MouseMovedEvent(float x, float y) : m_x(x), m_y(y) {}
+
+    ~MouseMovedEvent()
+    {
+      s_last_x = m_x;
+      s_last_y = m_y;
+    }
 
     /// @brief Returns position of the mouse in x axis.
     /// @return Position of the mouse in x axis.
@@ -24,6 +33,9 @@ namespace esp
     /// @brief Returns position of the mouse in y axis.
     /// @return Position of the mouse in y axis.
     inline float get_y() const { return m_y; }
+
+    inline float get_dx() const { return m_x - s_last_x; }
+    inline float get_dy() const { return m_y - s_last_y; }
 
     EVENT_CLASS_TYPE(EventTypeInput | EventTypeMouse)
     EVENT_CLASS_SUBTYPE(MouseMoved)

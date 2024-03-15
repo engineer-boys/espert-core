@@ -1,0 +1,29 @@
+#ifndef RENDERER_CAMERA_HH
+#define RENDERER_CAMERA_HH
+
+#include "esppch.hh"
+
+namespace esp
+{
+  class Camera
+  {
+   private:
+    float m_fov{ ESP_PI / 4 };
+    float m_near{ .1f };
+    float m_far{ 100.f };
+
+    glm::mat4 m_projection_mat{ 1.f };
+
+   public:
+    virtual ~Camera() {}
+
+    void set_perspective(float fov, float aspect_ratio, float near_plane, float far_plane);
+    void set_perspective(float aspect_ratio);
+
+    inline glm::mat4 get_projection() { return m_projection_mat; }
+
+    virtual glm::mat4 get_view() = 0;
+  };
+} // namespace esp
+
+#endif // RENDERER_CAMERA_HH

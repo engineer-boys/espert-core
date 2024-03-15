@@ -1,12 +1,16 @@
-#ifndef RENDERER_CAMERA_HH
-#define RENDERER_CAMERA_HH
+//
+// Created by sebastian on 15.03.24.
+//
 
-#include "esppch.hh"
+#ifndef ESPERT_SANDBOX_FPSCAMERA_HH
+#define ESPERT_SANDBOX_FPSCAMERA_HH
+
+#include "Camera.hh"
 
 namespace esp
 {
   /// @brief Contains information about how the objects to render are perceived.
-  class Camera
+  class FpsCamera : public Camera
   {
    public:
     /// @brief Direction in which the Camera is moving.
@@ -26,11 +30,7 @@ namespace esp
     static constexpr float S_PITCH_TRESHOLD{ glm::radians(89.f) };
 
     glm::mat4 m_view{ 1.f };
-    glm::mat4 m_projection_mat{ 1.f };
 
-    float m_fov{ ESP_PI / 4 };
-    float m_near{ .1f };
-    float m_far{ 100.f };
     float m_pitch{ glm::radians(0.f) };
     float m_jaw{ -ESP_PI / 2 };
     float m_move_speed{ 1.f };
@@ -46,22 +46,12 @@ namespace esp
 
    public:
     /// @brief Default Constructor.
-    Camera() = default;
+    FpsCamera() = default;
     /// @brief Default destructor.
-    ~Camera() = default;
+    ~FpsCamera() override = default;
 
-    Camera(const Camera&)            = delete;
-    Camera& operator=(const Camera&) = delete;
-
-    /// @brief Sets Camera perspective.
-    /// @param fov Camera's field of view.
-    /// @param aspect_ratio Aspect ratio of the screen.
-    /// @param near_plane The nearest plane that the Camera can see.
-    /// @param far_plane The furthest plane that the Camera can see.
-    void set_perspective(float fov, float aspect_ratio, float near_plane, float far_plane);
-    /// @brief Sets Camera perspective.
-    /// @param aspect_ratio Aspect ratio of the screen.
-    void set_perspective(float aspect_ratio);
+    FpsCamera(const FpsCamera&)            = delete;
+    FpsCamera& operator=(const FpsCamera&) = delete;
 
     /// @brief Moves camera in certain direction based on the delta time since last frame.
     /// @param direction Direction in which the Camera moves.
@@ -75,15 +65,6 @@ namespace esp
     /// @param dt Delta time since last frame.
     void look_at(glm::vec2 mouse_pos, float dt);
 
-    /// @brief Sets Cmaera's field of view.
-    /// @param val Field of view.
-    inline void set_fov(float val) { m_fov = std::clamp(val, glm::radians(1.f), ESP_PI / 4); }
-    /// @brief Sets Camera's nearest plane.
-    /// @param val Nearest plane.
-    inline void set_near(float val) { m_near = val; }
-    /// @brief Sets Camera's furthest plane.
-    /// @param val Furthest plane.
-    inline void set_far(float val) { m_far = val; }
     /// @brief Sets the Camera's movement speed.
     /// @param speed Camera's movement speed.
     inline void set_move_speed(float speed) { m_move_speed = speed; }
@@ -94,15 +75,6 @@ namespace esp
     /// @param position Camera's position.
     inline void set_position(glm::vec3 position) { m_position = position; }
 
-    /// @brief Returns Camera's field of view.
-    /// @return Camera's field of view.
-    inline float get_fov() const { return m_fov; }
-    /// @brief Returns Camera's nearest plane.
-    /// @return Camera's nearest plane.
-    inline float get_near() const { return m_near; }
-    /// @brief Returns Camera's furthest plane.
-    /// @return Camera's furthest plane.
-    inline float get_far() const { return m_far; }
     /// @brief Returns Camera's movement speed.
     /// @return Camera's movement speed.
     inline float get_move_speed() const { return m_move_speed; }
@@ -118,17 +90,13 @@ namespace esp
 
     /// @brief Returns Camera's view matrix.
     /// @return Camera's view matrix.
-    inline const glm::mat4& get_view()
+    inline glm::mat4 get_view() override
     {
       return m_view = glm::lookAt(m_position, m_position + m_camera_front, m_camera_up);
     }
-    /// @brief Returns Camera's projection matrix.
-    /// @return
-    inline const glm::mat4& get_projection() { return m_projection_mat; }
 
    private:
     void update_camera_up();
   };
 } // namespace esp
-
-#endif // RENDERER_CAMERA_HH
+#endif // ESPERT_SANDBOX_FPSCAMERA_HH

@@ -1,7 +1,7 @@
 #ifndef SCENE_SCENE_HH
 #define SCENE_SCENE_HH
 
-#include "Core/Renderer/Camera.hh"
+#include "Core/Renderer/Cameras/Camera.hh"
 #include "Node.hh"
 
 #include "esppch.hh"

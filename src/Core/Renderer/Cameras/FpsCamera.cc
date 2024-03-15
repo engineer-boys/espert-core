@@ -1,26 +1,8 @@
-#include "Camera.hh"
+#include "FpsCamera.hh"
 
 namespace esp
 {
-  void Camera::set_perspective(float fov, float aspect_ratio, float near_plane, float far_plane)
-  {
-    ESP_ASSERT(glm::abs(aspect_ratio - std::numeric_limits<float>::epsilon()) > 0.0f, "")
-
-    // m_projection_mat = glm::perspective(fov, aspect_ratio, near_plane, far_plane);
-
-    // OpenGL definition (RH_N0)
-    m_projection_mat       = glm::mat4(1.f);
-    float tan_half_fov     = tan(fov / 2.f);
-    m_projection_mat[0][0] = 1.f / (aspect_ratio * tan_half_fov);
-    m_projection_mat[1][1] = 1.f / tan_half_fov;
-    m_projection_mat[2][2] = -(far_plane + near_plane) / (far_plane - near_plane);
-    m_projection_mat[3][2] = -(2 * far_plane * near_plane) / (far_plane - near_plane);
-    m_projection_mat[2][3] = -1;
-  }
-
-  void Camera::set_perspective(float aspect_ratio) { set_perspective(m_fov, aspect_ratio, m_near, m_far); }
-
-  void Camera::move(MoveDirection direction, float dt)
+  void FpsCamera::move(MoveDirection direction, float dt)
   {
     switch (direction)
     {
@@ -45,7 +27,7 @@ namespace esp
     }
   }
 
-  void Camera::look_at(glm::vec3 target)
+  void FpsCamera::look_at(glm::vec3 target)
   {
     m_camera_front = esp::normalize(m_position - target);
 
@@ -58,7 +40,7 @@ namespace esp
     update_camera_up();
   }
 
-  void Camera::look_at(glm::vec2 mouse_pos, float dt)
+  void FpsCamera::look_at(glm::vec2 mouse_pos, float dt)
   {
     if (m_first_move)
     {
@@ -86,7 +68,7 @@ namespace esp
     update_camera_up();
   }
 
-  void Camera::update_camera_up()
+  void FpsCamera::update_camera_up()
   {
     glm::vec3 camera_right = esp::normalize(glm::cross(S_UP, m_camera_front));
     m_camera_up            = glm::cross(m_camera_front, camera_right);
