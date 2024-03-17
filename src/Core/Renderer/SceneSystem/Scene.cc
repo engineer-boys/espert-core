@@ -36,7 +36,7 @@ namespace esp
     // TODO: optimize by
     //  - sorting shaders
     //  - grouping instances of the same model (add instancing)
-    auto view = get_view<ModelComponent>();
+    auto view = m_registry.view<ModelComponent>();
     for (auto entity : view)
     {
       auto& model_component = view.get<ModelComponent>(entity);

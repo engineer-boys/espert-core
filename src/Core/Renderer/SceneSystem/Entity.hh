@@ -53,6 +53,8 @@ namespace esp
     /// @return True if Entity posesses component of said type. False otherwise.
     template<typename T> bool has_component() { return m_scene->m_registry.try_get<T>(m_handle); }
 
+    inline uint32_t get_id() { return (uint32_t)m_handle; }
+
    private:
     Entity(entt::entity handle, Scene* scene) : m_handle{ handle }, m_scene{ scene } {}
 
