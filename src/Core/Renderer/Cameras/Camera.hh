@@ -22,7 +22,8 @@ namespace esp
 
     inline glm::mat4 get_projection() { return m_projection_mat; }
 
-    virtual glm::mat4 get_view() = 0;
+    virtual glm::mat4 get_view()     = 0;
+    virtual glm::vec3 get_position() = 0;
   };
 } // namespace esp
 

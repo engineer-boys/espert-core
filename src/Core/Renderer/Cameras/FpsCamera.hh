@@ -84,7 +84,7 @@ namespace esp
 
     /// @brief Returns Camera's position.
     /// @return Camera's position.
-    inline glm::vec3 get_position() const { return m_position; }
+    inline glm::vec3 get_position() override { return m_position; }
 
     inline glm::vec2 get_delta_move() const { return m_delta_move; }
 

@@ -19,6 +19,17 @@ namespace esp
     return view;
   }
 
+  glm::vec3 OrbitCamera::get_position()
+  {
+    if (m_distance == 0.f) { return m_target; }
+    {
+      glm::mat4 inverse_view = glm::inverse(get_view());
+      glm::vec4 pos          = inverse_view[3];
+
+      return { pos.x, pos.y, pos.z };
+    }
+  }
+
   void OrbitCamera::rotate(float dx, float dy)
   {
     m_angle_x = glm::mod(m_angle_x + dx, glm::two_pi<float>());

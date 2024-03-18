@@ -39,4 +39,8 @@ namespace esp
 
     return static_cast<float>(y_pos);
   }
+
+  float EspInput::get_mouse_x_cs() { return EspInput::get_mouse_x() / EspWindow::get_width() * 2.f - 1.f; }
+
+  float EspInput::get_mouse_y_cs() { return 1.f - EspInput::get_mouse_y() / EspWindow::get_height() * 2.f; }
 } // namespace esp

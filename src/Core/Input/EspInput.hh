@@ -26,6 +26,9 @@ namespace esp
     /// @brief Checks and returns current mouse position in y axis.
     /// @return Current mouse position in y axis.
     static float get_mouse_y();
+
+    static float get_mouse_x_cs();
+    static float get_mouse_y_cs();
   };
 } // namespace esp
 

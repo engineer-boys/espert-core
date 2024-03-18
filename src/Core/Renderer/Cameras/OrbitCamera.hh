@@ -25,6 +25,7 @@ namespace esp
                 float distance     = 0.f);
 
     glm::mat4 get_view() override;
+    glm::vec3 get_position() override;
 
     void rotate(float dx, float dy);
     void zoom(float dd);
