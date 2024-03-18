@@ -25,6 +25,8 @@ set(IMGUI_SOURCES
     ${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp
     ${IMGUI_DIR}/backends/imgui_impl_glfw.h
     ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
+    ${IMGUI_DIR}/misc/cpp/imgui_stdlib.h
+    ${IMGUI_DIR}/misc/cpp/imgui_stdlib.cpp
 )
 
 set(IMGUI_INCLUDES
@@ -36,6 +38,7 @@ set(IMGUI_INCLUDES
     ${IMGUI_DIR}/imstb_truetype.h
     ${IMGUI_DIR}/backends/imgui_impl_vulkan.h
     ${IMGUI_DIR}/backends/imgui_impl_glfw.h
+    ${IMGUI_DIR}/misc/cpp/imgui_stdlib.h
 )
 
 add_compile_definitions(IMGUI_IMPL_VULKAN_NO_PROTOTYPES)
