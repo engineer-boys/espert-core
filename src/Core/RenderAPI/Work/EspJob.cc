@@ -20,6 +20,19 @@ namespace esp
     return command_handler;
   }
 
+  void EspJob::done_all_jobs()
+  {
+    /* ---------------------------------------------------------*/
+    /* ------------- PLATFORM DEPENDENT ------------------------*/
+    /* ---------------------------------------------------------*/
+#if ESP_USE_VULKAN
+    VulkanJob::done_all_jobs();
+#else
+#error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
+#endif
+    /* ---------------------------------------------------------*/
+  }
+
   void EspJob::draw(uint32_t vertex_count)
   {
     /* ---------------------------------------------------------*/

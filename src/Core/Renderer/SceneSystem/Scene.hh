@@ -39,6 +39,7 @@ namespace esp
     /// @brief Removes Entity from Scene and destroys it.
     /// @param entity Reference to an Entity to be destroyed.
     void destroy_entity(Entity& entity);
+    void destroy_entity(uint32_t id);
 
     /// @brief Adds a Camera to the Scene.
     /// @param camera Shared pointer to the Camera to be added to current Scene.

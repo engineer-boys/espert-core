@@ -25,7 +25,8 @@ namespace esp
 
     virtual void init() override;
     virtual void terminate() override;
-    virtual void done_all_jobs() override;
+
+    static void done_all_jobs();
 
     /* -------------------------- PUBLIC METHODS --------------------------- */
    public:

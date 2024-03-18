@@ -31,6 +31,8 @@ namespace esp
 
   void Scene::destroy_entity(Entity& entity) { m_registry.destroy(entity.m_handle); }
 
+  void Scene::destroy_entity(uint32_t id) { m_registry.destroy((entt::entity)id); }
+
   void Scene::draw()
   {
     // TODO: optimize by

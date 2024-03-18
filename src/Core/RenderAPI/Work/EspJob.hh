@@ -21,9 +21,10 @@ namespace esp
     EspJob(const EspJob& other)            = delete;
     EspJob& operator=(const EspJob& other) = delete;
 
-    virtual void init()          = 0;
-    virtual void terminate()     = 0;
-    virtual void done_all_jobs() = 0;
+    virtual void init()      = 0;
+    virtual void terminate() = 0;
+
+    static void done_all_jobs();
 
     static void draw(uint32_t vertex_count);
     static void draw(uint32_t vertex_count, uint32_t instance_count);
