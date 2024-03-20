@@ -5,7 +5,7 @@
 #include "Core/RenderAPI/Work/EspJob.hh"
 
 // signatures
-static void draw_model(const esp::ModelComponent& model_component);
+static void draw_model(const esp::ModelComponent* model_component);
 
 /* --------------------------------------------------------- */
 /* ---------------- CLASS IMPLEMENTATION ------------------- */
@@ -45,8 +45,8 @@ namespace esp
   {
     for (auto& child : node->m_children)
     {
-      auto& model = child->get_entity()->get_component<ModelComponent>();
-      draw_model(model);
+      auto model = child->get_entity()->try_get_component<ModelComponent>();
+      if (model) { draw_model(model); }
     }
 
     for (auto& child : node->m_children)
@@ -59,14 +59,14 @@ namespace esp
 /* --------------------------------------------------------- */
 /* ------------------ HELPFUL FUNCTIONS -------------------- */
 /* --------------------------------------------------------- */
-static void draw_model(const esp::ModelComponent& model_component)
+static void draw_model(const esp::ModelComponent* model_component)
 {
-  model_component.get_shader().attach();
+  model_component->get_shader().attach();
 
-  const auto& uniform_manager = model_component.get_uniform_manager();
+  const auto& uniform_manager = model_component->get_uniform_manager();
   uniform_manager.attach();
 
-  auto& model = model_component.get_model();
+  auto& model = model_component->get_model();
   for (auto model_node : model)
   {
     if (model.has_many_mesh_nodes())
@@ -74,7 +74,7 @@ static void draw_model(const esp::ModelComponent& model_component)
       uniform_manager.update_push_uniform(0, &(model_node.m_current_node->m_precomputed_transformation));
     }
 
-    auto& material_managers = model_component.get_material_managers();
+    auto& material_managers = model_component->get_material_managers();
     for (auto& mesh_idx : model_node.m_current_node->m_meshes)
     {
       auto& mesh = model.m_meshes[mesh_idx];
