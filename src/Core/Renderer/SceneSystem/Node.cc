@@ -21,8 +21,25 @@ namespace esp
 
   void Node::add_child(std::shared_ptr<Node> node)
   {
+    auto found =
+        std::find_if(m_children.begin(), m_children.end(), [&](const auto& item) { return item.get() == node.get(); });
+
+    if (found != m_children.end()) { return; }
+
     node->m_parent = shared_from_this();
     m_children.emplace_back(std::move(node));
+  }
+
+  void Node::remove_child(Node* node)
+  {
+    auto found =
+        std::find_if(m_children.begin(), m_children.end(), [&](const auto& item) { return item.get() == node; });
+
+    if (found != m_children.end())
+    {
+      (*found)->m_parent = nullptr;
+      m_children.erase(found);
+    }
   }
 
   Node* Node::get_parent() { return m_parent.get(); }

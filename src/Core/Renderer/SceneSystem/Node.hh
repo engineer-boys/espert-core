@@ -41,6 +41,8 @@ namespace esp
     /// @param child Child Node to be added to current Node.
     void add_child(std::shared_ptr<Node> node);
 
+    void remove_child(Node* node);
+
     /// @brief Returns pointer to parent Node.
     /// @return Pointer to parent Node.
     Node* get_parent();

@@ -38,11 +38,20 @@ namespace esp
     // TODO: optimize by
     //  - sorting shaders
     //  - grouping instances of the same model (add instancing)
-    auto view = m_registry.view<ModelComponent>();
-    for (auto entity : view)
+    draw_node(m_root_node.get());
+  }
+
+  void Scene::draw_node(esp::Node* node)
+  {
+    for (auto& child : node->m_children)
     {
-      auto& model_component = view.get<ModelComponent>(entity);
-      draw_model(model_component);
+      auto& model = child->get_entity()->get_component<ModelComponent>();
+      draw_model(model);
+    }
+
+    for (auto& child : node->m_children)
+    {
+      draw_node(child.get());
     }
   }
 } // namespace esp

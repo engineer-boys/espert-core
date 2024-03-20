@@ -68,6 +68,8 @@ namespace esp
    private:
     Scene() : m_root_node{ Node::create_root(this) } {}
 
+    void draw_node(Node* node);
+
     friend class Entity;
   };
 } // namespace esp
