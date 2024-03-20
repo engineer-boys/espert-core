@@ -75,17 +75,9 @@ namespace esp
     /// @param angle Angle to rotate by in radians
     /// @param axis Axis to rotate around
     void rotate(float angle, glm::vec3 axis);
-
-    // ---------------------------------------- MG1 -------------------------------------------------------
-    void rotate_x(float angle);
-    void rotate_y(float angle);
-    void rotate_z(float angle);
-    // ----------------------------------------------------------------------------------------------------
-
     /// @brief Scales entity by given argument
     /// @param val Value to scale by
     void scale(float val);
-
     /// @brief Sets entity's translation to given argument
     /// @param vec Translation vector
     void set_translation(glm::vec3 vec);
@@ -96,7 +88,6 @@ namespace esp
     /// @brief Sets entity's scale to given argument
     /// @param val Scale value
     void set_scale(float val);
-
     /// @brief Returns entity's model matrix
     /// @param type Tells whether matrix is relative to parent
     /// or world (relative to world by default)
