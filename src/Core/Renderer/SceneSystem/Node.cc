@@ -19,35 +19,56 @@ namespace esp
 
   void Node::attach_entity(std::shared_ptr<Entity> entity) { m_entity = std::move(entity); }
 
-  void Node::add_child(std::shared_ptr<Node> node)
+  void Node::add_child(Node* node)
   {
-    auto found =
-        std::find_if(m_children.begin(), m_children.end(), [&](const auto& item) { return item.get() == node.get(); });
-
+    auto found = std::find_if(m_children.begin(), m_children.end(), [&](const auto& item) { return item == node; });
     if (found != m_children.end()) { return; }
 
-    node->m_parent = shared_from_this();
-    m_children.emplace_back(std::move(node));
+    node->set_parent(this);
+    m_children.emplace_back(node);
+  }
+
+  void Node::rebase_child(esp::Node* dst, esp::Node* child)
+  {
+    auto found = std::find_if(m_children.begin(), m_children.end(), [&](const auto& item) { return item == child; });
+    if (found == m_children.end()) { return; }
+
+    remove_child(child);
+    for (auto& c_child : child->m_children)
+    {
+      add_child(c_child);
+      c_child->translate(child->get_translation());
+    }
+    if (dst) { dst->add_child(child); }
   }
 
   void Node::remove_child(Node* node)
   {
-    auto found =
-        std::find_if(m_children.begin(), m_children.end(), [&](const auto& item) { return item.get() == node; });
+    auto found = std::find_if(m_children.begin(), m_children.end(), [&](const auto& item) { return item == node; });
+    if (found == m_children.end()) { return; }
 
-    if (found != m_children.end())
-    {
-      (*found)->m_parent = nullptr;
-      m_children.erase(found);
-    }
+    (*found)->m_parent = nullptr;
+    m_children.erase(found);
   }
 
-  Node* Node::get_parent() { return m_parent.get(); }
+  void Node::set_parent(esp::Node* node)
+  {
+    m_parent = nullptr;
+
+    if (!m_entity->has_component<TransformComponent>()) { return; }
+    set_translation(get_translation() - node->get_translation());
+    // set_rotation(get_rotation()/node->get_rotation());
+    set_scale(get_scale() / node->get_scale());
+
+    m_parent = node;
+  }
+
+  Node* Node::get_parent() { return m_parent; }
 
   Node* Node::get_child(uint32_t index)
   {
     ESP_ASSERT(index < m_children.size(), "Index out of bounds")
-    return m_children[index].get();
+    return m_children[index];
   }
 
   Entity* Node::get_entity() { return m_entity.get(); }
@@ -70,9 +91,17 @@ namespace esp
     transform.scale(val);
   }
 
-  void Node::set_translation(glm::vec3 vec)
+  void Node::set_translation(glm::vec3 vec, action::ActionType type)
   {
     auto& transform = get_transform();
+    if (type == ActionType::ESP_RELATIVE)
+    {
+      for (auto& child : m_children)
+      {
+        auto& child_transform = child->get_transform();
+        child_transform.translate(transform.get_translation() - vec);
+      }
+    }
     transform.set_translation(vec);
   }
 
@@ -93,8 +122,9 @@ namespace esp
     auto& transform = get_transform();
     auto parent     = get_parent();
 
-    if (type == ActionType::ESP_RELATIVE || !parent) { return transform.get_model_mat(); }
-    else { return TransformComponent::calculate_model_mat(get_translation(type), get_rotation(type), get_scale(type)); }
+    glm::mat4 model = transform.get_model_mat();
+    if (type == ActionType::ESP_RELATIVE || !parent) { return model; }
+    else { return parent->get_model_mat() * model; }
   }
 
   glm::vec3 Node::get_translation(ActionType type)

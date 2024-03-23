@@ -9,11 +9,11 @@ namespace esp
   class Scene;
   class Entity;
 
-  class Node : public std::enable_shared_from_this<Node>
+  class Node
   {
    private:
-    std::shared_ptr<Node> m_parent;
-    std::vector<std::shared_ptr<Node>> m_children;
+    Node* m_parent;
+    std::vector<Node*> m_children;
     std::shared_ptr<Entity> m_entity;
 
    public:
@@ -39,9 +39,11 @@ namespace esp
 
     /// @brief Adds child to Node in scene greph.
     /// @param child Child Node to be added to current Node.
-    void add_child(std::shared_ptr<Node> node);
-
+    void add_child(Node* node);
+    void rebase_child(Node* dst, Node* child);
     void remove_child(Node* node);
+
+    void set_parent(Node* node);
 
     /// @brief Returns pointer to parent Node.
     /// @return Pointer to parent Node.
@@ -80,7 +82,7 @@ namespace esp
     void scale(float val);
     /// @brief Sets entity's translation to given argument
     /// @param vec Translation vector
-    void set_translation(glm::vec3 vec);
+    void set_translation(glm::vec3 vec, action::ActionType type = action::ESP_ABSOLUTE);
     /// @brief Sets entity's rotation to given arguments
     /// @param angle Rotation angle in radians
     /// @param axis Rotation axis
@@ -114,8 +116,8 @@ namespace esp
     // --------------------------------------------------
 
    private:
-    Node() : m_entity{ nullptr } {}
-    Node(std::shared_ptr<Entity> entity) : m_entity{ std::move(entity) } {}
+    Node() : m_entity{ nullptr }, m_parent{ nullptr } {}
+    Node(std::shared_ptr<Entity> entity) : m_entity{ std::move(entity) }, m_parent{ nullptr } {}
 
     friend class Scene;
   };

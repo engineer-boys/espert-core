@@ -51,7 +51,7 @@ namespace esp
 
     for (auto& child : node->m_children)
     {
-      draw_node(child.get());
+      draw_node(child);
     }
   }
 } // namespace esp
