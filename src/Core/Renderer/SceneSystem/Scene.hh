@@ -13,10 +13,8 @@ namespace esp
   /// @brief Graph of Nodes that contains all of objects used in rendering.
   class Scene
   {
-   public:
-    entt::registry m_registry;
-
    private:
+    entt::registry m_registry;
     std::shared_ptr<Node> m_root_node;
 
     static Camera* s_current_camera;
@@ -55,6 +53,10 @@ namespace esp
     }
     inline Node& get_root() { return *m_root_node; }
 
+    /// @brief Returns a view for the given component.
+    /// @tparam ...Args Type of component used to construct the view.
+    /// @return View for the given component.
+    template<typename... Args> auto get_view() { return m_registry.view<Args...>().each(); }
     /// @brief Sets the current Camera.
     /// @param camera Pointer to he Camera to be set as current one.
     inline static void set_current_camera(Camera* camera) { s_current_camera = camera; }
