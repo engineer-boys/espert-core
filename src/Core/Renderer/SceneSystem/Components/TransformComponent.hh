@@ -11,7 +11,6 @@ namespace esp
    private:
     glm::vec3 m_translation;
     float m_scale;
-
     glm::quat m_rotation;
 
    public:
@@ -25,6 +24,7 @@ namespace esp
     /// @param angle Angle to rotate by in radians
     /// @param axis Axis to rotate around
     inline void rotate(float angle, glm::vec3 axis) { m_rotation *= glm::angleAxis(angle, esp::normalize(axis)); }
+    inline void rotate(glm::quat quat) { m_rotation = quat * m_rotation; }
     /// @brief Scales by given argument
     /// @param val Value to scale by
     inline void scale(float val) { m_scale *= val; }
@@ -35,6 +35,7 @@ namespace esp
     /// @param angle Rotation angle in radians
     /// @param axis Rotation axis
     inline void set_rotation(float angle, glm::vec3 axis) { m_rotation = glm::angleAxis(angle, esp::normalize(axis)); }
+    inline void set_rotation(glm::quat quat) { m_rotation = quat; }
     /// @brief Sets scale to given argument
     /// @param val Scale value
     inline void set_scale(float val) { m_scale = val; }

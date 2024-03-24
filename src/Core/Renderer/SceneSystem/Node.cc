@@ -34,10 +34,10 @@ namespace esp
     if (found == m_children.end()) { return; }
 
     remove_child(child);
-    for (auto& c_child : child->m_children)
+    for (auto& grand_child : child->m_children)
     {
-      add_child(c_child);
-      c_child->translate(child->get_translation());
+      child->remove_child(grand_child);
+      add_child(grand_child);
     }
     if (dst) { dst->add_child(child); }
   }
@@ -47,19 +47,31 @@ namespace esp
     auto found = std::find_if(m_children.begin(), m_children.end(), [&](const auto& item) { return item == node; });
     if (found == m_children.end()) { return; }
 
+    glm::mat4 model_mat = node->get_model_mat();
+    (*found)->set_translation(glm::vec3(model_mat[3]));
+    float scale_x          = glm::length(glm::vec3(model_mat[0]));
+    float scale_y          = glm::length(glm::vec3(model_mat[1]));
+    float scale_z          = glm::length(glm::vec3(model_mat[2]));
+    glm::mat4 rotation_mat = glm::mat3(model_mat[0] / scale_x, model_mat[1] / scale_y, model_mat[2] / scale_z);
+    (*found)->set_rotation(glm::quat_cast(rotation_mat));
+    (*found)->set_scale(scale_x);
+
     (*found)->m_parent = nullptr;
     m_children.erase(found);
   }
 
   void Node::set_parent(esp::Node* node)
   {
+    glm::mat4 inv_model = glm::inverse(node->get_model_mat());
+    translate(glm::vec3(inv_model[3]));
+    float scale_x          = glm::length(glm::vec3(inv_model[0]));
+    float scale_y          = glm::length(glm::vec3(inv_model[1]));
+    float scale_z          = glm::length(glm::vec3(inv_model[2]));
+    glm::mat4 rotation_mat = glm::mat3(inv_model[0] / scale_x, inv_model[1] / scale_y, inv_model[2] / scale_z);
+    rotate(glm::quat_cast(rotation_mat));
+    scale(glm::length(glm::vec3(inv_model[0])));
+
     m_parent = nullptr;
-
-    if (!m_entity->has_component<TransformComponent>()) { return; }
-    set_translation(get_translation() - node->get_translation());
-    // set_rotation(get_rotation()/node->get_rotation());
-    set_scale(get_scale() / node->get_scale());
-
     m_parent = node;
   }
 
@@ -83,6 +95,12 @@ namespace esp
   {
     auto& transform = get_transform();
     transform.rotate(angle, axis);
+  }
+
+  void Node::rotate(glm::quat quat)
+  {
+    auto& transform = get_transform();
+    transform.rotate(quat);
   }
 
   void Node::scale(float val)
@@ -109,6 +127,12 @@ namespace esp
   {
     auto& transform = get_transform();
     transform.set_rotation(angle, axis);
+  }
+
+  void Node::set_rotation(glm::quat quat)
+  {
+    auto& transform = get_transform();
+    transform.set_rotation(quat);
   }
 
   void Node::set_scale(float val)

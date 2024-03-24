@@ -77,6 +77,7 @@ namespace esp
     /// @param angle Angle to rotate by in radians
     /// @param axis Axis to rotate around
     void rotate(float angle, glm::vec3 axis);
+    void rotate(glm::quat quat);
     /// @brief Scales entity by given argument
     /// @param val Value to scale by
     void scale(float val);
@@ -87,6 +88,7 @@ namespace esp
     /// @param angle Rotation angle in radians
     /// @param axis Rotation axis
     void set_rotation(float angle, glm::vec3 axis);
+    void set_rotation(glm::quat quat);
     /// @brief Sets entity's scale to given argument
     /// @param val Scale value
     void set_scale(float val);
