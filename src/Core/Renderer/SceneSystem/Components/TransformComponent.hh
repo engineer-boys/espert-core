@@ -5,6 +5,11 @@
 
 namespace esp
 {
+  static glm::mat4 calculate_model_mat(glm::vec3 translation, glm::quat rotation, float scale);
+  static glm::mat4 calculate_translation_mat(glm::mat4 mat, glm::vec3 v);
+  static glm::mat4 calculate_rotation_mat(glm::quat q);
+  static glm::mat4 calculate_scale_mat(glm::mat4 mat, glm::vec3 v);
+
   /// @brief ECS component that allows translation of component in space.
   struct TransformComponent
   {
@@ -39,30 +44,9 @@ namespace esp
     /// @brief Sets scale to given argument
     /// @param val Scale value
     inline void set_scale(float val) { m_scale = val; }
-
-    /// @brief Calculates model matrix based on arguments.
-    /// @param translation Translation vector
-    /// @param rotation Rotation quaternion
-    /// @param scale Float scale
-    /// @return model matrix.
-    inline static glm::mat4 calculate_model_mat(glm::vec3 translation, glm::quat rotation, float scale)
-    {
-      glm::mat4 translation_mat = glm::translate(glm::mat4(1.0f), translation);
-      glm::mat4 rotation_mat    = glm::mat4_cast(rotation);
-      glm::mat4 scale_mat       = glm::scale(glm::mat4(1.0f), { scale, scale, scale });
-
-      return translation_mat * rotation_mat * scale_mat;
-    }
     /// @brief Returns component's model matrix.
     /// @return Component's model matrix.
-    inline glm::mat4 get_model_mat() const
-    {
-      glm::mat4 translation_mat = glm::translate(glm::mat4(1.0f), m_translation);
-      glm::mat4 rotation_mat    = glm::mat4_cast(m_rotation);
-      glm::mat4 scale_mat       = glm::scale(glm::mat4(1.0f), { m_scale, m_scale, m_scale });
-
-      return translation_mat * rotation_mat * scale_mat;
-    }
+    inline glm::mat4 get_model_mat() const { return calculate_model_mat(m_translation, m_rotation, m_scale); }
     /// @brief Returns component's translation
     /// @return Component's translation
     inline glm::vec3 get_translation() const { return m_translation; }
@@ -73,6 +57,59 @@ namespace esp
     /// @return Component's rotation
     inline glm::quat get_rotation() const { return m_rotation; }
   };
+
+  static glm::mat4 calculate_model_mat(glm::vec3 translation, glm::quat rotation, float scale)
+  {
+    glm::mat4 translation_mat = calculate_translation_mat(glm::mat4(1.0f), translation);
+    glm::mat4 rotation_mat    = calculate_rotation_mat(rotation);
+    glm::mat4 scale_mat       = calculate_scale_mat(glm::mat4(1.0f), { scale, scale, scale });
+
+    return translation_mat * rotation_mat * scale_mat;
+  }
+
+  static glm::mat4 calculate_translation_mat(glm::mat4 mat, glm::vec3 v)
+  {
+    glm::mat4 result(mat);
+    result[3] = mat[0] * v[0] + mat[1] * v[1] + mat[2] * v[2] + mat[3];
+    return result;
+  }
+
+  static glm::mat4 calculate_rotation_mat(glm::quat q)
+  {
+    glm::mat4 result(1.f);
+    float qxx(q.x * q.x);
+    float qyy(q.y * q.y);
+    float qzz(q.z * q.z);
+    float qxz(q.x * q.z);
+    float qxy(q.x * q.y);
+    float qyz(q.y * q.z);
+    float qwx(q.w * q.x);
+    float qwy(q.w * q.y);
+    float qwz(q.w * q.z);
+
+    result[0][0] = 1.f - 2.f * (qyy + qzz);
+    result[0][1] = 2.f * (qxy + qwz);
+    result[0][2] = 2.f * (qxz - qwy);
+
+    result[1][0] = 2.f * (qxy - qwz);
+    result[1][1] = 1.f - 2.f * (qxx + qzz);
+    result[1][2] = 2.f * (qyz + qwx);
+
+    result[2][0] = 2.f * (qxz + qwy);
+    result[2][1] = 2.f * (qyz - qwx);
+    result[2][2] = 1.f - 2.f * (qxx + qyy);
+    return result;
+  }
+
+  static glm::mat4 calculate_scale_mat(glm::mat4 mat, glm::vec3 v)
+  {
+    glm::mat4 result(mat);
+    result[0] = mat[0] * v[0];
+    result[1] = mat[1] * v[1];
+    result[2] = mat[2] * v[2];
+    result[3] = mat[3];
+    return result;
+  }
 } // namespace esp
 
 #endif // SCENE_COMPONENTS_TRANSFORM_COMPONENT_HH
