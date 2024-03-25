@@ -5,7 +5,7 @@
 
 namespace esp
 {
-  static glm::mat4 calculate_model_mat(glm::vec3 translation, glm::quat rotation, float scale);
+  static glm::mat4 calculate_model_mat(glm::vec3 translation, glm::quat rotation, glm::vec3 scale);
   static glm::mat4 calculate_translation_mat(glm::mat4 mat, glm::vec3 v);
   static glm::mat4 calculate_rotation_mat(glm::quat q);
   static glm::mat4 calculate_scale_mat(glm::mat4 mat, glm::vec3 v);
@@ -15,12 +15,12 @@ namespace esp
   {
    private:
     glm::vec3 m_translation;
-    float m_scale;
+    glm::vec3 m_scale;
     glm::quat m_rotation;
 
    public:
     /// @brief Default constructor.
-    TransformComponent() : m_translation{ 0.f, 0.f, 0.f }, m_scale{ 1.f }, m_rotation{ 1.f, 0.f, 0.f, 0.f } {}
+    TransformComponent() : m_translation{ 0.f, 0.f, 0.f }, m_scale{ 1.f, 1.f, 1.f }, m_rotation{ 1.f, 0.f, 0.f, 0.f } {}
 
     /// @brief Translates by given argument
     /// @param vec Vector to translate by
@@ -33,6 +33,10 @@ namespace esp
     /// @brief Scales by given argument
     /// @param val Value to scale by
     inline void scale(float val) { m_scale *= val; }
+    inline void scale(glm::vec3 val) { m_scale *= val; }
+    inline void scale_ox(float val) { m_scale[0] *= val; }
+    inline void scale_oy(float val) { m_scale[1] *= val; }
+    inline void scale_oz(float val) { m_scale[2] *= val; }
     /// @brief Sets translation to given argument
     /// @param vec Translation vector
     inline void set_translation(glm::vec3 vec) { m_translation = vec; }
@@ -43,7 +47,7 @@ namespace esp
     inline void set_rotation(glm::quat quat) { m_rotation = quat; }
     /// @brief Sets scale to given argument
     /// @param val Scale value
-    inline void set_scale(float val) { m_scale = val; }
+    inline void set_scale(glm::vec3 val) { m_scale = val; }
     /// @brief Returns component's model matrix.
     /// @return Component's model matrix.
     inline glm::mat4 get_model_mat() const { return calculate_model_mat(m_translation, m_rotation, m_scale); }
@@ -52,17 +56,17 @@ namespace esp
     inline glm::vec3 get_translation() const { return m_translation; }
     /// @brief Returns component's scale
     /// @return Component's scale
-    inline float get_scale() const { return m_scale; }
+    inline glm::vec3 get_scale() const { return m_scale; }
     /// @brief Returns component's rotation
     /// @return Component's rotation
     inline glm::quat get_rotation() const { return m_rotation; }
   };
 
-  static glm::mat4 calculate_model_mat(glm::vec3 translation, glm::quat rotation, float scale)
+  static glm::mat4 calculate_model_mat(glm::vec3 translation, glm::quat rotation, glm::vec3 scale)
   {
     glm::mat4 translation_mat = calculate_translation_mat(glm::mat4(1.0f), translation);
     glm::mat4 rotation_mat    = calculate_rotation_mat(rotation);
-    glm::mat4 scale_mat       = calculate_scale_mat(glm::mat4(1.0f), { scale, scale, scale });
+    glm::mat4 scale_mat       = calculate_scale_mat(glm::mat4(1.0f), scale);
 
     return translation_mat * rotation_mat * scale_mat;
   }

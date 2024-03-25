@@ -81,6 +81,10 @@ namespace esp
     /// @brief Scales entity by given argument
     /// @param val Value to scale by
     void scale(float val);
+    void scale(glm::vec3 val);
+    void scale_ox(float val);
+    void scale_oy(float val);
+    void scale_oz(float val);
     /// @brief Sets entity's translation to given argument
     /// @param vec Translation vector
     void set_translation(glm::vec3 vec, action::ActionType type = action::ESP_ABSOLUTE);
@@ -91,7 +95,7 @@ namespace esp
     void set_rotation(glm::quat quat);
     /// @brief Sets entity's scale to given argument
     /// @param val Scale value
-    void set_scale(float val);
+    void set_scale(glm::vec3 val);
     /// @brief Returns entity's model matrix
     /// @param type Tells whether matrix is relative to parent
     /// or world (relative to world by default)
@@ -110,7 +114,7 @@ namespace esp
     /// @param type Tells whether scale is relative to parent
     /// or world (ESP_RELATIVE to world by default)
     /// @return Entity's scale
-    float get_scale(action::ActionType type = action::ESP_ABSOLUTE);
+    glm::vec3 get_scale(action::ActionType type = action::ESP_ABSOLUTE);
 
     /// @brief Returns entity's TransformComponent
     /// @return TransformComponent's reference

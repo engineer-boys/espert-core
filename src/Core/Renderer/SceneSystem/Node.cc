@@ -54,7 +54,7 @@ namespace esp
     float scale_z          = glm::length(glm::vec3(model_mat[2]));
     glm::mat4 rotation_mat = glm::mat3(model_mat[0] / scale_x, model_mat[1] / scale_y, model_mat[2] / scale_z);
     (*found)->set_rotation(glm::quat_cast(rotation_mat));
-    (*found)->set_scale(scale_x);
+    (*found)->set_scale({ scale_x, scale_y, scale_z });
 
     (*found)->m_parent = nullptr;
     m_children.erase(found);
@@ -69,7 +69,7 @@ namespace esp
     float scale_z          = glm::length(glm::vec3(inv_model[2]));
     glm::mat4 rotation_mat = glm::mat3(inv_model[0] / scale_x, inv_model[1] / scale_y, inv_model[2] / scale_z);
     rotate(glm::quat_cast(rotation_mat));
-    scale(glm::length(glm::vec3(inv_model[0])));
+    scale({ scale_x, scale_y, scale_z });
 
     m_parent = nullptr;
     m_parent = node;
@@ -109,6 +109,30 @@ namespace esp
     transform.scale(val);
   }
 
+  void Node::scale(glm::vec3 val)
+  {
+    auto& transform = get_transform();
+    transform.scale(val);
+  }
+
+  void Node::scale_ox(float val)
+  {
+    auto& transform = get_transform();
+    transform.scale_ox(val);
+  }
+
+  void Node::scale_oy(float val)
+  {
+    auto& transform = get_transform();
+    transform.scale_oy(val);
+  }
+
+  void Node::scale_oz(float val)
+  {
+    auto& transform = get_transform();
+    transform.scale_oz(val);
+  }
+
   void Node::set_translation(glm::vec3 vec, action::ActionType type)
   {
     auto& transform = get_transform();
@@ -135,7 +159,7 @@ namespace esp
     transform.set_rotation(quat);
   }
 
-  void Node::set_scale(float val)
+  void Node::set_scale(glm::vec3 val)
   {
     auto& transform = get_transform();
     transform.set_scale(val);
@@ -171,12 +195,12 @@ namespace esp
     return rotation;
   }
 
-  float Node::get_scale(ActionType type)
+  glm::vec3 Node::get_scale(ActionType type)
   {
     auto& transform = get_transform();
     auto parent     = get_parent();
 
-    float scale = transform.get_scale();
+    glm::vec3 scale = transform.get_scale();
     if (type == ActionType::ESP_ABSOLUTE && parent) { return scale * parent->get_scale(type); }
     return scale;
   }
