@@ -24,12 +24,13 @@ namespace esp
                 float max_distance = FLT_MAX,
                 float distance     = 0.f);
 
+    void rotate(float dx, float dy, float dt);
+    void zoom(float dd, float dt);
+
+    void set_distance_range(float min_distance, float max_distance);
+
     glm::mat4 get_view() override;
     glm::vec3 get_position() override;
-
-    void rotate(float dx, float dy);
-    void zoom(float dd);
-    void set_distance_range(float min_distance, float max_distance);
 
    private:
     void clamp_distance();

@@ -30,15 +30,15 @@ namespace esp
     }
   }
 
-  void OrbitCamera::rotate(float dx, float dy)
+  void OrbitCamera::rotate(float dx, float dy, float dt)
   {
-    m_angle_x = glm::mod(m_angle_x + dx, glm::two_pi<float>());
-    m_angle_y = glm::mod(m_angle_y + dy, glm::two_pi<float>());
+    m_angle_x = glm::mod(m_angle_x + dx * dt * m_sensitivity, glm::two_pi<float>());
+    m_angle_y = glm::mod(m_angle_y + dy * dt * m_sensitivity, glm::two_pi<float>());
   }
 
-  void OrbitCamera::zoom(float dd)
+  void OrbitCamera::zoom(float dd, float dt)
   {
-    m_distance += dd;
+    m_distance += dd * dt * m_sensitivity;
     clamp_distance();
   }
 

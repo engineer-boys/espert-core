@@ -1,7 +1,14 @@
 #include "FpsCamera.hh"
+#include "Core/RenderAPI/Work/EspWorkOrchestrator.hh"
 
 namespace esp
 {
+  void FpsCamera::zoom(float dd, float dt)
+  {
+    m_fov = std::clamp(m_fov + dd * dt / (2.f * m_sensitivity), glm::radians(1.f), ESP_PI / 4);
+    set_perspective(EspWorkOrchestrator::get_swap_chain_extent_aspect_ratio());
+  }
+
   void FpsCamera::move(MoveDirection direction, float dt)
   {
     switch (direction)
@@ -40,20 +47,10 @@ namespace esp
     update_camera_up();
   }
 
-  void FpsCamera::look_at(glm::vec2 mouse_pos, float dt)
+  void FpsCamera::look_at(float dx, float dy, float dt)
   {
-    if (m_first_move)
-    {
-      m_last_move  = mouse_pos;
-      m_first_move = false;
-      m_delta_move = { 0, 0 };
-      return;
-    }
-
-    float offset_x = (mouse_pos.x - m_last_move.x) * m_sensitivity * dt;
-    float offset_y = (m_last_move.y - mouse_pos.y) * m_sensitivity * dt;
-    m_last_move    = mouse_pos;
-    m_delta_move   = { offset_x, offset_y };
+    float offset_x = dx * m_sensitivity * dt;
+    float offset_y = dy * m_sensitivity * dt;
 
     m_jaw += glm::radians(offset_x);
     m_pitch = std::clamp(m_pitch + glm::radians(offset_y), -S_PITCH_TRESHOLD, S_PITCH_TRESHOLD);
