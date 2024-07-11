@@ -8,6 +8,7 @@ namespace esp
   enum class EspUniformShaderStage
   {
     ESP_VTX_STAGE,
+    ESP_GEOM_STAGE,
     ESP_FRAG_STAGE,
     ESP_ALL_STAGES
   };

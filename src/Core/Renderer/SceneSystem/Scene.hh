@@ -57,6 +57,11 @@ namespace esp
     /// @tparam ...Args Type of component used to construct the view.
     /// @return View for the given component.
     template<typename... Args> auto get_view() { return m_registry.view<Args...>().each(); }
+    /// @brief Returns component of given entity.
+    /// @param id Entity's id
+    /// @tparam T Component to get.
+    /// @return Component of given entity.
+    template<typename T> T& get_component(uint32_t id) { return m_registry.get<T>((entt::entity)id); }
     /// @brief Sets the current Camera.
     /// @param camera Pointer to he Camera to be set as current one.
     inline static void set_current_camera(Camera* camera) { s_current_camera = camera; }

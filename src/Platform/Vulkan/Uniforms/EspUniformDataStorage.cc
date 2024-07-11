@@ -77,6 +77,7 @@ static VkDescriptorSetLayoutBinding create_descriptor_set_layout_binding(esp::Es
 {
   auto stage = VK_SHADER_STAGE_VERTEX_BIT;
   if (data.m_stage == esp::EspUniformShaderStage::ESP_FRAG_STAGE) { stage = VK_SHADER_STAGE_FRAGMENT_BIT; }
+  else if (data.m_stage == esp::EspUniformShaderStage::ESP_GEOM_STAGE) { stage = VK_SHADER_STAGE_GEOMETRY_BIT; }
   else if (data.m_stage == esp::EspUniformShaderStage::ESP_ALL_STAGES) { stage = VK_SHADER_STAGE_ALL_GRAPHICS; }
 
   switch (data.m_uniform_type)
