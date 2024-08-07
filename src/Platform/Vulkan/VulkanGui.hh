@@ -20,7 +20,7 @@ namespace esp
 
     static void terminate();
     static void new_frame();
-    static void begin();
+    static void begin(EspGuiWindowFlags flags);
     static void end();
     static void end_frame();
     static void render();

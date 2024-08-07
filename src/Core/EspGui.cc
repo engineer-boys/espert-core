@@ -48,13 +48,13 @@ namespace esp
     /* ---------------------------------------------------------*/
   }
 
-  void EspGui::begin()
+  void EspGui::begin(EspGuiWindowFlags flags)
   {
     /* ---------------------------------------------------------*/
     /* ------------- PLATFORM DEPENDENT ------------------------*/
     /* ---------------------------------------------------------*/
 #if ESP_USE_VULKAN
-    VulkanGui::begin();
+    VulkanGui::begin(flags);
 #else
 #error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
 #endif

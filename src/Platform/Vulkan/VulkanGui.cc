@@ -32,7 +32,10 @@ namespace esp
     ImGui::NewFrame();
   }
 
-  void VulkanGui::begin() { ImGui::Begin(s_instance->m_name.c_str()); }
+  void VulkanGui::begin(EspGuiWindowFlags flags)
+  {
+    ImGui::Begin(s_instance->m_name.c_str(), nullptr, static_cast<EspGuiWindowFlags_>(flags));
+  }
 
   void VulkanGui::end() { ImGui::End(); }
 
