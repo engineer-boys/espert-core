@@ -20,6 +20,8 @@ namespace esp
 
     void set_perspective(float fov, float aspect_ratio, float near_plane, float far_plane);
     void set_perspective(float aspect_ratio);
+    void set_perspective(glm::vec4 clip_plane); // {l, r, b, t}
+    void set_anaglyph_perspective(float eye_distance, float plane_distance, bool left_eye);
 
     inline void set_sensitivity(float sensitivity) { m_sensitivity = sensitivity; }
 
