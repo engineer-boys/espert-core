@@ -53,6 +53,8 @@ namespace esp
    public:
     static std::unique_ptr<VulkanWorkOrchestrator> create(EspPresentationMode presentation_mode);
 
+    static void split_frame();
+
     inline static uint32_t get_number_of_command_buffers() { return s_instance->m_command_buffers.size(); }
     static VkCommandBuffer begin_single_time_commands();
     static void end_single_time_commands(VkCommandBuffer command_buffer);

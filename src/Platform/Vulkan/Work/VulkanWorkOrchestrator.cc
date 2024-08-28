@@ -71,6 +71,41 @@ namespace esp
                "Failed to begin recording command buffer!");
   }
 
+  void VulkanWorkOrchestrator::split_frame()
+  {
+    auto current_frame = s_instance->m_swap_chain->m_current_frame;
+    ESP_ASSERT(vkEndCommandBuffer(s_instance->m_command_buffers[current_frame]) == VK_SUCCESS,
+               "Failed to record commandbuffer!");
+
+    VkSubmitInfo submit_info{};
+    submit_info.sType              = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+    submit_info.commandBufferCount = 1;
+    submit_info.pCommandBuffers    = &s_instance->m_command_buffers[current_frame];
+
+    auto data_context = VulkanContext::get_context_data();
+    ESP_ASSERT(
+        vkQueueSubmit(data_context.m_graphics_queue, 1, &submit_info, s_instance->m_in_flight_fences[current_frame]) ==
+            VK_SUCCESS,
+        "Failed to submit draw command buffer!")
+
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    vkWaitForFences(VulkanDevice::get_logical_device(),
+                    1,
+                    &s_instance->m_in_flight_fences[current_frame],
+                    VK_TRUE,
+                    std::numeric_limits<uint64_t>::max());
+    vkResetFences(VulkanDevice::get_logical_device(), 1, &s_instance->m_in_flight_fences[current_frame]);
+
+    vkResetCommandBuffer(s_instance->m_command_buffers[current_frame], /*VkCommandBufferResetFlagBits*/ 0);
+
+    VkCommandBufferBeginInfo begin_info{};
+    begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+    ESP_ASSERT(vkBeginCommandBuffer(s_instance->m_command_buffers[current_frame], &begin_info) == VK_SUCCESS,
+               "Failed to begin recording command buffer!");
+  }
+
   void VulkanWorkOrchestrator::end_frame()
   {
     auto current_frame = m_swap_chain->m_current_frame;

@@ -44,4 +44,17 @@ namespace esp
 #endif
     /* ---------------------------------------------------------*/
   }
+
+  void EspWorkOrchestrator::split_frame()
+  {
+    /* ---------------------------------------------------------*/
+    /* ------------- PLATFORM DEPENDENT ------------------------*/
+    /* ---------------------------------------------------------*/
+#if ESP_USE_VULKAN
+    VulkanWorkOrchestrator::split_frame();
+#else
+#error Unfortunatelly, only Vulkan is supported by Espert. Please, install Vulkan API.
+#endif
+    /* ---------------------------------------------------------*/
+  }
 } // namespace esp

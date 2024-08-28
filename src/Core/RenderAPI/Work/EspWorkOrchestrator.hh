@@ -31,6 +31,7 @@ namespace esp
     /* -------------------------- STATIC METHODS --------------------------- */
    public:
     static std::unique_ptr<EspWorkOrchestrator> build(EspPresentationMode presentation_mode);
+    static void split_frame();
   };
 } // namespace esp
 
