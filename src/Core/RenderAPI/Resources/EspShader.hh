@@ -42,6 +42,8 @@ namespace esp
     /// @brief Enables multisampling.
     /// @param sample_count_flag Sets number of samples.
     void enable_multisampling(EspSampleCountFlag sample_count_flag);
+    /// @brief Enables alpha blending.
+    void enable_alpha_blending();
     /// @brief Sets pipeline attachement formats.
     /// @param formats List of block formats.
     void set_attachment_formats(std::vector<EspBlockFormat> formats);

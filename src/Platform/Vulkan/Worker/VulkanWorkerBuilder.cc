@@ -52,6 +52,8 @@ namespace esp
     m_multisampling.m_sample_count_flag = sample_count_flag;
   }
 
+  void VulkanWorkerBuilder::enable_alpha_blending() { m_alpha_blending.m_on = true; }
+
   void VulkanWorkerBuilder::set_attachment_formats(std::vector<EspBlockFormat> formats)
   {
     m_color_attachment_formats.clear();
@@ -228,7 +230,7 @@ namespace esp
 
       (6) Depth stencil: less operation for comparing.
 
-      (7) Blending: it is off.
+      (7) Blending: it is changeable.
 
       (8) Pipeline layout: it is changeable.
 
@@ -310,7 +312,20 @@ namespace esp
       {
         attachment.colorWriteMask =
             VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-        attachment.blendEnable = VK_FALSE;
+
+        if (m_alpha_blending.m_on)
+        {
+          attachment.blendEnable = VK_TRUE;
+          // alpha blending: finalColor = (srcAlpha * newColor) + ((1 - srcAlpha) * oldColor)
+          attachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+          attachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+          attachment.colorBlendOp        = VK_BLEND_OP_ADD;
+
+          attachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+          attachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+          attachment.alphaBlendOp        = VK_BLEND_OP_ADD;
+        }
+        else { attachment.blendEnable = VK_FALSE; }
       }
 
       color_blending.sType             = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;

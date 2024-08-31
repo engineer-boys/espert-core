@@ -66,6 +66,7 @@ namespace esp
 
     virtual void enable_depth_test(EspDepthBlockFormat format, EspCompareOp compare_op) = 0;
     virtual void enable_multisampling(EspSampleCountFlag sample_count_flag)             = 0;
+    virtual void enable_alpha_blending()                                                = 0;
 
     virtual void set_attachment_formats(std::vector<EspBlockFormat> formats) = 0;
 

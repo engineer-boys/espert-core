@@ -35,6 +35,8 @@ namespace esp
     m_worker_builder->enable_multisampling(sample_count_flag);
   }
 
+  void EspShader::enable_alpha_blending() { m_worker_builder->enable_alpha_blending(); }
+
   void EspShader::set_attachment_formats(std::vector<EspBlockFormat> formats)
   {
     m_worker_builder->set_attachment_formats(formats);
