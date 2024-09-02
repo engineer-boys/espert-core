@@ -97,6 +97,7 @@ namespace esp
     device_features.fillModeNonSolid         = VK_TRUE;
     device_features.geometryShader           = VK_TRUE;
     device_features.wideLines                = VK_TRUE;
+    device_features.tessellationShader       = VK_TRUE;
     // TODO: let user decide whether he wants higher quality or better performance - put this in some if statement
     // device_features.sampleRateShading        = VK_TRUE; // enable sample shading feature for the device
 

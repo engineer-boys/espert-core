@@ -259,6 +259,12 @@ namespace esp
       input_assembly.primitiveRestartEnable = VK_FALSE;
     }
 
+    VkPipelineTessellationStateCreateInfo tessellation_state = {};
+    {
+      tessellation_state.sType              = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO;
+      tessellation_state.patchControlPoints = 4; // TODO: 16 (?)
+    }
+
     VkPipelineViewportStateCreateInfo viewport_state{};
     {
       viewport_state.sType         = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
@@ -369,6 +375,7 @@ namespace esp
     pipeline_info.pStages             = shader_stages;
     pipeline_info.pVertexInputState   = &m_vertex_input_info;
     pipeline_info.pInputAssemblyState = &input_assembly;
+    pipeline_info.pTessellationState  = &tessellation_state;
     pipeline_info.pViewportState      = &viewport_state;
     pipeline_info.pRasterizationState = &rasterizer;
     pipeline_info.pMultisampleState   = &multisampling;
