@@ -262,7 +262,7 @@ namespace esp
     VkPipelineTessellationStateCreateInfo tessellation_state = {};
     {
       tessellation_state.sType              = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO;
-      tessellation_state.patchControlPoints = 4; // TODO: 16 (?)
+      tessellation_state.patchControlPoints = 16;
     }
 
     VkPipelineViewportStateCreateInfo viewport_state{};
