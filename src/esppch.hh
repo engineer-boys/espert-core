@@ -10,6 +10,7 @@
 #include <functional>
 #include <iostream>
 #include <memory>
+#include <numeric>
 #include <stdexcept>
 #include <typeinfo>
 #include <utility>
