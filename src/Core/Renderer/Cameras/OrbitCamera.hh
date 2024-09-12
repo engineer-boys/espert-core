@@ -17,6 +17,9 @@ namespace esp
     float m_max_distance;
 
     glm::vec3 m_target;
+    glm::vec3 m_position;
+
+    glm::mat4 m_view{ 1.f };
 
    public:
     OrbitCamera(glm::vec3 target   = { 0, 0, 0 },
@@ -29,8 +32,10 @@ namespace esp
 
     void set_distance_range(float min_distance, float max_distance);
 
-    glm::mat4 get_view() override;
-    glm::vec3 get_position() override;
+    void on_new_frame() override;
+
+    inline glm::mat4 get_view() { return m_view; }
+    inline glm::vec3 get_position() { return m_position; }
 
    private:
     void clamp_distance();

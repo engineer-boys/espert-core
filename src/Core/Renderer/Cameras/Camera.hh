@@ -27,6 +27,7 @@ namespace esp
 
     inline glm::mat4 get_projection() { return m_projection_mat; }
 
+    virtual void on_new_frame() {}
     virtual glm::mat4 get_view()     = 0;
     virtual glm::vec3 get_position() = 0;
   };
