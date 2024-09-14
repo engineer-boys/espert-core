@@ -1,12 +1,20 @@
 #include "FpsCamera.hh"
-#include "Core/RenderAPI/Work/EspWorkOrchestrator.hh"
 
 namespace esp
 {
-  void FpsCamera::zoom(float dd, float dt)
+  const glm::vec3 FpsCamera::s_up         = glm::vec3(0.f, 1.f, 0.f);
+  const glm::vec3 FpsCamera::s_front      = glm::vec3(0.f, 0.f, -1.f);
+  const float FpsCamera::s_pitch_treshold = glm::radians(89.f);
+
+  FpsCamera::FpsCamera(float pitch,
+                       float jaw,
+                       float move_speed,
+                       glm::vec3 position,
+                       glm::vec3 camera_front,
+                       glm::vec3 camera_up) :
+      m_pitch{ pitch }, m_jaw{ jaw }, m_move_speed{ move_speed }, m_position{ position },
+      m_camera_front{ camera_front }, m_camera_up{ camera_up }
   {
-    m_fov = std::clamp(m_fov + dd * dt / (2.f * m_sensitivity), glm::radians(1.f), ESP_PI / 4);
-    set_perspective(EspWorkOrchestrator::get_swap_chain_extent_aspect_ratio());
   }
 
   void FpsCamera::move(MoveDirection direction, float dt)
@@ -38,22 +46,22 @@ namespace esp
   {
     m_camera_front = esp::normalize(m_position - target);
 
-    m_pitch = std::clamp(glm::acos(glm::dot(m_camera_front, S_UP)) - ESP_PI / 2, -S_PITCH_TRESHOLD, S_PITCH_TRESHOLD);
+    m_pitch = std::clamp(glm::acos(glm::dot(m_camera_front, s_up)) - ESP_PI / 2, -s_pitch_treshold, s_pitch_treshold);
 
     glm::vec3 front_xz = esp::normalize(glm::vec3{ m_camera_front.x, 0.f, m_camera_front.z });
-    m_jaw              = m_camera_front.x < 0 ? ESP_PI / 2 - glm::acos(glm::dot(front_xz, S_FRONT))
-                                              : ESP_PI / 2 + glm::acos(glm::dot(front_xz, S_FRONT));
+    m_jaw              = m_camera_front.x < 0 ? ESP_PI / 2 - glm::acos(glm::dot(front_xz, s_front))
+                                              : ESP_PI / 2 + glm::acos(glm::dot(front_xz, s_front));
 
     update_camera_up();
   }
 
   void FpsCamera::look_at(float dx, float dy, float dt)
   {
-    float offset_x = dx * m_sensitivity * dt;
-    float offset_y = dy * m_sensitivity * dt;
+    float offset_x = dx * dt;
+    float offset_y = dy * dt;
 
     m_jaw += glm::radians(offset_x);
-    m_pitch = std::clamp(m_pitch + glm::radians(offset_y), -S_PITCH_TRESHOLD, S_PITCH_TRESHOLD);
+    m_pitch = std::clamp(m_pitch + glm::radians(offset_y), -s_pitch_treshold, s_pitch_treshold);
 
     glm::vec3 direction;
     direction.x = cos(m_jaw) * cos(m_pitch);
@@ -67,7 +75,7 @@ namespace esp
 
   void FpsCamera::update_camera_up()
   {
-    glm::vec3 camera_right = esp::normalize(glm::cross(S_UP, m_camera_front));
+    glm::vec3 camera_right = esp::normalize(glm::cross(s_up, m_camera_front));
     m_camera_up            = glm::cross(m_camera_front, camera_right);
   }
 } // namespace esp

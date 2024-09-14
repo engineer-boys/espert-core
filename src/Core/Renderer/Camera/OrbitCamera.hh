@@ -1,3 +1,4 @@
+
 #ifndef ESPERT_SANDBOX_ORBITCAMERA_HH
 #define ESPERT_SANDBOX_ORBITCAMERA_HH
 
@@ -17,9 +18,6 @@ namespace esp
     float m_max_distance;
 
     glm::vec3 m_target;
-    glm::vec3 m_position;
-
-    glm::mat4 m_view{ 1.f };
 
    public:
     OrbitCamera(glm::vec3 target   = { 0, 0, 0 },
@@ -27,17 +25,14 @@ namespace esp
                 float max_distance = FLT_MAX,
                 float distance     = 0.f);
 
+    glm::mat4 get_view();
+    glm::vec3 get_position();
+
     void rotate(float dx, float dy, float dt);
     void zoom(float dd, float dt);
 
-    void set_distance_range(float min_distance, float max_distance);
-
-    void on_new_frame() override;
-
-    inline glm::mat4 get_view() { return m_view; }
-    inline glm::vec3 get_position() { return m_position; }
-
    private:
+    void set_distance_range(float min_distance, float max_distance);
     void clamp_distance();
   };
 } // namespace esp

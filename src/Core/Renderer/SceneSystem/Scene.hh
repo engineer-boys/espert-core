@@ -1,7 +1,7 @@
 #ifndef SCENE_SCENE_HH
 #define SCENE_SCENE_HH
 
-#include "Core/Renderer/Cameras/Camera.hh"
+#include "Core/Renderer/CameraController/CameraController.hh"
 #include "Node.hh"
 
 #include "esppch.hh"
@@ -17,8 +17,8 @@ namespace esp
     entt::registry m_registry;
     std::shared_ptr<Node> m_root_node;
 
-    static Camera* s_current_camera;
-    std::vector<std::shared_ptr<Camera>> m_cameras;
+    static CameraController* s_current_camera;
+    std::vector<CameraController*> m_cameras;
 
    public:
     /// @brief Creates instance of a Scene.
@@ -41,12 +41,12 @@ namespace esp
 
     /// @brief Adds a Camera to the Scene.
     /// @param camera Shared pointer to the Camera to be added to current Scene.
-    inline void add_camera(std::shared_ptr<Camera> camera) { m_cameras.push_back(std::move(camera)); }
+    inline void add_camera(CameraController* camera) { m_cameras.push_back(camera); }
 
     /// @brief Returns Scene's Camera by it's index.
     /// @param index Index of the Camera to be returned.
     /// @return Shared pointer to Camera at index.
-    inline std::shared_ptr<Camera> get_camera(uint32_t index)
+    inline CameraController* get_camera(uint32_t index)
     {
       ESP_ASSERT(index < m_cameras.size(), "Index was out of range")
       return m_cameras[index];
@@ -64,10 +64,10 @@ namespace esp
     template<typename T> T& get_component(uint32_t id) { return m_registry.get<T>((entt::entity)id); }
     /// @brief Sets the current Camera.
     /// @param camera Pointer to he Camera to be set as current one.
-    inline static void set_current_camera(Camera* camera) { s_current_camera = camera; }
+    inline static void set_current_camera(CameraController* camera) { s_current_camera = camera; }
     /// @brief Returns pointer to the current Camera.
     /// @return Pointer to the current Camera.
-    inline static Camera* get_current_camera() { return s_current_camera; }
+    inline static CameraController* get_current_camera() { return s_current_camera; }
 
     /// @brief Draws each Node on scene graph that has ModelComponent
     void draw(); // TODO: move draw logic to Renderer class

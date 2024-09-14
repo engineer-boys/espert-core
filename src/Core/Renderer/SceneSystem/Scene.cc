@@ -6,7 +6,7 @@
 
 namespace esp
 {
-  Camera* Scene::s_current_camera = nullptr;
+  CameraController* Scene::s_current_camera = nullptr;
 
   std::shared_ptr<Scene> Scene::create() { return std::shared_ptr<Scene>(new Scene()); }
 

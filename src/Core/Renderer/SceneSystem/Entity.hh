@@ -11,8 +11,8 @@ namespace esp
   class Entity
   {
    private:
-    entt::entity m_handle{ 0 };
-    Scene* m_scene;
+    entt::entity m_handle{ entt::null };
+    Scene* m_scene = nullptr;
 
    public:
     /// @brief Adds component to an Entity.
