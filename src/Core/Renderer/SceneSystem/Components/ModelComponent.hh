@@ -6,6 +6,8 @@
 #include "Core/RenderAPI/Work/EspJob.hh"
 #include "Core/Renderer/Model/Model.hh"
 
+#define MAX_MODELS 3
+
 namespace esp
 {
   struct ModelComponentParams
@@ -21,16 +23,18 @@ namespace esp
     std::shared_ptr<Model> m_model;
     std::shared_ptr<EspShader> m_shader;
     std::shared_ptr<EspUniformManager> m_uniform_manager;
-    std::unordered_map<std::shared_ptr<Material>, std::unique_ptr<EspUniformManager>> m_material_managers;
+    std::unordered_map<std::shared_ptr<Material>, std::shared_ptr<EspUniformManager>> m_material_managers;
     bool m_draw{ true };
 
+    ModelDrawData() = default;
     ModelDrawData(const ModelComponentParams& params);
   };
 
   struct ModelComponent
   {
    private:
-    std::vector<std::shared_ptr<ModelDrawData>> m_draw_data{};
+    std::array<ModelDrawData, MAX_MODELS> m_draw_data;
+    uint32_t m_models_count;
 
    public:
     ModelComponent(std::shared_ptr<Model>& model,
@@ -44,12 +48,14 @@ namespace esp
     EspShader& get_shader(uint32_t idx = 0) const;
     EspUniformManager& get_uniform_manager(uint32_t idx = 0) const;
     auto& get_material_manager(uint32_t idx = 0) const;
-    auto& get_draw_data() const;
 
-    inline void choose(uint32_t idx) { m_draw_data[idx]->m_draw = true; }
-    inline void skip(uint32_t idx) { m_draw_data[idx]->m_draw = false; }
-    // inline ModelDrawData& operator[](uint32_t idx) { return *(m_draw_data[idx]); }
-
+    void choose(uint32_t idx);
+    void skip(uint32_t idx);
+    void update_buffer_uniform(uint32_t set,
+                               uint32_t binding,
+                               uint64_t offset,
+                               uint32_t size,
+                               void* data); // for each draw data
     void draw() const;
   };
 
@@ -74,42 +80,58 @@ namespace esp
                                         int start_managed_ds_for_uniform_manager,
                                         int end_managed_ds_for_uniform_manager)
   {
-    m_draw_data.push_back(std::make_shared<ModelDrawData>(
-        ModelComponentParams(model, shader, start_managed_ds_for_uniform_manager, end_managed_ds_for_uniform_manager)));
+    m_models_count = 1;
+    m_draw_data[0] = { { model, shader, start_managed_ds_for_uniform_manager, end_managed_ds_for_uniform_manager } };
   }
 
   inline ModelComponent::ModelComponent(std::vector<ModelComponentParams> params)
   {
-    for (auto& param : params)
+    ESP_ASSERT(params.size() < MAX_MODELS, "Model component can have at most 3 models")
+
+    m_models_count = params.size();
+    for (auto i = 0; i < m_models_count; i++)
     {
-      m_draw_data.push_back(std::make_unique<ModelDrawData>(param));
+      m_draw_data[i] = { params[i] };
     }
   }
 
-  inline Model& ModelComponent::get_model(uint32_t idx) const { return *(m_draw_data[idx]->m_model); }
-  inline EspShader& ModelComponent::get_shader(uint32_t idx) const { return *(m_draw_data[idx]->m_shader); }
+  inline Model& ModelComponent::get_model(uint32_t idx) const { return *(m_draw_data[idx].m_model); }
+  inline EspShader& ModelComponent::get_shader(uint32_t idx) const { return *(m_draw_data[idx].m_shader); }
   inline EspUniformManager& ModelComponent::get_uniform_manager(uint32_t idx) const
   {
-    return *(m_draw_data[idx]->m_uniform_manager);
+    return *(m_draw_data[idx].m_uniform_manager);
   }
-  inline auto& ModelComponent::get_material_manager(uint32_t idx) const
+  inline auto& ModelComponent::get_material_manager(uint32_t idx) const { return m_draw_data[idx].m_material_managers; }
+
+  inline void ModelComponent::choose(uint32_t idx) { m_draw_data[idx].m_draw = true; }
+
+  inline void ModelComponent::skip(uint32_t idx) { m_draw_data[idx].m_draw = false; }
+
+  inline void ModelComponent::update_buffer_uniform(uint32_t set,
+                                                    uint32_t binding,
+                                                    uint64_t offset,
+                                                    uint32_t size,
+                                                    void* data)
   {
-    return m_draw_data[idx]->m_material_managers;
+    for (auto i = 0; i < m_models_count; i++)
+    {
+      m_draw_data[i].m_uniform_manager->update_buffer_uniform(set, binding, offset, size, data);
+    }
   }
-  inline auto& esp::ModelComponent::get_draw_data() const { return m_draw_data; }
 
   inline void esp::ModelComponent::draw() const
   {
-    for (const auto& draw : m_draw_data)
+    for (auto i = 0; i < m_models_count; i++)
     {
-      if (!draw->m_draw) { return; }
+      auto& draw = m_draw_data[i];
+      if (!draw.m_draw) { return; }
 
-      draw->m_shader->attach();
+      draw.m_shader->attach();
 
-      const auto& uniform_manager = *draw->m_uniform_manager;
+      const auto& uniform_manager = *draw.m_uniform_manager;
       uniform_manager.attach();
 
-      auto& model = *draw->m_model;
+      auto& model = *draw.m_model;
       for (auto model_node : model)
       {
         if (model.has_many_mesh_nodes())
@@ -117,7 +139,7 @@ namespace esp
           uniform_manager.update_push_uniform(0, &(model_node.m_current_node->m_precomputed_transformation));
         }
 
-        auto& material_managers = draw->m_material_managers;
+        auto& material_managers = draw.m_material_managers;
         for (auto& mesh_idx : model_node.m_current_node->m_meshes)
         {
           auto& mesh = model.m_meshes[mesh_idx];
