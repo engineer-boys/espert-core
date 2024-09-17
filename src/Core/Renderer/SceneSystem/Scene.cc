@@ -6,8 +6,6 @@
 
 namespace esp
 {
-  CameraController* Scene::s_current_camera = nullptr;
-
   std::shared_ptr<Scene> Scene::create() { return std::shared_ptr<Scene>(new Scene()); }
 
   std::shared_ptr<Entity> Scene::create_entity(const std::string& name)
@@ -25,26 +23,4 @@ namespace esp
   void Scene::destroy_entity(Entity& entity) { m_registry.destroy(entity.m_handle); }
 
   void Scene::destroy_entity(uint32_t id) { m_registry.destroy((entt::entity)id); }
-
-  void Scene::draw()
-  {
-    // TODO: optimize by
-    //  - sorting shaders
-    //  - grouping instances of the same model (add instancing)
-    draw_node(m_root_node.get());
-  }
-
-  void Scene::draw_node(esp::Node* node)
-  {
-    for (auto& child : node->m_children)
-    {
-      auto model = child->get_entity()->try_get_component<ModelComponent>();
-      if (model) { model->draw(); }
-    }
-
-    for (auto& child : node->m_children)
-    {
-      draw_node(child);
-    }
-  }
 } // namespace esp
