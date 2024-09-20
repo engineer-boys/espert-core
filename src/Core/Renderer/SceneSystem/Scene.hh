@@ -1,10 +1,9 @@
 #ifndef SCENE_SCENE_HH
 #define SCENE_SCENE_HH
 
-#include "Core/Renderer/CameraController/CameraController.hh"
-#include "Node.hh"
-
 #include "esppch.hh"
+
+#include "Core/Renderer/CameraController/CameraController.hh"
 
 namespace esp
 {
@@ -15,7 +14,7 @@ namespace esp
   {
    private:
     entt::registry m_registry;
-    std::shared_ptr<Node> m_root_node;
+    std::unique_ptr<Entity> m_root_entity;
 
    public:
     /// @brief Creates instance of a Scene.
@@ -36,7 +35,7 @@ namespace esp
     void destroy_entity(Entity& entity);
     void destroy_entity(uint32_t id);
 
-    inline Node& get_root() { return *m_root_node; }
+    inline Entity& get_root() { return *m_root_entity; }
 
     /// @brief Returns a view for the given component.
     /// @tparam ...Args Type of component used to construct the view.
@@ -50,10 +49,13 @@ namespace esp
     /// @param id Entity's id
     /// @tparam T Component to get.
     /// @return Component of given entity.
+    template<typename T> T& get_component(entt::entity id) { return m_registry.get<T>(id); }
     template<typename T> T& get_component(uint32_t id) { return m_registry.get<T>((entt::entity)id); }
 
    private:
-    Scene() : m_root_node{ Node::create_root(this) } {}
+    Scene();
+
+    std::unique_ptr<Entity> create_root();
 
     friend class Entity;
   };

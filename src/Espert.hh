@@ -35,8 +35,8 @@
 #include "Core/Renderer/CameraController/OrbitCameraController.hh"
 #include "Core/Renderer/SceneSystem/Components/Components.hh"
 #include "Core/Renderer/SceneSystem/Entity.hh"
-#include "Core/Renderer/SceneSystem/Node.hh"
 #include "Core/Renderer/SceneSystem/Scene.hh"
+#include "Core/Renderer/SceneSystem/TransformManager.hh"
 
 /* ------------------------------------------ */
 
