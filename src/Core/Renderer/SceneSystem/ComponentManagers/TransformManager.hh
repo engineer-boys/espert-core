@@ -3,12 +3,13 @@
 
 #include "esppch.hh"
 
-#include "Action.hh"
-#include "Components/TransformComponent.hh"
-#include "Scene.hh"
+#include "Core/Renderer/SceneSystem/Action.hh"
+#include "Core/Renderer/SceneSystem/Scene.hh"
 
 namespace esp
 {
+  struct TransformComponent;
+
   class TransformManager
   {
    public:

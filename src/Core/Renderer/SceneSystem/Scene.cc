@@ -36,8 +36,6 @@ namespace esp
     entity.add_component<TransformComponent>();
     entity.add_component<NodeComponent>(entity.m_handle);
 
-    NodeComponent::s_scene = this;
-
     return std::make_unique<Entity>(entity);
   }
 } // namespace esp

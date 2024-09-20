@@ -1,5 +1,6 @@
 #include "TransformManager.hh"
-#include "Components/NodeComponent.hh"
+#include "Core/Renderer/SceneSystem/Components/NodeComponent.hh"
+#include "Core/Renderer/SceneSystem/Components/TransformComponent.hh"
 
 using namespace esp::action;
 
