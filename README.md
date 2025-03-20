@@ -1,4 +1,15 @@
 # Espert
+A cross platform game engine. It uses an abstract rendering API which currently implements Vulkan but is easy to extend. Main features include:
+- efficient resource management with option of implementing custom resource loaders
+- material system supporting PBR
+- Entity Component System in place of traditional inheritance for objects on scene
+- custom scene graph
+- skeletal animations
+- layered architecture
+- event communication
+- easy build system
+
+To experience all espert features check out [demo](https://github.com/engineer-boys/espert-sandbox).
 
 ## Build
 
