@@ -1,4 +1,6 @@
 # Espert
+https://github.com/user-attachments/assets/40e5a005-70d2-41c9-8f49-fc81450a3671
+
 A cross platform game engine. It uses an abstract rendering API which currently implements Vulkan but is easy to extend. Main features include:
 - efficient resource management with option of implementing custom resource loaders
 - material system supporting PBR
